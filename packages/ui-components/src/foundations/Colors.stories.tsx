@@ -81,7 +81,7 @@ export const Overview = () => {
       </p>
     
     <p className="text-sm text-text-secondary mb-12">Click on any color swatch to copy its hex code to your clipboard.</p>
-      <ColorGroup className="text-text-disabled" title="Interaction Colors" colors={interactionColors} />
+      <ColorGroup title="Interaction Colors" colors={interactionColors} />
       <ColorGroup title="Text Colors" colors={textColors} />
     </div>
   );
