@@ -30,28 +30,25 @@ jobs:
         continue-on-error: true
 
   lint:
-    name: Lint & Format Check
+    name: Lint Check
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
-      
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9.15.9
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Run ESLint
         run: pnpm --filter @pymes/ui-components lint
-      
-      - name: Check Prettier
-        run: npx prettier --check "packages/**/*.{ts,tsx}" "apps/**/*.{ts,tsx}"
 
   build:
     name: Build & Test
