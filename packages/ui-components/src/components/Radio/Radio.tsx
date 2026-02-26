@@ -1,0 +1,134 @@
+import { forwardRef } from 'react';
+import type { InputHTMLAttributes } from 'react';
+import clsx from 'clsx';
+
+export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
+  size?: 'sm' | 'md' | 'lg';
+  label?: string;
+  helperText?: string;
+  error?: boolean;
+  errorMessage?: string;
+}
+
+const sizes = {
+  sm: {
+    box: 'w-3.5 h-3.5',
+    dot: 'w-1.5 h-1.5',
+    label: 'text-xs',
+    helper: 'text-[10px]',
+    indent: 'ml-[22px]',
+  },
+  md: {
+    box: 'w-4 h-4',
+    dot: 'w-2 h-2',
+    label: 'text-sm',
+    helper: 'text-xs',
+    indent: 'ml-6',
+  },
+  lg: {
+    box: 'w-5 h-5',
+    dot: 'w-2.5 h-2.5',
+    label: 'text-base',
+    helper: 'text-sm',
+    indent: 'ml-7',
+  },
+};
+
+export const Radio = forwardRef<HTMLInputElement, RadioProps>(
+  (
+    {
+      size = 'md',
+      label,
+      helperText,
+      error = false,
+      errorMessage,
+      className,
+      disabled = false,
+      id,
+      ...props
+    },
+    ref
+  ) => {
+    const radioId =
+      id || (label ? `radio-${label.replace(/\s+/g, '-').toLowerCase()}` : undefined);
+    const hasMessage = (error && errorMessage) || helperText;
+    const messageId = hasMessage && radioId ? `${radioId}-message` : undefined;
+
+    return (
+      <div className={clsx('flex flex-col gap-1', className)}>
+        <div className="group flex items-center gap-2">
+          {/* Visual radio ring */}
+          <div
+            className={clsx(
+              'relative flex shrink-0 items-center justify-center rounded-full border-2 transition-colors',
+              'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
+              sizes[size].box,
+              error
+                ? 'border-red-500 group-has-[:focus-visible]:ring-red-500'
+                : 'border-interaction-primary-default group-has-[:checked]:border-interaction-primary-default group-has-[:focus-visible]:ring-interaction-primary-default hover:border-interaction-primary-hover',
+              disabled && 'opacity-50 cursor-not-allowed'
+            )}
+          >
+            {/* Native input overlaying the visual ring */}
+            <input
+              ref={ref}
+              id={radioId}
+              type="radio"
+              disabled={disabled}
+              aria-invalid={error || undefined}
+              aria-describedby={messageId}
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+              {...props}
+            />
+            {/* Inner dot — visible only when selected */}
+            <div
+              className={clsx(
+                'rounded-full transition-all',
+                'scale-0 group-has-[:checked]:scale-100',
+                sizes[size].dot,
+                error
+                  ? 'bg-red-500'
+                  : 'bg-interaction-primary-default'
+              )}
+            />
+          </div>
+
+          {/* Label */}
+          {label && (
+            <label
+              htmlFor={radioId}
+              className={clsx(
+                'select-none font-medium transition-colors cursor-pointer',
+                sizes[size].label,
+                error ? 'text-red-500' : 'text-text-primary',
+                disabled && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              {label}
+            </label>
+          )}
+        </div>
+
+        {/* Helper text / error message */}
+        {error && errorMessage ? (
+          <span
+            id={messageId}
+            className={clsx(sizes[size].helper, 'text-red-500', sizes[size].indent)}
+            role="alert"
+          >
+            {errorMessage}
+          </span>
+        ) : helperText ? (
+          <span
+            id={messageId}
+            className={clsx(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
+          >
+            {helperText}
+          </span>
+        ) : null}
+      </div>
+    );
+  }
+);
+
+Radio.displayName = 'Radio';
