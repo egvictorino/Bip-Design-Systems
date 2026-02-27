@@ -73,9 +73,55 @@ Component.displayName = 'Component';
 
 ### Styling rules
 - **Only Tailwind** — no CSS modules, no inline styles.
-- Use `clsx()` for all conditional class composition.
+- Use `cn()` from `../../lib/cn` for all conditional class composition — **never import `clsx` directly** in component files.
 - Use design tokens (see below) for colors, never hardcode hex values.
 - `group-has-[:checked]` and `group-has-[:focus-visible]` (Tailwind 3.4+) for custom form controls (Checkbox, Radio).
+
+### `cn()` utility
+
+Lives at `src/lib/cn.ts`. Combines `clsx` (conditional logic) + `extendTailwindMerge` configured with all project custom tokens so that class overrides work reliably:
+
+```ts
+import { cn } from '../../lib/cn';
+
+className={cn('base-class', condition && 'conditional-class', className)}
+```
+
+Plain `clsx` does not resolve conflicts between same-type utilities (e.g. `w-full` vs `w-1/2` — the one that appears later in Tailwind's generated CSS wins, not the one listed last in the attribute). `cn()` guarantees the last argument wins, including for custom tokens like `bg-interaction-*`, `text-text-*`, `border-interaction-*`.
+
+**Mantenimiento:** cuando se agreguen nuevos tokens a `tailwind.config.js`, deben registrarse también en el `extendTailwindMerge` de `src/lib/cn.ts`. Si no, `cn()` no resolverá conflictos para esos tokens y los overrides fallarán silenciosamente.
+
+### Compound component pattern
+
+Use when a component has multiple named sub-parts that share internal state (examples: Modal, Tabs, Dropdown). All three already exist as references.
+
+```tsx
+// 1. Context with null default + error guard hook
+const MyContext = createContext<MyContextValue | null>(null);
+const useMyContext = () => {
+  const ctx = useContext(MyContext);
+  if (!ctx) throw new Error('<Sub> must be used inside <Parent>');
+  return ctx;
+};
+
+// 2. Root provides context
+export const Parent: React.FC<ParentProps> = ({ children }) => {
+  const [state, setState] = useState(false);
+  return (
+    <MyContext.Provider value={{ state, setState }}>
+      <div>{children}</div>
+    </MyContext.Provider>
+  );
+};
+
+// 3. Sub-components consume context
+export const Sub: React.FC<SubProps> = ({ children }) => {
+  const { state } = useMyContext();
+  return <div>{children}</div>;
+};
+```
+
+Export all sub-components from both `index.ts` and `src/index.ts`.
 
 ### Design tokens (tailwind.config.js custom colors)
 ```
@@ -90,11 +136,21 @@ text-white      → #FFFFFF
 ```
 
 ### Accessibility requirements
-All form components must include:
+
+**Form components** must include:
 - `aria-invalid={error || undefined}` (not `aria-invalid="false"`)
 - `aria-describedby={messageId}` linked to helper/error span
 - `role="alert"` on error message spans
 - `htmlFor` / `id` pairing on labels
+
+**Decorative / loading components** (Skeleton, Spinner): add `aria-hidden="true"` — they convey no semantic content.
+
+**Interactive menus** (Dropdown — WAI-ARIA Menu Button pattern):
+- Trigger: `aria-haspopup`, `aria-expanded`, `aria-controls`
+- Menu: `role="menu"`, `aria-labelledby`, `aria-orientation="vertical"`
+- Items: `role="menuitem"` placed **after** `{...props}` spread to always enforce it
+- Dividers: `role="separator"` + `aria-orientation="horizontal"`
+- Keyboard: ↑ ↓ Home End navigate items; Escape closes and returns focus to trigger
 
 ### Story format (CSF v3)
 ```tsx
@@ -110,9 +166,24 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 ```
 
+Use `layout: 'padded'` instead of `'centered'` for components that are wider than a button (Table, Skeleton compositions, etc.).
+
+**Compound component stories:** when the root component has `children: ReactNode` as a required prop and stories use `render`, TypeScript requires `args` to satisfy the type. Always add `args: { children: null }` to every story — missing this causes a TS2322 build error in CI:
+
+```tsx
+export const MyStory: Story = {
+  args: { children: null },  // required even when render() provides the children
+  render: () => (
+    <Parent>
+      <Sub>content</Sub>
+    </Parent>
+  ),
+};
+```
+
 ## TypeScript
 
-All packages use `strict: true` + `noUnusedLocals: true` + `noUnusedParameters: true`. These will fail the build — never leave unused imports or variables. `jsx: 'react-jsx'` is set everywhere, so no `import React` is needed in component files (except `Button` which uses `React.FC` explicitly).
+All packages use `strict: true` + `noUnusedLocals: true` + `noUnusedParameters: true`. These will fail the build — never leave unused imports or variables. `jsx: 'react-jsx'` is set everywhere, so no `import React` is needed for JSX alone. However, `import React` **is** required when using `React.FC`, `React.createContext`, `React.cloneElement`, `React.isValidElement`, or any other `React.*` API explicitly — this applies to all compound components.
 
 ## Prettier
 
