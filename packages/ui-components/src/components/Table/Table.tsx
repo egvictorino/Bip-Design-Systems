@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 interface TableContextValue {
   striped: boolean;
@@ -25,7 +25,7 @@ export const Table: React.FC<TableProps> = ({
 }) => (
   <TableContext.Provider value={{ striped, compact }}>
     <div
-      className={clsx(
+      className={cn(
         'w-full overflow-x-auto rounded-lg border border-interaction-tertiary-default',
         className
       )}
@@ -43,7 +43,7 @@ export interface TableHeadProps extends React.HTMLAttributes<HTMLTableSectionEle
 }
 
 export const TableHead: React.FC<TableHeadProps> = ({ className, children, ...props }) => (
-  <thead className={clsx('bg-interaction-tertiary-default', className)} {...props}>
+  <thead className={cn('bg-interaction-tertiary-default', className)} {...props}>
     {children}
   </thead>
 );
@@ -56,7 +56,7 @@ export interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionEle
 
 export const TableBody: React.FC<TableBodyProps> = ({ className, children, ...props }) => (
   <tbody
-    className={clsx('border-t border-interaction-tertiary-hover', className)}
+    className={cn('border-t border-interaction-tertiary-hover', className)}
     {...props}
   >
     {children}
@@ -74,7 +74,7 @@ export const TableRow: React.FC<TableRowProps> = ({ className, children, ...prop
 
   return (
     <tr
-      className={clsx(
+      className={cn(
         'border-t border-interaction-tertiary-default transition-colors first:border-t-0',
         'hover:bg-interaction-tertiary-default/50',
         striped && 'even:bg-interaction-tertiary-default/30',
@@ -107,7 +107,7 @@ const SortIcon: React.FC<{ direction?: 'asc' | 'desc' | null }> = ({ direction }
   <svg
     viewBox="0 0 16 16"
     fill="none"
-    className={clsx(
+    className={cn(
       'w-3.5 h-3.5 shrink-0',
       direction ? 'text-interaction-primary-default' : 'text-text-secondary'
     )}
@@ -154,7 +154,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
     <th
       scope="col"
       aria-sort={ariaSort}
-      className={clsx(
+      className={cn(
         padding,
         'text-xs font-semibold uppercase tracking-wide whitespace-nowrap',
         'text-text-secondary',
@@ -194,7 +194,7 @@ export const TableCell: React.FC<TableCellProps> = ({
   const padding = compact ? 'px-3 py-2' : 'px-4 py-3';
 
   return (
-    <td className={clsx(padding, 'text-text-primary', alignStyles[align], className)} {...props}>
+    <td className={cn(padding, 'text-text-primary', alignStyles[align], className)} {...props}>
       {children}
     </td>
   );

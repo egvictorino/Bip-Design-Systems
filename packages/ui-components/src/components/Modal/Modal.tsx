@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useContext, useId } from 'react';
 import ReactDOM from 'react-dom';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 interface ModalContextValue {
   titleId: string;
@@ -114,7 +114,7 @@ export const Modal: React.FC<ModalProps> = ({
           aria-modal="true"
           aria-labelledby={titleId}
           tabIndex={-1}
-          className={clsx(
+          className={cn(
             'relative w-full rounded-lg bg-white shadow-xl focus:outline-none',
             sizeStyles[size],
             className
@@ -138,7 +138,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, .
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'flex items-center justify-between border-b border-interaction-tertiary-default px-6 py-4',
         className
       )}
@@ -151,7 +151,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, .
         type="button"
         onClick={onClose}
         aria-label="Cerrar modal"
-        className={clsx(
+        className={cn(
           'shrink-0 rounded p-1 text-text-secondary transition-colors',
           'hover:bg-interaction-tertiary-default hover:text-text-primary',
           'focus:outline-none focus:ring-2 focus:ring-interaction-primary-default focus:ring-offset-1'
@@ -170,7 +170,7 @@ export interface ModalBodyProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const ModalBody: React.FC<ModalBodyProps> = ({ className, children, ...props }) => (
-  <div className={clsx('px-6 py-5', className)} {...props}>
+  <div className={cn('px-6 py-5', className)} {...props}>
     {children}
   </div>
 );
@@ -181,7 +181,7 @@ export interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const ModalFooter: React.FC<ModalFooterProps> = ({ className, children, ...props }) => (
   <div
-    className={clsx(
+    className={cn(
       'flex items-center justify-end gap-3',
       'border-t border-interaction-tertiary-default px-6 py-4',
       className

@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
   size?: 'sm' | 'md' | 'lg';
@@ -30,11 +30,11 @@ export const Spinner: React.FC<SpinnerProps> = ({
     <span
       role="status"
       aria-label={label}
-      className={clsx('inline-flex items-center justify-center', className)}
+      className={cn('inline-flex items-center justify-center', className)}
       {...props}
     >
       <svg
-        className={clsx('animate-spin', sizeStyles[size], variantStyles[variant])}
+        className={cn('animate-spin', sizeStyles[size], variantStyles[variant])}
         viewBox="0 0 24 24"
         fill="none"
         aria-hidden="true"

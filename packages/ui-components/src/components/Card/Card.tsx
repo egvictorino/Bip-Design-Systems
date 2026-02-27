@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'elevated' | 'outlined' | 'flat';
@@ -34,7 +34,7 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ className, children, ...props }) => (
   <div
-    className={clsx('border-b border-interaction-tertiary-default px-5 py-4', className)}
+    className={cn('border-b border-interaction-tertiary-default px-5 py-4', className)}
     {...props}
   >
     {children}
@@ -42,14 +42,14 @@ export const CardHeader: React.FC<CardHeaderProps> = ({ className, children, ...
 );
 
 export const CardBody: React.FC<CardBodyProps> = ({ className, children, ...props }) => (
-  <div className={clsx('p-5', className)} {...props}>
+  <div className={cn('p-5', className)} {...props}>
     {children}
   </div>
 );
 
 export const CardFooter: React.FC<CardFooterProps> = ({ className, children, ...props }) => (
   <div
-    className={clsx('border-t border-interaction-tertiary-default px-5 py-4', className)}
+    className={cn('border-t border-interaction-tertiary-default px-5 py-4', className)}
     {...props}
   >
     {children}
@@ -65,7 +65,7 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   return (
     <div
-      className={clsx(
+      className={cn(
         'rounded-lg overflow-hidden',
         variantStyles[variant],
         paddingStyles[padding],

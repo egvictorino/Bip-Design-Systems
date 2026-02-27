@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface PaginationProps {
   currentPage: number;
@@ -46,12 +46,12 @@ function getPageRange(
   return [1, '...', ...middleRange, '...', totalPages];
 }
 
-const BASE_BTN = clsx(
+const BASE_BTN = cn(
   'inline-flex h-8 w-8 items-center justify-center rounded text-sm font-medium transition-colors',
   'focus:outline-none focus:ring-2 focus:ring-interaction-primary-default focus:ring-offset-1'
 );
 const BTN_ACTIVE = 'bg-interaction-primary-default text-text-white';
-const BTN_DEFAULT = clsx(
+const BTN_DEFAULT = cn(
   'text-text-secondary hover:text-text-primary',
   'hover:bg-interaction-tertiary-default'
 );
@@ -69,14 +69,14 @@ export const Pagination: React.FC<PaginationProps> = ({
   const pageRange = getPageRange(currentPage, totalPages, siblingCount);
 
   return (
-    <nav aria-label="Paginación" className={clsx('flex items-center gap-1', className)}>
+    <nav aria-label="Paginación" className={cn('flex items-center gap-1', className)}>
       {/* Previous */}
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="Página anterior"
-        className={clsx(BASE_BTN, currentPage === 1 ? BTN_DISABLED : BTN_DEFAULT)}
+        className={cn(BASE_BTN, currentPage === 1 ? BTN_DISABLED : BTN_DEFAULT)}
       >
         <svg
           viewBox="0 0 16 16"
@@ -111,7 +111,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             onClick={() => onPageChange(page as number)}
             aria-label={`Página ${page}`}
             aria-current={currentPage === page ? 'page' : undefined}
-            className={clsx(BASE_BTN, currentPage === page ? BTN_ACTIVE : BTN_DEFAULT)}
+            className={cn(BASE_BTN, currentPage === page ? BTN_ACTIVE : BTN_DEFAULT)}
           >
             {page}
           </button>
@@ -124,7 +124,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="Página siguiente"
-        className={clsx(BASE_BTN, currentPage === totalPages ? BTN_DISABLED : BTN_DEFAULT)}
+        className={cn(BASE_BTN, currentPage === totalPages ? BTN_DISABLED : BTN_DEFAULT)}
       >
         <svg
           viewBox="0 0 16 16"

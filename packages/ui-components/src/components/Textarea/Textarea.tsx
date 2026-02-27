@@ -1,6 +1,6 @@
 import { forwardRef, useState } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
   variant?: 'outlined' | 'filled' | 'bare';
@@ -42,19 +42,19 @@ const baseStyles =
   'rounded-[1px] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
 
 const getVariantStyles = (error: boolean) => ({
-  outlined: clsx(
+  outlined: cn(
     'border bg-transparent',
     error
       ? 'border-red-500 focus:ring-red-500'
       : 'border-interaction-primary-default focus:ring-interaction-primary-default hover:border-interaction-primary-hover'
   ),
-  filled: clsx(
+  filled: cn(
     'border-0',
     error
       ? 'bg-red-50 focus:ring-red-500'
       : 'bg-interaction-secondary-default focus:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
   ),
-  bare: clsx(
+  bare: cn(
     'border-0 border-b-2 bg-transparent rounded-none',
     error
       ? 'border-b-red-500 focus:ring-0'
@@ -91,11 +91,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-text';
 
     return (
-      <div className={clsx('flex flex-col gap-1', fullWidth && 'w-full')}>
+      <div className={cn('flex flex-col gap-1', fullWidth && 'w-full')}>
         {label && (
           <label
             htmlFor={textareaId}
-            className={clsx(
+            className={cn(
               'font-medium transition-colors',
               labelSizeStyles[size],
               error
@@ -115,7 +115,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           disabled={disabled}
           aria-invalid={error || undefined}
           aria-describedby={messageId}
-          className={clsx(
+          className={cn(
             baseStyles,
             variantStyles[variant],
             sizes[size],
@@ -137,13 +137,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={clsx(helperSizeStyles[size], 'text-red-500')}
+            className={cn(helperSizeStyles[size], 'text-red-500')}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span id={messageId} className={clsx(helperSizeStyles[size], 'text-text-secondary')}>
+          <span id={messageId} className={cn(helperSizeStyles[size], 'text-text-secondary')}>
             {helperText}
           </span>
         ) : null}

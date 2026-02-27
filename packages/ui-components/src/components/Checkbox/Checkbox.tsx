@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import type { InputHTMLAttributes } from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   size?: 'sm' | 'md' | 'lg';
@@ -55,11 +55,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     const messageId = hasMessage && checkboxId ? `${checkboxId}-message` : undefined;
 
     return (
-      <div className={clsx('flex flex-col gap-1', className)}>
+      <div className={cn('flex flex-col gap-1', className)}>
         <div className="group flex items-center gap-2">
           {/* Visual checkbox box */}
           <div
-            className={clsx(
+            className={cn(
               'relative flex shrink-0 items-center justify-center rounded-sm border-2 transition-colors',
               'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
               sizes[size].box,
@@ -82,7 +82,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             />
             {/* Checkmark icon — visible only when checked (colored background) */}
             <svg
-              className={clsx(
+              className={cn(
                 'pointer-events-none text-white transition-opacity',
                 'opacity-0 group-has-[:checked]:opacity-100',
                 sizes[size].check
@@ -99,7 +99,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           {label && (
             <label
               htmlFor={checkboxId}
-              className={clsx(
+              className={cn(
                 'select-none font-medium transition-colors cursor-pointer',
                 sizes[size].label,
                 error ? 'text-red-500' : 'text-text-primary',
@@ -115,7 +115,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={clsx(sizes[size].helper, 'text-red-500', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-red-500', sizes[size].indent)}
             role="alert"
           >
             {errorMessage}
@@ -123,7 +123,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         ) : helperText ? (
           <span
             id={messageId}
-            className={clsx(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
           >
             {helperText}
           </span>

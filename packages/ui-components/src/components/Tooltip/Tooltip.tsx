@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface TooltipProps {
   content: string;
@@ -46,12 +46,12 @@ export const Tooltip: React.FC<TooltipProps> = ({
     : children;
 
   return (
-    <span className={clsx('relative inline-flex group', className)}>
+    <span className={cn('relative inline-flex group', className)}>
       {trigger}
       <span
         id={id}
         role="tooltip"
-        className={clsx(
+        className={cn(
           'pointer-events-none absolute z-50 max-w-xs rounded bg-text-primary px-2.5 py-1.5 text-xs font-medium text-text-white shadow-sm',
           'invisible opacity-0 transition-opacity duration-150',
           'group-hover:visible group-hover:opacity-100',

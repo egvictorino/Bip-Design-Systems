@@ -1,5 +1,5 @@
 import React, { useId, useState, useContext } from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ const TabsContext = React.createContext<TabsContextValue>({
 // ─── Style helpers ────────────────────────────────────────────────────────────
 
 const getTabClasses = (variant: 'line' | 'pill', isActive: boolean) =>
-  clsx(
+  cn(
     'text-sm font-medium whitespace-nowrap transition-colors',
     'focus:outline-none focus:ring-2 focus:ring-interaction-primary-default focus:ring-offset-1',
     'disabled:opacity-40 disabled:cursor-not-allowed',
@@ -66,7 +66,7 @@ export const Tabs: React.FC<TabsProps> = ({
 
   return (
     <TabsContext.Provider value={{ activeTab, onChange: handleChange, instanceId, variant }}>
-      <div className={clsx('w-full', className)}>{children}</div>
+      <div className={cn('w-full', className)}>{children}</div>
     </TabsContext.Provider>
   );
 };
@@ -83,7 +83,7 @@ export const TabList: React.FC<TabListProps> = ({ className, children, ...props 
   return (
     <div
       role="tablist"
-      className={clsx(
+      className={cn(
         variant === 'line' && 'flex border-b border-interaction-tertiary-default',
         variant === 'pill' && 'inline-flex gap-1 p-1 bg-interaction-tertiary-default/50 rounded-lg',
         className
@@ -146,7 +146,7 @@ export const Tab: React.FC<TabProps> = ({ value, className, children, ...props }
       type="button"
       onClick={() => onChange(value)}
       onKeyDown={handleKeyDown}
-      className={clsx(getTabClasses(variant, isActive), className)}
+      className={cn(getTabClasses(variant, isActive), className)}
       {...props}
     >
       {children}
@@ -173,7 +173,7 @@ export const TabPanel: React.FC<TabPanelProps> = ({ value, className, children, 
       aria-labelledby={tabId}
       tabIndex={0}
       hidden={activeTab !== value}
-      className={clsx('focus:outline-none', className)}
+      className={cn('focus:outline-none', className)}
       {...props}
     >
       {children}

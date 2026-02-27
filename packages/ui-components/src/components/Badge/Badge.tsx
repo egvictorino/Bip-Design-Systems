@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: 'primary' | 'success' | 'warning' | 'error' | 'neutral';
@@ -46,7 +46,7 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   return (
     <span
-      className={clsx(
+      className={cn(
         'inline-flex items-center gap-1.5 rounded-full font-medium',
         variants[variant],
         sizes[size],
@@ -56,7 +56,7 @@ export const Badge: React.FC<BadgeProps> = ({
     >
       {dot && (
         <span
-          className={clsx('shrink-0 rounded-full', dotVariants[variant], dotSizes[size])}
+          className={cn('shrink-0 rounded-full', dotVariants[variant], dotSizes[size])}
           aria-hidden="true"
         />
       )}

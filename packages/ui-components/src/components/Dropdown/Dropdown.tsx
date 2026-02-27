@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 
@@ -65,7 +65,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ children, className }) => {
 
   return (
     <DropdownContext.Provider value={{ isOpen, toggle, close, menuId, triggerId }}>
-      <div ref={containerRef} className={clsx('relative inline-block', className)}>
+      <div ref={containerRef} className={cn('relative inline-block', className)}>
         {children}
       </div>
     </DropdownContext.Provider>
@@ -174,7 +174,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
       aria-orientation="vertical"
       aria-labelledby={triggerId}
       onKeyDown={handleKeyDown}
-      className={clsx(
+      className={cn(
         'absolute z-50 min-w-[160px] rounded-md border border-interaction-tertiary-default bg-white py-1 shadow-md',
         placementStyles[placement],
         className
@@ -214,7 +214,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
       type="button"
       disabled={disabled}
       onClick={handleClick}
-      className={clsx(
+      className={cn(
         'flex w-full items-center gap-2 px-4 py-2 text-sm text-left transition-colors',
         'focus:outline-none focus-visible:bg-interaction-tertiary-default',
         danger

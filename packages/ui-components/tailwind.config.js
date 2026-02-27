@@ -1,5 +1,3 @@
-import { text } from 'stream/consumers';
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [

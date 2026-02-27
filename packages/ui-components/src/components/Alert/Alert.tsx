@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'info' | 'success' | 'warning' | 'error';
@@ -87,7 +87,7 @@ export const Alert: React.FC<AlertProps> = ({
   return (
     <div
       role="alert"
-      className={clsx(
+      className={cn(
         'flex gap-3 rounded-[1px] border-l-4 p-4',
         styles.container,
         className
@@ -100,9 +100,9 @@ export const Alert: React.FC<AlertProps> = ({
       {/* Content */}
       <div className="flex-1 min-w-0">
         {title && (
-          <p className={clsx('text-sm font-semibold', styles.title)}>{title}</p>
+          <p className={cn('text-sm font-semibold', styles.title)}>{title}</p>
         )}
-        <p className={clsx('text-sm', title ? 'mt-1' : '', styles.body)}>{children}</p>
+        <p className={cn('text-sm', title ? 'mt-1' : '', styles.body)}>{children}</p>
       </div>
 
       {/* Close button */}
@@ -111,7 +111,7 @@ export const Alert: React.FC<AlertProps> = ({
           type="button"
           onClick={onClose}
           aria-label="Cerrar alerta"
-          className={clsx(
+          className={cn(
             'shrink-0 rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1',
             styles.close
           )}

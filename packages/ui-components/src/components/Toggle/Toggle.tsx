@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import type { InputHTMLAttributes } from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   size?: 'sm' | 'md' | 'lg';
@@ -58,11 +58,11 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
     const messageId = hasMessage && toggleId ? `${toggleId}-message` : undefined;
 
     return (
-      <div className={clsx('flex flex-col gap-1', className)}>
+      <div className={cn('flex flex-col gap-1', className)}>
         <div className="group flex items-center gap-2">
           {/* Track */}
           <div
-            className={clsx(
+            className={cn(
               'relative shrink-0 rounded-full transition-colors',
               'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
               sizes[size].track,
@@ -87,7 +87,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
 
             {/* Thumb — slides on check */}
             <span
-              className={clsx(
+              className={cn(
                 'absolute top-1/2 left-[2px] -translate-y-1/2 rounded-full bg-white shadow-sm transition-transform',
                 sizes[size].thumb,
                 sizes[size].translate
@@ -100,7 +100,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
           {label && (
             <label
               htmlFor={toggleId}
-              className={clsx(
+              className={cn(
                 'select-none font-medium transition-colors cursor-pointer',
                 sizes[size].label,
                 error ? 'text-red-500' : 'text-text-primary',
@@ -116,7 +116,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={clsx(sizes[size].helper, 'text-red-500', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-red-500', sizes[size].indent)}
             role="alert"
           >
             {errorMessage}
@@ -124,7 +124,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         ) : helperText ? (
           <span
             id={messageId}
-            className={clsx(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
           >
             {helperText}
           </span>

@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import type { InputHTMLAttributes } from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   size?: 'sm' | 'md' | 'lg';
@@ -55,11 +55,11 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     const messageId = hasMessage && radioId ? `${radioId}-message` : undefined;
 
     return (
-      <div className={clsx('flex flex-col gap-1', className)}>
+      <div className={cn('flex flex-col gap-1', className)}>
         <div className="group flex items-center gap-2">
           {/* Visual radio ring */}
           <div
-            className={clsx(
+            className={cn(
               'relative flex shrink-0 items-center justify-center rounded-full border-2 transition-colors',
               'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
               sizes[size].box,
@@ -82,7 +82,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
             />
             {/* Inner dot — visible only when selected */}
             <div
-              className={clsx(
+              className={cn(
                 'rounded-full transition-all',
                 'scale-0 group-has-[:checked]:scale-100',
                 sizes[size].dot,
@@ -97,7 +97,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           {label && (
             <label
               htmlFor={radioId}
-              className={clsx(
+              className={cn(
                 'select-none font-medium transition-colors cursor-pointer',
                 sizes[size].label,
                 error ? 'text-red-500' : 'text-text-primary',
@@ -113,7 +113,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={clsx(sizes[size].helper, 'text-red-500', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-red-500', sizes[size].indent)}
             role="alert"
           >
             {errorMessage}
@@ -121,7 +121,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
         ) : helperText ? (
           <span
             id={messageId}
-            className={clsx(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
           >
             {helperText}
           </span>

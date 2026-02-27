@@ -1,6 +1,6 @@
 import { forwardRef, useState } from 'react';
 import type { SelectHTMLAttributes } from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface SelectOption {
   value: string;
@@ -42,19 +42,19 @@ const baseStyles =
   'appearance-none rounded-[1px] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 pr-8';
 
 const getVariantStyles = (error: boolean) => ({
-  outlined: clsx(
+  outlined: cn(
     'border bg-transparent',
     error
       ? 'border-red-500 focus:ring-red-500'
       : 'border-interaction-primary-default focus:ring-interaction-primary-default hover:border-interaction-primary-hover'
   ),
-  filled: clsx(
+  filled: cn(
     'border-0',
     error
       ? 'bg-red-50 focus:ring-red-500'
       : 'bg-interaction-secondary-default focus:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
   ),
-  bare: clsx(
+  bare: cn(
     'border-0 border-b-2 bg-transparent rounded-none',
     error
       ? 'border-b-red-500 focus:ring-0'
@@ -92,11 +92,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
 
     return (
-      <div className={clsx('flex flex-col gap-1', fullWidth && 'w-full')}>
+      <div className={cn('flex flex-col gap-1', fullWidth && 'w-full')}>
         {label && (
           <label
             htmlFor={selectId}
-            className={clsx(
+            className={cn(
               'font-medium transition-colors',
               labelSizeStyles[size],
               error
@@ -112,14 +112,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         )}
 
         {/* Wrapper for custom chevron icon */}
-        <div className={clsx('relative', fullWidth && 'w-full')}>
+        <div className={cn('relative', fullWidth && 'w-full')}>
           <select
             ref={ref}
             id={selectId}
             disabled={disabled}
             aria-invalid={error || undefined}
             aria-describedby={messageId}
-            className={clsx(
+            className={cn(
               baseStyles,
               variantStyles[variant],
               sizes[size],
@@ -151,7 +151,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
           {/* Chevron icon */}
           <span
-            className={clsx(
+            className={cn(
               'pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2',
               error
                 ? 'text-red-500'
@@ -179,13 +179,13 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={clsx(helperSizeStyles[size], 'text-red-500')}
+            className={cn(helperSizeStyles[size], 'text-red-500')}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span id={messageId} className={clsx(helperSizeStyles[size], 'text-text-secondary')}>
+          <span id={messageId} className={cn(helperSizeStyles[size], 'text-text-secondary')}>
             {helperText}
           </span>
         ) : null}

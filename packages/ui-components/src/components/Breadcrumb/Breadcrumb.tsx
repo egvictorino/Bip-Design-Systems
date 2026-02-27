@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface BreadcrumbItem {
   label: string;
@@ -46,7 +46,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, separator, classN
               ) : (
                 <a
                   href={item.href ?? '#'}
-                  className={clsx(
+                  className={cn(
                     'text-text-secondary hover:text-text-primary transition-colors',
                     'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default rounded'
                   )}

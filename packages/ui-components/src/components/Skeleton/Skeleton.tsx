@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../../lib/cn';
 
 export interface SkeletonProps {
   variant?: 'text' | 'circle' | 'rect';
@@ -26,7 +26,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
         {Array.from({ length: lines }).map((_, i) => (
           <div
             key={i}
-            className={clsx(
+            className={cn(
               baseClass,
               'h-4 rounded-sm',
               i === lines - 1 ? 'w-3/4' : 'w-full',
@@ -41,7 +41,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   return (
     <div
       aria-hidden="true"
-      className={clsx(baseClass, variantStyles[variant], className)}
+      className={cn(baseClass, variantStyles[variant], className)}
     />
   );
 };
