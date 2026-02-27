@@ -22,3 +22,17 @@ export type { SelectProps, SelectOption } from './components/Select';
 
 export { Alert } from './components/Alert';
 export type { AlertProps } from './components/Alert';
+
+export { Spinner } from './components/Spinner';
+export type { SpinnerProps } from './components/Spinner';
+
+export { Card, CardHeader, CardBody, CardFooter } from './components/Card';
+export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps } from './components/Card';
+
+export { Modal, ModalHeader, ModalBody, ModalFooter } from './components/Modal';
+export type {
+  ModalProps,
+  ModalHeaderProps,
+  ModalBodyProps,
+  ModalFooterProps,
+} from './components/Modal';
