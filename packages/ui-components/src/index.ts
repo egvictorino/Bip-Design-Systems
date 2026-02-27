@@ -16,3 +16,6 @@ export type { TextareaProps } from './components/Textarea';
 
 export { Badge } from './components/Badge';
 export type { BadgeProps } from './components/Badge';
+
+export { Select } from './components/Select';
+export type { SelectProps, SelectOption } from './components/Select';
