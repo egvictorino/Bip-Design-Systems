@@ -34,7 +34,7 @@ const estadoVariant: Record<Estado, 'success' | 'warning' | 'neutral'> = {
   Inactivo: 'neutral',
 };
 
-const ClientesTable = ({ striped = false, compact = false }) => (
+const ClientesTable = ({ striped = false, compact = false }: { striped?: boolean; compact?: boolean }) => (
   <Table striped={striped} compact={compact}>
     <TableHead>
       <TableRow>
@@ -79,59 +79,61 @@ export const StripedCompact: Story = {
   render: () => <ClientesTable striped compact />,
 };
 
+const WithSortingTableStory = () => {
+  const [sortCol, setSortCol] = useState<'nombre' | 'monto' | null>(null);
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+
+  const handleSort = (col: 'nombre' | 'monto') => {
+    if (sortCol === col) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortCol(col);
+      setSortDir('asc');
+    }
+  };
+
+  return (
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableHeader
+            sortable
+            sortDirection={sortCol === 'nombre' ? sortDir : null}
+            onSort={() => handleSort('nombre')}
+          >
+            Nombre
+          </TableHeader>
+          <TableHeader>Correo electrónico</TableHeader>
+          <TableHeader>Estado</TableHeader>
+          <TableHeader
+            sortable
+            sortDirection={sortCol === 'monto' ? sortDir : null}
+            onSort={() => handleSort('monto')}
+            align="right"
+          >
+            Monto
+          </TableHeader>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {clientes.map((c) => (
+          <TableRow key={c.id}>
+            <TableCell>{c.nombre}</TableCell>
+            <TableCell>{c.email}</TableCell>
+            <TableCell>
+              <Badge variant={estadoVariant[c.estado as Estado]}>{c.estado}</Badge>
+            </TableCell>
+            <TableCell align="right">{c.monto}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
+
 export const WithSorting: Story = {
   args: { children: '' },
-  render: () => {
-    const [sortCol, setSortCol] = useState<'nombre' | 'monto' | null>(null);
-    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-
-    const handleSort = (col: 'nombre' | 'monto') => {
-      if (sortCol === col) {
-        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-      } else {
-        setSortCol(col);
-        setSortDir('asc');
-      }
-    };
-
-    return (
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableHeader
-              sortable
-              sortDirection={sortCol === 'nombre' ? sortDir : null}
-              onSort={() => handleSort('nombre')}
-            >
-              Nombre
-            </TableHeader>
-            <TableHeader>Correo electrónico</TableHeader>
-            <TableHeader>Estado</TableHeader>
-            <TableHeader
-              sortable
-              sortDirection={sortCol === 'monto' ? sortDir : null}
-              onSort={() => handleSort('monto')}
-              align="right"
-            >
-              Monto
-            </TableHeader>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {clientes.map((c) => (
-            <TableRow key={c.id}>
-              <TableCell>{c.nombre}</TableCell>
-              <TableCell>{c.email}</TableCell>
-              <TableCell>
-                <Badge variant={estadoVariant[c.estado as Estado]}>{c.estado}</Badge>
-              </TableCell>
-              <TableCell align="right">{c.monto}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    );
-  },
+  render: () => <WithSortingTableStory />,
 };
 
 export const WithActions: Story = {

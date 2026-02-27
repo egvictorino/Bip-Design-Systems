@@ -60,23 +60,38 @@ export const FewPages: Story = {
   },
 };
 
+const InteractivePaginationStory = () => {
+  const [page, setPage] = useState(1);
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <p className="text-sm text-text-secondary">
+        Página <span className="font-semibold text-text-primary">{page}</span> de 10
+      </p>
+      <Pagination currentPage={page} totalPages={10} onPageChange={setPage} />
+    </div>
+  );
+};
+
 export const Interactive: Story = {
   args: {
     currentPage: 1,
     totalPages: 10,
     onPageChange: () => {},
   },
-  render: () => {
-    const [page, setPage] = useState(1);
-    return (
-      <div className="flex flex-col items-center gap-4">
-        <p className="text-sm text-text-secondary">
-          Página <span className="font-semibold text-text-primary">{page}</span> de 10
-        </p>
-        <Pagination currentPage={page} totalPages={10} onPageChange={setPage} />
+  render: () => <InteractivePaginationStory />,
+};
+
+const WithTablePaginationStory = () => {
+  const [page, setPage] = useState(1);
+  return (
+    <div className="flex flex-col gap-3 w-[480px]">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-text-secondary">Mostrando 5 de 40 registros</p>
+        <p className="text-sm text-text-secondary">Página {page} de 8</p>
       </div>
-    );
-  },
+      <Pagination currentPage={page} totalPages={8} onPageChange={setPage} />
+    </div>
+  );
 };
 
 export const WithTable: Story = {
@@ -85,16 +100,5 @@ export const WithTable: Story = {
     totalPages: 8,
     onPageChange: () => {},
   },
-  render: () => {
-    const [page, setPage] = useState(1);
-    return (
-      <div className="flex flex-col gap-3 w-[480px]">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-text-secondary">Mostrando 5 de 40 registros</p>
-          <p className="text-sm text-text-secondary">Página {page} de 8</p>
-        </div>
-        <Pagination currentPage={page} totalPages={8} onPageChange={setPage} />
-      </div>
-    );
-  },
+  render: () => <WithTablePaginationStory />,
 };

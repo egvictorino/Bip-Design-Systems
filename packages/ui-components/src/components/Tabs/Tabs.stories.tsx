@@ -84,35 +84,37 @@ export const WithDisabled: Story = {
   ),
 };
 
+const ControlledTabsStory = () => {
+  const [activeTab, setActiveTab] = useState('info');
+  return (
+    <div className="flex flex-col gap-3 w-[520px]">
+      <p className="text-xs text-text-secondary">
+        Pestaña activa:{' '}
+        <span className="font-medium text-text-primary">{activeTab}</span>
+      </p>
+      <Tabs value={activeTab} onChange={setActiveTab}>
+        <TabList>
+          <Tab value="info">Información</Tab>
+          <Tab value="historial">Historial</Tab>
+          <Tab value="documentos">Documentos</Tab>
+        </TabList>
+        <TabPanel value="info" className="pt-4">
+          <p className="text-sm text-text-secondary">Datos generales del cliente.</p>
+        </TabPanel>
+        <TabPanel value="historial" className="pt-4">
+          <p className="text-sm text-text-secondary">Historial de transacciones.</p>
+        </TabPanel>
+        <TabPanel value="documentos" className="pt-4">
+          <p className="text-sm text-text-secondary">Documentos adjuntos.</p>
+        </TabPanel>
+      </Tabs>
+    </div>
+  );
+};
+
 export const Controlled: Story = {
   args: { children: '' },
-  render: () => {
-    const [activeTab, setActiveTab] = useState('info');
-    return (
-      <div className="flex flex-col gap-3 w-[520px]">
-        <p className="text-xs text-text-secondary">
-          Pestaña activa:{' '}
-          <span className="font-medium text-text-primary">{activeTab}</span>
-        </p>
-        <Tabs value={activeTab} onChange={setActiveTab}>
-          <TabList>
-            <Tab value="info">Información</Tab>
-            <Tab value="historial">Historial</Tab>
-            <Tab value="documentos">Documentos</Tab>
-          </TabList>
-          <TabPanel value="info" className="pt-4">
-            <p className="text-sm text-text-secondary">Datos generales del cliente.</p>
-          </TabPanel>
-          <TabPanel value="historial" className="pt-4">
-            <p className="text-sm text-text-secondary">Historial de transacciones.</p>
-          </TabPanel>
-          <TabPanel value="documentos" className="pt-4">
-            <p className="text-sm text-text-secondary">Documentos adjuntos.</p>
-          </TabPanel>
-        </Tabs>
-      </div>
-    );
-  },
+  render: () => <ControlledTabsStory />,
 };
 
 export const WithBadge: Story = {
