@@ -29,6 +29,22 @@ export type { SpinnerProps } from './components/Spinner';
 export { Card, CardHeader, CardBody, CardFooter } from './components/Card';
 export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps } from './components/Card';
 
+export { Toggle } from './components/Toggle';
+export type { ToggleProps } from './components/Toggle';
+
+export { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from './components/Table';
+export type {
+  TableProps,
+  TableHeadProps,
+  TableBodyProps,
+  TableRowProps,
+  TableHeaderProps,
+  TableCellProps,
+} from './components/Table';
+
+export { Pagination } from './components/Pagination';
+export type { PaginationProps } from './components/Pagination';
+
 export { Modal, ModalHeader, ModalBody, ModalFooter } from './components/Modal';
 export type {
   ModalProps,
