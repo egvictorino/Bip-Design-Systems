@@ -69,3 +69,6 @@ export type {
   DropdownMenuProps,
   DropdownItemProps,
 } from './components/Dropdown';
+
+export { Skeleton } from './components/Skeleton';
+export type { SkeletonProps } from './components/Skeleton';
