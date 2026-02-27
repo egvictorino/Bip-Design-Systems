@@ -55,3 +55,9 @@ export type {
   ModalBodyProps,
   ModalFooterProps,
 } from './components/Modal';
+
+export { Tooltip } from './components/Tooltip';
+export type { TooltipProps } from './components/Tooltip';
+
+export { Breadcrumb } from './components/Breadcrumb';
+export type { BreadcrumbProps, BreadcrumbItem } from './components/Breadcrumb';
