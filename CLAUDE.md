@@ -117,3 +117,9 @@ All packages use `strict: true` + `noUnusedLocals: true` + `noUnusedParameters: 
 ## Prettier
 
 `printWidth: 100`, `singleQuote: true`, `semi: true`, `trailingComma: 'es5'`, `tabWidth: 2`. Prettier check is **not** enforced in CI (removed from the lint job).
+
+## Ignored directories
+
+Never read or search inside these directories:
+- `node_modules/` (any level)
+- `dist/`
