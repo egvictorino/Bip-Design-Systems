@@ -72,12 +72,12 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       - name: Lint
-        run: pnpm --filter @pymes/ui-components lint
+        run: pnpm --filter @bip/ui-components lint
       
       - name: Build
         run: |
-          pnpm --filter @pymes/shared-utils build
-          pnpm --filter @pymes/ui-components build
+          pnpm --filter @bip/shared-utils build
+          pnpm --filter @bip/ui-components build
       
       - name: Comment on PR
         uses: actions/github-script@v7

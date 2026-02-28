@@ -1,6 +1,6 @@
-# PYMEs Platform — Monorepo
+# BipUI — Monorepo
 
-Plataforma de desarrollo web para PYMEs en Nuevo León, México.
+Design system y librería de componentes React.
 Monorepo basado en **pnpm workspaces** que centraliza la librería de componentes, utilidades compartidas y el template base para nuevos clientes.
 
 ---
@@ -22,10 +22,10 @@ Monorepo basado en **pnpm workspaces** que centraliza la librería de componente
 ## Estructura del Proyecto
 
 ```
-pymes-platform/
+bip-ui/
 ├── packages/
-│   ├── ui-components/      # Librería de componentes React  →  @pymes/ui-components
-│   └── shared-utils/       # Utilidades TypeScript puras    →  @pymes/shared-utils
+│   ├── ui-components/      # Librería de componentes React  →  @bip/ui-components
+│   └── shared-utils/       # Utilidades TypeScript puras    →  @bip/shared-utils
 └── apps/
     └── template-base/      # Starter app para nuevos clientes
 ```
@@ -36,8 +36,8 @@ Los paquetes internos se consumen con el protocolo workspace:
 // package.json de cualquier app cliente
 {
   "dependencies": {
-    "@pymes/ui-components": "workspace:*",
-    "@pymes/shared-utils": "workspace:*"
+    "@bip/ui-components": "workspace:*",
+    "@bip/shared-utils": "workspace:*"
   }
 }
 ```
@@ -69,14 +69,14 @@ Los paquetes internos se consumen con el protocolo workspace:
 pnpm install
 
 # 2. Construir paquetes en orden (shared-utils primero)
-pnpm --filter @pymes/shared-utils build
-pnpm --filter @pymes/ui-components build
+pnpm --filter @bip/shared-utils build
+pnpm --filter @bip/ui-components build
 
 # 3. Abrir Storybook  →  http://localhost:6006
-pnpm --filter @pymes/ui-components storybook
+pnpm --filter @bip/ui-components storybook
 
 # 4. Levantar template base  →  http://localhost:5173
-pnpm --filter @pymes/template-base dev
+pnpm --filter @bip/template-base dev
 ```
 
 ---
@@ -86,11 +86,11 @@ pnpm --filter @pymes/template-base dev
 ### Por paquete
 
 ```bash
-pnpm --filter @pymes/ui-components storybook        # Dev Storybook
-pnpm --filter @pymes/ui-components build-storybook  # Build estático
-pnpm --filter @pymes/ui-components build            # Build librería
-pnpm --filter @pymes/ui-components lint             # Lint
-pnpm --filter @pymes/ui-components test             # Tests
+pnpm --filter @bip/ui-components storybook        # Dev Storybook
+pnpm --filter @bip/ui-components build-storybook  # Build estático
+pnpm --filter @bip/ui-components build            # Build librería
+pnpm --filter @bip/ui-components lint             # Lint
+pnpm --filter @bip/ui-components test             # Tests
 ```
 
 ### Monorepo completo
@@ -105,7 +105,7 @@ pnpm dev     # Modo desarrollo paralelo
 
 ## Componentes UI
 
-> Storybook: <https://TU-USUARIO.github.io/pymes-platform/>
+> Storybook: <https://TU-USUARIO.github.io/bip-ui/>
 
 ### Entrada de datos
 
@@ -155,7 +155,7 @@ pnpm dev     # Modo desarrollo paralelo
 
 ## Tokens de Diseño
 
-Los tokens están definidos en `packages/ui-components/tailwind.config.js` y registrados en `src/lib/cn.ts` para una resolución correcta de conflictos de clases.
+Los tokens están definidos en `packages/ui-components/tailwind.preset.js` y registrados en `src/lib/cn.ts` para una resolución correcta de conflictos de clases.
 
 ```
 interaction-primary-{default|hover|pressed}    →  #1643A8 / #10327D / #0B2152
@@ -214,7 +214,7 @@ git commit -m "hotfix: descripción"
 
 | Branch | Ambiente | Storybook | Deploy |
 |--------|----------|-----------|--------|
-| `main` | Producción | [GitHub Pages](https://tu-usuario.github.io/pymes-platform/) | Automático |
+| `main` | Producción | [GitHub Pages](https://tu-usuario.github.io/bip-ui/) | Automático |
 | `qa` | Testing | (por configurar) | Automático |
 | `dev` | Desarrollo | (por configurar) | Automático |
 
@@ -242,7 +242,7 @@ cp -r apps/template-base apps/nombre-cliente
 pnpm install
 
 # Levantar
-pnpm --filter @pymes/nombre-cliente dev
+pnpm --filter @bip/nombre-cliente dev
 ```
 
 ---

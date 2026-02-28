@@ -13,7 +13,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'PymesUI',
+      name: 'BipUI',
       formats: ['es', 'umd'],
       fileName: (format) => `index.${format}.js`,
     },

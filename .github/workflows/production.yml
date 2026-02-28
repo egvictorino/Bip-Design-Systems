@@ -39,12 +39,12 @@ jobs:
         run: pnpm audit --audit-level=high
       
       - name: Lint (strict)
-        run: pnpm --filter @pymes/ui-components lint
+        run: pnpm --filter @bip/ui-components lint
       
       - name: Type check
         run: |
-          pnpm --filter @pymes/shared-utils build
-          pnpm --filter @pymes/ui-components build
+          pnpm --filter @bip/shared-utils build
+          pnpm --filter @bip/ui-components build
           pnpm exec tsc --noEmit -p packages/ui-components/tsconfig.json
 
   build-production:
@@ -74,9 +74,9 @@ jobs:
       
       - name: Build packages (production mode)
         run: |
-          NODE_ENV=production pnpm --filter @pymes/shared-utils build
-          NODE_ENV=production pnpm --filter @pymes/ui-components build
-          NODE_ENV=production pnpm --filter @pymes/template-base build
+          NODE_ENV=production pnpm --filter @bip/shared-utils build
+          NODE_ENV=production pnpm --filter @bip/ui-components build
+          NODE_ENV=production pnpm --filter @bip/template-base build
       
       - name: Upload production artifacts
         uses: actions/upload-artifact@v4
@@ -112,7 +112,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
       
       - name: Build Storybook
-        run: pnpm --filter @pymes/ui-components build-storybook
+        run: pnpm --filter @bip/ui-components build-storybook
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
       
@@ -154,7 +154,7 @@ jobs:
             **Autor:** ${{ github.actor }}
             
             ### Documentación
-            - [Storybook](https://tu-usuario.github.io/pymes-platform/)
+            - [Storybook](https://tu-usuario.github.io/bip-ui/)
           draft: false
           prerelease: false
 
@@ -167,5 +167,5 @@ jobs:
       - name: Success notification
         run: |
           echo "✅ Deploy a PRODUCCIÓN completado exitosamente"
-          echo "🔗 Storybook: https://tu-usuario.github.io/pymes-platform/"
+          echo "🔗 Storybook: https://tu-usuario.github.io/bip-ui/"
           # Integración con Slack/Discord/Email

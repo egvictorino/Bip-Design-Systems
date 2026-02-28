@@ -48,7 +48,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
-        run: pnpm --filter @pymes/ui-components lint
+        run: pnpm --filter @bip/ui-components lint
 
   build:
     name: Build & Test
@@ -77,9 +77,9 @@ jobs:
       
       - name: Build all packages
         run: |
-          pnpm --filter @pymes/shared-utils build
-          pnpm --filter @pymes/ui-components build
-          pnpm --filter @pymes/template-base build
+          pnpm --filter @bip/shared-utils build
+          pnpm --filter @bip/ui-components build
+          pnpm --filter @bip/template-base build
       
       - name: Run tests
         run: echo "🧪 Tests cuando los configures"
@@ -120,7 +120,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       - name: Build Storybook
-        run: pnpm --filter @pymes/ui-components build-storybook
+        run: pnpm --filter @bip/ui-components build-storybook
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
       

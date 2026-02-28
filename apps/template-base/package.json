@@ -1,5 +1,5 @@
 {
-  "name": "@pymes/template-base",
+  "name": "@bip/template-base",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@pymes/shared-utils": "workspace:*",
-    "@pymes/ui-components": "workspace:*",
+    "@bip/shared-utils": "workspace:*",
+    "@bip/ui-components": "workspace:*",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },

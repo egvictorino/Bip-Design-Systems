@@ -1,9 +1,9 @@
 {
-  "name": "pymes-platform",
+  "name": "bip-ui",
   "version": "1.0.0",
   "packageManager": "pnpm@9.15.9",
   "private": true,
-  "description": "Plataforma de desarrollo web para PYMEs",
+  "description": "BipUI — React component library and design system",
   "scripts": {
     "dev": "pnpm --parallel --recursive dev",
     "build": "pnpm --recursive build",

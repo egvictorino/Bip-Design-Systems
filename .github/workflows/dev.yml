@@ -26,7 +26,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
       
       - name: Lint ui-components
-        run: pnpm --filter @pymes/ui-components lint
+        run: pnpm --filter @bip/ui-components lint
         continue-on-error: true
 
   build:
@@ -57,9 +57,9 @@ jobs:
       
       - name: Build all packages
         run: |
-          pnpm --filter @pymes/shared-utils build
-          pnpm --filter @pymes/ui-components build
-          pnpm --filter @pymes/template-base build
+          pnpm --filter @bip/shared-utils build
+          pnpm --filter @bip/ui-components build
+          pnpm --filter @bip/template-base build
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -91,7 +91,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
       
       - name: Build Storybook
-        run: pnpm --filter @pymes/ui-components build-storybook
+        run: pnpm --filter @bip/ui-components build-storybook
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
       
@@ -99,4 +99,4 @@ jobs:
         run: echo "📦 Aquí desplegarías a un ambiente de dev preview"
         # Ejemplo con Surge.sh (gratis):
         # - run: npm install -g surge
-        # - run: surge ./packages/ui-components/storybook-static pymes-dev.surge.sh --token ${{ secrets.SURGE_TOKEN }}
+        # - run: surge ./packages/ui-components/storybook-static bip-dev.surge.sh --token ${{ secrets.SURGE_TOKEN }}

@@ -1,5 +1,5 @@
 {
-  "name": "@pymes/shared-utils",
+  "name": "@bip/shared-utils",
   "version": "0.1.0",
   "private": true,
   "main": "./dist/index.js",

@@ -9,17 +9,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm install
 
 # Build order matters — shared-utils must build before ui-components
-pnpm --filter @pymes/shared-utils build
-pnpm --filter @pymes/ui-components build
-pnpm --filter @pymes/template-base build
+pnpm --filter @bip/shared-utils build
+pnpm --filter @bip/ui-components build
+pnpm --filter @bip/template-base build
 
 # Component development
-pnpm --filter @pymes/ui-components storybook        # http://localhost:6006
-pnpm --filter @pymes/ui-components build-storybook
+pnpm --filter @bip/ui-components storybook        # http://localhost:6006
+pnpm --filter @bip/ui-components build-storybook
 
 # Lint & test (scoped)
-pnpm --filter @pymes/ui-components lint
-pnpm --filter @pymes/ui-components test
+pnpm --filter @bip/ui-components lint
+pnpm --filter @bip/ui-components test
 
 # All packages at once
 pnpm build
@@ -43,23 +43,23 @@ PRs always go: `feature/xxx → dev → qa → main`. Hotfixes branch from `main
 - `packages/shared-utils` — Pure TypeScript utilities (formatting, validation). No runtime deps.
 - `apps/template-base` — Starter app for new clients. Consumes both packages via `workspace:*`.
 
-Internal dependencies use the workspace protocol: `"@pymes/ui-components": "workspace:*"`.
+Internal dependencies use the workspace protocol: `"@bip/ui-components": "workspace:*"`.
 
 ## Tailwind consumer setup
 
-`ui-components` ships a **Tailwind preset** at `@pymes/ui-components/tailwind.preset`. Any project that consumes the library must configure Tailwind with this preset so the design tokens (`interaction-*`, `text-*`) resolve correctly.
+`ui-components` ships a **Tailwind preset** at `@bip/ui-components/tailwind.preset`. Any project that consumes the library must configure Tailwind with this preset so the design tokens (`interaction-*`, `text-*`) resolve correctly.
 
 ```js
 // tailwind.config.js (proyecto consumidor)
-import pymesPreset from '@pymes/ui-components/tailwind.preset';
+import bipPreset from '@bip/ui-components/tailwind.preset';
 
 export default {
   content: [
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@pymes/ui-components/dist/**/*.js', // escanea clases de la librería
+    // No hace falta agregar el path de la librería — el preset lo incluye automáticamente
   ],
-  presets: [pymesPreset],
+  presets: [bipPreset],
 };
 ```
 
@@ -69,6 +69,8 @@ export default {
 @tailwind components;
 @tailwind utilities;
 ```
+
+El preset resuelve el `content` path de `dist/**/*.js` con una ruta absoluta desde su propia ubicación (`import.meta.url`), por lo que funciona tanto en el monorepo como en proyectos externos instalados vía npm.
 
 `template-base` ya tiene esta configuración lista como referencia. Para proyectos externos (fuera del monorepo), instalar primero `tailwindcss`, `postcss` y `autoprefixer` como devDependencies.
 
