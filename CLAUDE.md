@@ -45,6 +45,33 @@ PRs always go: `feature/xxx → dev → qa → main`. Hotfixes branch from `main
 
 Internal dependencies use the workspace protocol: `"@pymes/ui-components": "workspace:*"`.
 
+## Tailwind consumer setup
+
+`ui-components` ships a **Tailwind preset** at `@pymes/ui-components/tailwind.preset`. Any project that consumes the library must configure Tailwind with this preset so the design tokens (`interaction-*`, `text-*`) resolve correctly.
+
+```js
+// tailwind.config.js (proyecto consumidor)
+import pymesPreset from '@pymes/ui-components/tailwind.preset';
+
+export default {
+  content: [
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@pymes/ui-components/dist/**/*.js', // escanea clases de la librería
+  ],
+  presets: [pymesPreset],
+};
+```
+
+```css
+/* src/index.css (proyecto consumidor) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+`template-base` ya tiene esta configuración lista como referencia. Para proyectos externos (fuera del monorepo), instalar primero `tailwindcss`, `postcss` y `autoprefixer` como devDependencies.
+
 ## Component Patterns (`packages/ui-components`)
 
 ### Structure for every new component
