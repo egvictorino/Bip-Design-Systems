@@ -28,14 +28,21 @@ jobs:
             echo "Debe ser: qa → main  |  hotfix/* → main"
             exit 1
           fi
-          
-          if [[ "$TARGET" == "qa" ]] && [[ "$SOURCE" != "dev" ]] && [[ "$SOURCE" != "hotfix/"* ]]; then
-            echo "❌ ERROR: Solo se puede mergear a 'qa' desde 'dev' o 'hotfix/*'"
+
+          if [[ "$TARGET" == "qa" ]] && [[ "$SOURCE" != "dev" ]] && [[ "$SOURCE" != "hotfix/"* ]] && [[ "$SOURCE" != "main" ]]; then
+            echo "❌ ERROR: Solo se puede mergear a 'qa' desde 'dev', 'hotfix/*' o 'main'"
             echo "Tu PR es: $SOURCE → $TARGET"
-            echo "Debe ser: dev → qa"
+            echo "Debe ser: dev → qa  |  hotfix/* → qa  |  main → qa"
             exit 1
           fi
-          
+
+          if [[ "$TARGET" == "dev" ]] && [[ "$SOURCE" != "feature/"* ]] && [[ "$SOURCE" != "hotfix/"* ]] && [[ "$SOURCE" != "main" ]]; then
+            echo "❌ ERROR: Solo se puede mergear a 'dev' desde 'feature/*', 'hotfix/*' o 'main'"
+            echo "Tu PR es: $SOURCE → $TARGET"
+            echo "Debe ser: feature/* → dev  |  hotfix/* → dev  |  main → dev"
+            exit 1
+          fi
+
           echo "✅ Flujo de branches correcto"
       
       - name: Check PR title format
