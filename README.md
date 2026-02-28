@@ -111,9 +111,9 @@ pnpm dev     # Modo desarrollo paralelo
 
 | Componente | Descripción |
 |------------|-------------|
-| `Button` | Botón con variantes `primary`, `secondary`, `bare`, `danger` y tamaños `sm / md / lg` |
-| `Input` | Campo de texto con label, helper text, estados de error y múltiples tipos |
-| `Textarea` | Área de texto con autoResize opcional |
+| `Button` | Botón con variantes `primary`, `secondary`, `bare`, `soul` y tamaños `sm / md / lg` |
+| `Input` | Campo de texto con label, helper text, estados `error`, `disabled` y `readOnly` |
+| `Textarea` | Área de texto con control de resize (`none / vertical / horizontal / both`) |
 | `Select` | Selector nativo con chevron custom, variantes y accesibilidad |
 | `Checkbox` | Checkbox accesible con soporte para estado indeterminado |
 | `Radio` | Radio button con label y helper text |
@@ -133,7 +133,7 @@ pnpm dev     # Modo desarrollo paralelo
 | Componente | Descripción |
 |------------|-------------|
 | `Card` | Tarjeta compuesta: `CardHeader`, `CardBody`, `CardFooter` |
-| `Table` | Tabla responsiva: `TableHead`, `TableBody`, `TableRow`, `TableHeader`, `TableCell` — soporta ordenamiento, striped y compact |
+| `Table` | Tabla responsiva: `TableHead`, `TableBody`, `TableRow`, `TableHeader`, `TableCell` — soporta ordenamiento, striped, compact y filas seleccionables (`selected`) |
 
 ### Navegación
 
@@ -155,18 +155,29 @@ pnpm dev     # Modo desarrollo paralelo
 
 ## Tokens de Diseño
 
-Los tokens están definidos en `packages/ui-components/tailwind.preset.js` y registrados en `src/lib/cn.ts` para una resolución correcta de conflictos de clases.
+Fuente única de verdad: `packages/ui-components/tailwind.tokens.js` — importado por `tailwind.preset.js` (tema Tailwind) y `Colors.stories.tsx` (documentación Storybook). Para agregar un token: editar `tailwind.tokens.js` → registrar en `src/lib/cn.ts`.
 
 ```
+// Interaction
 interaction-primary-{default|hover|pressed}    →  #1643A8 / #10327D / #0B2152
 interaction-secondary-{default|hover|pressed}  →  #4B5468 / #3A404B / #282C33
 interaction-tertiary-{default|hover|pressed}   →  #DEE4ED / #B6BBC3 / #8E9298
-interaction-disabled                           →  #EFEFEF
+interaction-disabled                           →  #EFEFEF  (fondo campos deshabilitados)
+interaction-field                              →  #FCFCFC  (fondo campos outlined)
+interaction-field-readonly                     →  #F2F2F2  (fondo campos read-only)
+interaction-selected                           →  #E4FCFF  (fondo TableRow seleccionado)
 
+// Text
 text-primary    →  #23232A
 text-secondary  →  #5E5E60
 text-disabled   →  #A6A7A8
 text-white      →  #FFFFFF
+
+// Feedback
+feedback-error-{default|light|subtle|muted|text}   →  #EF4444 / #FEF2F2 / #FEE2E2 / #FECACA / #B91C1C
+feedback-success-{default|light|subtle|text}       →  #22C55E / #F0FDF4 / #DCFCE7 / #15803D
+feedback-warning-{default|light|subtle|text}       →  #EAB308 / #FEFCE8 / #FEF9C3 / #A16207
+feedback-info-{light|subtle|text}                  →  #EFF6FF / #DBEAFE / #1D4ED8
 ```
 
 ---
