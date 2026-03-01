@@ -1,7 +1,7 @@
 # BipUI — Monorepo
 
 Design system y librería de componentes React.
-Monorepo basado en **pnpm workspaces** que centraliza la librería de componentes, utilidades compartidas y el template base para nuevos clientes.
+Monorepo basado en **pnpm workspaces** que centraliza la librería de componentes y utilidades compartidas.
 
 ---
 
@@ -15,7 +15,7 @@ Monorepo basado en **pnpm workspaces** que centraliza la librería de componente
 - [Tokens de Diseño](#tokens-de-diseño)
 - [Estrategia de Branches](#estrategia-de-branches)
 - [CI/CD](#cicd)
-- [Agregar Nuevo Cliente](#agregar-nuevo-cliente)
+- [Usar en un Proyecto Externo](#usar-en-un-proyecto-externo)
 
 ---
 
@@ -23,23 +23,9 @@ Monorepo basado en **pnpm workspaces** que centraliza la librería de componente
 
 ```
 bip-ui/
-├── packages/
-│   ├── ui-components/      # Librería de componentes React  →  @bip/ui-components
-│   └── shared-utils/       # Utilidades TypeScript puras    →  @bip/shared-utils
-└── apps/
-    └── template-base/      # Starter app para nuevos clientes
-```
-
-Los paquetes internos se consumen con el protocolo workspace:
-
-```jsonc
-// package.json de cualquier app cliente
-{
-  "dependencies": {
-    "@bip/ui-components": "workspace:*",
-    "@bip/shared-utils": "workspace:*"
-  }
-}
+└── packages/
+    ├── ui-components/      # Librería de componentes React  →  @bip/ui-components
+    └── shared-utils/       # Utilidades TypeScript puras    →  @bip/shared-utils
 ```
 
 ---
@@ -74,9 +60,6 @@ pnpm --filter @bip/ui-components build
 
 # 3. Abrir Storybook  →  http://localhost:6006
 pnpm --filter @bip/ui-components storybook
-
-# 4. Levantar template base  →  http://localhost:5173
-pnpm --filter @bip/template-base dev
 ```
 
 ---
@@ -266,22 +249,73 @@ Cuatro workflows de GitHub Actions, uno por ambiente:
 **Reglas del pipeline:**
 - Todos los workflows instalan dependencias con `--frozen-lockfile` para garantizar reproducibilidad.
 - Los tests siempre se ejecutan **antes** del build (fail-fast).
-- Orden de build garantizado: `shared-utils → ui-components → template-base`.
+- Orden de build garantizado: `shared-utils → ui-components`.
 
 ---
 
-## Agregar Nuevo Cliente
+## Usar en un Proyecto Externo
+
+Pasos para consumir BipUI desde un repositorio independiente.
+
+### 1. Instalar los paquetes
+
+**Desde GitHub (sin publicar en npm):**
 
 ```bash
-# Copiar el template base
-cp -r apps/template-base apps/nombre-cliente
+# Con pnpm
+pnpm add github:TU-ORG/bip-ui#main --filter @bip/ui-components
+pnpm add github:TU-ORG/bip-ui#main --filter @bip/shared-utils
+```
 
-# Actualizar name en package.json del nuevo cliente
-# Instalar dependencias
-pnpm install
+**Desde npm / registro privado (cuando se publique):**
 
-# Levantar
-pnpm --filter @bip/nombre-cliente dev
+```bash
+pnpm add @bip/ui-components @bip/shared-utils
+```
+
+### 2. Instalar las peer dependencies
+
+```bash
+pnpm add react react-dom
+pnpm add -D tailwindcss postcss autoprefixer
+```
+
+### 3. Configurar Tailwind
+
+```js
+// tailwind.config.js
+import bipPreset from '@bip/ui-components/tailwind.preset';
+
+export default {
+  content: [
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
+    // El preset ya incluye automáticamente el path de la librería
+  ],
+  presets: [bipPreset],
+};
+```
+
+```css
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### 4. Usar los componentes
+
+```tsx
+import { Button, Input, Modal } from '@bip/ui-components';
+import { formatCurrency, validateRFC } from '@bip/shared-utils';
+
+export const MiPagina = () => (
+  <div>
+    <Input label="RFC" />
+    <Button variant="primary">Guardar</Button>
+    <p>{formatCurrency(1500)}</p>
+  </div>
+);
 ```
 
 ---

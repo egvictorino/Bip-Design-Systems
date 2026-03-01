@@ -79,15 +79,12 @@ jobs:
         run: |
           NODE_ENV=production pnpm --filter @bip/shared-utils build
           NODE_ENV=production pnpm --filter @bip/ui-components build
-          NODE_ENV=production pnpm --filter @bip/template-base build
-      
+
       - name: Upload production artifacts
         uses: actions/upload-artifact@v4
         with:
           name: production-build
-          path: |
-            packages/*/dist
-            apps/*/dist
+          path: packages/*/dist
           retention-days: 30
 
   deploy-storybook-production:

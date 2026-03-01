@@ -82,15 +82,12 @@ jobs:
         run: |
           pnpm --filter @bip/shared-utils build
           pnpm --filter @bip/ui-components build
-          pnpm --filter @bip/template-base build
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: qa-build
-          path: |
-            packages/*/dist
-            apps/*/dist
+          path: packages/*/dist
           retention-days: 7
 
   deploy-storybook-qa:

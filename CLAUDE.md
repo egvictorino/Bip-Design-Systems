@@ -11,7 +11,6 @@ pnpm install
 # Build order matters — shared-utils must build before ui-components
 pnpm --filter @bip/shared-utils build
 pnpm --filter @bip/ui-components build
-pnpm --filter @bip/template-base build
 
 # Component development
 pnpm --filter @bip/ui-components storybook        # http://localhost:6006
@@ -41,9 +40,6 @@ PRs always go: `feature/xxx → dev → qa → main`. Hotfixes branch from `main
 
 - `packages/ui-components` — React component library. Main deliverable. Builds to `dist/index.{es,umd}.js` + types.
 - `packages/shared-utils` — Pure TypeScript utilities (formatting, validation). No runtime deps.
-- `apps/template-base` — Starter app for new clients. Consumes both packages via `workspace:*`.
-
-Internal dependencies use the workspace protocol: `"@bip/ui-components": "workspace:*"`.
 
 ## Tailwind consumer setup
 
@@ -72,7 +68,7 @@ export default {
 
 El preset resuelve el `content` path de `dist/**/*.js` con una ruta absoluta desde su propia ubicación (`import.meta.url`), por lo que funciona tanto en el monorepo como en proyectos externos instalados vía npm.
 
-`template-base` ya tiene esta configuración lista como referencia. Para proyectos externos (fuera del monorepo), instalar primero `tailwindcss`, `postcss` y `autoprefixer` como devDependencies.
+Para proyectos externos, instalar primero `tailwindcss`, `postcss` y `autoprefixer` como devDependencies.
 
 ## shared-utils (`packages/shared-utils`)
 
@@ -102,7 +98,7 @@ Four workflows, one per environment:
 **Rules:**
 - All workflows use `pnpm install --frozen-lockfile` — never use `--no-frozen-lockfile` in CI.
 - Tests (`pnpm --filter @bip/shared-utils test`) always run **before** build (fail-fast).
-- Build order in every pipeline: `shared-utils → ui-components → template-base`.
+- Build order in every pipeline: `shared-utils → ui-components`.
 
 ## Component Patterns (`packages/ui-components`)
 

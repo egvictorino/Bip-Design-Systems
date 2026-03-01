@@ -5,9 +5,9 @@
   "private": true,
   "description": "BipUI — React component library and design system",
   "scripts": {
-    "dev": "pnpm --parallel --recursive dev",
-    "build": "pnpm --recursive build",
-    "test": "echo \"Tests pendientes\"",
+    "dev": "pnpm --filter @bip/ui-components storybook",
+    "build": "pnpm --filter @bip/shared-utils build && pnpm --filter @bip/ui-components build",
+    "test": "pnpm --filter @bip/shared-utils test",
     "lint": "pnpm --recursive lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""

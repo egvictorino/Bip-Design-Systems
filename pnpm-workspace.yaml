@@ -1,5 +1,2 @@
 packages:
-  # Todos los paquetes compartidos
   - 'packages/*'
-  # Todas las aplicaciones de clientes
-  - 'apps/*'
