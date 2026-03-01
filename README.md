@@ -90,7 +90,7 @@ pnpm --filter @bip/ui-components storybook        # Dev Storybook
 pnpm --filter @bip/ui-components build-storybook  # Build estático
 pnpm --filter @bip/ui-components build            # Build librería
 pnpm --filter @bip/ui-components lint             # Lint
-pnpm --filter @bip/ui-components test             # Tests
+pnpm --filter @bip/shared-utils test              # Tests (vitest)
 ```
 
 ### Monorepo completo
@@ -150,6 +150,27 @@ pnpm dev     # Modo desarrollo paralelo
 |------------|-------------|
 | `Modal` | Diálogo con focus trap y portal: `ModalHeader`, `ModalBody`, `ModalFooter` |
 | `Tooltip` | Tooltip posicionable con delay configurable |
+
+---
+
+## Utilidades Compartidas
+
+`@bip/shared-utils` — utilidades TypeScript puras, sin dependencias de runtime.
+
+| Función | Firma | Descripción |
+|---------|-------|-------------|
+| `formatCurrency` | `(amount: number) => string` | Formatea como moneda MXN con locale `es-MX` |
+| `formatDate` | `(date: Date) => string` | Formatea fecha con locale `es-MX` |
+| `validateRFC` | `(rfc: string) => boolean` | Valida formato RFC mexicano (solo mayúsculas, sin normalización) |
+
+```ts
+import { formatCurrency, formatDate, validateRFC } from '@bip/shared-utils';
+
+formatCurrency(1500);           // "$1,500.00"
+formatDate(new Date(2026, 5, 15)); // "15/6/2026"
+validateRFC('ABC800101AA1');    // true
+validateRFC('abc800101AA1');    // false — no acepta minúsculas
+```
 
 ---
 
@@ -233,12 +254,19 @@ git commit -m "hotfix: descripción"
 
 ## CI/CD
 
-El pipeline de GitHub Actions ejecuta en cada PR:
+Cuatro workflows de GitHub Actions, uno por ambiente:
 
-- Validación de tipos TypeScript
-- Lint (`eslint`)
-- Build de todos los paquetes (en orden de dependencia)
-- Deploy automático de Storybook a GitHub Pages (solo rama `main`)
+| Workflow | Trigger | Pasos clave |
+|----------|---------|-------------|
+| `pr-validation.yml` | PR a cualquier rama | validación de branch → lint → **tests** → build |
+| `dev.yml` | push/PR a `dev` | lint → **tests** → build → storybook preview |
+| `qa.yml` | push/PR a `qa` | security audit · lint → **tests** → build → storybook QA |
+| `production.yml` | push/PR a `main` | security · lint → **tests** → type-check → build → GitHub Pages → release tag |
+
+**Reglas del pipeline:**
+- Todos los workflows instalan dependencias con `--frozen-lockfile` para garantizar reproducibilidad.
+- Los tests siempre se ejecutan **antes** del build (fail-fast).
+- Orden de build garantizado: `shared-utils → ui-components → template-base`.
 
 ---
 

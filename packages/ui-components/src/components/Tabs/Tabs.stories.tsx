@@ -17,7 +17,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => (
     <Tabs defaultValue="general" className="w-[520px]">
       <TabList>
@@ -39,7 +39,7 @@ export const Default: Story = {
 };
 
 export const Pill: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => (
     <Tabs defaultValue="ventas" variant="pill" className="w-[520px]">
       <TabList>
@@ -61,7 +61,7 @@ export const Pill: Story = {
 };
 
 export const WithDisabled: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => (
     <Tabs defaultValue="activos" className="w-[520px]">
       <TabList>
@@ -113,12 +113,12 @@ const ControlledTabsStory = () => {
 };
 
 export const Controlled: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => <ControlledTabsStory />,
 };
 
 export const WithBadge: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => (
     <Tabs defaultValue="abiertos" className="w-[520px]">
       <TabList>

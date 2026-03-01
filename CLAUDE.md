@@ -19,7 +19,7 @@ pnpm --filter @bip/ui-components build-storybook
 
 # Lint & test (scoped)
 pnpm --filter @bip/ui-components lint
-pnpm --filter @bip/ui-components test
+pnpm --filter @bip/shared-utils test
 
 # All packages at once
 pnpm build
@@ -73,6 +73,36 @@ export default {
 El preset resuelve el `content` path de `dist/**/*.js` con una ruta absoluta desde su propia ubicación (`import.meta.url`), por lo que funciona tanto en el monorepo como en proyectos externos instalados vía npm.
 
 `template-base` ya tiene esta configuración lista como referencia. Para proyectos externos (fuera del monorepo), instalar primero `tailwindcss`, `postcss` y `autoprefixer` como devDependencies.
+
+## shared-utils (`packages/shared-utils`)
+
+Pure TypeScript utilities — no runtime dependencies.
+
+**Available functions:**
+- `formatCurrency(amount: number): string` — formats as MXN currency using `es-MX` locale
+- `formatDate(date: Date): string` — formats date using `es-MX` locale
+- `validateRFC(rfc: string): boolean` — validates Mexican RFC format (uppercase only, no normalization)
+  - Regex: `/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/`
+
+**Testing:** vitest is configured. Run with `pnpm --filter @bip/shared-utils test` (21 tests).
+
+**Build note:** `tsconfig.json` excludes `**/*.test.ts` from compilation so test files never appear in `dist/`. Do not remove this exclude.
+
+## CI/CD
+
+Four workflows, one per environment:
+
+| Workflow | Trigger | Key steps |
+|----------|---------|-----------|
+| `pr-validation.yml` | PR to any branch | branch check → lint → **test** → build |
+| `dev.yml` | push/PR to `dev` | lint → **test** → build → storybook preview |
+| `qa.yml` | push/PR to `qa` | security audit \| lint → **test** → build → storybook QA |
+| `production.yml` | push/PR to `main` | security + lint + **test** + type-check → build → GitHub Pages → release |
+
+**Rules:**
+- All workflows use `pnpm install --frozen-lockfile` — never use `--no-frozen-lockfile` in CI.
+- Tests (`pnpm --filter @bip/shared-utils test`) always run **before** build (fail-fast).
+- Build order in every pipeline: `shared-utils → ui-components → template-base`.
 
 ## Component Patterns (`packages/ui-components`)
 
@@ -192,6 +222,11 @@ feedback-info-{light|subtle|text}                    → #EFF6FF / #DBEAFE / #1D
 - `htmlFor` / `id` pairing on labels
 
 **Decorative / loading components** (Skeleton, Spinner): add `aria-hidden="true"` — they convey no semantic content.
+
+**Modal dialogs** (WAI-ARIA Dialog pattern):
+- Save `document.activeElement` before opening — restore focus to it on close
+- Focus trap: Tab cycles within modal; Shift+Tab reverses; Escape calls `onClose`
+- First focusable element inside modal receives focus on open
 
 **Interactive menus** (Dropdown — WAI-ARIA Menu Button pattern):
 - Trigger: `aria-haspopup`, `aria-expanded`, `aria-controls`

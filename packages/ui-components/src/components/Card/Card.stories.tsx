@@ -18,7 +18,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Elevated: Story = {
-  args: { variant: 'elevated', children: '' },
+  args: { variant: 'elevated', children: null },
   render: (args) => (
     <Card {...args} className="w-80">
       <CardBody>
@@ -29,7 +29,7 @@ export const Elevated: Story = {
 };
 
 export const Outlined: Story = {
-  args: { variant: 'outlined', children: '' },
+  args: { variant: 'outlined', children: null },
   render: (args) => (
     <Card {...args} className="w-80">
       <CardBody>
@@ -40,7 +40,7 @@ export const Outlined: Story = {
 };
 
 export const Flat: Story = {
-  args: { variant: 'flat', children: '' },
+  args: { variant: 'flat', children: null },
   render: (args) => (
     <Card {...args} className="w-80">
       <CardBody>
@@ -51,7 +51,7 @@ export const Flat: Story = {
 };
 
 export const WithHeader: Story = {
-  args: { variant: 'elevated', children: '' },
+  args: { variant: 'elevated', children: null },
   render: (args) => (
     <Card {...args} className="w-80">
       <CardHeader>
@@ -67,7 +67,7 @@ export const WithHeader: Story = {
 };
 
 export const WithHeaderAndFooter: Story = {
-  args: { variant: 'outlined', children: '' },
+  args: { variant: 'outlined', children: null },
   render: (args) => (
     <Card {...args} className="w-80">
       <CardHeader>
@@ -93,7 +93,7 @@ export const WithHeaderAndFooter: Story = {
 };
 
 export const WithBadge: Story = {
-  args: { variant: 'elevated', children: '' },
+  args: { variant: 'elevated', children: null },
   render: (args) => (
     <Card {...args} className="w-80">
       <CardHeader>
@@ -114,7 +114,7 @@ export const WithBadge: Story = {
 };
 
 export const WithPadding: Story = {
-  args: { variant: 'elevated', padding: 'md', children: '' },
+  args: { variant: 'elevated', padding: 'md', children: null },
   render: (args) => (
     <Card {...args} className="w-80">
       <p className="text-text-secondary text-sm">
@@ -125,7 +125,7 @@ export const WithPadding: Story = {
 };
 
 export const AllVariants: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <Card variant="elevated">

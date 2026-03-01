@@ -33,7 +33,7 @@ jobs:
           version: 9.15.9
       
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       
       - name: Security audit
         run: pnpm audit --audit-level=high
@@ -73,7 +73,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-prod-${{ hashFiles('**/pnpm-lock.yaml') }}
       
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       
       - name: Build packages (production mode)
         run: |
@@ -112,7 +112,7 @@ jobs:
           version: 9.15.9
       
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       
       - name: Build Storybook
         run: pnpm --filter @bip/ui-components build-storybook

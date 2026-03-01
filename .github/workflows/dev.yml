@@ -23,7 +23,7 @@ jobs:
           version: 9.15.9
       
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       
       - name: Lint ui-components
         run: pnpm --filter @bip/ui-components lint
@@ -53,7 +53,7 @@ jobs:
             ${{ runner.os }}-pnpm-
       
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       
       - name: Test
         run: pnpm --filter @bip/shared-utils test
@@ -91,7 +91,7 @@ jobs:
           version: 9.15.9
       
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       
       - name: Build Storybook
         run: pnpm --filter @bip/ui-components build-storybook
