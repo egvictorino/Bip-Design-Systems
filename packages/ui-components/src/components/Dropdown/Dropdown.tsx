@@ -218,7 +218,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
         'flex w-full items-center gap-2 px-4 py-2 text-sm text-left transition-colors',
         'focus:outline-none focus-visible:bg-interaction-tertiary-default',
         danger
-          ? 'text-red-600 hover:bg-red-50 focus-visible:bg-red-50'
+          ? 'text-feedback-error-default hover:bg-feedback-error-light focus-visible:bg-feedback-error-light'
           : 'text-text-primary hover:bg-interaction-tertiary-default',
         disabled && 'cursor-not-allowed opacity-50',
         className

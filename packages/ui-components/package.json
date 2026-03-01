@@ -16,7 +16,8 @@
   },
   "files": [
     "dist",
-    "tailwind.preset.js"
+    "tailwind.preset.js",
+    "tailwind.tokens.js"
   ],
   "scripts": {
     "dev": "vite",

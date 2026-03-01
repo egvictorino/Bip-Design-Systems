@@ -46,7 +46,7 @@ const DefaultModalStory = () => {
 };
 
 export const Default: Story = {
-  args: { isOpen: false, onClose: () => {}, children: '' },
+  args: { isOpen: false, onClose: () => {}, children: null },
   render: () => <DefaultModalStory />,
 };
 
@@ -78,7 +78,7 @@ const ConfirmationModalStory = () => {
 };
 
 export const Confirmation: Story = {
-  args: { isOpen: false, onClose: () => {}, children: '' },
+  args: { isOpen: false, onClose: () => {}, children: null },
   render: () => <ConfirmationModalStory />,
 };
 
@@ -112,7 +112,7 @@ const WithFormModalStory = () => {
 };
 
 export const WithForm: Story = {
-  args: { isOpen: false, onClose: () => {}, children: '' },
+  args: { isOpen: false, onClose: () => {}, children: null },
   render: () => <WithFormModalStory />,
 };
 
@@ -155,7 +155,7 @@ const LargeModalStory = () => {
 };
 
 export const Large: Story = {
-  args: { isOpen: false, onClose: () => {}, children: '' },
+  args: { isOpen: false, onClose: () => {}, children: null },
   render: () => <LargeModalStory />,
 };
 
@@ -185,6 +185,6 @@ const NoBackdropCloseModalStory = () => {
 };
 
 export const NoBackdropClose: Story = {
-  args: { isOpen: false, onClose: () => {}, children: '' },
+  args: { isOpen: false, onClose: () => {}, children: null },
   render: () => <NoBackdropCloseModalStory />,
 };

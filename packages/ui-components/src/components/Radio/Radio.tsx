@@ -64,7 +64,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
               sizes[size].box,
               error
-                ? 'border-red-500 group-has-[:focus-visible]:ring-red-500'
+                ? 'border-feedback-error-default group-has-[:focus-visible]:ring-feedback-error-default'
                 : 'border-interaction-primary-default group-has-[:checked]:border-interaction-primary-default group-has-[:focus-visible]:ring-interaction-primary-default hover:border-interaction-primary-hover',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
@@ -87,7 +87,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
                 'scale-0 group-has-[:checked]:scale-100',
                 sizes[size].dot,
                 error
-                  ? 'bg-red-500'
+                  ? 'bg-feedback-error-default'
                   : 'bg-interaction-primary-default'
               )}
             />
@@ -100,7 +100,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               className={cn(
                 'select-none font-medium transition-colors cursor-pointer',
                 sizes[size].label,
-                error ? 'text-red-500' : 'text-text-primary',
+                error ? 'text-feedback-error-default' : 'text-text-primary',
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
             >
@@ -113,7 +113,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-red-500', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-feedback-error-default', sizes[size].indent)}
             role="alert"
           >
             {errorMessage}

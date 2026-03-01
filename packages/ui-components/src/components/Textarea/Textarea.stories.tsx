@@ -77,6 +77,17 @@ export const Disabled: Story = {
   },
 };
 
+export const ReadOnly: Story = {
+  args: {
+    variant: 'outlined',
+    label: 'Términos y condiciones',
+    value: 'Al usar este servicio, aceptas los términos y condiciones de uso de la plataforma.',
+    readOnly: true,
+    helperText: 'Este campo no puede editarse',
+    rows: 4,
+  },
+};
+
 export const NoResize: Story = {
   args: {
     variant: 'outlined',

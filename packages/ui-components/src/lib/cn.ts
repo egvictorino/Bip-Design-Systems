@@ -27,11 +27,23 @@ const twMerge = extendTailwindMerge({
             'selected',
           ],
           'bg-text': ['primary', 'secondary', 'disabled', 'white'],
+          'bg-feedback': [
+            'error-default', 'error-light', 'error-subtle', 'error-muted',
+            'success-default', 'success-light', 'success-subtle',
+            'warning-default', 'warning-light', 'warning-subtle',
+            'info-light', 'info-subtle',
+          ],
         },
       ],
       'text-color': [
         {
           'text-text': ['primary', 'secondary', 'disabled', 'white'],
+          'text-feedback': [
+            'error-default', 'error-text',
+            'success-default', 'success-text',
+            'warning-default', 'warning-text',
+            'info-text',
+          ],
         },
       ],
       'border-color': [
@@ -47,11 +59,17 @@ const twMerge = extendTailwindMerge({
             'tertiary-hover',
             'tertiary-pressed',
           ],
+          'border-feedback': [
+            'error-default',
+            'success-default',
+            'warning-default',
+          ],
         },
       ],
       'ring-color': [
         {
           'ring-interaction': ['primary-default', 'secondary-default'],
+          'ring-feedback': ['error-default', 'success-default', 'warning-default'],
         },
       ],
     },

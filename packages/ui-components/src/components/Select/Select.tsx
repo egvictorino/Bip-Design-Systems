@@ -43,21 +43,21 @@ const baseStyles =
 
 const getVariantStyles = (error: boolean) => ({
   outlined: cn(
-    'border bg-transparent',
+    'border bg-interaction-field',
     error
-      ? 'border-red-500 focus:ring-red-500'
+      ? 'border-feedback-error-default focus:ring-feedback-error-default'
       : 'border-interaction-primary-default focus:ring-interaction-primary-default hover:border-interaction-primary-hover'
   ),
   filled: cn(
     'border-0',
     error
-      ? 'bg-red-50 focus:ring-red-500'
+      ? 'bg-feedback-error-light focus:ring-feedback-error-default'
       : 'bg-interaction-secondary-default focus:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
   ),
   bare: cn(
     'border-0 border-b-2 bg-transparent rounded-none',
     error
-      ? 'border-b-red-500 focus:ring-0'
+      ? 'border-b-feedback-error-default focus:ring-0'
       : 'border-b-interaction-primary-default focus:ring-0 focus:border-b-interaction-primary-hover hover:border-b-interaction-primary-hover'
   ),
 });
@@ -100,7 +100,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               'font-medium transition-colors',
               labelSizeStyles[size],
               error
-                ? 'text-red-500'
+                ? 'text-feedback-error-default'
                 : focused
                   ? 'text-interaction-primary-default'
                   : 'text-text-primary',
@@ -124,6 +124,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               variantStyles[variant],
               sizes[size],
               disabledStyles,
+              'disabled:bg-interaction-disabled',
               fullWidth && 'w-full',
               className
             )}
@@ -154,7 +155,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             className={cn(
               'pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2',
               error
-                ? 'text-red-500'
+                ? 'text-feedback-error-default'
                 : focused
                   ? 'text-interaction-primary-default'
                   : 'text-text-secondary',
@@ -179,7 +180,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(helperSizeStyles[size], 'text-red-500')}
+            className={cn(helperSizeStyles[size], 'text-feedback-error-default')}
             role="alert"
           >
             {errorMessage}

@@ -73,7 +73,10 @@ jobs:
       
       - name: Lint
         run: pnpm --filter @bip/ui-components lint
-      
+
+      - name: Test
+        run: pnpm --filter @bip/shared-utils test
+
       - name: Build
         run: |
           pnpm --filter @bip/shared-utils build

@@ -43,21 +43,21 @@ const baseStyles =
 
 const getVariantStyles = (error: boolean) => ({
   outlined: cn(
-    'border bg-transparent',
+    'border bg-interaction-field',
     error
-      ? 'border-red-500 focus:ring-red-500'
+      ? 'border-feedback-error-default focus:ring-feedback-error-default'
       : 'border-interaction-primary-default focus:ring-interaction-primary-default hover:border-interaction-primary-hover'
   ),
   filled: cn(
     'border-0',
     error
-      ? 'bg-red-50 focus:ring-red-500'
+      ? 'bg-feedback-error-light focus:ring-feedback-error-default'
       : 'bg-interaction-secondary-default focus:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
   ),
   bare: cn(
     'border-0 border-b-2 bg-transparent rounded-none',
     error
-      ? 'border-b-red-500 focus:ring-0'
+      ? 'border-b-feedback-error-default focus:ring-0'
       : 'border-b-interaction-primary-default focus:ring-0 focus:border-b-interaction-primary-hover hover:border-b-interaction-primary-hover'
   ),
 });
@@ -99,7 +99,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
               'font-medium transition-colors',
               labelSizeStyles[size],
               error
-                ? 'text-red-500'
+                ? 'text-feedback-error-default'
                 : focused
                   ? 'text-interaction-primary-default'
                   : 'text-text-primary',
@@ -121,6 +121,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             sizes[size],
             resizeStyles[resize],
             disabledStyles,
+            'disabled:bg-interaction-disabled read-only:bg-interaction-field-readonly',
             fullWidth && 'w-full',
             className
           )}
@@ -137,7 +138,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(helperSizeStyles[size], 'text-red-500')}
+            className={cn(helperSizeStyles[size], 'text-feedback-error-default')}
             role="alert"
           >
             {errorMessage}

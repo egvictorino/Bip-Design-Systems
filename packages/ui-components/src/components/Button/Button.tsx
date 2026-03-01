@@ -15,20 +15,20 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'rounded-[1px] font-small transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer';
+    'rounded-[1px] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer';
 
   const variants = {
     primary:
-      'bg-interaction-primary-default text-white hover:bg-interaction-primary-hover active:bg-interaction-primary-pressed dark:bg-interaction-primary-700 dark:hover:bg-interaction-primary-600 dark:active:bg-interaction-primary-800',
+      'bg-interaction-primary-default text-text-white hover:bg-interaction-primary-hover active:bg-interaction-primary-pressed focus:ring-interaction-primary-default',
     secondary:
-      'bg-interaction-secondary-default text-primary hover:bg-interaction-secondary-hover active:bg-interaction-secondary-pressed dark:bg-interaction-secondary-700 dark:hover:bg-interaction-secondary-600 dark:active:bg-interaction-secondary-800',
-    bare: 'bg-transparent text-interaction-primary-default border border-interaction-primary-default hover:text-interaction-primary-hover hover:border-interaction-primary-hover active:text-interaction-primary-pressed active:border-interaction-primary-pressed focus:ring-gray-500',
-    soul: 'bg-transparent text-interaction-primary-default focus:ring-soul-500',
+      'bg-interaction-secondary-default text-text-primary hover:bg-interaction-secondary-hover active:bg-interaction-secondary-pressed focus:ring-interaction-secondary-default',
+    bare: 'bg-transparent text-interaction-primary-default border border-interaction-primary-default hover:text-interaction-primary-hover hover:border-interaction-primary-hover active:text-interaction-primary-pressed active:border-interaction-primary-pressed focus:ring-interaction-primary-default',
+    soul: 'bg-transparent text-interaction-primary-default focus:ring-interaction-primary-default',
   };
 
   const sizes = {
-    sm: 'px-[12px] py-[6px] text-sm',
-    md: 'px-[20px] py-[10px] text-[12px]',
+    sm: 'px-[12px] py-[6px] text-xs',
+    md: 'px-[20px] py-[10px] text-sm',
     lg: 'px-[24px] py-[12px] text-lg',
   };
 

@@ -1,5 +1,6 @@
 import type { Meta } from '@storybook/react';
 import { useState } from 'react';
+import { colors } from '../../tailwind.tokens.js';
 
 const meta = {
   title: 'Foundations/Colors',
@@ -34,11 +35,11 @@ const ColorSwatch = ({ name, value }: { name: string; value: string }) => {
   );
 };
 
-const ColorGroup = ({ title, colors }: { title: string; colors: Record<string, string> }) => (
+const ColorGroup = ({ title, colors: swatches }: { title: string; colors: Record<string, string> }) => (
   <div className="mb-12">
     <h2 className="text-2xl font-bold mb-6 text-text-primary">{title}</h2>
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-      {Object.entries(colors).map(([name, value]) => (
+      {Object.entries(swatches).map(([name, value]) => (
         <ColorSwatch key={name} name={name} value={value} />
       ))}
     </div>
@@ -46,27 +47,57 @@ const ColorGroup = ({ title, colors }: { title: string; colors: Record<string, s
 );
 
 export const Overview = () => {
-  const interactionColors = {
-    'Primary Default': '#1643A8',
-    'Primary Hover': '#10327D',
-    'Primary Pressed': '#0B2152',
-    'Secondary Default': '#4B5468',
-    'Secondary Hover': '#3A404B',
-    'Secondary Pressed': '#282C33',
-    'Tertiary Default': '#DEE4ED',
-    'Tertiary Hover': '#B6BBC3',
-    'Tertiary Pressed': '#8E9298',
-    'Disabled': '#EFEFEF',
-    'Field': '#FCFCFC',
-    'Field Readonly': '#F2F2F2',
-    'Selected': '#E4FCFF',
+  const { interaction, text, feedback } = colors;
+
+  const interactionColors: Record<string, string> = {
+    'Primary Default':    interaction.primary.default,
+    'Primary Hover':      interaction.primary.hover,
+    'Primary Pressed':    interaction.primary.pressed,
+    'Secondary Default':  interaction.secondary.default,
+    'Secondary Hover':    interaction.secondary.hover,
+    'Secondary Pressed':  interaction.secondary.pressed,
+    'Tertiary Default':   interaction.tertiary.default,
+    'Tertiary Hover':     interaction.tertiary.hover,
+    'Tertiary Pressed':   interaction.tertiary.pressed,
+    'Disabled':           interaction.disabled,
+    'Field':              interaction.field,
+    'Field Readonly':     interaction['field-readonly'],
+    'Selected':           interaction.selected,
   };
 
-  const textColors = {
-    'Primary': '#23232A',
-    'Secondary': '#5E5E60',
-    'Disabled': '#A6A7A8',
-    'White': '#FFFFFF',
+  const textColors: Record<string, string> = {
+    'Primary':   text.primary,
+    'Secondary': text.secondary,
+    'Disabled':  text.disabled,
+    'White':     text.white,
+  };
+
+  const feedbackErrorColors: Record<string, string> = {
+    'Error Default': feedback.error.default,
+    'Error Light':   feedback.error.light,
+    'Error Subtle':  feedback.error.subtle,
+    'Error Muted':   feedback.error.muted,
+    'Error Text':    feedback.error.text,
+  };
+
+  const feedbackSuccessColors: Record<string, string> = {
+    'Success Default': feedback.success.default,
+    'Success Light':   feedback.success.light,
+    'Success Subtle':  feedback.success.subtle,
+    'Success Text':    feedback.success.text,
+  };
+
+  const feedbackWarningColors: Record<string, string> = {
+    'Warning Default': feedback.warning.default,
+    'Warning Light':   feedback.warning.light,
+    'Warning Subtle':  feedback.warning.subtle,
+    'Warning Text':    feedback.warning.text,
+  };
+
+  const feedbackInfoColors: Record<string, string> = {
+    'Info Light':  feedback.info.light,
+    'Info Subtle': feedback.info.subtle,
+    'Info Text':   feedback.info.text,
   };
 
   return (
@@ -83,6 +114,10 @@ export const Overview = () => {
       </p>
       <ColorGroup title="Interaction Colors" colors={interactionColors} />
       <ColorGroup title="Text Colors" colors={textColors} />
+      <ColorGroup title="Feedback — Error" colors={feedbackErrorColors} />
+      <ColorGroup title="Feedback — Success" colors={feedbackSuccessColors} />
+      <ColorGroup title="Feedback — Warning" colors={feedbackWarningColors} />
+      <ColorGroup title="Feedback — Info" colors={feedbackInfoColors} />
     </div>
   );
 };

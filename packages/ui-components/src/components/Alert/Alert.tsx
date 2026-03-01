@@ -10,28 +10,28 @@ export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const variantStyles = {
   info: {
-    container: 'bg-blue-50 border-interaction-primary-default text-interaction-primary-default',
+    container: 'bg-feedback-info-light border-interaction-primary-default text-interaction-primary-default',
     title: 'text-interaction-primary-default',
-    body: 'text-blue-700',
-    close: 'text-interaction-primary-default hover:bg-blue-100',
+    body: 'text-feedback-info-text',
+    close: 'text-interaction-primary-default hover:bg-feedback-info-subtle',
   },
   success: {
-    container: 'bg-green-50 border-green-500 text-green-700',
-    title: 'text-green-800',
-    body: 'text-green-700',
-    close: 'text-green-600 hover:bg-green-100',
+    container: 'bg-feedback-success-light border-feedback-success-default text-feedback-success-text',
+    title: 'text-feedback-success-text',
+    body: 'text-feedback-success-text',
+    close: 'text-feedback-success-default hover:bg-feedback-success-subtle',
   },
   warning: {
-    container: 'bg-yellow-50 border-yellow-500 text-yellow-700',
-    title: 'text-yellow-800',
-    body: 'text-yellow-700',
-    close: 'text-yellow-600 hover:bg-yellow-100',
+    container: 'bg-feedback-warning-light border-feedback-warning-default text-feedback-warning-text',
+    title: 'text-feedback-warning-text',
+    body: 'text-feedback-warning-text',
+    close: 'text-feedback-warning-default hover:bg-feedback-warning-subtle',
   },
   error: {
-    container: 'bg-red-50 border-red-500 text-red-700',
-    title: 'text-red-800',
-    body: 'text-red-700',
-    close: 'text-red-600 hover:bg-red-100',
+    container: 'bg-feedback-error-light border-feedback-error-default text-feedback-error-text',
+    title: 'text-feedback-error-text',
+    body: 'text-feedback-error-text',
+    close: 'text-feedback-error-default hover:bg-feedback-error-subtle',
   },
 };
 

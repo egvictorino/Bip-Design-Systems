@@ -90,7 +90,7 @@ pnpm --filter @bip/ui-components storybook        # Dev Storybook
 pnpm --filter @bip/ui-components build-storybook  # Build estático
 pnpm --filter @bip/ui-components build            # Build librería
 pnpm --filter @bip/ui-components lint             # Lint
-pnpm --filter @bip/ui-components test             # Tests
+pnpm --filter @bip/shared-utils test              # Tests (vitest)
 ```
 
 ### Monorepo completo
@@ -111,9 +111,9 @@ pnpm dev     # Modo desarrollo paralelo
 
 | Componente | Descripción |
 |------------|-------------|
-| `Button` | Botón con variantes `primary`, `secondary`, `bare`, `danger` y tamaños `sm / md / lg` |
-| `Input` | Campo de texto con label, helper text, estados de error y múltiples tipos |
-| `Textarea` | Área de texto con autoResize opcional |
+| `Button` | Botón con variantes `primary`, `secondary`, `bare`, `soul` y tamaños `sm / md / lg` |
+| `Input` | Campo de texto con label, helper text, estados `error`, `disabled` y `readOnly` |
+| `Textarea` | Área de texto con control de resize (`none / vertical / horizontal / both`) |
 | `Select` | Selector nativo con chevron custom, variantes y accesibilidad |
 | `Checkbox` | Checkbox accesible con soporte para estado indeterminado |
 | `Radio` | Radio button con label y helper text |
@@ -133,7 +133,7 @@ pnpm dev     # Modo desarrollo paralelo
 | Componente | Descripción |
 |------------|-------------|
 | `Card` | Tarjeta compuesta: `CardHeader`, `CardBody`, `CardFooter` |
-| `Table` | Tabla responsiva: `TableHead`, `TableBody`, `TableRow`, `TableHeader`, `TableCell` — soporta ordenamiento, striped y compact |
+| `Table` | Tabla responsiva: `TableHead`, `TableBody`, `TableRow`, `TableHeader`, `TableCell` — soporta ordenamiento, striped, compact y filas seleccionables (`selected`) |
 
 ### Navegación
 
@@ -153,20 +153,52 @@ pnpm dev     # Modo desarrollo paralelo
 
 ---
 
+## Utilidades Compartidas
+
+`@bip/shared-utils` — utilidades TypeScript puras, sin dependencias de runtime.
+
+| Función | Firma | Descripción |
+|---------|-------|-------------|
+| `formatCurrency` | `(amount: number) => string` | Formatea como moneda MXN con locale `es-MX` |
+| `formatDate` | `(date: Date) => string` | Formatea fecha con locale `es-MX` |
+| `validateRFC` | `(rfc: string) => boolean` | Valida formato RFC mexicano (solo mayúsculas, sin normalización) |
+
+```ts
+import { formatCurrency, formatDate, validateRFC } from '@bip/shared-utils';
+
+formatCurrency(1500);           // "$1,500.00"
+formatDate(new Date(2026, 5, 15)); // "15/6/2026"
+validateRFC('ABC800101AA1');    // true
+validateRFC('abc800101AA1');    // false — no acepta minúsculas
+```
+
+---
+
 ## Tokens de Diseño
 
-Los tokens están definidos en `packages/ui-components/tailwind.preset.js` y registrados en `src/lib/cn.ts` para una resolución correcta de conflictos de clases.
+Fuente única de verdad: `packages/ui-components/tailwind.tokens.js` — importado por `tailwind.preset.js` (tema Tailwind) y `Colors.stories.tsx` (documentación Storybook). Para agregar un token: editar `tailwind.tokens.js` → registrar en `src/lib/cn.ts`.
 
 ```
+// Interaction
 interaction-primary-{default|hover|pressed}    →  #1643A8 / #10327D / #0B2152
 interaction-secondary-{default|hover|pressed}  →  #4B5468 / #3A404B / #282C33
 interaction-tertiary-{default|hover|pressed}   →  #DEE4ED / #B6BBC3 / #8E9298
-interaction-disabled                           →  #EFEFEF
+interaction-disabled                           →  #EFEFEF  (fondo campos deshabilitados)
+interaction-field                              →  #FCFCFC  (fondo campos outlined)
+interaction-field-readonly                     →  #F2F2F2  (fondo campos read-only)
+interaction-selected                           →  #E4FCFF  (fondo TableRow seleccionado)
 
+// Text
 text-primary    →  #23232A
 text-secondary  →  #5E5E60
 text-disabled   →  #A6A7A8
 text-white      →  #FFFFFF
+
+// Feedback
+feedback-error-{default|light|subtle|muted|text}   →  #EF4444 / #FEF2F2 / #FEE2E2 / #FECACA / #B91C1C
+feedback-success-{default|light|subtle|text}       →  #22C55E / #F0FDF4 / #DCFCE7 / #15803D
+feedback-warning-{default|light|subtle|text}       →  #EAB308 / #FEFCE8 / #FEF9C3 / #A16207
+feedback-info-{light|subtle|text}                  →  #EFF6FF / #DBEAFE / #1D4ED8
 ```
 
 ---
@@ -222,12 +254,19 @@ git commit -m "hotfix: descripción"
 
 ## CI/CD
 
-El pipeline de GitHub Actions ejecuta en cada PR:
+Cuatro workflows de GitHub Actions, uno por ambiente:
 
-- Validación de tipos TypeScript
-- Lint (`eslint`)
-- Build de todos los paquetes (en orden de dependencia)
-- Deploy automático de Storybook a GitHub Pages (solo rama `main`)
+| Workflow | Trigger | Pasos clave |
+|----------|---------|-------------|
+| `pr-validation.yml` | PR a cualquier rama | validación de branch → lint → **tests** → build |
+| `dev.yml` | push/PR a `dev` | lint → **tests** → build → storybook preview |
+| `qa.yml` | push/PR a `qa` | security audit · lint → **tests** → build → storybook QA |
+| `production.yml` | push/PR a `main` | security · lint → **tests** → type-check → build → GitHub Pages → release tag |
+
+**Reglas del pipeline:**
+- Todos los workflows instalan dependencias con `--frozen-lockfile` para garantizar reproducibilidad.
+- Los tests siempre se ejecutan **antes** del build (fail-fast).
+- Orden de build garantizado: `shared-utils → ui-components → template-base`.
 
 ---
 
