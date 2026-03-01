@@ -77,6 +77,16 @@ export const Disabled: Story = {
   },
 };
 
+export const ReadOnly: Story = {
+  args: {
+    variant: 'outlined',
+    label: 'RFC',
+    value: 'ABC123456789',
+    readOnly: true,
+    helperText: 'Este campo no puede editarse',
+  },
+};
+
 export const NumberInput: Story = {
   args: {
     variant: 'outlined',

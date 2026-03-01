@@ -64,7 +64,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
               sizes[size].box,
               error
-                ? 'border-red-500 group-has-[:checked]:bg-red-500 group-has-[:checked]:border-red-500 group-has-[:focus-visible]:ring-red-500'
+                ? 'border-feedback-error-default group-has-[:checked]:bg-feedback-error-default group-has-[:checked]:border-feedback-error-default group-has-[:focus-visible]:ring-feedback-error-default'
                 : 'border-interaction-primary-default group-has-[:checked]:bg-interaction-primary-default group-has-[:checked]:border-interaction-primary-default group-has-[:focus-visible]:ring-interaction-primary-default hover:border-interaction-primary-hover',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
@@ -102,7 +102,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               className={cn(
                 'select-none font-medium transition-colors cursor-pointer',
                 sizes[size].label,
-                error ? 'text-red-500' : 'text-text-primary',
+                error ? 'text-feedback-error-default' : 'text-text-primary',
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
             >
@@ -115,7 +115,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-red-500', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-feedback-error-default', sizes[size].indent)}
             role="alert"
           >
             {errorMessage}

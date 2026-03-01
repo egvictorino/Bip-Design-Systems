@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useContext, useId } from 'react';
+import React, { useEffect, useRef, useContext, useId, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
 
@@ -41,6 +41,7 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   // Lock body scroll while open
   useEffect(() => {
@@ -52,9 +53,18 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen]);
 
+  // Restore focus to the trigger element when modal closes
+  const restoreFocus = useCallback(() => {
+    previouslyFocusedRef.current?.focus();
+    previouslyFocusedRef.current = null;
+  }, []);
+
   // Escape key + focus trap
   useEffect(() => {
     if (!isOpen) return;
+
+    // Save the element that had focus before the modal opened
+    previouslyFocusedRef.current = document.activeElement as HTMLElement;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -89,8 +99,11 @@ export const Modal: React.FC<ModalProps> = ({
     const firstFocusable = dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTORS);
     (firstFocusable ?? dialogRef.current)?.focus();
 
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      restoreFocus();
+    };
+  }, [isOpen, onClose, restoreFocus]);
 
   if (!isOpen) return null;
 

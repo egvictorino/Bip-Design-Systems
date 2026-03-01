@@ -19,7 +19,7 @@ pnpm --filter @bip/ui-components build-storybook
 
 # Lint & test (scoped)
 pnpm --filter @bip/ui-components lint
-pnpm --filter @bip/ui-components test
+pnpm --filter @bip/shared-utils test
 
 # All packages at once
 pnpm build
@@ -74,6 +74,36 @@ El preset resuelve el `content` path de `dist/**/*.js` con una ruta absoluta des
 
 `template-base` ya tiene esta configuración lista como referencia. Para proyectos externos (fuera del monorepo), instalar primero `tailwindcss`, `postcss` y `autoprefixer` como devDependencies.
 
+## shared-utils (`packages/shared-utils`)
+
+Pure TypeScript utilities — no runtime dependencies.
+
+**Available functions:**
+- `formatCurrency(amount: number): string` — formats as MXN currency using `es-MX` locale
+- `formatDate(date: Date): string` — formats date using `es-MX` locale
+- `validateRFC(rfc: string): boolean` — validates Mexican RFC format (uppercase only, no normalization)
+  - Regex: `/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/`
+
+**Testing:** vitest is configured. Run with `pnpm --filter @bip/shared-utils test` (21 tests).
+
+**Build note:** `tsconfig.json` excludes `**/*.test.ts` from compilation so test files never appear in `dist/`. Do not remove this exclude.
+
+## CI/CD
+
+Four workflows, one per environment:
+
+| Workflow | Trigger | Key steps |
+|----------|---------|-----------|
+| `pr-validation.yml` | PR to any branch | branch check → lint → **test** → build |
+| `dev.yml` | push/PR to `dev` | lint → **test** → build → storybook preview |
+| `qa.yml` | push/PR to `qa` | security audit \| lint → **test** → build → storybook QA |
+| `production.yml` | push/PR to `main` | security + lint + **test** + type-check → build → GitHub Pages → release |
+
+**Rules:**
+- All workflows use `pnpm install --frozen-lockfile` — never use `--no-frozen-lockfile` in CI.
+- Tests (`pnpm --filter @bip/shared-utils test`) always run **before** build (fail-fast).
+- Build order in every pipeline: `shared-utils → ui-components → template-base`.
+
 ## Component Patterns (`packages/ui-components`)
 
 ### Structure for every new component
@@ -118,7 +148,7 @@ className={cn('base-class', condition && 'conditional-class', className)}
 
 Plain `clsx` does not resolve conflicts between same-type utilities (e.g. `w-full` vs `w-1/2` — the one that appears later in Tailwind's generated CSS wins, not the one listed last in the attribute). `cn()` guarantees the last argument wins, including for custom tokens like `bg-interaction-*`, `text-text-*`, `border-interaction-*`.
 
-**Mantenimiento:** cuando se agreguen nuevos tokens a `tailwind.config.js`, deben registrarse también en el `extendTailwindMerge` de `src/lib/cn.ts`. Si no, `cn()` no resolverá conflictos para esos tokens y los overrides fallarán silenciosamente.
+**Mantenimiento:** cuando se agreguen nuevos tokens a `tailwind.tokens.js`, deben registrarse también en el `extendTailwindMerge` de `src/lib/cn.ts`. Si no, `cn()` no resolverá conflictos para esos tokens y los overrides fallarán silenciosamente.
 
 ### Compound component pattern
 
@@ -152,17 +182,36 @@ export const Sub: React.FC<SubProps> = ({ children }) => {
 
 Export all sub-components from both `index.ts` and `src/index.ts`.
 
-### Design tokens (tailwind.config.js custom colors)
+### Design tokens
+
+Single source of truth: `tailwind.tokens.js` — imported by `tailwind.preset.js` (Tailwind theme) and `src/foundations/Colors.stories.tsx` (Storybook docs). To add a token: edit `tailwind.tokens.js` → register in `cn.ts`.
+
 ```
-interaction-primary-{default|hover|pressed}   → #1643A8 / #10327D / #0B2152
-interaction-secondary-{default|hover|pressed} → #4B5468 / #3A404B / #282C33
-interaction-tertiary-{default|hover|pressed}  → #DEE4ED / #B6BBC3 / #8E9298
-interaction-disabled                          → #EFEFEF
+// Interaction
+interaction-primary-{default|hover|pressed}    → #1643A8 / #10327D / #0B2152
+interaction-secondary-{default|hover|pressed}  → #4B5468 / #3A404B / #282C33
+interaction-tertiary-{default|hover|pressed}   → #DEE4ED / #B6BBC3 / #8E9298
+interaction-disabled                           → #EFEFEF   (bg of disabled fields)
+interaction-field                              → #FCFCFC   (bg of outlined fields)
+interaction-field-readonly                     → #F2F2F2   (bg of read-only fields, via read-only: pseudo)
+interaction-selected                           → #E4FCFF   (bg of selected TableRow)
+
+// Text
 text-primary    → #23232A
 text-secondary  → #5E5E60
 text-disabled   → #A6A7A8
 text-white      → #FFFFFF
+
+// Feedback
+feedback-error-{default|light|subtle|muted|text}     → #EF4444 / #FEF2F2 / #FEE2E2 / #FECACA / #B91C1C
+feedback-success-{default|light|subtle|text}         → #22C55E / #F0FDF4 / #DCFCE7 / #15803D
+feedback-warning-{default|light|subtle|text}         → #EAB308 / #FEFCE8 / #FEF9C3 / #A16207
+feedback-info-{light|subtle|text}                    → #EFF6FF / #DBEAFE / #1D4ED8
 ```
+
+**Pseudo-variant states for form fields** (work automatically via HTML attributes — no extra config):
+- `disabled:bg-interaction-disabled` → applied via `disabled` HTML attribute on Input, Select, Textarea
+- `read-only:bg-interaction-field-readonly` → applied via `readOnly` HTML attribute on Input, Textarea
 
 ### Accessibility requirements
 
@@ -173,6 +222,11 @@ text-white      → #FFFFFF
 - `htmlFor` / `id` pairing on labels
 
 **Decorative / loading components** (Skeleton, Spinner): add `aria-hidden="true"` — they convey no semantic content.
+
+**Modal dialogs** (WAI-ARIA Dialog pattern):
+- Save `document.activeElement` before opening — restore focus to it on close
+- Focus trap: Tab cycles within modal; Shift+Tab reverses; Escape calls `onClose`
+- First focusable element inside modal receives focus on open
 
 **Interactive menus** (Dropdown — WAI-ARIA Menu Button pattern):
 - Trigger: `aria-haspopup`, `aria-expanded`, `aria-controls`

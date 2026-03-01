@@ -9,18 +9,18 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variants = {
-  primary: 'bg-blue-100 text-interaction-primary-default',
-  success: 'bg-green-100 text-green-700',
-  warning: 'bg-yellow-100 text-yellow-700',
-  error: 'bg-red-100 text-red-700',
+  primary: 'bg-feedback-info-subtle text-interaction-primary-default',
+  success: 'bg-feedback-success-subtle text-feedback-success-text',
+  warning: 'bg-feedback-warning-subtle text-feedback-warning-text',
+  error: 'bg-feedback-error-subtle text-feedback-error-text',
   neutral: 'bg-interaction-tertiary-default text-text-secondary',
 };
 
 const dotVariants = {
   primary: 'bg-interaction-primary-default',
-  success: 'bg-green-500',
-  warning: 'bg-yellow-500',
-  error: 'bg-red-500',
+  success: 'bg-feedback-success-default',
+  warning: 'bg-feedback-warning-default',
+  error: 'bg-feedback-error-default',
   neutral: 'bg-text-secondary',
 };
 

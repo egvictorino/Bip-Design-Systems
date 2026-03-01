@@ -197,3 +197,42 @@ export const Empty: Story = {
     </Table>
   ),
 };
+
+const WithSelectionStory = () => {
+  const [selectedId, setSelectedId] = useState<number | null>(1);
+
+  return (
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableHeader>Nombre</TableHeader>
+          <TableHeader>Correo electrónico</TableHeader>
+          <TableHeader>Estado</TableHeader>
+          <TableHeader align="right">Monto</TableHeader>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {clientes.map((c) => (
+          <TableRow
+            key={c.id}
+            selected={selectedId === c.id}
+            onClick={() => setSelectedId(c.id)}
+            className="cursor-pointer"
+          >
+            <TableCell>{c.nombre}</TableCell>
+            <TableCell>{c.email}</TableCell>
+            <TableCell>
+              <Badge variant={estadoVariant[c.estado as Estado]}>{c.estado}</Badge>
+            </TableCell>
+            <TableCell align="right">{c.monto}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
+
+export const WithSelection: Story = {
+  args: { children: '' },
+  render: () => <WithSelectionStory />,
+};

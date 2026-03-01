@@ -66,18 +66,19 @@ export const TableBody: React.FC<TableBodyProps> = ({ className, children, ...pr
 // ─── TableRow ────────────────────────────────────────────────────────────────
 
 export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+  selected?: boolean;
   children: React.ReactNode;
 }
 
-export const TableRow: React.FC<TableRowProps> = ({ className, children, ...props }) => {
+export const TableRow: React.FC<TableRowProps> = ({ selected = false, className, children, ...props }) => {
   const { striped } = useContext(TableContext);
 
   return (
     <tr
       className={cn(
         'border-t border-interaction-tertiary-default transition-colors first:border-t-0',
-        'hover:bg-interaction-tertiary-default/50',
-        striped && 'even:bg-interaction-tertiary-default/30',
+        selected ? 'bg-interaction-selected' : 'hover:bg-interaction-tertiary-default/50',
+        !selected && striped && 'even:bg-interaction-tertiary-default/30',
         className
       )}
       {...props}
