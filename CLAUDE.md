@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Install dependencies (requires pnpm 9.15.9+)
+# Install dependencies (requires Node >=20 and pnpm 9.15.9+)
 pnpm install
 
 # Build order matters — shared-utils must build before ui-components
@@ -19,6 +19,7 @@ pnpm --filter @bip/ui-components build-storybook
 # Lint & test (scoped)
 pnpm --filter @bip/ui-components lint
 pnpm --filter @bip/shared-utils test
+pnpm --filter @bip/ui-components test   # component tests (vitest + happy-dom)
 
 # All packages at once
 pnpm build
@@ -38,7 +39,7 @@ PRs always go: `feature/xxx → dev → qa → main`. Hotfixes branch from `main
 
 **pnpm workspaces monorepo:**
 
-- `packages/ui-components` — React component library. Main deliverable. Builds to `dist/index.{es,umd}.js` + types.
+- `packages/ui-components` — React component library. Main deliverable. Builds to `dist/` with one file per component (ES only, `preserveModules: true`) + individual `.d.ts` files. Entry: `dist/index.js`.
 - `packages/shared-utils` — Pure TypeScript utilities (formatting, validation). No runtime deps.
 
 ## Tailwind consumer setup
@@ -84,6 +85,16 @@ Pure TypeScript utilities — no runtime dependencies.
 
 **Build note:** `tsconfig.json` excludes `**/*.test.ts` from compilation so test files never appear in `dist/`. Do not remove this exclude.
 
+## Component testing (`packages/ui-components`)
+
+Test files live alongside components: `ComponentName.test.tsx`. Configured with:
+- **vitest** + **happy-dom** (ESM-native DOM — do not switch to jsdom@28, it has ESM incompatibility)
+- **@testing-library/react** + **@testing-library/user-event** + **@testing-library/jest-dom**
+- `vitest.config.ts` at package root — sets `globals: true`, `environment: 'happy-dom'`, `setupFiles: ['./src/test-setup.ts']`
+- `src/test-setup.ts` imports `@testing-library/jest-dom` to extend `expect`
+- `vite-plugin-dts` excludes `**/*.test.tsx` so test files never appear in `dist/`
+- `tsconfig.json` keeps test files **included** (no exclude) so the IDE resolves test imports correctly; `"types": ["vitest/globals", "@testing-library/jest-dom"]` provides global types
+
 ## CI/CD
 
 Four workflows, one per environment:
@@ -97,7 +108,7 @@ Four workflows, one per environment:
 
 **Rules:**
 - All workflows use `pnpm install --frozen-lockfile` — never use `--no-frozen-lockfile` in CI.
-- Tests (`pnpm --filter @bip/shared-utils test`) always run **before** build (fail-fast).
+- Tests for **both** packages always run **before** build (fail-fast): `pnpm --filter @bip/shared-utils test` then `pnpm --filter @bip/ui-components test`.
 - Build order in every pipeline: `shared-utils → ui-components`.
 
 ## Component Patterns (`packages/ui-components`)
@@ -212,7 +223,7 @@ feedback-info-{light|subtle|text}                    → #EFF6FF / #DBEAFE / #1D
 ### Accessibility requirements
 
 **Form components** must include:
-- `aria-invalid={error || undefined}` (not `aria-invalid="false"`)
+- `aria-invalid={error || undefined}` (not `aria-invalid="false"`) — **only on native `<input>`, `<textarea>`, `<select>`**. Do NOT add `aria-invalid` to elements with `role="radio"` or `role="checkbox"` — it is not a valid ARIA property for those roles. Error state is communicated via `aria-describedby` → `role="alert"` span.
 - `aria-describedby={messageId}` linked to helper/error span
 - `role="alert"` on error message spans
 - `htmlFor` / `id` pairing on labels

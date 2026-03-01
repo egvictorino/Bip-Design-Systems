@@ -26,7 +26,7 @@ jobs:
       
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       
       - uses: pnpm/action-setup@v4
         with:
@@ -42,13 +42,14 @@ jobs:
         run: pnpm --filter @bip/ui-components lint
       
       - name: Test
-        run: pnpm --filter @bip/shared-utils test
+        run: |
+          pnpm --filter @bip/shared-utils test
+          pnpm --filter @bip/ui-components test
 
-      - name: Type check
+      - name: Type check & build (validate)
         run: |
           pnpm --filter @bip/shared-utils build
           pnpm --filter @bip/ui-components build
-          pnpm exec tsc --noEmit -p packages/ui-components/tsconfig.json
 
   build-production:
     name: Build Production
@@ -60,7 +61,7 @@ jobs:
       
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       
       - uses: pnpm/action-setup@v4
         with:
@@ -102,7 +103,7 @@ jobs:
       
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       
       - uses: pnpm/action-setup@v4
         with:

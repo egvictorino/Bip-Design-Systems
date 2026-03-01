@@ -115,10 +115,12 @@ export const Modal: React.FC<ModalProps> = ({
 
   return ReactDOM.createPortal(
     <ModalContext.Provider value={{ titleId, onClose }}>
-      {/* Backdrop + centering container */}
+      {/* Backdrop + centering container — presentational, Escape handled at document level */}
       <div
+        role="presentation"
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
         onClick={handleBackdropClick}
+        onKeyDown={() => {}}
       >
         {/* Dialog */}
         <div
@@ -132,7 +134,6 @@ export const Modal: React.FC<ModalProps> = ({
             sizeStyles[size],
             className
           )}
-          onClick={(e) => e.stopPropagation()}
         >
           {children}
         </div>

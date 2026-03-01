@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "pnpm --filter @bip/ui-components storybook",
     "build": "pnpm --filter @bip/shared-utils build && pnpm --filter @bip/ui-components build",
-    "test": "pnpm --filter @bip/shared-utils test",
+    "test": "pnpm --filter @bip/shared-utils test && pnpm --filter @bip/ui-components test",
     "lint": "pnpm --recursive lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
@@ -17,13 +17,14 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.56.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.1.1",
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=20.0.0",
     "pnpm": ">=9.15.9"
   },
   "pnpm": {

@@ -22,7 +22,12 @@ const ColorSwatch = ({ name, value }: { name: string; value: string }) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 cursor-pointer group" onClick={handleCopy}>
+    <button
+      type="button"
+      className="flex flex-col items-center gap-2 cursor-pointer group bg-transparent border-0 p-0"
+      onClick={handleCopy}
+      aria-label={`Copiar color ${name}: ${value}`}
+    >
       <div
         className="w-24 h-24 rounded border border-gray-300 shadow-sm group-hover:shadow-lg transition-shadow"
         style={{ backgroundColor: value }}
@@ -31,7 +36,7 @@ const ColorSwatch = ({ name, value }: { name: string; value: string }) => {
         <p className="text-sm font-semibold text-text-primary">{name}</p>
         <p className="text-xs text-text-secondary">{copied ? 'Copied!' : value}</p>
       </div>
-    </div>
+    </button>
   );
 };
 

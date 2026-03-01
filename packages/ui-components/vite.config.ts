@@ -7,24 +7,26 @@ export default defineConfig({
   plugins: [
     react(),
     dts({
-      insertTypesEntry: true,
+      include: ['src'],
+      exclude: ['**/*.test.tsx', '**/*.test.ts'],
     }),
   ],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'BipUI',
-      formats: ['es', 'umd'],
-      fileName: (format) => `index.${format}.js`,
+      formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: ['react', 'react-dom', 'react/jsx-runtime', 'clsx', 'tailwind-merge'],
       output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
-          'react/jsx-runtime': 'react/jsx-runtime',
-        },
+        preserveModules: true,
+        preserveModulesRoot: 'src',
+        entryFileNames: '[name].js',
       },
     },
   },

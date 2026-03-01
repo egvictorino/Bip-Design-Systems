@@ -14,6 +14,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Path aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
     /* Linting */
     "allowJs": true,
     "strict": true,
@@ -21,10 +27,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Build */
-    "declaration": true,
-    "declarationDir": "./dist",
-    "outDir": "./dist"
+    /* Test types — vitest globals + jest-dom matchers */
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

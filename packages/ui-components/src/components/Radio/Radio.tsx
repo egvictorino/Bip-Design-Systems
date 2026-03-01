@@ -75,7 +75,6 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               id={radioId}
               type="radio"
               disabled={disabled}
-              aria-invalid={error || undefined}
               aria-describedby={messageId}
               className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
               {...props}

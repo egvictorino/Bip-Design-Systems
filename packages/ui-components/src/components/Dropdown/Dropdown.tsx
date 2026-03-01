@@ -173,6 +173,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
       role="menu"
       aria-orientation="vertical"
       aria-labelledby={triggerId}
+      tabIndex={-1}
       onKeyDown={handleKeyDown}
       className={cn(
         'absolute z-50 min-w-[160px] rounded-md border border-interaction-tertiary-default bg-white py-1 shadow-md',

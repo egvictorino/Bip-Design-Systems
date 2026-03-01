@@ -62,7 +62,7 @@ jobs:
       
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       
       - uses: pnpm/action-setup@v4
         with:
@@ -75,7 +75,9 @@ jobs:
         run: pnpm --filter @bip/ui-components lint
 
       - name: Test
-        run: pnpm --filter @bip/shared-utils test
+        run: |
+          pnpm --filter @bip/shared-utils test
+          pnpm --filter @bip/ui-components test
 
       - name: Build
         run: |
