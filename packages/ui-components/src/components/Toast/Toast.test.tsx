@@ -249,6 +249,39 @@ describe('ToastProvider / useToast', () => {
     expect(screen.getByRole('button', { name: 'Cerrar alerta' })).toBeInTheDocument();
   });
 
+  // ── Progress bar ─────────────────────────────────────────────────────────────
+
+  it('shows a progress bar when duration > 0', () => {
+    render(
+      <ToastProvider>
+        <TriggerButton message="Con progreso" duration={3000} />
+      </ToastProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar toast' }));
+    expect(screen.getByTestId('toast-progress-bar')).toBeInTheDocument();
+  });
+
+  it('does not show a progress bar for persistent toasts (duration: 0)', () => {
+    render(
+      <ToastProvider>
+        <TriggerButton message="Sin progreso" duration={0} />
+      </ToastProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar toast' }));
+    expect(screen.queryByTestId('toast-progress-bar')).not.toBeInTheDocument();
+  });
+
+  it('progress bar starts at 100% width', () => {
+    render(
+      <ToastProvider>
+        <TriggerButton message="Inicio" duration={5000} />
+      </ToastProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar toast' }));
+    const bar = screen.getByTestId('toast-progress-bar') as HTMLElement;
+    expect(bar.style.width).toBe('100%');
+  });
+
   // ── Max limit ───────────────────────────────────────────────────────────────
 
   it('respects max prop — oldest toast is removed when limit is exceeded', () => {

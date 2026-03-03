@@ -27,7 +27,7 @@ const variantStyles: Record<
     title: 'text-interaction-primary-default',
     body: 'text-feedback-info-text',
     close: 'text-interaction-primary-default hover:bg-feedback-info-subtle',
-    focusRing: 'focus:ring-interaction-primary-default',
+    focusRing: 'focus-visible:ring-interaction-primary-default',
   },
   success: {
     container:
@@ -35,7 +35,7 @@ const variantStyles: Record<
     title: 'text-feedback-success-text',
     body: 'text-feedback-success-text',
     close: 'text-feedback-success-default hover:bg-feedback-success-subtle',
-    focusRing: 'focus:ring-feedback-success-default',
+    focusRing: 'focus-visible:ring-feedback-success-default',
   },
   warning: {
     container:
@@ -43,14 +43,14 @@ const variantStyles: Record<
     title: 'text-feedback-warning-text',
     body: 'text-feedback-warning-text',
     close: 'text-feedback-warning-default hover:bg-feedback-warning-subtle',
-    focusRing: 'focus:ring-feedback-warning-default',
+    focusRing: 'focus-visible:ring-feedback-warning-default',
   },
   error: {
     container: 'bg-feedback-error-light border-feedback-error-default text-feedback-error-text',
     title: 'text-feedback-error-text',
     body: 'text-feedback-error-text',
     close: 'text-feedback-error-default hover:bg-feedback-error-subtle',
-    focusRing: 'focus:ring-feedback-error-default',
+    focusRing: 'focus-visible:ring-feedback-error-default',
   },
 };
 
@@ -127,7 +127,7 @@ export const Alert: React.FC<AlertProps> = ({
           aria-label="Cerrar alerta"
           className={cn(
             'shrink-0 self-start rounded p-0.5 transition-colors',
-            'focus:outline-none focus:ring-2 focus:ring-offset-1',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
             styles.close,
             styles.focusRing
           )}
