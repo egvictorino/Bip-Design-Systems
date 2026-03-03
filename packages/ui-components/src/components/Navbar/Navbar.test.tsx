@@ -168,4 +168,58 @@ describe('Navbar', () => {
     renderNavbar();
     expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeInTheDocument();
   });
+
+  it('disabled NavbarItem link has tabIndex={-1} to prevent keyboard focus', () => {
+    renderNavbar();
+    expect(screen.getByRole('link', { name: 'Reportes' })).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('NavbarItem without href renders a button element', () => {
+    render(
+      <Navbar>
+        <NavbarNav>
+          <NavbarItem>Inicio</NavbarItem>
+        </NavbarNav>
+      </Navbar>
+    );
+    expect(screen.getByRole('button', { name: 'Inicio' })).toBeInTheDocument();
+  });
+
+  it('active NavbarItem has the active background class', () => {
+    renderNavbar();
+    expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveClass(
+      'bg-interaction-tertiary-default'
+    );
+  });
+
+  it('clicking a NavbarItem button closes the mobile menu', async () => {
+    const user = userEvent.setup();
+    render(
+      <Navbar>
+        <NavbarNav>
+          <NavbarItem>Inicio</NavbarItem>
+        </NavbarNav>
+      </Navbar>
+    );
+    const toggle = screen.getByRole('button', { name: 'Abrir menú' });
+    await user.click(toggle);
+    const mobileMenuId = toggle.getAttribute('aria-controls') as string;
+    expect(document.getElementById(mobileMenuId)).toBeInTheDocument();
+
+    // NavbarNav renders items in both desktop and mobile lists — click any instance
+    await user.click(screen.getAllByRole('button', { name: 'Inicio' })[0]);
+    expect(document.getElementById(mobileMenuId)).not.toBeInTheDocument();
+  });
+
+  it('clicking NavbarBrand link closes the mobile menu', async () => {
+    const user = userEvent.setup();
+    renderNavbar();
+    const toggle = screen.getByRole('button', { name: 'Abrir menú' });
+    await user.click(toggle);
+    const mobileMenuId = toggle.getAttribute('aria-controls') as string;
+    expect(document.getElementById(mobileMenuId)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('link', { name: 'MiApp' }));
+    expect(document.getElementById(mobileMenuId)).not.toBeInTheDocument();
+  });
 });

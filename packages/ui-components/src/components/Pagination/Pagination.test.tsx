@@ -72,4 +72,41 @@ describe('Pagination', () => {
     expect(screen.getByRole('button', { name: 'Página 2' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Página 3' })).toBeInTheDocument();
   });
+
+  it('forwards className to the nav element', () => {
+    render(
+      <Pagination currentPage={1} totalPages={5} onPageChange={() => {}} className="custom-class" />
+    );
+    expect(screen.getByRole('navigation')).toHaveClass('custom-class');
+  });
+
+  it('active page button has the active background class', () => {
+    render(<Pagination currentPage={3} totalPages={5} onPageChange={() => {}} />);
+    expect(screen.getByRole('button', { name: 'Página 3' })).toHaveClass(
+      'bg-interaction-primary-default'
+    );
+  });
+
+  it('renders ellipsis on the right when current page is near the start', () => {
+    render(<Pagination currentPage={1} totalPages={20} onPageChange={() => {}} />);
+    expect(screen.getByRole('navigation').textContent).toContain('…');
+    // first and last pages are always present
+    expect(screen.getByRole('button', { name: 'Página 1' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Página 20' })).toBeInTheDocument();
+  });
+
+  it('renders ellipsis on the left when current page is near the end', () => {
+    render(<Pagination currentPage={20} totalPages={20} onPageChange={() => {}} />);
+    expect(screen.getByRole('navigation').textContent).toContain('…');
+    expect(screen.getByRole('button', { name: 'Página 1' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Página 20' })).toBeInTheDocument();
+  });
+
+  it('renders ellipsis on both sides when current page is in the middle', () => {
+    render(<Pagination currentPage={10} totalPages={20} onPageChange={() => {}} />);
+    const nav = screen.getByRole('navigation');
+    // two ellipsis characters
+    const matches = nav.textContent?.match(/…/g);
+    expect(matches?.length).toBe(2);
+  });
 });

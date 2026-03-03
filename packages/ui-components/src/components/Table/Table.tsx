@@ -105,7 +105,7 @@ export interface TableHeaderProps extends React.ThHTMLAttributes<HTMLTableCellEl
   children: React.ReactNode;
 }
 
-const alignStyles = {
+const alignStyles: Record<'left' | 'center' | 'right', string> = {
   left: 'text-left',
   center: 'text-center',
   right: 'text-right',

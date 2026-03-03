@@ -20,47 +20,51 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   options: SelectOption[];
 }
 
-const sizes = {
-  sm: 'px-[12px] py-[6px] text-sm',
-  md: 'px-[20px] py-[10px] text-[12px]',
+// ─── Static maps ──────────────────────────────────────────────────────────────
+
+const sizes: Record<NonNullable<SelectProps['size']>, string> = {
+  sm: 'px-[12px] py-[6px] text-xs',
+  md: 'px-[20px] py-[10px] text-sm',
   lg: 'px-[24px] py-[12px] text-lg',
 };
 
-const labelSizeStyles = {
+const labelSizeStyles: Record<NonNullable<SelectProps['size']>, string> = {
   sm: 'text-xs',
   md: 'text-sm',
   lg: 'text-base',
 };
 
-const helperSizeStyles = {
-  sm: 'text-[10px]',
+const helperSizeStyles: Record<NonNullable<SelectProps['size']>, string> = {
+  sm: 'text-xs',
   md: 'text-xs',
   lg: 'text-sm',
 };
 
 const baseStyles =
-  'appearance-none rounded-[1px] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 pr-8';
+  'appearance-none rounded-[1px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 pr-8';
 
-const getVariantStyles = (error: boolean) => ({
+const getVariantStyles = (error: boolean): Record<NonNullable<SelectProps['variant']>, string> => ({
   outlined: cn(
     'border bg-interaction-field',
     error
-      ? 'border-feedback-error-default focus:ring-feedback-error-default'
-      : 'border-interaction-primary-default focus:ring-interaction-primary-default hover:border-interaction-primary-hover'
+      ? 'border-feedback-error-default focus-visible:ring-feedback-error-default'
+      : 'border-interaction-primary-default focus-visible:ring-interaction-primary-default hover:border-interaction-primary-hover'
   ),
   filled: cn(
     'border-0',
     error
-      ? 'bg-feedback-error-light focus:ring-feedback-error-default'
-      : 'bg-interaction-secondary-default focus:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
+      ? 'bg-feedback-error-light focus-visible:ring-feedback-error-default'
+      : 'bg-interaction-secondary-default focus-visible:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
   ),
   bare: cn(
     'border-0 border-b-2 bg-transparent rounded-none',
     error
-      ? 'border-b-feedback-error-default focus:ring-0'
-      : 'border-b-interaction-primary-default focus:ring-0 focus:border-b-interaction-primary-hover hover:border-b-interaction-primary-hover'
+      ? 'border-b-feedback-error-default focus-visible:ring-0'
+      : 'border-b-interaction-primary-default focus-visible:ring-0 focus-visible:border-b-interaction-primary-hover hover:border-b-interaction-primary-hover'
   ),
 });
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
@@ -77,6 +81,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       className,
       disabled = false,
       id,
+      onFocus,
+      onBlur,
       ...props
     },
     ref
@@ -84,9 +90,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const [focused, setFocused] = useState(false);
     const generatedId = useId();
 
-    const selectId = id || (label ? generatedId : undefined);
+    // Always fall back to generatedId so aria-describedby linkage works
+    // even when no label or explicit id is provided
+    const selectId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
-    const messageId = hasMessage && selectId ? `${selectId}-message` : undefined;
+    const messageId = hasMessage ? `${selectId}-message` : undefined;
 
     const variantStyles = getVariantStyles(error);
     const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
@@ -128,15 +136,18 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               fullWidth && 'w-full',
               className
             )}
+            // Spread props before internal handlers so internal handlers always
+            // run last — prevents consumer's onFocus/onBlur from overriding the
+            // focused state management
+            {...props}
             onFocus={(e) => {
               setFocused(true);
-              props.onFocus?.(e);
+              onFocus?.(e);
             }}
             onBlur={(e) => {
               setFocused(false);
-              props.onBlur?.(e);
+              onBlur?.(e);
             }}
-            {...props}
           >
             {placeholder && (
               <option value="" disabled>
@@ -163,11 +174,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             )}
             aria-hidden="true"
           >
-            <svg
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="w-4 h-4"
-            >
+            <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
               <path
                 fillRule="evenodd"
                 d="M4.22 6.22a.75.75 0 011.06 0L8 8.94l2.72-2.72a.75.75 0 111.06 1.06l-3.25 3.25a.75.75 0 01-1.06 0L4.22 7.28a.75.75 0 010-1.06z"

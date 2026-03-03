@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 
@@ -10,13 +10,22 @@ export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   errorMessage?: string;
 }
 
-const sizes = {
+type SizeTokens = {
+  track: string;
+  thumb: string;
+  translate: string;
+  label: string;
+  helper: string;
+  indent: string;
+};
+
+const sizes: Record<NonNullable<ToggleProps['size']>, SizeTokens> = {
   sm: {
     track: 'w-8 h-4',
     thumb: 'w-3 h-3',
     translate: 'group-has-[:checked]:translate-x-4',
     label: 'text-xs',
-    helper: 'text-[10px]',
+    helper: 'text-xs',
     indent: 'ml-10',
   },
   md: {
@@ -52,10 +61,12 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
     },
     ref
   ) => {
-    const toggleId =
-      id || (label ? `toggle-${label.replace(/\s+/g, '-').toLowerCase()}` : undefined);
+    const generatedId = useId();
+    // Always fall back to generatedId so aria-describedby linkage works
+    // even when no label or explicit id is provided
+    const toggleId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
-    const messageId = hasMessage && toggleId ? `${toggleId}-message` : undefined;
+    const messageId = hasMessage ? `${toggleId}-message` : undefined;
 
     return (
       <div className={cn('flex flex-col gap-1', className)}>

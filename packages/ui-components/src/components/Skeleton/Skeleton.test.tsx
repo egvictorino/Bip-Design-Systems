@@ -38,4 +38,19 @@ describe('Skeleton', () => {
     const { container } = render(<Skeleton className="custom" />);
     expect(container.firstChild).toHaveClass('custom');
   });
+
+  it('circle variant has rounded-full class', () => {
+    const { container } = render(<Skeleton variant="circle" />);
+    expect(container.firstChild).toHaveClass('rounded-full');
+  });
+
+  it('rect variant has rounded-md class', () => {
+    const { container } = render(<Skeleton variant="rect" />);
+    expect(container.firstChild).toHaveClass('rounded-md');
+  });
+
+  it('has animate-pulse class (loading animation)', () => {
+    const { container } = render(<Skeleton />);
+    expect(container.firstChild).toHaveClass('animate-pulse');
+  });
 });

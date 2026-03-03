@@ -224,4 +224,40 @@ describe('Sidebar', () => {
     const link = screen.getByRole('link', { name: 'MyApp' });
     expect(link).toHaveAttribute('href', '/home');
   });
+
+  it('throws when sub-components are used outside <Sidebar>', () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(() => render(<SidebarTrigger />)).toThrow();
+    consoleError.mockRestore();
+  });
+
+  it('aside has w-60 class when expanded', () => {
+    render(<DefaultSidebar />);
+    const aside = screen.getByRole('complementary', { name: 'Navegación lateral' });
+    expect(aside.className).toMatch(/w-60/);
+  });
+
+  it('aside has w-16 class when collapsed', () => {
+    render(<DefaultSidebar defaultCollapsed />);
+    const aside = screen.getByRole('complementary', { name: 'Navegación lateral' });
+    expect(aside.className).toMatch(/w-16/);
+  });
+
+  it('Sidebar forwards className to the aside panel', () => {
+    render(<DefaultSidebar />);
+    // DefaultSidebar doesn't pass className, verify the aside exists
+    // Render directly with className
+    render(
+      <Sidebar className="my-sidebar">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem>Item</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    const asides = screen.getAllByRole('complementary', { name: 'Navegación lateral' });
+    // The second aside (last rendered) has the className
+    expect(asides[asides.length - 1].className).toMatch(/my-sidebar/);
+  });
 });

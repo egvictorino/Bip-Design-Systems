@@ -140,6 +140,32 @@ describe('Tabs', () => {
     expect(screen.getByRole('tab', { name: 'T1' })).toHaveAttribute('aria-selected', 'false');
   });
 
+  it('Home key moves focus to the first enabled tab', () => {
+    render(<DefaultTabs defaultValue="tab2" />);
+    const tab1 = screen.getByRole('tab', { name: 'Pestaña 1' });
+    const tab2 = screen.getByRole('tab', { name: 'Pestaña 2' });
+    tab2.focus();
+    fireEvent.keyDown(tab2, { key: 'Home' });
+    expect(document.activeElement).toBe(tab1);
+  });
+
+  it('End key moves focus to the last enabled tab', () => {
+    render(<DefaultTabs />);
+    const tab1 = screen.getByRole('tab', { name: 'Pestaña 1' });
+    // tab3 is disabled so last enabled is tab2
+    const tab2 = screen.getByRole('tab', { name: 'Pestaña 2' });
+    tab1.focus();
+    fireEvent.keyDown(tab1, { key: 'End' });
+    expect(document.activeElement).toBe(tab2);
+  });
+
+  it('disabled tab is not focusable via tabIndex', () => {
+    render(<DefaultTabs />);
+    const tab3 = screen.getByRole('tab', { name: 'Pestaña 3' });
+    expect(tab3).toBeDisabled();
+    expect(tab3).toHaveAttribute('tabindex', '-1');
+  });
+
   it('throws when sub-components are used outside <Tabs>', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(() => render(<TabList><Tab value="x">X</Tab></TabList>)).toThrow();

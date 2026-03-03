@@ -191,4 +191,120 @@ describe('Table', () => {
     expect(() => render(<TableRow><TableCell>X</TableCell></TableRow>)).toThrow();
     consoleError.mockRestore();
   });
+
+  it('compact mode applies smaller padding to header and cell', () => {
+    const { container } = render(
+      <Table compact>
+        <TableHead>
+          <TableRow>
+            <TableHeader>Nombre</TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>Juan</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    const th = container.querySelector('th')!;
+    const td = container.querySelector('td')!;
+    expect(th.className).toMatch(/px-3/);
+    expect(th.className).toMatch(/py-2/);
+    expect(td.className).toMatch(/px-3/);
+    expect(td.className).toMatch(/py-2/);
+  });
+
+  it('non-compact mode applies larger padding to header and cell', () => {
+    const { container } = render(
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableHeader>Nombre</TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>Juan</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    const th = container.querySelector('th')!;
+    const td = container.querySelector('td')!;
+    expect(th.className).toMatch(/px-4/);
+    expect(th.className).toMatch(/py-3/);
+    expect(td.className).toMatch(/px-4/);
+    expect(td.className).toMatch(/py-3/);
+  });
+
+  it('striped mode applies even-row background class', () => {
+    const { container } = render(
+      <Table striped>
+        <TableBody>
+          <TableRow>
+            <TableCell>Fila 1</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Fila 2</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    const rows = container.querySelectorAll('tbody tr');
+    // Both rows should carry the even: stripe class
+    rows.forEach((row) => {
+      expect(row.className).toMatch(/even:/);
+    });
+  });
+
+  it('TableHeader align="center" applies text-center class', () => {
+    const { container } = render(
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableHeader align="center">Centro</TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody />
+      </Table>
+    );
+    expect(container.querySelector('th')).toHaveClass('text-center');
+  });
+
+  it('TableHeader align="right" applies text-right class', () => {
+    const { container } = render(
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableHeader align="right">Derecha</TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody />
+      </Table>
+    );
+    expect(container.querySelector('th')).toHaveClass('text-right');
+  });
+
+  it('TableCell align="center" applies text-center class', () => {
+    const { container } = render(
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell align="center">Centro</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    expect(container.querySelector('td')).toHaveClass('text-center');
+  });
+
+  it('Table forwards className to the wrapper div', () => {
+    const { container } = render(
+      <Table className="my-custom-class">
+        <TableBody />
+      </Table>
+    );
+    expect(container.firstChild).toHaveClass('my-custom-class');
+  });
 });

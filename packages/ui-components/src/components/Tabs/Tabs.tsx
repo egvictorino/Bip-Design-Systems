@@ -23,7 +23,7 @@ const useTabsContext = (): TabsContextValue => {
 const getTabClasses = (variant: 'line' | 'pill', isActive: boolean) =>
   cn(
     'text-sm font-medium whitespace-nowrap transition-colors',
-    'focus:outline-none focus:ring-2 focus:ring-interaction-primary-default focus:ring-offset-1',
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-offset-1',
     'disabled:opacity-40 disabled:cursor-not-allowed',
     variant === 'line' && 'px-4 py-2 -mb-px border-b-2',
     variant === 'line' && isActive && 'border-interaction-primary-default',

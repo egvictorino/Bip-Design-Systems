@@ -191,6 +191,64 @@ describe('ToastProvider / useToast', () => {
     expect(screen.getByText('Persistente')).toBeInTheDocument();
   });
 
+  // ── Multiple toasts ─────────────────────────────────────────────────────────
+
+  it('multiple toasts are all visible simultaneously', () => {
+    const MultiTrigger = () => {
+      const { addToast } = useToast();
+      return (
+        <>
+          <button onClick={() => addToast({ message: 'Primero', duration: 0 })}>T1</button>
+          <button onClick={() => addToast({ message: 'Segundo', duration: 0 })}>T2</button>
+        </>
+      );
+    };
+
+    render(
+      <ToastProvider>
+        <MultiTrigger />
+      </ToastProvider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'T1' }));
+    fireEvent.click(screen.getByRole('button', { name: 'T2' }));
+
+    expect(screen.getByText('Primero')).toBeInTheDocument();
+    expect(screen.getByText('Segundo')).toBeInTheDocument();
+  });
+
+  it('toast without explicit variant defaults to info (role="status")', () => {
+    const DefaultVariantTrigger = () => {
+      const { addToast } = useToast();
+      return (
+        <button onClick={() => addToast({ message: 'Sin variante', duration: 0 })}>
+          Agregar
+        </button>
+      );
+    };
+
+    render(
+      <ToastProvider>
+        <DefaultVariantTrigger />
+      </ToastProvider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar' }));
+    // Default variant → Alert renders with role="status"
+    expect(screen.getByRole('status')).toBeInTheDocument();
+  });
+
+  it('each toast has a visible close button', () => {
+    render(
+      <ToastProvider>
+        <TriggerButton message="Con botón de cierre" />
+      </ToastProvider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar toast' }));
+    expect(screen.getByRole('button', { name: 'Cerrar alerta' })).toBeInTheDocument();
+  });
+
   // ── Max limit ───────────────────────────────────────────────────────────────
 
   it('respects max prop — oldest toast is removed when limit is exceeded', () => {
