@@ -57,7 +57,7 @@ export const TableHead: React.FC<TableHeadProps> = ({ className, children, ...pr
 // ─── TableBody ───────────────────────────────────────────────────────────────
 
 export interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const TableBody: React.FC<TableBodyProps> = ({ className, children, ...props }) => (
@@ -105,7 +105,7 @@ export interface TableHeaderProps extends React.ThHTMLAttributes<HTMLTableCellEl
   children: React.ReactNode;
 }
 
-const alignStyles = {
+const alignStyles: Record<'left' | 'center' | 'right', string> = {
   left: 'text-left',
   center: 'text-center',
   right: 'text-right',

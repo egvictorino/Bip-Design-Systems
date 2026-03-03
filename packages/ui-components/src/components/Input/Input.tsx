@@ -15,47 +15,51 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   fullWidth?: boolean;
 }
 
-const sizes = {
-  sm: 'px-[12px] py-[6px] text-sm',
-  md: 'px-[20px] py-[10px] text-[12px]',
+// ─── Static maps ──────────────────────────────────────────────────────────────
+
+const sizes: Record<NonNullable<InputProps['size']>, string> = {
+  sm: 'px-[12px] py-[6px] text-xs',
+  md: 'px-[20px] py-[10px] text-sm',
   lg: 'px-[24px] py-[12px] text-lg',
 };
 
-const labelSizeStyles = {
+const labelSizeStyles: Record<NonNullable<InputProps['size']>, string> = {
   sm: 'text-xs',
   md: 'text-sm',
   lg: 'text-base',
 };
 
-const helperSizeStyles = {
-  sm: 'text-[10px]',
+const helperSizeStyles: Record<NonNullable<InputProps['size']>, string> = {
+  sm: 'text-xs',
   md: 'text-xs',
   lg: 'text-sm',
 };
 
 const baseStyles =
-  'rounded-[1px] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+  'rounded-[1px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
 
-const getVariantStyles = (error: boolean) => ({
+const getVariantStyles = (error: boolean): Record<NonNullable<InputProps['variant']>, string> => ({
   outlined: cn(
     'border bg-interaction-field',
     error
-      ? 'border-feedback-error-default focus:ring-feedback-error-default'
-      : 'border-interaction-primary-default focus:ring-interaction-primary-default hover:border-interaction-primary-hover'
+      ? 'border-feedback-error-default focus-visible:ring-feedback-error-default'
+      : 'border-interaction-primary-default focus-visible:ring-interaction-primary-default hover:border-interaction-primary-hover'
   ),
   filled: cn(
     'border-0',
     error
-      ? 'bg-feedback-error-light focus:ring-feedback-error-default'
-      : 'bg-interaction-secondary-default focus:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
+      ? 'bg-feedback-error-light focus-visible:ring-feedback-error-default'
+      : 'bg-interaction-secondary-default focus-visible:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
   ),
   bare: cn(
     'border-0 border-b-2 bg-transparent rounded-none',
     error
-      ? 'border-b-feedback-error-default focus:ring-0'
-      : 'border-b-interaction-primary-default focus:ring-0 focus:border-b-interaction-primary-hover hover:border-b-interaction-primary-hover'
+      ? 'border-b-feedback-error-default focus-visible:ring-0'
+      : 'border-b-interaction-primary-default focus-visible:ring-0 focus-visible:border-b-interaction-primary-hover hover:border-b-interaction-primary-hover'
   ),
 });
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -71,6 +75,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       className,
       disabled = false,
       id,
+      onFocus,
+      onBlur,
       ...props
     },
     ref
@@ -78,12 +84,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const [focused, setFocused] = useState(false);
     const generatedId = useId();
 
-    const inputId = id || (label ? generatedId : undefined);
+    // Always fall back to generatedId so aria-describedby linkage works
+    // even when no label or explicit id is provided
+    const inputId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
-    const messageId = hasMessage && inputId ? `${inputId}-message` : undefined;
+    const messageId = hasMessage ? `${inputId}-message` : undefined;
 
     const variantStyles = getVariantStyles(error);
-
     const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-text';
 
     return (
@@ -121,15 +128,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             fullWidth && 'w-full',
             className
           )}
+          // Spread props before internal handlers so internal handlers always
+          // run last — prevents consumer's onFocus/onBlur from overriding the
+          // focused state management
+          {...props}
           onFocus={(e) => {
             setFocused(true);
-            props.onFocus?.(e);
+            onFocus?.(e);
           }}
           onBlur={(e) => {
             setFocused(false);
-            props.onBlur?.(e);
+            onBlur?.(e);
           }}
-          {...props}
         />
         {error && errorMessage ? (
           <span

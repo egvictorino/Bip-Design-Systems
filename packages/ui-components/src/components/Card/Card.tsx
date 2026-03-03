@@ -7,19 +7,6 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-const variantStyles = {
-  elevated: 'bg-white shadow-md',
-  outlined: 'bg-white border border-interaction-tertiary-default',
-  flat: 'bg-interaction-tertiary-default',
-};
-
-const paddingStyles = {
-  none: '',
-  sm: 'p-3',
-  md: 'p-5',
-  lg: 'p-7',
-};
-
 export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
@@ -31,6 +18,23 @@ export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
 export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
+
+// ─── Static maps ──────────────────────────────────────────────────────────────
+
+const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
+  elevated: 'bg-white shadow-md',
+  outlined: 'bg-white border border-interaction-tertiary-default',
+  flat: 'bg-interaction-tertiary-default',
+};
+
+const paddingStyles: Record<NonNullable<CardProps['padding']>, string> = {
+  none: '',
+  sm: 'p-3',
+  md: 'p-5',
+  lg: 'p-7',
+};
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ className, children, ...props }) => (
   <div
@@ -56,27 +60,27 @@ export const CardFooter: React.FC<CardFooterProps> = ({ className, children, ...
   </div>
 );
 
+// ─── Root ─────────────────────────────────────────────────────────────────────
+
 export const Card: React.FC<CardProps> = ({
   variant = 'elevated',
   padding = 'none',
   className,
   children,
   ...props
-}) => {
-  return (
-    <div
-      className={cn(
-        'rounded-lg overflow-hidden',
-        variantStyles[variant],
-        paddingStyles[padding],
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
+}) => (
+  <div
+    className={cn(
+      'rounded-lg overflow-hidden',
+      variantStyles[variant],
+      paddingStyles[padding],
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 Card.displayName = 'Card';
 CardHeader.displayName = 'CardHeader';

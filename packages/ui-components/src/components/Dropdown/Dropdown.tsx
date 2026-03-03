@@ -130,7 +130,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
   placement = 'bottom-start',
   className,
 }) => {
-  const { isOpen, menuId, triggerId } = useDropdown();
+  const { isOpen, menuId, triggerId, close } = useDropdown();
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Focus first item when menu opens
@@ -161,6 +161,9 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
     } else if (e.key === 'End') {
       e.preventDefault();
       items[items.length - 1]?.focus();
+    } else if (e.key === 'Tab') {
+      // WAI-ARIA Menu Button: Tab closes the menu and lets focus move naturally
+      close();
     }
   };
 

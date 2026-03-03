@@ -11,7 +11,7 @@ const ModalContext = createContext<ModalContextValue | null>(null);
 
 const useModalContext = (): ModalContextValue => {
   const ctx = useContext(ModalContext);
-  if (!ctx) throw new Error('ModalHeader, ModalBody, and ModalFooter must be used inside <Modal>');
+  if (!ctx) throw new Error('<ModalHeader> must be used inside <Modal>');
   return ctx;
 };
 
@@ -24,7 +24,7 @@ export interface ModalProps {
   children: React.ReactNode;
 }
 
-const sizeStyles = {
+const sizeStyles: Record<NonNullable<ModalProps['size']>, string> = {
   sm: 'max-w-sm',
   md: 'max-w-md',
   lg: 'max-w-lg',
@@ -170,7 +170,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, .
         className={cn(
           'shrink-0 rounded p-1 text-text-secondary transition-colors',
           'hover:bg-interaction-tertiary-default hover:text-text-primary',
-          'focus:outline-none focus:ring-2 focus:ring-interaction-primary-default focus:ring-offset-1'
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-offset-1'
         )}
       >
         <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5" aria-hidden="true">

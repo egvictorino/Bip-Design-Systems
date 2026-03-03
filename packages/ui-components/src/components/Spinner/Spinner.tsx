@@ -7,13 +7,13 @@ export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
   label?: string;
 }
 
-const sizeStyles = {
+const sizeStyles: Record<NonNullable<SpinnerProps['size']>, string> = {
   sm: 'w-4 h-4',
   md: 'w-6 h-6',
   lg: 'w-8 h-8',
 };
 
-const variantStyles = {
+const variantStyles: Record<NonNullable<SpinnerProps['variant']>, string> = {
   primary: 'text-interaction-primary-default',
   secondary: 'text-interaction-secondary-default',
   white: 'text-text-white',

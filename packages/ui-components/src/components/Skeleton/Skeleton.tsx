@@ -7,7 +7,7 @@ export interface SkeletonProps {
   className?: string;
 }
 
-const variantStyles = {
+const variantStyles: Record<NonNullable<SkeletonProps['variant']>, string> = {
   text: 'h-4 w-full rounded-sm',
   circle: 'h-10 w-10 rounded-full shrink-0',
   rect: 'h-32 w-full rounded-md',

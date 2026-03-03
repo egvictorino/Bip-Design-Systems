@@ -10,12 +10,14 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
   errorMessage?: string;
 }
 
-const sizes = {
+type SizeTokens = { box: string; check: string; label: string; helper: string; indent: string };
+
+const sizes: Record<NonNullable<CheckboxProps['size']>, SizeTokens> = {
   sm: {
     box: 'w-3.5 h-3.5',
     check: 'w-2 h-2',
     label: 'text-xs',
-    helper: 'text-[10px]',
+    helper: 'text-xs',
     indent: 'ml-[22px]',
   },
   md: {
@@ -50,9 +52,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     ref
   ) => {
     const generatedId = useId();
-    const checkboxId = id || (label ? generatedId : undefined);
+    // Always fall back to generatedId so aria-describedby linkage works
+    // even when no label or explicit id is provided
+    const checkboxId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
-    const messageId = hasMessage && checkboxId ? `${checkboxId}-message` : undefined;
+    const messageId = hasMessage ? `${checkboxId}-message` : undefined;
 
     return (
       <div className={cn('flex flex-col gap-1', className)}>
