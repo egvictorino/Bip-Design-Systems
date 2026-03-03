@@ -3,10 +3,74 @@ import { describe, it, expect } from 'vitest';
 import { Card, CardHeader, CardBody, CardFooter } from './Card';
 
 describe('Card', () => {
+  // ── Root rendering ─────────────────────────────────────────────────────────
+
   it('renders children', () => {
     render(<Card>Contenido de la tarjeta</Card>);
     expect(screen.getByText('Contenido de la tarjeta')).toBeInTheDocument();
   });
+
+  it('spreads additional props to the root div', () => {
+    render(<Card data-testid="my-card">Contenido</Card>);
+    expect(screen.getByTestId('my-card')).toBeInTheDocument();
+  });
+
+  it('accepts role and aria-label for semantic regions', () => {
+    render(
+      <Card role="region" aria-label="Resumen de pedido">
+        Contenido
+      </Card>
+    );
+    expect(screen.getByRole('region', { name: 'Resumen de pedido' })).toBeInTheDocument();
+  });
+
+  it('always has rounded-lg and overflow-hidden base classes', () => {
+    const { container } = render(<Card>Contenido</Card>);
+    expect(container.firstChild).toHaveClass('rounded-lg', 'overflow-hidden');
+  });
+
+  it('accepts a custom className without losing base classes', () => {
+    const { container } = render(<Card className="mt-6">Contenido</Card>);
+    expect(container.firstChild).toHaveClass('mt-6', 'rounded-lg');
+  });
+
+  // ── Variants ───────────────────────────────────────────────────────────────
+
+  it('defaults to elevated variant', () => {
+    const { container } = render(<Card>Contenido</Card>);
+    expect(container.firstChild).toHaveClass('shadow-md', 'bg-white');
+  });
+
+  it.each([
+    ['elevated', 'shadow-md'],
+    ['outlined', 'border'],
+    ['flat', 'bg-interaction-tertiary-default'],
+  ] as const)('variant %s applies correct class', (variant, cls) => {
+    const { container } = render(<Card variant={variant}>Contenido</Card>);
+    expect(container.firstChild).toHaveClass(cls);
+  });
+
+  // ── Padding ────────────────────────────────────────────────────────────────
+
+  it('defaults to padding none (no padding class)', () => {
+    const { container } = render(<Card>Contenido</Card>);
+    // p-3, p-5, p-7 should NOT be present
+    const el = container.firstChild as HTMLElement;
+    expect(el).not.toHaveClass('p-3');
+    expect(el).not.toHaveClass('p-5');
+    expect(el).not.toHaveClass('p-7');
+  });
+
+  it.each([
+    ['sm', 'p-3'],
+    ['md', 'p-5'],
+    ['lg', 'p-7'],
+  ] as const)('padding %s applies correct class', (padding, cls) => {
+    const { container } = render(<Card padding={padding}>Contenido</Card>);
+    expect(container.firstChild).toHaveClass(cls);
+  });
+
+  // ── Sub-components: structure ──────────────────────────────────────────────
 
   it('renders all sub-components together', () => {
     render(
@@ -21,45 +85,81 @@ describe('Card', () => {
     expect(screen.getByText('Pie')).toBeInTheDocument();
   });
 
-  it('CardHeader renders children', () => {
+  // ── CardHeader ─────────────────────────────────────────────────────────────
+
+  it('CardHeader has bottom border', () => {
     render(
       <Card>
-        <CardHeader>Título de la tarjeta</CardHeader>
+        <CardHeader data-testid="header">Título</CardHeader>
       </Card>
     );
-    expect(screen.getByText('Título de la tarjeta')).toBeInTheDocument();
+    expect(screen.getByTestId('header')).toHaveClass('border-b');
   });
 
-  it('CardBody renders children', () => {
+  it('CardHeader applies horizontal and vertical padding', () => {
     render(
       <Card>
-        <CardBody>Texto del cuerpo</CardBody>
+        <CardHeader data-testid="header">Título</CardHeader>
       </Card>
     );
-    expect(screen.getByText('Texto del cuerpo')).toBeInTheDocument();
+    expect(screen.getByTestId('header')).toHaveClass('px-5', 'py-4');
   });
 
-  it('CardFooter renders children', () => {
+  it('CardHeader accepts custom className', () => {
     render(
       <Card>
-        <CardFooter>Acciones</CardFooter>
+        <CardHeader className="bg-red-50" data-testid="header">Título</CardHeader>
       </Card>
     );
-    expect(screen.getByText('Acciones')).toBeInTheDocument();
+    expect(screen.getByTestId('header')).toHaveClass('bg-red-50', 'border-b');
   });
 
-  it.each(['elevated', 'outlined', 'flat'] as const)('renders variant %s', (variant) => {
-    render(<Card variant={variant}>Contenido</Card>);
-    expect(screen.getByText('Contenido')).toBeInTheDocument();
+  // ── CardBody ───────────────────────────────────────────────────────────────
+
+  it('CardBody applies p-5 padding', () => {
+    render(
+      <Card>
+        <CardBody data-testid="body">Contenido</CardBody>
+      </Card>
+    );
+    expect(screen.getByTestId('body')).toHaveClass('p-5');
   });
 
-  it.each(['none', 'sm', 'md', 'lg'] as const)('renders padding %s', (padding) => {
-    render(<Card padding={padding}>Contenido</Card>);
-    expect(screen.getByText('Contenido')).toBeInTheDocument();
+  it('CardBody accepts custom className', () => {
+    render(
+      <Card>
+        <CardBody className="text-sm" data-testid="body">Contenido</CardBody>
+      </Card>
+    );
+    expect(screen.getByTestId('body')).toHaveClass('text-sm', 'p-5');
   });
 
-  it('accepts a custom className', () => {
-    const { container } = render(<Card className="custom-card">Contenido</Card>);
-    expect(container.firstChild).toHaveClass('custom-card');
+  // ── CardFooter ─────────────────────────────────────────────────────────────
+
+  it('CardFooter has top border', () => {
+    render(
+      <Card>
+        <CardFooter data-testid="footer">Acciones</CardFooter>
+      </Card>
+    );
+    expect(screen.getByTestId('footer')).toHaveClass('border-t');
+  });
+
+  it('CardFooter applies horizontal and vertical padding', () => {
+    render(
+      <Card>
+        <CardFooter data-testid="footer">Acciones</CardFooter>
+      </Card>
+    );
+    expect(screen.getByTestId('footer')).toHaveClass('px-5', 'py-4');
+  });
+
+  it('CardFooter accepts custom className', () => {
+    render(
+      <Card>
+        <CardFooter className="justify-end flex" data-testid="footer">Acciones</CardFooter>
+      </Card>
+    );
+    expect(screen.getByTestId('footer')).toHaveClass('justify-end', 'border-t');
   });
 });
