@@ -57,7 +57,7 @@ export const TableHead: React.FC<TableHeadProps> = ({ className, children, ...pr
 // ─── TableBody ───────────────────────────────────────────────────────────────
 
 export interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const TableBody: React.FC<TableBodyProps> = ({ className, children, ...props }) => (

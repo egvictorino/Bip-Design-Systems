@@ -8,34 +8,53 @@ export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-const variantStyles = {
+// info/success → role="status" (aria-live="polite", no interrumpe al lector de pantalla)
+// warning/error → role="alert"  (aria-live="assertive", urgente)
+const variantRole: Record<NonNullable<AlertProps['variant']>, 'alert' | 'status'> = {
+  info: 'status',
+  success: 'status',
+  warning: 'alert',
+  error: 'alert',
+};
+
+const variantStyles: Record<
+  NonNullable<AlertProps['variant']>,
+  { container: string; title: string; body: string; close: string; focusRing: string }
+> = {
   info: {
-    container: 'bg-feedback-info-light border-interaction-primary-default text-interaction-primary-default',
+    container:
+      'bg-feedback-info-light border-interaction-primary-default text-interaction-primary-default',
     title: 'text-interaction-primary-default',
     body: 'text-feedback-info-text',
     close: 'text-interaction-primary-default hover:bg-feedback-info-subtle',
+    focusRing: 'focus:ring-interaction-primary-default',
   },
   success: {
-    container: 'bg-feedback-success-light border-feedback-success-default text-feedback-success-text',
+    container:
+      'bg-feedback-success-light border-feedback-success-default text-feedback-success-text',
     title: 'text-feedback-success-text',
     body: 'text-feedback-success-text',
     close: 'text-feedback-success-default hover:bg-feedback-success-subtle',
+    focusRing: 'focus:ring-feedback-success-default',
   },
   warning: {
-    container: 'bg-feedback-warning-light border-feedback-warning-default text-feedback-warning-text',
+    container:
+      'bg-feedback-warning-light border-feedback-warning-default text-feedback-warning-text',
     title: 'text-feedback-warning-text',
     body: 'text-feedback-warning-text',
     close: 'text-feedback-warning-default hover:bg-feedback-warning-subtle',
+    focusRing: 'focus:ring-feedback-warning-default',
   },
   error: {
     container: 'bg-feedback-error-light border-feedback-error-default text-feedback-error-text',
     title: 'text-feedback-error-text',
     body: 'text-feedback-error-text',
     close: 'text-feedback-error-default hover:bg-feedback-error-subtle',
+    focusRing: 'focus:ring-feedback-error-default',
   },
 };
 
-const icons: Record<AlertProps['variant'] & string, React.ReactNode> = {
+const icons: Record<NonNullable<AlertProps['variant']>, React.ReactNode> = {
   info: (
     <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 shrink-0" aria-hidden="true">
       <path
@@ -86,12 +105,8 @@ export const Alert: React.FC<AlertProps> = ({
 
   return (
     <div
-      role="alert"
-      className={cn(
-        'flex gap-3 rounded-[1px] border-l-4 p-4',
-        styles.container,
-        className
-      )}
+      role={variantRole[variant]}
+      className={cn('flex gap-3 rounded-[1px] border-l-4 p-4', styles.container, className)}
       {...props}
     >
       {/* Icon */}
@@ -99,21 +114,22 @@ export const Alert: React.FC<AlertProps> = ({
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        {title && (
-          <p className={cn('text-sm font-semibold', styles.title)}>{title}</p>
-        )}
-        <p className={cn('text-sm', title ? 'mt-1' : '', styles.body)}>{children}</p>
+        {title && <p className={cn('text-sm font-semibold', styles.title)}>{title}</p>}
+        {/* div instead of p to allow rich children (lists, links, etc.) without invalid HTML */}
+        <div className={cn('text-sm', title ? 'mt-1' : '', styles.body)}>{children}</div>
       </div>
 
-      {/* Close button */}
+      {/* Close button — self-start keeps it anchored to the top-right in multi-line alerts */}
       {onClose && (
         <button
           type="button"
           onClick={onClose}
           aria-label="Cerrar alerta"
           className={cn(
-            'shrink-0 rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-interaction-primary-default focus:ring-offset-1',
-            styles.close
+            'shrink-0 self-start rounded p-0.5 transition-colors',
+            'focus:outline-none focus:ring-2 focus:ring-offset-1',
+            styles.close,
+            styles.focusRing
           )}
         >
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden="true">
