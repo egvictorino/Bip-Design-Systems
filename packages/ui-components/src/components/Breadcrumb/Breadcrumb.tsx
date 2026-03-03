@@ -6,10 +6,9 @@ export interface BreadcrumbItem {
   href?: string;
 }
 
-export interface BreadcrumbProps {
+export interface BreadcrumbProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {
   items: BreadcrumbItem[];
   separator?: React.ReactNode;
-  className?: string;
 }
 
 const ChevronIcon = () => (
@@ -27,9 +26,15 @@ const ChevronIcon = () => (
   </svg>
 );
 
-export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, separator, className }) => {
+export const Breadcrumb: React.FC<BreadcrumbProps> = ({
+  items,
+  separator,
+  className,
+  ...props
+}) => {
   return (
-    <nav aria-label="Breadcrumb" className={className}>
+    // aria-label first so consumers can override it via ...props (e.g. for i18n)
+    <nav aria-label="Breadcrumb" {...props} className={className}>
       <ol className="flex flex-wrap items-center gap-1.5 text-sm">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
@@ -43,16 +48,20 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, separator, classN
                 >
                   {item.label}
                 </span>
-              ) : (
+              ) : item.href ? (
                 <a
-                  href={item.href ?? '#'}
+                  href={item.href}
                   className={cn(
-                    'text-text-secondary hover:text-text-primary transition-colors',
+                    'max-w-[200px] truncate text-text-secondary hover:text-text-primary transition-colors',
                     'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default rounded'
                   )}
                 >
                   {item.label}
                 </a>
+              ) : (
+                // No href on a non-current item: render as non-interactive span
+                // (an <a href="#"> would be a misleading dead link)
+                <span className="max-w-[200px] truncate text-text-secondary">{item.label}</span>
               )}
             </li>
           );
