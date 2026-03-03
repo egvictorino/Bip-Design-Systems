@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 import { cn } from '../../lib/cn';
 
 interface TableContextValue {
@@ -6,7 +6,13 @@ interface TableContextValue {
   compact: boolean;
 }
 
-const TableContext = React.createContext<TableContextValue>({ striped: false, compact: false });
+const TableContext = createContext<TableContextValue | null>(null);
+
+const useTableContext = (): TableContextValue => {
+  const ctx = useContext(TableContext);
+  if (!ctx) throw new Error('TableHead, TableBody, TableRow, TableHeader, and TableCell must be used inside <Table>');
+  return ctx;
+};
 
 // ─── Table ───────────────────────────────────────────────────────────────────
 
@@ -71,10 +77,11 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
 }
 
 export const TableRow: React.FC<TableRowProps> = ({ selected = false, className, children, ...props }) => {
-  const { striped } = useContext(TableContext);
+  const { striped } = useTableContext();
 
   return (
     <tr
+      aria-selected={selected || undefined}
       className={cn(
         'border-t border-interaction-tertiary-default transition-colors first:border-t-0',
         selected ? 'bg-interaction-selected' : 'hover:bg-interaction-tertiary-default/50',
@@ -140,7 +147,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   children,
   ...props
 }) => {
-  const { compact } = useContext(TableContext);
+  const { compact } = useTableContext();
   const padding = compact ? 'px-3 py-2' : 'px-4 py-3';
 
   const ariaSort = sortable
@@ -151,19 +158,29 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
         : 'none'
     : undefined;
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTableCellElement>) => {
+    if (sortable && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onSort?.();
+    }
+  };
+
   return (
     <th
       scope="col"
       aria-sort={ariaSort}
+      tabIndex={sortable ? 0 : undefined}
       className={cn(
         padding,
         'text-xs font-semibold uppercase tracking-wide whitespace-nowrap',
         'text-text-secondary',
         alignStyles[align],
-        sortable && 'cursor-pointer select-none hover:text-text-primary',
+        sortable &&
+          'cursor-pointer select-none hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-inset',
         className
       )}
       onClick={sortable ? onSort : undefined}
+      onKeyDown={handleKeyDown}
       {...props}
     >
       {sortable ? (
@@ -191,7 +208,7 @@ export const TableCell: React.FC<TableCellProps> = ({
   children,
   ...props
 }) => {
-  const { compact } = useContext(TableContext);
+  const { compact } = useTableContext();
   const padding = compact ? 'px-3 py-2' : 'px-4 py-3';
 
   return (
@@ -200,3 +217,10 @@ export const TableCell: React.FC<TableCellProps> = ({
     </td>
   );
 };
+
+Table.displayName = 'Table';
+TableHead.displayName = 'TableHead';
+TableBody.displayName = 'TableBody';
+TableRow.displayName = 'TableRow';
+TableHeader.displayName = 'TableHeader';
+TableCell.displayName = 'TableCell';

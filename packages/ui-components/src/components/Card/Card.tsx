@@ -77,3 +77,8 @@ export const Card: React.FC<CardProps> = ({
     </div>
   );
 };
+
+Card.displayName = 'Card';
+CardHeader.displayName = 'CardHeader';
+CardBody.displayName = 'CardBody';
+CardFooter.displayName = 'CardFooter';

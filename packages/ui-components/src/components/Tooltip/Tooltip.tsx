@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '../../lib/cn';
 
 export interface TooltipProps {
-  content: string;
+  content: React.ReactNode;
   position?: 'top' | 'bottom' | 'left' | 'right';
   children: React.ReactNode;
   className?: string;
@@ -65,3 +65,5 @@ export const Tooltip: React.FC<TooltipProps> = ({
     </span>
   );
 };
+
+Tooltip.displayName = 'Tooltip';

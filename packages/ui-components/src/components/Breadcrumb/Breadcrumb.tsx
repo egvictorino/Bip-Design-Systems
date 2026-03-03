@@ -61,3 +61,5 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, separator, classN
     </nav>
   );
 };
+
+Breadcrumb.displayName = 'Breadcrumb';

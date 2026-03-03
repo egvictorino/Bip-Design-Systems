@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useContext, useId, useCallback } from 'react';
+import React, { useEffect, useRef, useContext, useId, useCallback, createContext } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
 
@@ -7,10 +7,13 @@ interface ModalContextValue {
   onClose: () => void;
 }
 
-const ModalContext = React.createContext<ModalContextValue>({
-  titleId: '',
-  onClose: () => {},
-});
+const ModalContext = createContext<ModalContextValue | null>(null);
+
+const useModalContext = (): ModalContextValue => {
+  const ctx = useContext(ModalContext);
+  if (!ctx) throw new Error('ModalHeader, ModalBody, and ModalFooter must be used inside <Modal>');
+  return ctx;
+};
 
 export interface ModalProps {
   isOpen: boolean;
@@ -120,7 +123,6 @@ export const Modal: React.FC<ModalProps> = ({
         role="presentation"
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
         onClick={handleBackdropClick}
-        onKeyDown={() => {}}
       >
         {/* Dialog */}
         <div
@@ -148,7 +150,7 @@ export interface ModalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, ...props }) => {
-  const { titleId, onClose } = useContext(ModalContext);
+  const { titleId, onClose } = useModalContext();
 
   return (
     <div
@@ -205,3 +207,8 @@ export const ModalFooter: React.FC<ModalFooterProps> = ({ className, children, .
     {children}
   </div>
 );
+
+Modal.displayName = 'Modal';
+ModalHeader.displayName = 'ModalHeader';
+ModalBody.displayName = 'ModalBody';
+ModalFooter.displayName = 'ModalFooter';

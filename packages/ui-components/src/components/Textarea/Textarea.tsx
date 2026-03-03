@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useId, useState } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 
@@ -81,9 +81,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     ref
   ) => {
     const [focused, setFocused] = useState(false);
+    const generatedId = useId();
 
-    const textareaId =
-      id || (label ? `textarea-${label.replace(/\s+/g, '-').toLowerCase()}` : undefined);
+    const textareaId = id || (label ? generatedId : undefined);
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage && textareaId ? `${textareaId}-message` : undefined;
 

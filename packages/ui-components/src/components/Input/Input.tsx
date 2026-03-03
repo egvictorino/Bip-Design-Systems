@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useId, useState } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 
@@ -76,8 +76,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     ref
   ) => {
     const [focused, setFocused] = useState(false);
+    const generatedId = useId();
 
-    const inputId = id || (label ? `input-${label.replace(/\s+/g, '-').toLowerCase()}` : undefined);
+    const inputId = id || (label ? generatedId : undefined);
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage && inputId ? `${inputId}-message` : undefined;
 

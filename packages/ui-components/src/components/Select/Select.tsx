@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useId, useState } from 'react';
 import type { SelectHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 
@@ -82,9 +82,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     ref
   ) => {
     const [focused, setFocused] = useState(false);
+    const generatedId = useId();
 
-    const selectId =
-      id || (label ? `select-${label.replace(/\s+/g, '-').toLowerCase()}` : undefined);
+    const selectId = id || (label ? generatedId : undefined);
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage && selectId ? `${selectId}-message` : undefined;
 

@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 
@@ -49,8 +49,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     },
     ref
   ) => {
-    const checkboxId =
-      id || (label ? `checkbox-${label.replace(/\s+/g, '-').toLowerCase()}` : undefined);
+    const generatedId = useId();
+    const checkboxId = id || (label ? generatedId : undefined);
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage && checkboxId ? `${checkboxId}-message` : undefined;
 

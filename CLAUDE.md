@@ -128,14 +128,19 @@ Form components (anything with a ref) use `forwardRef`. Display components use `
 
 ```tsx
 // Form component
+import { forwardRef, useId } from 'react';
+
 export const Component = forwardRef<HTMLInputElement, ComponentProps>(
   ({ size = 'md', label, error = false, disabled = false, id, ...props }, ref) => {
-    const componentId = id || (label ? `prefix-${label.replace(/\s+/g, '-').toLowerCase()}` : undefined);
+    const generatedId = useId();
+    const componentId = id || (label ? generatedId : undefined);
     ...
   }
 );
 Component.displayName = 'Component';
 ```
+
+**ID generation rule:** always use `useId()` from React 18 — never derive IDs from label text. Label-based IDs (`\`input-${label}\``) produce duplicate `id` attributes when two instances share the same label, breaking `htmlFor`/`id` linkage and screen reader accessibility. `useId()` is guaranteed unique per component instance and SSR-safe.
 
 ### Styling rules
 - **Only Tailwind** — no CSS modules, no inline styles.
@@ -159,12 +164,14 @@ Plain `clsx` does not resolve conflicts between same-type utilities (e.g. `w-ful
 
 ### Compound component pattern
 
-Use when a component has multiple named sub-parts that share internal state (examples: Modal, Tabs, Dropdown). All three already exist as references.
+Use when a component has multiple named sub-parts that share internal state (examples: Modal, Tabs, Dropdown, Navbar, Table). All five already exist as references.
 
 ```tsx
-// 1. Context with null default + error guard hook
+// 1. Context with null default + error guard hook (MANDATORY — never use a default object value)
+//    Using a default object value (e.g. createContext({ striped: false })) silences errors when
+//    sub-components are used outside the parent — the null guard makes misuse fail loudly.
 const MyContext = createContext<MyContextValue | null>(null);
-const useMyContext = () => {
+const useMyContext = (): MyContextValue => {
   const ctx = useContext(MyContext);
   if (!ctx) throw new Error('<Sub> must be used inside <Parent>');
   return ctx;
@@ -220,6 +227,21 @@ feedback-info-{light|subtle|text}                    → #EFF6FF / #DBEAFE / #1D
 - `disabled:bg-interaction-disabled` → applied via `disabled` HTML attribute on Input, Select, Textarea
 - `read-only:bg-interaction-field-readonly` → applied via `readOnly` HTML attribute on Input, Textarea
 
+### `displayName` requirement
+
+**All components must set `displayName`** — both `forwardRef` and `React.FC` components. This enables readable component names in React DevTools and error messages.
+
+```tsx
+// forwardRef
+export const Input = forwardRef<HTMLInputElement, InputProps>((...) => { ... });
+Input.displayName = 'Input';
+
+// React.FC (including compound sub-components)
+export const Card: React.FC<CardProps> = (...) => { ... };
+Card.displayName = 'Card';
+CardHeader.displayName = 'CardHeader';
+```
+
 ### Accessibility requirements
 
 **Form components** must include:
@@ -241,6 +263,19 @@ feedback-info-{light|subtle|text}                    → #EFF6FF / #DBEAFE / #1D
 - Items: `role="menuitem"` placed **after** `{...props}` spread to always enforce it
 - Dividers: `role="separator"` + `aria-orientation="horizontal"`
 - Keyboard: ↑ ↓ Home End navigate items; Escape closes and returns focus to trigger
+
+**Navigation** (Navbar — WAI-ARIA Navigation Landmark + Disclosure pattern):
+- Root: `<nav aria-label="...">` landmark
+- Hamburger: `aria-expanded`, `aria-controls` pointing to the mobile menu panel
+- Mobile panel: conditionally rendered (not CSS hidden); closes on Escape and outside click
+- NavbarItem active: `aria-current="page"`; disabled `<a>`: `aria-disabled` + `tabIndex={-1}`; disabled `<button>`: native `disabled`
+- NavbarNav renders children in `<ul list-none>` with `<li className="contents">` wrappers (semantic list, transparent to layout)
+
+**Selectable table rows** (Table):
+- `TableRow selected` prop must include `aria-selected={selected || undefined}` on `<tr>` — the `row` role supports this state
+
+**Sortable table headers** (Table):
+- `TableHeader sortable` must have `tabIndex={0}` and handle `onKeyDown` for Enter/Space — `<th>` is not natively focusable
 
 ### Story format (CSF v3)
 ```tsx

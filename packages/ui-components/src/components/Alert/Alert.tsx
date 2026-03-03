@@ -112,7 +112,7 @@ export const Alert: React.FC<AlertProps> = ({
           onClick={onClose}
           aria-label="Cerrar alerta"
           className={cn(
-            'shrink-0 rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1',
+            'shrink-0 rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-interaction-primary-default focus:ring-offset-1',
             styles.close
           )}
         >
@@ -124,3 +124,5 @@ export const Alert: React.FC<AlertProps> = ({
     </div>
   );
 };
+
+Alert.displayName = 'Alert';

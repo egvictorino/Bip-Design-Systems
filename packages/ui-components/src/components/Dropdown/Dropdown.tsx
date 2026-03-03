@@ -246,3 +246,9 @@ export const DropdownDivider: React.FC = () => (
     className="my-1 border-t border-interaction-tertiary-default"
   />
 );
+
+Dropdown.displayName = 'Dropdown';
+DropdownTrigger.displayName = 'DropdownTrigger';
+DropdownMenu.displayName = 'DropdownMenu';
+DropdownItem.displayName = 'DropdownItem';
+DropdownDivider.displayName = 'DropdownDivider';

@@ -10,12 +10,13 @@ interface TabsContextValue {
   variant: 'line' | 'pill';
 }
 
-const TabsContext = React.createContext<TabsContextValue>({
-  activeTab: '',
-  onChange: () => {},
-  instanceId: '',
-  variant: 'line',
-});
+const TabsContext = React.createContext<TabsContextValue | null>(null);
+
+const useTabsContext = (): TabsContextValue => {
+  const ctx = useContext(TabsContext);
+  if (!ctx) throw new Error('TabList, Tab, and TabPanel must be used inside <Tabs>');
+  return ctx;
+};
 
 // ─── Style helpers ────────────────────────────────────────────────────────────
 
@@ -78,7 +79,7 @@ export interface TabListProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const TabList: React.FC<TabListProps> = ({ className, children, ...props }) => {
-  const { variant } = useContext(TabsContext);
+  const { variant } = useTabsContext();
 
   return (
     <div
@@ -103,7 +104,7 @@ export interface TabProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElem
 }
 
 export const Tab: React.FC<TabProps> = ({ value, className, children, ...props }) => {
-  const { activeTab, onChange, instanceId, variant } = useContext(TabsContext);
+  const { activeTab, onChange, instanceId, variant } = useTabsContext();
   const isActive = activeTab === value;
   const tabId = `${instanceId}-tab-${value}`;
   const panelId = `${instanceId}-panel-${value}`;
@@ -162,7 +163,7 @@ export interface TabPanelProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const TabPanel: React.FC<TabPanelProps> = ({ value, className, children, ...props }) => {
-  const { activeTab, instanceId } = useContext(TabsContext);
+  const { activeTab, instanceId } = useTabsContext();
   const tabId = `${instanceId}-tab-${value}`;
   const panelId = `${instanceId}-panel-${value}`;
 
@@ -180,3 +181,8 @@ export const TabPanel: React.FC<TabPanelProps> = ({ value, className, children, 
     </div>
   );
 };
+
+Tabs.displayName = 'Tabs';
+TabList.displayName = 'TabList';
+Tab.displayName = 'Tab';
+TabPanel.displayName = 'TabPanel';

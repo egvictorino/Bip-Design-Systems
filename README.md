@@ -73,7 +73,8 @@ pnpm --filter @bip/ui-components storybook        # Dev Storybook
 pnpm --filter @bip/ui-components build-storybook  # Build estático
 pnpm --filter @bip/ui-components build            # Build librería
 pnpm --filter @bip/ui-components lint             # Lint
-pnpm --filter @bip/shared-utils test              # Tests (vitest)
+pnpm --filter @bip/shared-utils test              # Tests utilidades (vitest)
+pnpm --filter @bip/ui-components test             # Tests componentes (vitest + happy-dom)
 ```
 
 ### Monorepo completo
@@ -122,6 +123,7 @@ pnpm dev     # Modo desarrollo paralelo
 
 | Componente | Descripción |
 |------------|-------------|
+| `Navbar` | Barra de navegación compound: `NavbarBrand`, `NavbarNav`, `NavbarItem`, `NavbarActions` — sticky, responsive con menú hamburguesa, navegación accesible |
 | `Breadcrumb` | Ruta de navegación con separador configurable |
 | `Tabs` | Pestañas accesibles: `TabList`, `Tab`, `TabPanel` |
 | `Pagination` | Paginador con salto a primera/última página |
