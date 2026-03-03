@@ -81,3 +81,26 @@ export type {
   NavbarItemProps,
   NavbarActionsProps,
 } from './components/Navbar';
+
+export {
+  Sidebar,
+  SidebarHeader,
+  SidebarBrand,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarItem,
+  SidebarFooter,
+  SidebarTrigger,
+} from './components/Sidebar';
+export type {
+  SidebarProps,
+  SidebarHeaderProps,
+  SidebarBrandProps,
+  SidebarContentProps,
+  SidebarGroupProps,
+  SidebarGroupLabelProps,
+  SidebarItemProps,
+  SidebarFooterProps,
+  SidebarTriggerProps,
+} from './components/Sidebar';

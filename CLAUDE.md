@@ -271,6 +271,16 @@ CardHeader.displayName = 'CardHeader';
 - NavbarItem active: `aria-current="page"`; disabled `<a>`: `aria-disabled` + `tabIndex={-1}`; disabled `<button>`: native `disabled`
 - NavbarNav renders children in `<ul list-none>` with `<li className="contents">` wrappers (semantic list, transparent to layout)
 
+**Sidebar** (WAI-ARIA Complementary Landmark + Navigation + Disclosure pattern):
+- Root: `<aside aria-label="Navegación lateral">` — complementary landmark for the panel structure
+- `SidebarContent` renders `<nav aria-label="Navegación">` — navigation landmark for the nav items (two distinct landmarks: aside for layout, nav for items)
+- `SidebarTrigger`: `aria-expanded={!isCollapsed}` + `aria-controls={sidebarId}` — full ARIA disclosure widget compliance
+- `SidebarGroup label="Section"`: `label` prop renders a `<p>` header (hidden when collapsed); children are wrapped in `<ul>` automatically — consumer does NOT need to provide `<ul>`
+- `SidebarItem`: `<li className="contents">` wrapper; collapsed mode adds `aria-label` (string children) for screen readers + `<Tooltip>` for visual feedback
+- `SidebarItem` active: `aria-current="page"`; disabled link: `aria-disabled` + `tabIndex={-1}`; disabled button: native `disabled`
+- Mobile overlay: `role="presentation"` + `aria-hidden="true"`; closes on click or Escape
+- `SidebarGroupLabel`: standalone label component for advanced/non-standard placement — prefer `label` prop on `SidebarGroup` for common cases
+
 **Selectable table rows** (Table):
 - `TableRow selected` prop must include `aria-selected={selected || undefined}` on `<tr>` — the `row` role supports this state
 
