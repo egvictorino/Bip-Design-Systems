@@ -50,8 +50,6 @@ const DEFAULT_DURATION = 5000;
 const EXIT_DURATION_MS = 250;
 const PROGRESS_INTERVAL_MS = 100;
 
-let idCounter = 0;
-
 // ─── Progress bar color per variant ──────────────────────────────────────────
 
 const progressBarColor: Record<NonNullable<ToastConfig['variant']>, string> = {
@@ -160,10 +158,11 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
   max = DEFAULT_MAX,
 }) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const idRef = useRef(0);
 
   const addToast = useCallback(
     (config: ToastConfig) => {
-      const id = ++idCounter;
+      const id = ++idRef.current;
       setToasts((prev) => {
         const next = [...prev, { ...config, id }];
         // When the limit is exceeded, remove the oldest toast(s)
@@ -177,25 +176,30 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
+  // SSR guard: createPortal requires document to exist (not available server-side)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <ToastContext.Provider value={{ addToast }}>
       {children}
-      {ReactDOM.createPortal(
-        <div
-          role="region"
-          aria-label="Notificaciones"
-          // pointer-events-none on the container so it never blocks clicks beneath it
-          className="fixed top-4 right-4 z-[100] flex flex-col gap-3 w-80 pointer-events-none"
-        >
-          {toasts.map((item) => (
-            // pointer-events-auto restores interactivity on each individual toast
-            <div key={item.id} className="pointer-events-auto">
-              <ToastItemComponent item={item} onRemove={removeToast} />
-            </div>
-          ))}
-        </div>,
-        document.body
-      )}
+      {mounted &&
+        ReactDOM.createPortal(
+          <div
+            role="region"
+            aria-label="Notificaciones"
+            // pointer-events-none on the container so it never blocks clicks beneath it
+            className="fixed top-4 right-4 z-[100] flex flex-col gap-3 w-80 pointer-events-none"
+          >
+            {toasts.map((item) => (
+              // pointer-events-auto restores interactivity on each individual toast
+              <div key={item.id} className="pointer-events-auto">
+                <ToastItemComponent item={item} onRemove={removeToast} />
+              </div>
+            ))}
+          </div>,
+          document.body
+        )}
     </ToastContext.Provider>
   );
 };

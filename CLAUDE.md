@@ -164,7 +164,7 @@ Plain `clsx` does not resolve conflicts between same-type utilities (e.g. `w-ful
 
 ### Compound component pattern
 
-Use when a component has multiple named sub-parts that share internal state (examples: Modal, Tabs, Dropdown, Navbar, Table). All five already exist as references.
+Use when a component has multiple named sub-parts that share internal state (examples: Modal, Tabs, Dropdown, Navbar, Table, Sidebar). All six already exist as references.
 
 ```tsx
 // 1. Context with null default + error guard hook (MANDATORY — never use a default object value)
@@ -271,9 +271,23 @@ CardHeader.displayName = 'CardHeader';
 - NavbarItem active: `aria-current="page"`; disabled `<a>`: `aria-disabled` + `tabIndex={-1}`; disabled `<button>`: native `disabled`
 - NavbarNav renders children in `<ul list-none>` with `<li className="contents">` wrappers (semantic list, transparent to layout)
 
+**Alert** (`info/success` → `role="status"`, `warning/error` → `role="alert"`):
+- `onClose` prop: renders a dismiss button with `aria-label="Cerrar alerta"` and `focus-visible:ring` per variant color
+- `role="status"` (aria-live polite) for `info` / `success` — non-interrupting
+- `role="alert"` (aria-live assertive) for `warning` / `error` — urgent announcements
+
+**Toast** (Provider + hook pattern — NOT a compound component with sub-parts):
+- Wrap the app with `<ToastProvider>` — renders a portal in `document.body`
+- Portal container: `role="region"` + `aria-label="Notificaciones"` — `pointer-events-none` on wrapper, `pointer-events-auto` on each toast
+- Individual toasts render `<Alert>` (inherits `role="status"/"alert"` per variant)
+- Call `useToast().addToast({ variant, title, message, duration? })` anywhere inside the provider
+- `duration: 0` → persistent (no auto-dismiss); default is 5000ms
+- Enter/exit CSS transition (translate-x + opacity); progress bar tracks remaining time
+
 **Sidebar** (WAI-ARIA Complementary Landmark + Navigation + Disclosure pattern):
 - Root: `<aside aria-label="Navegación lateral">` — complementary landmark for the panel structure
 - `SidebarContent` renders `<nav aria-label="Navegación">` — navigation landmark for the nav items (two distinct landmarks: aside for layout, nav for items)
+- `SidebarBrand`: hidden automatically when collapsed (`return null`); supports optional `href` prop
 - `SidebarTrigger`: `aria-expanded={!isCollapsed}` + `aria-controls={sidebarId}` — full ARIA disclosure widget compliance
 - `SidebarGroup label="Section"`: `label` prop renders a `<p>` header (hidden when collapsed); children are wrapped in `<ul>` automatically — consumer does NOT need to provide `<ul>`
 - `SidebarItem`: `<li className="contents">` wrapper; collapsed mode adds `aria-label` (string children) for screen readers + `<Tooltip>` for visual feedback

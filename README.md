@@ -107,7 +107,8 @@ pnpm dev     # Modo desarrollo paralelo
 
 | Componente | Descripción |
 |------------|-------------|
-| `Alert` | Mensajes de estado con variantes `info`, `success`, `warning`, `error` y acción dismiss |
+| `Alert` | Mensajes de estado con variantes `info`, `success`, `warning`, `error`; botón dismiss (`onClose`); `role="status"` (info/success) o `role="alert"` (warning/error) |
+| `Toast` | Notificaciones flotantes vía `<ToastProvider>` + hook `useToast()` — auto-dismiss con barra de progreso, máx. simultáneos configurable |
 | `Badge` | Etiqueta compacta con variantes semánticas y punto indicador opcional |
 | `Spinner` | Indicador de carga animado con tamaños y colores |
 | `Skeleton` | Placeholder de carga con variantes `text`, `circle`, `rect` y prop `lines` |
@@ -123,7 +124,7 @@ pnpm dev     # Modo desarrollo paralelo
 
 | Componente | Descripción |
 |------------|-------------|
-| `Navbar` | Barra de navegación compound: `NavbarBrand`, `NavbarNav`, `NavbarItem`, `NavbarActions` — sticky, responsive con menú hamburguesa, navegación accesible |
+| `Navbar` | Barra de navegación compound: `NavbarBrand`, `NavbarNav`, `NavbarItem`, `NavbarActions` — sticky, responsive con menú hamburguesa, navegación accesible (WAI-ARIA Navigation + Disclosure) |
 | `Breadcrumb` | Ruta de navegación con separador configurable |
 | `Tabs` | Pestañas accesibles: `TabList`, `Tab`, `TabPanel` |
 | `Pagination` | Paginador con salto a primera/última página |
@@ -135,6 +136,12 @@ pnpm dev     # Modo desarrollo paralelo
 |------------|-------------|
 | `Modal` | Diálogo con focus trap y portal: `ModalHeader`, `ModalBody`, `ModalFooter` |
 | `Tooltip` | Tooltip posicionable con delay configurable |
+
+### Navegación lateral
+
+| Componente | Descripción |
+|------------|-------------|
+| `Sidebar` | Panel lateral compound: `SidebarHeader`, `SidebarBrand`, `SidebarContent`, `SidebarGroup`, `SidebarGroupLabel`, `SidebarItem`, `SidebarFooter`, `SidebarTrigger` — colapsable (w-60↔w-16), drawer móvil, Tooltip en ítems colapsados |
 
 ---
 
@@ -308,16 +315,28 @@ export default {
 ### 4. Usar los componentes
 
 ```tsx
-import { Button, Input, Modal } from '@bip/ui-components';
+import { Button, Input, ToastProvider, useToast } from '@bip/ui-components';
 import { formatCurrency, validateRFC } from '@bip/shared-utils';
 
-export const MiPagina = () => (
-  <div>
-    <Input label="RFC" />
-    <Button variant="primary">Guardar</Button>
-    <p>{formatCurrency(1500)}</p>
-  </div>
+// Wrap the app root with ToastProvider
+export const App = () => (
+  <ToastProvider>
+    <MiPagina />
+  </ToastProvider>
 );
+
+export const MiPagina = () => {
+  const { addToast } = useToast();
+  return (
+    <div>
+      <Input label="RFC" />
+      <Button variant="primary" onClick={() => addToast({ variant: 'success', message: '¡Guardado!' })}>
+        Guardar
+      </Button>
+      <p>{formatCurrency(1500)}</p>
+    </div>
+  );
+};
 ```
 
 ---

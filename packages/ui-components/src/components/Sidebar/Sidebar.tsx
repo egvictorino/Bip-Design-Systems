@@ -66,6 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpen && (
         <div
           role="presentation"
+          data-testid="mobile-overlay"
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
           onClick={closeMobile}
           aria-hidden="true"

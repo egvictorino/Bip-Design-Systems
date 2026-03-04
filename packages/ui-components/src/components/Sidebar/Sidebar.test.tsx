@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import {
   Sidebar,
@@ -150,27 +150,26 @@ describe('Sidebar', () => {
     render(<DefaultSidebar defaultCollapsed />);
     // When collapsed, links still have aria-label for screen readers...
     const dashboardLink = screen.getByRole('link', { name: /dashboard/i });
-    // ...but no inline text span is rendered inside the link
-    expect(within(dashboardLink).queryByText('Dashboard')).not.toBeInTheDocument();
+    // ...but no inline text <span> is rendered inside the link (only the icon)
+    expect(dashboardLink.querySelector('span')).toBeNull();
     // Icons should be present
     expect(screen.getAllByTestId('home-icon').length).toBeGreaterThan(0);
   });
 
   it('shows overlay when isOpen=true', () => {
     render(<DefaultSidebar isOpen />);
-    // Overlay has aria-hidden="true" so we need { hidden: true } to find it
-    expect(screen.getByRole('presentation', { hidden: true })).toBeInTheDocument();
+    expect(screen.getByTestId('mobile-overlay')).toBeInTheDocument();
   });
 
   it('does not show overlay when isOpen=false', () => {
     render(<DefaultSidebar isOpen={false} />);
-    expect(screen.queryByRole('presentation', { hidden: true })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mobile-overlay')).not.toBeInTheDocument();
   });
 
   it('clicking the overlay calls onClose', () => {
     const onClose = vi.fn();
     render(<DefaultSidebar isOpen onClose={onClose} />);
-    fireEvent.click(screen.getByRole('presentation', { hidden: true }));
+    fireEvent.click(screen.getByTestId('mobile-overlay'));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
