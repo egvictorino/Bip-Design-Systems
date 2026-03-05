@@ -9,6 +9,6 @@
   "references": [
     { "path": "./packages/ui-components" },
     { "path": "./packages/shared-utils" },
-    { "path": "./apps/template-base" }
+   /* { "path": "./apps/template-base" } */
   ]
 }

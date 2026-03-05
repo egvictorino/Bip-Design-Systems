@@ -4,7 +4,7 @@ import { colors } from '../../tailwind.tokens.js';
 import pkg from '../../package.json';
 
 const meta = {
-  title: 'Foundations/Colors',
+  title: 'Foundations/Test',
   parameters: {
     layout: 'fullscreen',
   },
@@ -65,7 +65,8 @@ const ColorGroup = ({
       ))}
     </div>
   </div>
-);
+)
+
 
 // ─── Story ────────────────────────────────────────────────────────────────────
 
@@ -88,6 +89,7 @@ export const Overview: Story = {
       'Field Readonly':    interaction.fieldreadonly,
       'Selected':          interaction.selected,
     };
+
 
     const textColors: Record<string, string> = {
       'Primary':   text.primary,
@@ -126,22 +128,29 @@ export const Overview: Story = {
 
     return (
       <div className="p-8 bg-gray-50 min-h-screen">
-        <h1 className="text-4xl font-bold mb-2 text-text-primary">Color Palette</h1>
+        <h1 className="text-4xl font-bold mb-2 text-text-primary">Colors from Style Directory</h1>
         <p className="text-xl font-semibold mb-4 text-text-secondary">Versión {pkg.version}</p>
         <p className="text-lg text-text-primary mb-12">
-          Los siguientes colores son los colores base del design system.
+          Prueba de colores basada en los tokens de diseño definidos en el directorio de estilos.
           <br />
           Sigue las guías de uso para mantener consistencia en todo el producto.
         </p>
         <p className="text-sm text-text-secondary mb-12">
           Haz clic en cualquier muestra para copiar el código hex al portapapeles.
         </p>
-        <ColorGroup title="Interaction Colors" colors={interactionColors} />
-        <ColorGroup title="Text Colors" colors={textColors} />
-        <ColorGroup title="Feedback — Error" colors={feedbackErrorColors} />
-        <ColorGroup title="Feedback — Success" colors={feedbackSuccessColors} />
-        <ColorGroup title="Feedback — Warning" colors={feedbackWarningColors} />
-        <ColorGroup title="Feedback — Info" colors={feedbackInfoColors} />
+
+          <button
+      type="button"
+      className="flex flex-col items-center gap-2 cursor-pointer group bg-transparent border-0 p-0"
+    >
+      <div
+        className="w-24 h-24 rounded border border-gray-300 shadow-sm group-hover:shadow-lg transition-shadow"
+        style={{ backgroundColor: 'red' }}
+      />
+      <div className="text-center">
+        <p className="text-sm font-semibold text-text-primary">Red</p>
+      </div>
+    </button>
       </div>
     );
   },

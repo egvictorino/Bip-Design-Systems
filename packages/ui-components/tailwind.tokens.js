@@ -27,7 +27,7 @@ export const colors = {
     },
     disabled:        '#EFEFEF',
     field:           '#FCFCFC',
-    'field-readonly': '#F2F2F2',
+    fieldreadonly: '#F2F2F2',
     selected:        '#E4FCFF',
   },
   text: {
