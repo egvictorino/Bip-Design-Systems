@@ -88,6 +88,12 @@ export type {
   NavbarActionsProps,
 } from './components/Navbar';
 
+export { DatePicker } from './components/DatePicker';
+export type { DatePickerProps } from './components/DatePicker';
+
+export { TimePicker } from './components/TimePicker';
+export type { TimePickerProps } from './components/TimePicker';
+
 export {
   Sidebar,
   SidebarHeader,
