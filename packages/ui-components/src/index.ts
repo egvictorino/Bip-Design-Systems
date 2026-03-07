@@ -27,7 +27,7 @@ export { Alert } from './components/Alert';
 export type { AlertProps } from './components/Alert';
 
 export { ToastProvider, useToast } from './components/Toast';
-export type { ToastProviderProps, ToastConfig } from './components/Toast';
+export type { ToastProviderProps, ToastConfig, ToastPosition } from './components/Toast';
 
 export { Spinner } from './components/Spinner';
 export type { SpinnerProps } from './components/Spinner';
