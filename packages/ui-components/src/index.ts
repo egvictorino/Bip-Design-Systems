@@ -1,4 +1,7 @@
 // Componentes
+export { EmptyState } from './components/EmptyState';
+export type { EmptyStateProps } from './components/EmptyState';
+
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/Accordion';
 export type {
   AccordionProps,
