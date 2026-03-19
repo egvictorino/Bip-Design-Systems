@@ -62,6 +62,9 @@ export type {
 export { Pagination } from './components/Pagination';
 export type { PaginationProps } from './components/Pagination';
 
+export { ProgressBar } from './components/ProgressBar';
+export type { ProgressBarProps } from './components/ProgressBar';
+
 export { Tabs, TabList, Tab, TabPanel } from './components/Tabs';
 export type { TabsProps, TabListProps, TabProps, TabPanelProps } from './components/Tabs';
 
