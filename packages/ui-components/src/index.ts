@@ -149,3 +149,27 @@ export type {
   SidebarFooterProps,
   SidebarTriggerProps,
 } from './components/Sidebar';
+
+export { ConfirmDialog } from './components/ConfirmDialog';
+export type { ConfirmDialogProps } from './components/ConfirmDialog';
+
+export { Divider } from './components/Divider';
+export type { DividerProps } from './components/Divider';
+
+export { StatsCard } from './components/StatsCard';
+export type { StatsCardProps } from './components/StatsCard';
+
+export { SearchInput } from './components/SearchInput';
+export type { SearchInputProps } from './components/SearchInput';
+
+export { DateRangePicker } from './components/DateRangePicker';
+export type { DateRangePickerProps, DateRange } from './components/DateRangePicker';
+
+export { Timeline, TimelineItem } from './components/Timeline';
+export type { TimelineProps, TimelineItemProps } from './components/Timeline';
+
+export { DrawerPanel } from './components/DrawerPanel';
+export type { DrawerPanelProps } from './components/DrawerPanel';
+
+export { DataTable } from './components/DataTable';
+export type { DataTableProps, ColumnDef } from './components/DataTable';
