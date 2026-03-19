@@ -107,6 +107,9 @@ export type {
   CalendarView,
 } from './components/Calendar';
 
+export { Stepper, StepperStep } from './components/Stepper';
+export type { StepperProps, StepperStepProps } from './components/Stepper';
+
 export { Avatar, AvatarGroup } from './components/Avatar';
 export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarShape, AvatarStatus } from './components/Avatar';
 
