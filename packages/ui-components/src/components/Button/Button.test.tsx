@@ -40,10 +40,10 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveClass('bg-primary', 'text-txt-white');
   });
 
-  it('applies secondary variant with white text (contrast)', () => {
+  it('applies secondary variant with dark text on light background', () => {
     render(<Button variant="secondary">Secondary</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('bg-secondary', 'text-txt-white');
+    expect(btn).toHaveClass('bg-secondary', 'text-txt-primary');
   });
 
   it('applies bare variant', () => {

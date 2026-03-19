@@ -145,11 +145,11 @@ describe('Input', () => {
     expect(screen.getByRole('textbox')).toHaveClass('border', 'bg-field');
   });
 
-  it('filled variant has no border and uses bg-secondary', () => {
+  it('filled variant uses bg-secondary with edge border', () => {
     render(<Input variant="filled" />);
     const input = screen.getByRole('textbox');
     expect(input).toHaveClass('bg-secondary');
-    expect(input).toHaveClass('border-0');
+    expect(input).toHaveClass('border', 'border-edge');
   });
 
   it('bare variant has bottom border only', () => {

@@ -107,6 +107,9 @@ export type {
   CalendarView,
 } from './components/Calendar';
 
+export { Avatar, AvatarGroup } from './components/Avatar';
+export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarShape, AvatarStatus } from './components/Avatar';
+
 export {
   Sidebar,
   SidebarHeader,
