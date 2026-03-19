@@ -97,6 +97,16 @@ export type { DatePickerProps } from './components/DatePicker';
 export { TimePicker } from './components/TimePicker';
 export type { TimePickerProps } from './components/TimePicker';
 
+export { Calendar } from './components/Calendar';
+export type {
+  CalendarProps,
+  CalendarEvent,
+  CalendarEventStatus,
+  CalendarResource,
+  CalendarSlotInfo,
+  CalendarView,
+} from './components/Calendar';
+
 export {
   Sidebar,
   SidebarHeader,
