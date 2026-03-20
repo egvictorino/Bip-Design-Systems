@@ -14,19 +14,19 @@ const positionStyles: Record<
 > = {
   top: {
     tooltip: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
-    arrow: 'absolute left-1/2 -translate-x-1/2 top-full -mt-1 h-2 w-2 rotate-45 bg-text-primary',
+    arrow: 'absolute left-1/2 -translate-x-1/2 top-full -mt-1 h-2 w-2 rotate-45 bg-txt',
   },
   bottom: {
     tooltip: 'top-full left-1/2 -translate-x-1/2 mt-2',
-    arrow: 'absolute left-1/2 -translate-x-1/2 bottom-full -mb-1 h-2 w-2 rotate-45 bg-text-primary',
+    arrow: 'absolute left-1/2 -translate-x-1/2 bottom-full -mb-1 h-2 w-2 rotate-45 bg-txt',
   },
   left: {
     tooltip: 'right-full top-1/2 -translate-y-1/2 mr-2',
-    arrow: 'absolute top-1/2 -translate-y-1/2 left-full -ml-1 h-2 w-2 rotate-45 bg-text-primary',
+    arrow: 'absolute top-1/2 -translate-y-1/2 left-full -ml-1 h-2 w-2 rotate-45 bg-txt',
   },
   right: {
     tooltip: 'left-full top-1/2 -translate-y-1/2 ml-2',
-    arrow: 'absolute top-1/2 -translate-y-1/2 right-full -mr-1 h-2 w-2 rotate-45 bg-text-primary',
+    arrow: 'absolute top-1/2 -translate-y-1/2 right-full -mr-1 h-2 w-2 rotate-45 bg-txt',
   },
 };
 
@@ -52,7 +52,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         id={id}
         role="tooltip"
         className={cn(
-          'pointer-events-none absolute z-50 max-w-xs rounded bg-text-primary px-2.5 py-1.5 text-xs font-medium text-text-white shadow-sm',
+          'pointer-events-none absolute z-50 max-w-xs rounded bg-txt px-2.5 py-1.5 text-xs font-medium text-txt-white shadow-sm',
           'invisible opacity-0 transition-opacity duration-150',
           'group-hover:visible group-hover:opacity-100',
           'group-focus-within:visible group-focus-within:opacity-100',

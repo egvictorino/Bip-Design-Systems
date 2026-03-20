@@ -13,7 +13,7 @@ const variantStyles: Record<NonNullable<SkeletonProps['variant']>, string> = {
   rect: 'h-32 w-full rounded-md',
 };
 
-const baseClass = 'animate-pulse bg-interaction-tertiary-default';
+const baseClass = 'animate-pulse bg-surface-3';
 
 export const Skeleton: React.FC<SkeletonProps> = ({
   variant = 'text',

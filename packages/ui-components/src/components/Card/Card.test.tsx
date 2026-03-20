@@ -44,7 +44,7 @@ describe('Card', () => {
   it.each([
     ['elevated', 'shadow-md'],
     ['outlined', 'border'],
-    ['flat', 'bg-interaction-tertiary-default'],
+    ['flat', 'bg-surface-3'],
   ] as const)('variant %s applies correct class', (variant, cls) => {
     const { container } = render(<Card variant={variant}>Contenido</Card>);
     expect(container.firstChild).toHaveClass(cls);

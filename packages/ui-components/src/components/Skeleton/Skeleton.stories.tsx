@@ -38,7 +38,7 @@ export const Rect: Story = {
 export const ProfileCard: Story = {
   args: { variant: 'text' },
   render: () => (
-    <div className="w-72 rounded-lg border border-interaction-tertiary-default p-4 flex flex-col gap-4">
+    <div className="w-72 rounded-lg border border-edge p-4 flex flex-col gap-4">
       {/* Header: avatar + nombre */}
       <div className="flex items-center gap-3">
         <Skeleton variant="circle" />
@@ -59,7 +59,7 @@ export const ProfileCard: Story = {
 export const DataRows: Story = {
   args: { variant: 'text' },
   render: () => (
-    <div className="w-[480px] flex flex-col divide-y divide-interaction-tertiary-default">
+    <div className="w-[480px] flex flex-col divide-y divide-edge">
       {[1, 2, 3, 4, 5].map((i) => (
         <div key={i} className="flex items-center gap-3 py-3">
           <Skeleton variant="circle" />

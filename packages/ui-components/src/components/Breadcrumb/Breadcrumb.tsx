@@ -15,7 +15,7 @@ const ChevronIcon = () => (
   <svg
     viewBox="0 0 16 16"
     fill="currentColor"
-    className="w-3.5 h-3.5 shrink-0 text-text-disabled"
+    className="w-3.5 h-3.5 shrink-0 text-txt-disabled"
     aria-hidden="true"
   >
     <path
@@ -44,7 +44,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
               {isLast ? (
                 <span
                   aria-current="page"
-                  className="font-medium text-text-primary max-w-[240px] truncate"
+                  className="font-medium text-txt max-w-[240px] truncate"
                 >
                   {item.label}
                 </span>
@@ -52,8 +52,8 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
                 <a
                   href={item.href}
                   className={cn(
-                    'max-w-[200px] truncate text-text-secondary hover:text-text-primary transition-colors',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default rounded'
+                    'max-w-[200px] truncate text-txt-secondary hover:text-txt transition-colors',
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded'
                   )}
                 >
                   {item.label}
@@ -61,7 +61,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
               ) : (
                 // No href on a non-current item: render as non-interactive span
                 // (an <a href="#"> would be a misleading dead link)
-                <span className="max-w-[200px] truncate text-text-secondary">{item.label}</span>
+                <span className="max-w-[200px] truncate text-txt-secondary">{item.label}</span>
               )}
             </li>
           );

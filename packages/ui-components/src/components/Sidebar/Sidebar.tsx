@@ -79,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         aria-label="Navegación lateral"
         className={cn(
           'fixed left-0 top-0 z-50 flex h-screen flex-col',
-          'bg-white border-r border-interaction-tertiary-default',
+          'bg-white border-r border-edge',
           'transition-[width,transform] duration-200 ease-in-out',
           isCollapsed ? 'w-16' : 'w-60',
           // Mobile: hidden by default, visible when isOpen
@@ -108,7 +108,7 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ className, childre
   return (
     <div
       className={cn(
-        'flex items-center shrink-0 border-b border-interaction-tertiary-default px-4 py-3',
+        'flex items-center shrink-0 border-b border-edge px-4 py-3',
         isCollapsed ? 'justify-center' : 'justify-between',
         className
       )}
@@ -134,7 +134,7 @@ export const SidebarBrand: React.FC<SidebarBrandProps> = ({ href, className, chi
 
   if (isCollapsed) return null;
 
-  const brandClasses = cn('flex items-center gap-2 font-semibold text-sm text-text-primary', className);
+  const brandClasses = cn('flex items-center gap-2 font-semibold text-sm text-txt', className);
 
   return href ? (
     <a href={href} className={brandClasses}>
@@ -189,7 +189,7 @@ export const SidebarGroup: React.FC<SidebarGroupProps> = ({
   return (
     <div className={cn('mb-4', className)} {...props}>
       {label && !isCollapsed && (
-        <p className="px-2 mb-1 text-xs font-semibold uppercase tracking-wide text-text-disabled">
+        <p className="px-2 mb-1 text-xs font-semibold uppercase tracking-wide text-txt-disabled">
           {label}
         </p>
       )}
@@ -218,7 +218,7 @@ export const SidebarGroupLabel: React.FC<SidebarGroupLabelProps> = ({
   return (
     <p
       className={cn(
-        'px-2 mb-1 text-xs font-semibold uppercase tracking-wide text-text-disabled',
+        'px-2 mb-1 text-xs font-semibold uppercase tracking-wide text-txt-disabled',
         className
       )}
       {...props}
@@ -259,12 +259,12 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
 
   const baseClasses = cn(
     'flex items-center w-full rounded-md text-sm font-medium transition-colors outline-none',
-    'focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-offset-1',
+    'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1',
     isCollapsed ? 'justify-center px-2 py-2' : 'gap-3 px-3 py-2',
     active
-      ? 'bg-interaction-tertiary-default text-text-primary'
-      : 'text-text-secondary hover:bg-interaction-tertiary-default hover:text-text-primary',
-    disabled && 'text-text-disabled cursor-not-allowed pointer-events-none',
+      ? 'bg-surface-3 text-txt'
+      : 'text-txt-secondary hover:bg-surface-3 hover:text-txt',
+    disabled && 'text-txt-disabled cursor-not-allowed pointer-events-none',
     className
   );
 
@@ -326,7 +326,7 @@ export interface SidebarFooterProps extends React.HTMLAttributes<HTMLDivElement>
 export const SidebarFooter: React.FC<SidebarFooterProps> = ({ className, children, ...props }) => (
   <div
     className={cn(
-      'shrink-0 border-t border-interaction-tertiary-default px-3 py-3',
+      'shrink-0 border-t border-edge px-3 py-3',
       className
     )}
     {...props}
@@ -351,9 +351,9 @@ export const SidebarTrigger: React.FC<SidebarTriggerProps> = ({ className, ...pr
       aria-controls={sidebarId}
       className={cn(
         'inline-flex items-center justify-center w-8 h-8 rounded shrink-0',
-        'text-text-secondary hover:bg-interaction-tertiary-default hover:text-text-primary',
+        'text-txt-secondary hover:bg-surface-3 hover:text-txt',
         'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
-        'focus-visible:ring-interaction-primary-default',
+        'focus-visible:ring-primary',
         className
       )}
       {...props}

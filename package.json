@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "pnpm --filter @bip/ui-components storybook",
     "build": "pnpm --filter @bip/shared-utils build && pnpm --filter @bip/ui-components build",
+    "sync:tokens": "node sync-figma-tokens.js",
     "test": "pnpm --filter @bip/shared-utils test && pnpm --filter @bip/ui-components test",
     "lint": "pnpm --filter @bip/ui-components lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
@@ -41,6 +42,7 @@
       "minimatch@<3.1.4": "3.1.4",
       "minimatch@>=9.0.0 <9.0.7": "9.0.7",
       "minimatch@>=10.0.0 <10.2.3": "10.2.3",
+      "ajv@<6.14.0": "6.14.0",
       "rollup": "^4.59.0"
     }
   }

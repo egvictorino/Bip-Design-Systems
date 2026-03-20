@@ -23,18 +23,18 @@ const useTabsContext = (): TabsContextValue => {
 const getTabClasses = (variant: 'line' | 'pill', isActive: boolean) =>
   cn(
     'text-sm font-medium whitespace-nowrap transition-colors',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-offset-1',
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1',
     'disabled:opacity-40 disabled:cursor-not-allowed',
     variant === 'line' && 'px-4 py-2 -mb-px border-b-2',
-    variant === 'line' && isActive && 'border-interaction-primary-default',
-    variant === 'line' && isActive && 'text-interaction-primary-default',
-    variant === 'line' && !isActive && 'border-transparent text-text-secondary',
-    variant === 'line' && !isActive && 'hover:text-text-primary',
-    variant === 'line' && !isActive && 'hover:border-interaction-tertiary-hover',
+    variant === 'line' && isActive && 'border-primary',
+    variant === 'line' && isActive && 'text-primary',
+    variant === 'line' && !isActive && 'border-transparent text-txt-secondary',
+    variant === 'line' && !isActive && 'hover:text-txt',
+    variant === 'line' && !isActive && 'hover:border-edge-hover',
     variant === 'pill' && 'px-4 py-1.5 rounded-md',
-    variant === 'pill' && isActive && 'bg-white shadow-sm text-text-primary',
-    variant === 'pill' && !isActive && 'text-text-secondary',
-    variant === 'pill' && !isActive && 'hover:text-text-primary hover:bg-white/50'
+    variant === 'pill' && isActive && 'bg-white shadow-sm text-txt',
+    variant === 'pill' && !isActive && 'text-txt-secondary',
+    variant === 'pill' && !isActive && 'hover:text-txt hover:bg-white/50'
   );
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
@@ -85,8 +85,8 @@ export const TabList: React.FC<TabListProps> = ({ className, children, ...props 
     <div
       role="tablist"
       className={cn(
-        variant === 'line' && 'flex border-b border-interaction-tertiary-default',
-        variant === 'pill' && 'inline-flex gap-1 p-1 bg-interaction-tertiary-default/50 rounded-lg',
+        variant === 'line' && 'flex border-b border-edge',
+        variant === 'pill' && 'inline-flex gap-1 p-1 bg-surface-3/50 rounded-lg',
         className
       )}
       {...props}

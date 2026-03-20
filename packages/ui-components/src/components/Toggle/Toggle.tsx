@@ -78,8 +78,8 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
               'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
               sizes[size].track,
               error
-                ? 'bg-feedback-error-muted group-has-[:checked]:bg-feedback-error-default group-has-[:focus-visible]:ring-feedback-error-default'
-                : 'bg-interaction-tertiary-pressed group-has-[:checked]:bg-interaction-primary-default group-has-[:focus-visible]:ring-interaction-primary-default',
+                ? 'bg-danger-muted group-has-[:checked]:bg-danger group-has-[:focus-visible]:ring-danger'
+                : 'bg-surface-4 group-has-[:checked]:bg-primary group-has-[:focus-visible]:ring-primary',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
           >
@@ -114,7 +114,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
               className={cn(
                 'select-none font-medium transition-colors cursor-pointer',
                 sizes[size].label,
-                error ? 'text-feedback-error-default' : 'text-text-primary',
+                error ? 'text-danger' : 'text-txt',
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
             >
@@ -127,7 +127,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-feedback-error-default', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-danger', sizes[size].indent)}
             role="alert"
           >
             {errorMessage}
@@ -135,7 +135,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         ) : helperText ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-txt-secondary', sizes[size].indent)}
           >
             {helperText}
           </span>

@@ -23,8 +23,8 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
   elevated: 'bg-white shadow-md',
-  outlined: 'bg-white border border-interaction-tertiary-default',
-  flat: 'bg-interaction-tertiary-default',
+  outlined: 'bg-white border border-edge',
+  flat: 'bg-surface-3',
 };
 
 const paddingStyles: Record<NonNullable<CardProps['padding']>, string> = {
@@ -38,7 +38,7 @@ const paddingStyles: Record<NonNullable<CardProps['padding']>, string> = {
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ className, children, ...props }) => (
   <div
-    className={cn('border-b border-interaction-tertiary-default px-5 py-4', className)}
+    className={cn('border-b border-edge px-5 py-4', className)}
     {...props}
   >
     {children}
@@ -53,7 +53,7 @@ export const CardBody: React.FC<CardBodyProps> = ({ className, children, ...prop
 
 export const CardFooter: React.FC<CardFooterProps> = ({ className, children, ...props }) => (
   <div
-    className={cn('border-t border-interaction-tertiary-default px-5 py-4', className)}
+    className={cn('border-t border-edge px-5 py-4', className)}
     {...props}
   >
     {children}

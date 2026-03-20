@@ -9,12 +9,12 @@ const config = {
     options: {},
   },
   viteFinal: async (config) => {
-    return {
-      ...config,
-      css: {
-        postcss: './postcss.config.js',
-      },
+    config.css = { postcss: './postcss.config.js' };
+    config.optimizeDeps = {
+      ...config.optimizeDeps,
+      include: ['react', 'react-dom', 'clsx', 'tailwind-merge'],
     };
+    return config;
   },
 };
 

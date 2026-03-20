@@ -39,11 +39,11 @@ describe('Badge', () => {
     'renders variant %s with the correct text color class',
     (variant) => {
       const classMap = {
-        primary: 'text-interaction-primary-default',
-        success: 'text-feedback-success-text',
-        warning: 'text-feedback-warning-text',
-        error: 'text-feedback-error-text',
-        neutral: 'text-text-secondary',
+        primary: 'text-primary',
+        success: 'text-success-text',
+        warning: 'text-warning-text',
+        error: 'text-danger-text',
+        neutral: 'text-txt-secondary',
       };
       const { container } = render(<Badge variant={variant}>{variant}</Badge>);
       expect(container.firstChild).toHaveClass(classMap[variant]);
@@ -52,7 +52,7 @@ describe('Badge', () => {
 
   it('defaults to neutral variant', () => {
     const { container } = render(<Badge>Texto</Badge>);
-    expect(container.firstChild).toHaveClass('text-text-secondary');
+    expect(container.firstChild).toHaveClass('text-txt-secondary');
   });
 
   // ── Sizes ──────────────────────────────────────────────────────────────────

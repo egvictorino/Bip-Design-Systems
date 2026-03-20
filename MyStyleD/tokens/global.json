@@ -1,0 +1,172 @@
+{
+  "global": {
+    "Text": {
+      "Black": {
+        "$value": "#0d0d0d",
+        "$type": "color"
+      },
+      "Primary": {
+        "$value": "#191919",
+        "$type": "color"
+      },
+      "Secondary": {
+        "$value": "#929292",
+        "$type": "color"
+      },
+      "Utility": {
+        "$value": "#6e6e6e",
+        "$type": "color"
+      },
+      "Disabled": {
+        "$value": "#ababab",
+        "$type": "color"
+      },
+      "Link-Default": {
+        "$value": "#3347ff",
+        "$type": "color"
+      },
+      "Link-Hover": {
+        "$value": "#1f2b99",
+        "$type": "color"
+      },
+      "Link-Press": {
+        "$value": "#141c66",
+        "$type": "color"
+      },
+      "White": {
+        "$value": "#ffffff",
+        "$type": "color"
+      },
+      "Important": {
+        "$value": "#cc242a",
+        "$type": "color"
+      }
+    },
+    "Interaction": {
+      "Primary": {
+        "$value": "#2939cc",
+        "$type": "color"
+      },
+      "Primary-Hover": {
+        "$value": "#1f2b99",
+        "$type": "color"
+      },
+      "Primary-Press": {
+        "$value": "#141c66",
+        "$type": "color"
+      },
+      "Secondary": {
+        "$value": "#e7e7e7",
+        "$type": "color"
+      },
+      "Secondary-Hover": {
+        "$value": "#cfcfcf",
+        "$type": "color"
+      },
+      "Secondary-Press": {
+        "$value": "#9e9e9e",
+        "$type": "color"
+      },
+      "Disabled": {
+        "$value": "#f3f3f3",
+        "$type": "color"
+      },
+      "Dangger": {
+        "$value": "#cc242a",
+        "$type": "color"
+      },
+      "Dangger-hover": {
+        "$value": "#991b1f",
+        "$type": "color"
+      },
+      "Dangger-Press": {
+        "$value": "#661215",
+        "$type": "color"
+      },
+      "Field-Readonly": {
+        "$value": "#f3f3f3",
+        "$type": "color"
+      },
+      "Field": {
+        "$value": "#ffffff",
+        "$type": "color"
+      },
+      "Selected": {
+        "$value": "#ecffff",
+        "$type": "color"
+      },
+      "Active": {
+        "$value": "#2939cc",
+        "$type": "color"
+      },
+      "Unique": {
+        "$value": "#ad29ff",
+        "$type": "color"
+      }
+    },
+    "Surface": {
+      "L1": {
+        "$value": "#ffffff",
+        "$type": "color"
+      },
+      "L2": {
+        "$value": "#fafafa",
+        "$type": "color"
+      },
+      "L3": {
+        "$value": "#e7e7e7",
+        "$type": "color"
+      },
+      "L4": {
+        "$value": "#cfcfcf",
+        "$type": "color"
+      },
+      "Scrim": {
+        "$value": "#191919a6",
+        "$type": "color"
+      }
+    },
+    "Border": {
+      "Light": {
+        "$value": "#dbdbdb",
+        "$type": "color"
+      },
+      "Medium": {
+        "$value": "#9e9e9e",
+        "$type": "color"
+      },
+      "Heavy": {
+        "$value": "#868686",
+        "$type": "color"
+      },
+      "Disabled": {
+        "$value": "#f3f3f3",
+        "$type": "color"
+      },
+      "Focus": {
+        "$value": "#3347ff",
+        "$type": "color"
+      },
+      "Hover": {
+        "$value": "#1f2b99",
+        "$type": "color"
+      },
+      "Important": {
+        "$value": "#cc242a",
+        "$type": "color"
+      },
+      "Warning": {
+        "$value": "#cc8f34",
+        "$type": "color"
+      },
+      "Success": {
+        "$value": "#24ae42",
+        "$type": "color"
+      },
+      "Unique": {
+        "$value": "#8a21cc",
+        "$type": "color"
+      }
+    }
+  }
+}

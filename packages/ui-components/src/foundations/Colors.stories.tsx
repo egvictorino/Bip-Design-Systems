@@ -41,8 +41,8 @@ const ColorSwatch = ({ name, value }: { name: string; value: string }) => {
         style={{ backgroundColor: value }}
       />
       <div className="text-center">
-        <p className="text-sm font-semibold text-text-primary">{name}</p>
-        <p className="text-xs text-text-secondary">{copied ? '¡Copiado!' : value}</p>
+        <p className="text-sm font-semibold text-txt">{name}</p>
+        <p className="text-xs text-txt-secondary">{copied ? '¡Copiado!' : value}</p>
       </div>
     </button>
   );
@@ -58,7 +58,7 @@ const ColorGroup = ({
   colors: Record<string, string>;
 }) => (
   <div className="mb-12">
-    <h2 className="text-2xl font-bold mb-6 text-text-primary">{title}</h2>
+    <h2 className="text-2xl font-bold mb-6 text-txt">{title}</h2>
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
       {Object.entries(swatches).map(([name, value]) => (
         <ColorSwatch key={name} name={name} value={value} />
@@ -71,77 +71,45 @@ const ColorGroup = ({
 
 export const Overview: Story = {
   render: () => {
-    const { interaction, text, feedback } = colors;
-
-    const interactionColors: Record<string, string> = {
-      'Primary Default':   interaction.primary.default,
-      'Primary Hover':     interaction.primary.hover,
-      'Primary Pressed':   interaction.primary.pressed,
-      'Secondary Default': interaction.secondary.default,
-      'Secondary Hover':   interaction.secondary.hover,
-      'Secondary Pressed': interaction.secondary.pressed,
-      'Tertiary Default':  interaction.tertiary.default,
-      'Tertiary Hover':    interaction.tertiary.hover,
-      'Tertiary Pressed':  interaction.tertiary.pressed,
-      'Disabled':          interaction.disabled,
-      'Field':             interaction.field,
-      'Field Readonly':    interaction['field-readonly'],
-      'Selected':          interaction.selected,
+    // Agrupar tokens por prefijo semántico
+    const groups: Record<string, Record<string, string>> = {
+      Interaction: {},
+      Text: {},
+      Surface: {},
+      Border: {},
     };
 
-    const textColors: Record<string, string> = {
-      'Primary':   text.primary,
-      'Secondary': text.secondary,
-      'Disabled':  text.disabled,
-      'White':     text.white,
-    };
-
-    const feedbackErrorColors: Record<string, string> = {
-      'Error Default': feedback.error.default,
-      'Error Light':   feedback.error.light,
-      'Error Subtle':  feedback.error.subtle,
-      'Error Muted':   feedback.error.muted,
-      'Error Text':    feedback.error.text,
-    };
-
-    const feedbackSuccessColors: Record<string, string> = {
-      'Success Default': feedback.success.default,
-      'Success Light':   feedback.success.light,
-      'Success Subtle':  feedback.success.subtle,
-      'Success Text':    feedback.success.text,
-    };
-
-    const feedbackWarningColors: Record<string, string> = {
-      'Warning Default': feedback.warning.default,
-      'Warning Light':   feedback.warning.light,
-      'Warning Subtle':  feedback.warning.subtle,
-      'Warning Text':    feedback.warning.text,
-    };
-
-    const feedbackInfoColors: Record<string, string> = {
-      'Info Light':  feedback.info.light,
-      'Info Subtle': feedback.info.subtle,
-      'Info Text':   feedback.info.text,
-    };
+    for (const [name, value] of Object.entries(colors)) {
+      if (['primary', 'secondary', 'danger', 'disabled', 'field', 'selected', 'active', 'unique'].some(
+        p => name === p || name.startsWith(p + '-')
+      )) {
+        groups.Interaction[name] = value;
+      } else if (name.startsWith('txt') || name === 'link' || name.startsWith('link-')) {
+        groups.Text[name] = value;
+      } else if (name.startsWith('surface') || name === 'scrim') {
+        groups.Surface[name] = value;
+      } else if (name.startsWith('edge')) {
+        groups.Border[name] = value;
+      }
+    }
 
     return (
       <div className="p-8 bg-gray-50 min-h-screen">
-        <h1 className="text-4xl font-bold mb-2 text-text-primary">Color Palette</h1>
-        <p className="text-xl font-semibold mb-4 text-text-secondary">Versión {pkg.version}</p>
-        <p className="text-lg text-text-primary mb-12">
+        <h1 className="text-4xl font-bold mb-2 text-gray-900">Color Palette</h1>
+        <p className="text-xl font-semibold mb-4 text-gray-500">Versión {pkg.version}</p>
+        <p className="text-lg text-gray-900 mb-4">
           Los siguientes colores son los colores base del design system.
           <br />
           Sigue las guías de uso para mantener consistencia en todo el producto.
         </p>
-        <p className="text-sm text-text-secondary mb-12">
+        <p className="text-sm text-gray-500 mb-12">
           Haz clic en cualquier muestra para copiar el código hex al portapapeles.
+          <br />
+          Los valores mostrados son CSS custom properties — los hex se resuelven en runtime.
         </p>
-        <ColorGroup title="Interaction Colors" colors={interactionColors} />
-        <ColorGroup title="Text Colors" colors={textColors} />
-        <ColorGroup title="Feedback — Error" colors={feedbackErrorColors} />
-        <ColorGroup title="Feedback — Success" colors={feedbackSuccessColors} />
-        <ColorGroup title="Feedback — Warning" colors={feedbackWarningColors} />
-        <ColorGroup title="Feedback — Info" colors={feedbackInfoColors} />
+        {Object.entries(groups).map(([title, swatches]) => (
+          <ColorGroup key={title} title={title} colors={swatches} />
+        ))}
       </div>
     );
   },

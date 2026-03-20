@@ -282,6 +282,41 @@ describe('ToastProvider / useToast', () => {
     expect(bar.style.width).toBe('100%');
   });
 
+  // ── Position prop ───────────────────────────────────────────────────────────
+
+  it('position prop — top-right is the default (container has top-4 right-4)', () => {
+    render(
+      <ToastProvider>
+        <span />
+      </ToastProvider>
+    );
+    const region = screen.getByRole('region', { name: 'Notificaciones' });
+    expect(region.className).toContain('top-4');
+    expect(region.className).toContain('right-4');
+  });
+
+  it('position prop — bottom-right positions container with bottom-4 right-4', () => {
+    render(
+      <ToastProvider position="bottom-right">
+        <span />
+      </ToastProvider>
+    );
+    const region = screen.getByRole('region', { name: 'Notificaciones' });
+    expect(region.className).toContain('bottom-4');
+    expect(region.className).toContain('right-4');
+  });
+
+  it('position prop — bottom-center positions container with bottom-4 and translate-x', () => {
+    render(
+      <ToastProvider position="bottom-center">
+        <span />
+      </ToastProvider>
+    );
+    const region = screen.getByRole('region', { name: 'Notificaciones' });
+    expect(region.className).toContain('bottom-4');
+    expect(region.className).toContain('left-1/2');
+  });
+
   // ── Max limit ───────────────────────────────────────────────────────────────
 
   it('respects max prop — oldest toast is removed when limit is exceeded', () => {

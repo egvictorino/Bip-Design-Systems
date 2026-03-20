@@ -155,12 +155,12 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, .
   return (
     <div
       className={cn(
-        'flex items-center justify-between border-b border-interaction-tertiary-default px-6 py-4',
+        'flex items-center justify-between border-b border-edge px-6 py-4',
         className
       )}
       {...props}
     >
-      <h2 id={titleId} className="text-lg font-semibold text-text-primary">
+      <h2 id={titleId} className="text-lg font-semibold text-txt">
         {children}
       </h2>
       <button
@@ -168,9 +168,9 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, .
         onClick={onClose}
         aria-label="Cerrar modal"
         className={cn(
-          'shrink-0 rounded p-1 text-text-secondary transition-colors',
-          'hover:bg-interaction-tertiary-default hover:text-text-primary',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-offset-1'
+          'shrink-0 rounded p-1 text-txt-secondary transition-colors',
+          'hover:bg-surface-3 hover:text-txt',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1'
         )}
       >
         <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5" aria-hidden="true">
@@ -199,7 +199,7 @@ export const ModalFooter: React.FC<ModalFooterProps> = ({ className, children, .
   <div
     className={cn(
       'flex items-center justify-end gap-3',
-      'border-t border-interaction-tertiary-default px-6 py-4',
+      'border-t border-edge px-6 py-4',
       className
     )}
     {...props}

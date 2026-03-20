@@ -180,7 +180,7 @@ describe('Dropdown', () => {
     render(<DefaultDropdown />);
     open();
     expect(screen.getByRole('menuitem', { name: 'Eliminar' })).toHaveClass(
-      'text-feedback-error-default'
+      'text-danger'
     );
   });
 

@@ -28,7 +28,7 @@ const DefaultModalStory = () => {
       <Modal isOpen={open} onClose={() => setOpen(false)} size="md">
         <ModalHeader>Información importante</ModalHeader>
         <ModalBody>
-          <p className="text-text-secondary text-sm">
+          <p className="text-txt-secondary text-sm">
             Este proceso puede tardar hasta 24 horas hábiles en completarse.
           </p>
         </ModalBody>
@@ -60,7 +60,7 @@ const ConfirmationModalStory = () => {
       <Modal isOpen={open} onClose={() => setOpen(false)} size="sm">
         <ModalHeader>Confirmar eliminación</ModalHeader>
         <ModalBody>
-          <p className="text-text-secondary text-sm">
+          <p className="text-txt-secondary text-sm">
             ¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.
           </p>
         </ModalBody>
@@ -126,7 +126,7 @@ const LargeModalStory = () => {
       <Modal isOpen={open} onClose={() => setOpen(false)} size="lg">
         <ModalHeader>Términos y condiciones</ModalHeader>
         <ModalBody>
-          <div className="flex flex-col gap-3 text-sm text-text-secondary">
+          <div className="flex flex-col gap-3 text-sm text-txt-secondary">
             <p>
               Al utilizar esta plataforma, aceptas los presentes términos y condiciones de uso.
               Es importante que los leas detenidamente antes de continuar.
@@ -169,7 +169,7 @@ const NoBackdropCloseModalStory = () => {
       <Modal isOpen={open} onClose={() => setOpen(false)} size="sm" closeOnBackdrop={false}>
         <ModalHeader>Acción requerida</ModalHeader>
         <ModalBody>
-          <p className="text-text-secondary text-sm">
+          <p className="text-txt-secondary text-sm">
             Debes completar esta acción antes de continuar. No puedes cerrar este modal haciendo
             clic fuera de él.
           </p>

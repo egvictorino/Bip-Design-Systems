@@ -92,11 +92,11 @@ export const OnIcon: Story = {
   args: { content: 'Más información', position: 'top', children: <span /> },
   render: () => (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-text-primary">Monto total</span>
+      <span className="text-sm text-txt">Monto total</span>
       <Tooltip content="Suma de todas las transacciones del período" position="top">
         <button
           type="button"
-          className="rounded-full text-text-secondary hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default"
+          className="rounded-full text-txt-secondary hover:text-txt focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label="Más información sobre monto total"
         >
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden="true">

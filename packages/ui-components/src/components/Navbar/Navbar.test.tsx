@@ -188,7 +188,7 @@ describe('Navbar', () => {
   it('active NavbarItem has the active background class', () => {
     renderNavbar();
     expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveClass(
-      'bg-interaction-tertiary-default'
+      'bg-surface-3'
     );
   });
 

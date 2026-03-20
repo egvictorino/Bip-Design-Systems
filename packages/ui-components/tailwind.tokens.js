@@ -1,65 +1,84 @@
 /**
- * Design tokens — single source of truth for all color values.
+ * Design tokens — Tailwind color config via CSS custom properties
+ * GENERADO AUTOMÁTICAMENTE — no editar manualmente
+ * Comando: pnpm sync:tokens
+ *
+ * Uso en componentes:
+ *   bg-primary hover:bg-primary-hover active:bg-primary-press
+ *   text-txt text-txt-secondary
+ *   border-edge focus:border-edge-focus
+ *   bg-surface-1 bg-surface-2
  *
  * Imported by:
  *   - tailwind.preset.js  (Tailwind theme)
  *   - src/foundations/Colors.stories.tsx  (Storybook documentation)
- *
- * No Node.js dependencies — safe for both browser and Node.js contexts.
  */
 
 export const colors = {
-  interaction: {
-    primary: {
-      default: '#1643A8',
-      hover:   '#10327D',
-      pressed: '#0B2152',
-    },
-    secondary: {
-      default: '#4B5468',
-      hover:   '#3A404B',
-      pressed: '#282C33',
-    },
-    tertiary: {
-      default: '#DEE4ED',
-      hover:   '#B6BBC3',
-      pressed: '#8E9298',
-    },
-    disabled:        '#EFEFEF',
-    field:           '#FCFCFC',
-    'field-readonly': '#F2F2F2',
-    selected:        '#E4FCFF',
-  },
-  text: {
-    primary:   '#23232A',
-    secondary: '#5E5E60',
-    disabled:  '#A6A7A8',
-    white:     '#FFFFFF',
-  },
-  feedback: {
-    error: {
-      default: '#EF4444', // red-500  — borders, rings, indicators, form text
-      light:   '#FEF2F2', // red-50   — container backgrounds (Alert, Dropdown hover)
-      subtle:  '#FEE2E2', // red-100  — Badge background, close button hover
-      muted:   '#FECACA', // red-200  — Toggle unchecked track
-      text:    '#B91C1C', // red-700  — text on light backgrounds (Alert, Badge)
-    },
-    success: {
-      default: '#22C55E', // green-500
-      light:   '#F0FDF4', // green-50
-      subtle:  '#DCFCE7', // green-100
-      text:    '#15803D', // green-700
-    },
-    warning: {
-      default: '#EAB308', // yellow-500
-      light:   '#FEFCE8', // yellow-50
-      subtle:  '#FEF9C3', // yellow-100
-      text:    '#A16207', // yellow-700
-    },
-    info: {
-      light:   '#EFF6FF', // blue-50   — Alert info background
-      subtle:  '#DBEAFE', // blue-100  — Badge primary background, close hover
-      text:    '#1D4ED8', // blue-700  — Alert body text, Badge text
-    },
-  },
+  // Interaction
+  active:            'var(--color-active)',
+  danger:            'var(--color-danger)',
+  'danger-hover':      'var(--color-danger-hover)',
+  'danger-light':      'var(--color-danger-light)',
+  'danger-muted':      'var(--color-danger-muted)',
+  'danger-press':      'var(--color-danger-press)',
+  'danger-subtle':     'var(--color-danger-subtle)',
+  'danger-text':       'var(--color-danger-text)',
+  disabled:          'var(--color-disabled)',
+  field:             'var(--color-field)',
+  'field-readonly':    'var(--color-field-readonly)',
+  primary:           'var(--color-primary)',
+  'primary-hover':     'var(--color-primary-hover)',
+  'primary-press':     'var(--color-primary-press)',
+  secondary:         'var(--color-secondary)',
+  'secondary-hover':   'var(--color-secondary-hover)',
+  'secondary-press':   'var(--color-secondary-press)',
+  selected:          'var(--color-selected)',
+  unique:            'var(--color-unique)',
+
+  // Text
+  link:              'var(--color-link)',
+  'link-hover':        'var(--color-link-hover)',
+  'link-press':        'var(--color-link-press)',
+  txt:               'var(--color-txt)',
+  'txt-black':         'var(--color-txt-black)',
+  'txt-disabled':      'var(--color-txt-disabled)',
+  'txt-important':     'var(--color-txt-important)',
+  'txt-secondary':     'var(--color-txt-secondary)',
+  'txt-utility':       'var(--color-txt-utility)',
+  'txt-white':         'var(--color-txt-white)',
+
+  // Surface
+  scrim:             'var(--color-scrim)',
+  'surface-1':         'var(--color-surface-1)',
+  'surface-2':         'var(--color-surface-2)',
+  'surface-3':         'var(--color-surface-3)',
+  'surface-4':         'var(--color-surface-4)',
+
+  // Border
+  edge:              'var(--color-edge)',
+  'edge-disabled':     'var(--color-edge-disabled)',
+  'edge-focus':        'var(--color-edge-focus)',
+  'edge-heavy':        'var(--color-edge-heavy)',
+  'edge-hover':        'var(--color-edge-hover)',
+  'edge-important':    'var(--color-edge-important)',
+  'edge-medium':       'var(--color-edge-medium)',
+  'edge-success':      'var(--color-edge-success)',
+  'edge-unique':       'var(--color-edge-unique)',
+  'edge-warning':      'var(--color-edge-warning)',
+
+  // Feedback
+  info:              'var(--color-info)',
+  'info-light':        'var(--color-info-light)',
+  'info-subtle':       'var(--color-info-subtle)',
+  'info-text':         'var(--color-info-text)',
+  success:           'var(--color-success)',
+  'success-light':     'var(--color-success-light)',
+  'success-subtle':    'var(--color-success-subtle)',
+  'success-text':      'var(--color-success-text)',
+  warning:           'var(--color-warning)',
+  'warning-light':     'var(--color-warning-light)',
+  'warning-subtle':    'var(--color-warning-subtle)',
+  'warning-text':      'var(--color-warning-text)',
+
 };

@@ -48,14 +48,14 @@ function getPageRange(
 
 const BASE_BTN = cn(
   'inline-flex h-8 w-8 items-center justify-center rounded text-sm font-medium transition-colors',
-  'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-offset-1'
+  'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1'
 );
-const BTN_ACTIVE = 'bg-interaction-primary-default text-text-white';
+const BTN_ACTIVE = 'bg-primary text-txt-white';
 const BTN_DEFAULT = cn(
-  'text-text-secondary hover:text-text-primary',
-  'hover:bg-interaction-tertiary-default'
+  'text-txt-secondary hover:text-txt',
+  'hover:bg-surface-3'
 );
-const BTN_DISABLED = 'opacity-40 cursor-not-allowed text-text-secondary';
+const BTN_DISABLED = 'opacity-40 cursor-not-allowed text-txt-secondary';
 
 export const Pagination: React.FC<PaginationProps> = ({
   currentPage,
@@ -99,7 +99,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         page === '...' ? (
           <span
             key={`ellipsis-${index}`}
-            className="inline-flex h-8 w-8 items-center justify-center text-text-secondary"
+            className="inline-flex h-8 w-8 items-center justify-center text-txt-secondary"
             aria-hidden="true"
           >
             &hellip;

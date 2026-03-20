@@ -86,7 +86,7 @@ export const AlignEnd: Story = {
       <DropdownTrigger>
         <button
           type="button"
-          className="rounded p-1.5 text-text-secondary hover:bg-interaction-tertiary-default hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default transition-colors"
+          className="rounded p-1.5 text-txt-secondary hover:bg-surface-3 hover:text-txt focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
           aria-label="Más opciones"
         >
           <svg

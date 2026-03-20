@@ -40,22 +40,22 @@ const baseStyles =
 
 const getVariantStyles = (error: boolean): Record<NonNullable<InputProps['variant']>, string> => ({
   outlined: cn(
-    'border bg-interaction-field',
+    'border bg-field',
     error
-      ? 'border-feedback-error-default focus-visible:ring-feedback-error-default'
-      : 'border-interaction-primary-default focus-visible:ring-interaction-primary-default hover:border-interaction-primary-hover'
+      ? 'border-danger focus-visible:ring-danger'
+      : 'border-edge focus-visible:ring-primary hover:border-edge-hover'
   ),
   filled: cn(
-    'border-0',
+    'border',
     error
-      ? 'bg-feedback-error-light focus-visible:ring-feedback-error-default'
-      : 'bg-interaction-secondary-default focus-visible:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
+      ? 'bg-danger-light focus-visible:ring-danger'
+      : 'border-edge bg-secondary focus-visible:ring-primary'
   ),
   bare: cn(
     'border-0 border-b-2 bg-transparent rounded-none',
     error
-      ? 'border-b-feedback-error-default focus-visible:ring-0'
-      : 'border-b-interaction-primary-default focus-visible:ring-0 focus-visible:border-b-interaction-primary-hover hover:border-b-interaction-primary-hover'
+      ? 'border-b-danger focus-visible:ring-0'
+      : 'border-b-primary focus-visible:ring-0 focus-visible:border-b-primary-hover hover:border-b-primary-hover'
   ),
 });
 
@@ -102,10 +102,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               'font-medium transition-colors',
               labelSizeStyles[size],
               error
-                ? 'text-feedback-error-default'
+                ? 'text-danger'
                 : focused
-                  ? 'text-interaction-primary-default'
-                  : 'text-text-primary',
+                  ? 'text-txt'
+                  : 'text-txt-utility',
               disabled && 'opacity-50'
             )}
           >
@@ -124,7 +124,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             variantStyles[variant],
             sizes[size],
             disabledStyles,
-            'disabled:bg-interaction-disabled read-only:bg-interaction-field-readonly',
+            'disabled:bg-disabled read-only:bg-field-readonly',
             fullWidth && 'w-full',
             className
           )}
@@ -144,13 +144,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(helperSizeStyles[size], 'text-feedback-error-default')}
+            className={cn(helperSizeStyles[size], 'text-danger')}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span id={messageId} className={cn(helperSizeStyles[size], 'text-text-secondary')}>
+          <span id={messageId} className={cn(helperSizeStyles[size], 'text-txt-secondary')}>
             {helperText}
           </span>
         ) : null}
