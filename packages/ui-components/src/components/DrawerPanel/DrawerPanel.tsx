@@ -96,20 +96,22 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
   if (!open) return null;
 
   return ReactDOM.createPortal(
-    /* Backdrop */
-    <div
-      role="presentation"
-      className="fixed inset-0 z-50 bg-black/50"
-      onClick={onClose}
-    >
-      {/* Panel — stops click propagation so backdrop click works correctly */}
+    <div className="fixed inset-0 z-50">
+      {/* Backdrop — click to close (hidden from a11y tree; drawer closes via X button and Escape) */}
+      <button
+        type="button"
+        aria-hidden="true"
+        tabIndex={-1}
+        className="absolute inset-0 w-full h-full bg-black/50 cursor-default"
+        onClick={onClose}
+      />
+      {/* Panel */}
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        onClick={(e) => e.stopPropagation()}
         className={cn(
           'absolute top-0 bottom-0 flex flex-col bg-white shadow-xl focus:outline-none',
           sizeStyles[size],

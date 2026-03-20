@@ -58,8 +58,8 @@ describe('DrawerPanel', () => {
   it('calls onClose when backdrop is clicked', async () => {
     const onClose = vi.fn();
     render(<DrawerPanel {...defaultProps} onClose={onClose} />);
-    // Click the backdrop (role="presentation" outer div)
-    const backdrop = document.querySelector('[role="presentation"]') as HTMLElement;
+    // Click the backdrop button (aria-hidden, purely for mouse users)
+    const backdrop = document.querySelector('button[aria-hidden="true"]') as HTMLElement;
     await userEvent.click(backdrop);
     expect(onClose).toHaveBeenCalledTimes(1);
   });

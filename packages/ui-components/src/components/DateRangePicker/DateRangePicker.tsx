@@ -309,7 +309,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
       return d;
     }, []);
 
-    const range = value ?? { from: null, to: null };
+    const range = useMemo(() => value ?? { from: null, to: null }, [value]);
 
     const [viewDate, setViewDate] = useState<Date>(() => range.from ?? today);
 

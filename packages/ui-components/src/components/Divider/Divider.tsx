@@ -48,7 +48,6 @@ export const Divider: React.FC<DividerProps> = ({
 
   return (
     <hr
-      role="separator"
       aria-orientation="horizontal"
       className={cn('border-t border-edge my-0', variant === 'dashed' && 'border-dashed', className)}
     />
