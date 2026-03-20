@@ -173,3 +173,13 @@ export type { DrawerPanelProps } from './components/DrawerPanel';
 
 export { DataTable } from './components/DataTable';
 export type { DataTableProps, ColumnDef } from './components/DataTable';
+
+export { Odontogram, CONDITION_LABELS } from './components/Odontogram';
+export type {
+  OdontogramProps,
+  OdontogramValue,
+  ToothData,
+  ToothCondition,
+  ToothSurface,
+  SurfaceCondition,
+} from './components/Odontogram';
