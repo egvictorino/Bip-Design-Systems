@@ -1,0 +1,74 @@
+/**
+ * Design tokens — CSS custom properties
+ * GENERADO AUTOMÁTICAMENTE — no editar manualmente
+ * Comando: pnpm sync:tokens
+ */
+
+:root {
+  /* Interaction */
+  --color-active: #2939cc;
+  --color-danger: #cc242a;
+  --color-danger-hover: #991b1f;
+  --color-danger-light: #fef2f2;
+  --color-danger-muted: #fecaca;
+  --color-danger-press: #661215;
+  --color-danger-subtle: #fee2e2;
+  --color-danger-text: #b91c1c;
+  --color-disabled: #f3f3f3;
+  --color-field: #ffffff;
+  --color-field-readonly: #f3f3f3;
+  --color-primary: #2939cc;
+  --color-primary-hover: #1f2b99;
+  --color-primary-press: #141c66;
+  --color-secondary: #e7e7e7;
+  --color-secondary-hover: #cfcfcf;
+  --color-secondary-press: #9e9e9e;
+  --color-selected: #ecffff;
+  --color-unique: #ad29ff;
+
+  /* Text */
+  --color-link: #3347ff;
+  --color-link-hover: #1f2b99;
+  --color-link-press: #141c66;
+  --color-txt: #191919;
+  --color-txt-black: #0d0d0d;
+  --color-txt-disabled: #ababab;
+  --color-txt-important: #cc242a;
+  --color-txt-secondary: #929292;
+  --color-txt-utility: #6e6e6e;
+  --color-txt-white: #ffffff;
+
+  /* Surface */
+  --color-scrim: #191919a6;
+  --color-surface-1: #ffffff;
+  --color-surface-2: #fafafa;
+  --color-surface-3: #e7e7e7;
+  --color-surface-4: #cfcfcf;
+
+  /* Border */
+  --color-edge: #dbdbdb;
+  --color-edge-disabled: #f3f3f3;
+  --color-edge-focus: #3347ff;
+  --color-edge-heavy: #868686;
+  --color-edge-hover: #1f2b99;
+  --color-edge-important: #cc242a;
+  --color-edge-medium: #9e9e9e;
+  --color-edge-success: #24ae42;
+  --color-edge-unique: #8a21cc;
+  --color-edge-warning: #cc8f34;
+
+  /* Feedback */
+  --color-info: #3347ff;
+  --color-info-light: #eff6ff;
+  --color-info-subtle: #dbeafe;
+  --color-info-text: #1d4ed8;
+  --color-success: #22c55e;
+  --color-success-light: #f0fdf4;
+  --color-success-subtle: #dcfce7;
+  --color-success-text: #15803d;
+  --color-warning: #eab308;
+  --color-warning-light: #fefce8;
+  --color-warning-subtle: #fef9c3;
+  --color-warning-text: #a16207;
+
+}

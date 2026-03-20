@@ -22,7 +22,7 @@ export const Elevated: Story = {
   render: (args) => (
     <Card {...args} className="w-80">
       <CardBody>
-        <p className="text-text-primary text-sm">Contenido de la tarjeta con sombra elevada.</p>
+        <p className="text-txt text-sm">Contenido de la tarjeta con sombra elevada.</p>
       </CardBody>
     </Card>
   ),
@@ -33,7 +33,7 @@ export const Outlined: Story = {
   render: (args) => (
     <Card {...args} className="w-80">
       <CardBody>
-        <p className="text-text-primary text-sm">Contenido de la tarjeta con borde.</p>
+        <p className="text-txt text-sm">Contenido de la tarjeta con borde.</p>
       </CardBody>
     </Card>
   ),
@@ -44,7 +44,7 @@ export const Flat: Story = {
   render: (args) => (
     <Card {...args} className="w-80">
       <CardBody>
-        <p className="text-text-primary text-sm">Contenido de la tarjeta plana.</p>
+        <p className="text-txt text-sm">Contenido de la tarjeta plana.</p>
       </CardBody>
     </Card>
   ),
@@ -55,10 +55,10 @@ export const WithHeader: Story = {
   render: (args) => (
     <Card {...args} className="w-80">
       <CardHeader>
-        <h3 className="text-base font-semibold text-text-primary">Título de la tarjeta</h3>
+        <h3 className="text-base font-semibold text-txt">Título de la tarjeta</h3>
       </CardHeader>
       <CardBody>
-        <p className="text-text-secondary text-sm">
+        <p className="text-txt-secondary text-sm">
           Descripción o contenido principal de la tarjeta.
         </p>
       </CardBody>
@@ -71,10 +71,10 @@ export const WithHeaderAndFooter: Story = {
   render: (args) => (
     <Card {...args} className="w-80">
       <CardHeader>
-        <h3 className="text-base font-semibold text-text-primary">Resumen de cuenta</h3>
+        <h3 className="text-base font-semibold text-txt">Resumen de cuenta</h3>
       </CardHeader>
       <CardBody>
-        <p className="text-text-secondary text-sm">
+        <p className="text-txt-secondary text-sm">
           Revisa los detalles de tu cuenta antes de confirmar.
         </p>
       </CardBody>
@@ -98,14 +98,14 @@ export const WithBadge: Story = {
     <Card {...args} className="w-80">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-semibold text-text-primary">Estado del pedido</h3>
+          <h3 className="text-base font-semibold text-txt">Estado del pedido</h3>
           <Badge variant="success" dot>
             Completado
           </Badge>
         </div>
       </CardHeader>
       <CardBody>
-        <p className="text-text-secondary text-sm">
+        <p className="text-txt-secondary text-sm">
           Tu pedido #4521 fue entregado el 25 de febrero de 2026.
         </p>
       </CardBody>
@@ -117,7 +117,7 @@ export const WithPadding: Story = {
   args: { variant: 'elevated', padding: 'md', children: null },
   render: (args) => (
     <Card {...args} className="w-80">
-      <p className="text-text-secondary text-sm">
+      <p className="text-txt-secondary text-sm">
         Tarjeta con padding directo, sin usar CardBody.
       </p>
     </Card>
@@ -130,17 +130,17 @@ export const AllVariants: Story = {
     <div className="flex flex-col gap-4 w-80">
       <Card variant="elevated">
         <CardBody>
-          <p className="text-text-secondary text-sm">Elevated — con sombra</p>
+          <p className="text-txt-secondary text-sm">Elevated — con sombra</p>
         </CardBody>
       </Card>
       <Card variant="outlined">
         <CardBody>
-          <p className="text-text-secondary text-sm">Outlined — con borde</p>
+          <p className="text-txt-secondary text-sm">Outlined — con borde</p>
         </CardBody>
       </Card>
       <Card variant="flat">
         <CardBody>
-          <p className="text-text-secondary text-sm">Flat — fondo gris</p>
+          <p className="text-txt-secondary text-sm">Flat — fondo gris</p>
         </CardBody>
       </Card>
     </div>

@@ -68,8 +68,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
               sizes[size].box,
               error
-                ? 'border-feedback-error-default group-has-[:checked]:bg-feedback-error-default group-has-[:checked]:border-feedback-error-default group-has-[:focus-visible]:ring-feedback-error-default'
-                : 'border-interaction-primary-default group-has-[:checked]:bg-interaction-primary-default group-has-[:checked]:border-interaction-primary-default group-has-[:focus-visible]:ring-interaction-primary-default hover:border-interaction-primary-hover',
+                ? 'border-danger group-has-[:checked]:bg-danger group-has-[:checked]:border-danger group-has-[:focus-visible]:ring-danger'
+                : 'border-primary group-has-[:checked]:bg-primary group-has-[:checked]:border-primary group-has-[:focus-visible]:ring-primary hover:border-primary-hover',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
           >
@@ -106,7 +106,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               className={cn(
                 'select-none font-medium transition-colors cursor-pointer',
                 sizes[size].label,
-                error ? 'text-feedback-error-default' : 'text-text-primary',
+                error ? 'text-danger' : 'text-txt',
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
             >
@@ -119,7 +119,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-feedback-error-default', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-danger', sizes[size].indent)}
             role="alert"
           >
             {errorMessage}
@@ -127,7 +127,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         ) : helperText ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-txt-secondary', sizes[size].indent)}
           >
             {helperText}
           </span>

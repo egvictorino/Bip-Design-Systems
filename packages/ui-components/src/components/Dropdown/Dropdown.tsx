@@ -179,7 +179,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
       tabIndex={-1}
       onKeyDown={handleKeyDown}
       className={cn(
-        'absolute z-50 min-w-[160px] rounded-md border border-interaction-tertiary-default bg-white py-1 shadow-md',
+        'absolute z-50 min-w-[160px] rounded-md border border-edge bg-white py-1 shadow-md',
         placementStyles[placement],
         className
       )}
@@ -220,10 +220,10 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
       onClick={handleClick}
       className={cn(
         'flex w-full items-center gap-2 px-4 py-2 text-sm text-left transition-colors',
-        'focus:outline-none focus-visible:bg-interaction-tertiary-default',
+        'focus:outline-none focus-visible:bg-surface-3',
         danger
-          ? 'text-feedback-error-default hover:bg-feedback-error-light focus-visible:bg-feedback-error-light'
-          : 'text-text-primary hover:bg-interaction-tertiary-default',
+          ? 'text-danger hover:bg-danger-light focus-visible:bg-danger-light'
+          : 'text-txt hover:bg-surface-3',
         disabled && 'cursor-not-allowed opacity-50',
         className
       )}
@@ -246,7 +246,7 @@ export const DropdownDivider: React.FC = () => (
   <div
     role="separator"
     aria-orientation="horizontal"
-    className="my-1 border-t border-interaction-tertiary-default"
+    className="my-1 border-t border-edge"
   />
 );
 

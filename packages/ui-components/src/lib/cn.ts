@@ -2,76 +2,17 @@ import { clsx, type ClassValue } from 'clsx';
 import { extendTailwindMerge } from 'tailwind-merge';
 
 /**
- * Tailwind-merge configurado con los tokens de diseño del proyecto.
- * Garantiza que las clases personalizadas (interaction-*, text-*) se fusionen
- * correctamente cuando hay conflictos, igual que las clases base de Tailwind.
+ * Tailwind-merge con tokens semánticos del proyecto.
+ * GENERADO AUTOMÁTICAMENTE — no editar manualmente
+ * Comando: pnpm sync:tokens
  */
 const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
-      'bg-color': [
-        {
-          'bg-interaction': [
-            'primary-default',
-            'primary-hover',
-            'primary-pressed',
-            'secondary-default',
-            'secondary-hover',
-            'secondary-pressed',
-            'tertiary-default',
-            'tertiary-hover',
-            'tertiary-pressed',
-            'disabled',
-            'field',
-            'field-readonly',
-            'selected',
-          ],
-          'bg-text': ['primary', 'secondary', 'disabled', 'white'],
-          'bg-feedback': [
-            'error-default', 'error-light', 'error-subtle', 'error-muted',
-            'success-default', 'success-light', 'success-subtle',
-            'warning-default', 'warning-light', 'warning-subtle',
-            'info-light', 'info-subtle',
-          ],
-        },
-      ],
-      'text-color': [
-        {
-          'text-text': ['primary', 'secondary', 'disabled', 'white'],
-          'text-feedback': [
-            'error-default', 'error-text',
-            'success-default', 'success-text',
-            'warning-default', 'warning-text',
-            'info-text',
-          ],
-        },
-      ],
-      'border-color': [
-        {
-          'border-interaction': [
-            'primary-default',
-            'primary-hover',
-            'primary-pressed',
-            'secondary-default',
-            'secondary-hover',
-            'secondary-pressed',
-            'tertiary-default',
-            'tertiary-hover',
-            'tertiary-pressed',
-          ],
-          'border-feedback': [
-            'error-default',
-            'success-default',
-            'warning-default',
-          ],
-        },
-      ],
-      'ring-color': [
-        {
-          'ring-interaction': ['primary-default', 'secondary-default'],
-          'ring-feedback': ['error-default', 'success-default', 'warning-default'],
-        },
-      ],
+      'bg-color': [{ bg: ['primary', 'primary-hover', 'primary-press', 'secondary', 'secondary-hover', 'secondary-press', 'disabled', 'danger', 'danger-hover', 'danger-press', 'field-readonly', 'field', 'selected', 'active', 'unique', 'danger-light', 'danger-subtle', 'danger-muted', 'danger-text', 'txt-black', 'txt', 'txt-secondary', 'txt-utility', 'txt-disabled', 'link', 'link-hover', 'link-press', 'txt-white', 'txt-important', 'surface-1', 'surface-2', 'surface-3', 'surface-4', 'scrim', 'success', 'success-light', 'success-subtle', 'success-text', 'warning', 'warning-light', 'warning-subtle', 'warning-text', 'info', 'info-light', 'info-subtle', 'info-text'] }],
+      'text-color': [{ text: ['txt-black', 'txt', 'txt-secondary', 'txt-utility', 'txt-disabled', 'link', 'link-hover', 'link-press', 'txt-white', 'txt-important', 'primary', 'primary-hover', 'primary-press', 'secondary', 'secondary-hover', 'secondary-press', 'disabled', 'danger', 'danger-hover', 'danger-press', 'field-readonly', 'field', 'selected', 'active', 'unique', 'danger-light', 'danger-subtle', 'danger-muted', 'danger-text', 'success', 'success-light', 'success-subtle', 'success-text', 'warning', 'warning-light', 'warning-subtle', 'warning-text', 'info', 'info-light', 'info-subtle', 'info-text'] }],
+      'border-color': [{ border: ['primary', 'primary-hover', 'primary-press', 'secondary', 'secondary-hover', 'secondary-press', 'disabled', 'danger', 'danger-hover', 'danger-press', 'field-readonly', 'field', 'selected', 'active', 'unique', 'danger-light', 'danger-subtle', 'danger-muted', 'danger-text', 'edge', 'edge-medium', 'edge-heavy', 'edge-disabled', 'edge-focus', 'edge-hover', 'edge-important', 'edge-warning', 'edge-success', 'edge-unique', 'success', 'success-light', 'success-subtle', 'success-text', 'warning', 'warning-light', 'warning-subtle', 'warning-text', 'info', 'info-light', 'info-subtle', 'info-text'] }],
+      'ring-color': [{ ring: ['primary', 'primary-hover', 'primary-press', 'secondary', 'secondary-hover', 'secondary-press', 'disabled', 'danger', 'danger-hover', 'danger-press', 'field-readonly', 'field', 'selected', 'active', 'unique', 'danger-light', 'danger-subtle', 'danger-muted', 'danger-text', 'edge', 'edge-medium', 'edge-heavy', 'edge-disabled', 'edge-focus', 'edge-hover', 'edge-important', 'edge-warning', 'edge-success', 'edge-unique', 'success', 'success-light', 'success-subtle', 'success-text', 'warning', 'warning-light', 'warning-subtle', 'warning-text', 'info', 'info-light', 'info-subtle', 'info-text'] }],
     },
   },
 });

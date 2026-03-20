@@ -14,9 +14,9 @@ const sizeStyles: Record<NonNullable<SpinnerProps['size']>, string> = {
 };
 
 const variantStyles: Record<NonNullable<SpinnerProps['variant']>, string> = {
-  primary: 'text-interaction-primary-default',
-  secondary: 'text-interaction-secondary-default',
-  white: 'text-text-white',
+  primary: 'text-primary',
+  secondary: 'text-secondary',
+  white: 'text-txt-white',
 };
 
 export const Spinner: React.FC<SpinnerProps> = ({

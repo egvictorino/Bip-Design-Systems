@@ -9,18 +9,18 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variants: Record<NonNullable<BadgeProps['variant']>, string> = {
-  primary: 'bg-feedback-info-subtle text-interaction-primary-default',
-  success: 'bg-feedback-success-subtle text-feedback-success-text',
-  warning: 'bg-feedback-warning-subtle text-feedback-warning-text',
-  error: 'bg-feedback-error-subtle text-feedback-error-text',
-  neutral: 'bg-interaction-tertiary-default text-text-secondary',
+  primary: 'bg-info-subtle text-primary',
+  success: 'bg-success-subtle text-success-text',
+  warning: 'bg-warning-subtle text-warning-text',
+  error: 'bg-danger-subtle text-danger-text',
+  neutral: 'bg-surface-3 text-txt-secondary',
 };
 
 const dotVariants: Record<NonNullable<BadgeProps['variant']>, string> = {
-  primary: 'bg-interaction-primary-default',
-  success: 'bg-feedback-success-default',
-  warning: 'bg-feedback-warning-default',
-  error: 'bg-feedback-error-default',
+  primary: 'bg-primary',
+  success: 'bg-success',
+  warning: 'bg-warning',
+  error: 'bg-danger',
   neutral: 'bg-text-secondary',
 };
 

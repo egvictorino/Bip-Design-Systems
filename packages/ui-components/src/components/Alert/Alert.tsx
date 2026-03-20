@@ -23,34 +23,34 @@ const variantStyles: Record<
 > = {
   info: {
     container:
-      'bg-feedback-info-light border-interaction-primary-default text-interaction-primary-default',
-    title: 'text-interaction-primary-default',
-    body: 'text-feedback-info-text',
-    close: 'text-interaction-primary-default hover:bg-feedback-info-subtle',
-    focusRing: 'focus-visible:ring-interaction-primary-default',
+      'bg-info-light border-primary text-primary',
+    title: 'text-primary',
+    body: 'text-info-text',
+    close: 'text-primary hover:bg-info-subtle',
+    focusRing: 'focus-visible:ring-primary',
   },
   success: {
     container:
-      'bg-feedback-success-light border-feedback-success-default text-feedback-success-text',
-    title: 'text-feedback-success-text',
-    body: 'text-feedback-success-text',
-    close: 'text-feedback-success-default hover:bg-feedback-success-subtle',
-    focusRing: 'focus-visible:ring-feedback-success-default',
+      'bg-success-light border-success text-success-text',
+    title: 'text-success-text',
+    body: 'text-success-text',
+    close: 'text-success hover:bg-success-subtle',
+    focusRing: 'focus-visible:ring-success',
   },
   warning: {
     container:
-      'bg-feedback-warning-light border-feedback-warning-default text-feedback-warning-text',
-    title: 'text-feedback-warning-text',
-    body: 'text-feedback-warning-text',
-    close: 'text-feedback-warning-default hover:bg-feedback-warning-subtle',
-    focusRing: 'focus-visible:ring-feedback-warning-default',
+      'bg-warning-light border-warning text-warning-text',
+    title: 'text-warning-text',
+    body: 'text-warning-text',
+    close: 'text-warning hover:bg-warning-subtle',
+    focusRing: 'focus-visible:ring-warning',
   },
   error: {
-    container: 'bg-feedback-error-light border-feedback-error-default text-feedback-error-text',
-    title: 'text-feedback-error-text',
-    body: 'text-feedback-error-text',
-    close: 'text-feedback-error-default hover:bg-feedback-error-subtle',
-    focusRing: 'focus-visible:ring-feedback-error-default',
+    container: 'bg-danger-light border-danger text-danger-text',
+    title: 'text-danger-text',
+    body: 'text-danger-text',
+    close: 'text-danger hover:bg-danger-subtle',
+    focusRing: 'focus-visible:ring-danger',
   },
 };
 

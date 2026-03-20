@@ -83,7 +83,7 @@ describe('Pagination', () => {
   it('active page button has the active background class', () => {
     render(<Pagination currentPage={3} totalPages={5} onPageChange={() => {}} />);
     expect(screen.getByRole('button', { name: 'Página 3' })).toHaveClass(
-      'bg-interaction-primary-default'
+      'bg-primary'
     );
   });
 

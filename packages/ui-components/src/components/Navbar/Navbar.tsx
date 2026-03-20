@@ -59,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({ children, className }) => {
         ref={navRef}
         aria-label="Navegación principal"
         className={cn(
-          'sticky top-0 z-50 bg-white border-b border-interaction-tertiary-default',
+          'sticky top-0 z-50 bg-white border-b border-edge',
           className
         )}
       >
@@ -75,9 +75,9 @@ export const Navbar: React.FC<NavbarProps> = ({ children, className }) => {
             aria-label={isMobileOpen ? 'Cerrar menú' : 'Abrir menú'}
             onClick={toggleMobile}
             className={cn(
-              'md:hidden flex items-center justify-center w-9 h-9 rounded-md text-text-secondary',
-              'hover:bg-interaction-tertiary-default hover:text-text-primary',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-offset-1',
+              'md:hidden flex items-center justify-center w-9 h-9 rounded-md text-txt-secondary',
+              'hover:bg-surface-3 hover:text-txt',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1',
               'transition-colors'
             )}
           >
@@ -136,7 +136,7 @@ export const NavbarBrand: React.FC<NavbarBrandProps> = ({ children, href, classN
   const { closeMobile } = useNavbar();
 
   const baseClass = cn(
-    'flex items-center gap-2 font-semibold text-sm text-text-primary shrink-0',
+    'flex items-center gap-2 font-semibold text-sm text-txt shrink-0',
     className
   );
 
@@ -174,7 +174,7 @@ export const NavbarNav: React.FC<NavbarNavProps> = ({ children, className }) => 
       {isMobileOpen && (
         <ul
           id={mobileMenuId}
-          className="absolute top-full left-0 right-0 bg-white border-b border-interaction-tertiary-default shadow-md flex flex-col md:hidden px-4 py-3 gap-1 list-none"
+          className="absolute top-full left-0 right-0 bg-white border-b border-edge shadow-md flex flex-col md:hidden px-4 py-3 gap-1 list-none"
         >
           {children}
         </ul>
@@ -208,12 +208,12 @@ export const NavbarItem: React.FC<NavbarItemProps> = ({
 
   const baseClass = cn(
     'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-offset-1',
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1',
     'w-full md:w-auto',
     active
-      ? 'bg-interaction-tertiary-default text-text-primary'
-      : 'text-text-secondary hover:bg-interaction-tertiary-default hover:text-text-primary',
-    disabled && 'text-text-disabled cursor-not-allowed pointer-events-none',
+      ? 'bg-surface-3 text-txt'
+      : 'text-txt-secondary hover:bg-surface-3 hover:text-txt',
+    disabled && 'text-txt-disabled cursor-not-allowed pointer-events-none',
     className
   );
 

@@ -58,7 +58,7 @@ export const AllVariants: Story = {
     <div className="flex items-center gap-6">
       <Spinner size="md" variant="primary" />
       <Spinner size="md" variant="secondary" />
-      <div className="flex items-center justify-center rounded bg-interaction-primary-default p-4">
+      <div className="flex items-center justify-center rounded bg-primary p-4">
         <Spinner size="md" variant="white" />
       </div>
     </div>

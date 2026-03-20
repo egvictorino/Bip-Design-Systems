@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from './Table';
 import { Badge } from '../Badge';
@@ -79,18 +79,35 @@ export const StripedCompact: Story = {
   render: () => <ClientesTable striped compact />,
 };
 
+const montoNumerico = (monto: string) => Number(monto.replace(/[$,]/g, ''));
+
 const WithSortingTableStory = () => {
-  const [sortCol, setSortCol] = useState<'nombre' | 'monto' | null>(null);
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [sort, setSort] = useState<{ col: 'nombre' | 'monto' | null; dir: 'asc' | 'desc' }>({
+    col: null,
+    dir: 'asc',
+  });
 
   const handleSort = (col: 'nombre' | 'monto') => {
-    if (sortCol === col) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortCol(col);
-      setSortDir('asc');
-    }
+    setSort((prev) => {
+      if (prev.col !== col) return { col, dir: 'asc' };
+      if (prev.dir === 'asc') return { col, dir: 'desc' };
+      return { col: null, dir: 'asc' }; // tercer clic → sin orden
+    });
   };
+
+  const sortedClientes = useMemo(
+    () =>
+      [...clientes].sort((a, b) => {
+        if (!sort.col) return 0;
+        if (sort.col === 'nombre') {
+          const cmp = a.nombre.localeCompare(b.nombre, 'es-MX');
+          return sort.dir === 'asc' ? cmp : -cmp;
+        }
+        const cmp = montoNumerico(a.monto) - montoNumerico(b.monto);
+        return sort.dir === 'asc' ? cmp : -cmp;
+      }),
+    [sort]
+  );
 
   return (
     <Table>
@@ -98,7 +115,7 @@ const WithSortingTableStory = () => {
         <TableRow>
           <TableHeader
             sortable
-            sortDirection={sortCol === 'nombre' ? sortDir : null}
+            sortDirection={sort.col === 'nombre' ? sort.dir : null}
             onSort={() => handleSort('nombre')}
           >
             Nombre
@@ -107,7 +124,7 @@ const WithSortingTableStory = () => {
           <TableHeader>Estado</TableHeader>
           <TableHeader
             sortable
-            sortDirection={sortCol === 'monto' ? sortDir : null}
+            sortDirection={sort.col === 'monto' ? sort.dir : null}
             onSort={() => handleSort('monto')}
             align="right"
           >
@@ -116,7 +133,7 @@ const WithSortingTableStory = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {clientes.map((c) => (
+        {sortedClientes.map((c) => (
           <TableRow key={c.id}>
             <TableCell>{c.nombre}</TableCell>
             <TableCell>{c.email}</TableCell>
@@ -152,8 +169,8 @@ export const WithActions: Story = {
           <TableRow key={c.id}>
             <TableCell>
               <div>
-                <p className="font-medium text-text-primary">{c.nombre}</p>
-                <p className="text-xs text-text-secondary">{c.email}</p>
+                <p className="font-medium text-txt">{c.nombre}</p>
+                <p className="text-xs text-txt-secondary">{c.email}</p>
               </div>
             </TableCell>
             <TableCell>
@@ -190,7 +207,7 @@ export const Empty: Story = {
       <TableBody>
         <TableRow>
           <TableCell colSpan={3}>
-            <p className="py-8 text-center text-text-secondary">No hay registros que mostrar.</p>
+            <p className="py-8 text-center text-txt-secondary">No hay registros que mostrar.</p>
           </TableCell>
         </TableRow>
       </TableBody>

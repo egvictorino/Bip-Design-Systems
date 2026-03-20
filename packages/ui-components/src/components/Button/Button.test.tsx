@@ -37,25 +37,25 @@ describe('Button', () => {
 
   it('applies primary variant by default', () => {
     render(<Button>Primary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-interaction-primary-default', 'text-text-white');
+    expect(screen.getByRole('button')).toHaveClass('bg-primary', 'text-txt-white');
   });
 
-  it('applies secondary variant with white text (contrast)', () => {
+  it('applies secondary variant with dark text on light background', () => {
     render(<Button variant="secondary">Secondary</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('bg-interaction-secondary-default', 'text-text-white');
+    expect(btn).toHaveClass('bg-secondary', 'text-txt-primary');
   });
 
   it('applies bare variant', () => {
     render(<Button variant="bare">Bare</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('border', 'border-interaction-primary-default', 'bg-transparent');
+    expect(btn).toHaveClass('border', 'border-primary', 'bg-transparent');
   });
 
   it('applies soul variant', () => {
     render(<Button variant="soul">Soul</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('bg-transparent', 'text-interaction-primary-default');
+    expect(btn).toHaveClass('bg-transparent', 'text-primary');
   });
 
   // ── Sizes ───────────────────────────────────────────────────────────────────
@@ -128,6 +128,6 @@ describe('Button', () => {
     render(<Button className="mt-4">Custom</Button>);
     const button = screen.getByRole('button');
     expect(button).toHaveClass('mt-4');
-    expect(button).toHaveClass('bg-interaction-primary-default');
+    expect(button).toHaveClass('bg-primary');
   });
 });

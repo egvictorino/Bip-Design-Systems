@@ -26,13 +26,13 @@ export const Default: Story = {
         <Tab value="notificaciones">Notificaciones</Tab>
       </TabList>
       <TabPanel value="general" className="pt-4">
-        <p className="text-sm text-text-secondary">Configuración general de la cuenta.</p>
+        <p className="text-sm text-txt-secondary">Configuración general de la cuenta.</p>
       </TabPanel>
       <TabPanel value="seguridad" className="pt-4">
-        <p className="text-sm text-text-secondary">Opciones de seguridad y contraseña.</p>
+        <p className="text-sm text-txt-secondary">Opciones de seguridad y contraseña.</p>
       </TabPanel>
       <TabPanel value="notificaciones" className="pt-4">
-        <p className="text-sm text-text-secondary">Preferencias de notificaciones.</p>
+        <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -48,13 +48,13 @@ export const Pill: Story = {
         <Tab value="inventario">Inventario</Tab>
       </TabList>
       <TabPanel value="ventas" className="pt-4">
-        <p className="text-sm text-text-secondary">Reporte de ventas del período.</p>
+        <p className="text-sm text-txt-secondary">Reporte de ventas del período.</p>
       </TabPanel>
       <TabPanel value="compras" className="pt-4">
-        <p className="text-sm text-text-secondary">Reporte de compras del período.</p>
+        <p className="text-sm text-txt-secondary">Reporte de compras del período.</p>
       </TabPanel>
       <TabPanel value="inventario" className="pt-4">
-        <p className="text-sm text-text-secondary">Estado actual del inventario.</p>
+        <p className="text-sm text-txt-secondary">Estado actual del inventario.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -72,13 +72,13 @@ export const WithDisabled: Story = {
         </Tab>
       </TabList>
       <TabPanel value="activos" className="pt-4">
-        <p className="text-sm text-text-secondary">Contratos activos.</p>
+        <p className="text-sm text-txt-secondary">Contratos activos.</p>
       </TabPanel>
       <TabPanel value="pendientes" className="pt-4">
-        <p className="text-sm text-text-secondary">Contratos pendientes de aprobación.</p>
+        <p className="text-sm text-txt-secondary">Contratos pendientes de aprobación.</p>
       </TabPanel>
       <TabPanel value="archivados" className="pt-4">
-        <p className="text-sm text-text-secondary">Contratos archivados.</p>
+        <p className="text-sm text-txt-secondary">Contratos archivados.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -88,9 +88,9 @@ const ControlledTabsStory = () => {
   const [activeTab, setActiveTab] = useState('info');
   return (
     <div className="flex flex-col gap-3 w-[520px]">
-      <p className="text-xs text-text-secondary">
+      <p className="text-xs text-txt-secondary">
         Pestaña activa:{' '}
-        <span className="font-medium text-text-primary">{activeTab}</span>
+        <span className="font-medium text-txt">{activeTab}</span>
       </p>
       <Tabs value={activeTab} onChange={setActiveTab}>
         <TabList>
@@ -99,13 +99,13 @@ const ControlledTabsStory = () => {
           <Tab value="documentos">Documentos</Tab>
         </TabList>
         <TabPanel value="info" className="pt-4">
-          <p className="text-sm text-text-secondary">Datos generales del cliente.</p>
+          <p className="text-sm text-txt-secondary">Datos generales del cliente.</p>
         </TabPanel>
         <TabPanel value="historial" className="pt-4">
-          <p className="text-sm text-text-secondary">Historial de transacciones.</p>
+          <p className="text-sm text-txt-secondary">Historial de transacciones.</p>
         </TabPanel>
         <TabPanel value="documentos" className="pt-4">
-          <p className="text-sm text-text-secondary">Documentos adjuntos.</p>
+          <p className="text-sm text-txt-secondary">Documentos adjuntos.</p>
         </TabPanel>
       </Tabs>
     </div>
@@ -148,13 +148,13 @@ export const WithBadge: Story = {
         </Tab>
       </TabList>
       <TabPanel value="abiertos" className="pt-4">
-        <p className="text-sm text-text-secondary">Tickets abiertos en espera de atención.</p>
+        <p className="text-sm text-txt-secondary">Tickets abiertos en espera de atención.</p>
       </TabPanel>
       <TabPanel value="cerrados" className="pt-4">
-        <p className="text-sm text-text-secondary">Tickets resueltos y cerrados.</p>
+        <p className="text-sm text-txt-secondary">Tickets resueltos y cerrados.</p>
       </TabPanel>
       <TabPanel value="cancelados" className="pt-4">
-        <p className="text-sm text-text-secondary">Tickets cancelados por el usuario.</p>
+        <p className="text-sm text-txt-secondary">Tickets cancelados por el usuario.</p>
       </TabPanel>
     </Tabs>
   ),

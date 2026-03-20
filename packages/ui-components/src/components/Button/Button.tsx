@@ -17,22 +17,22 @@ const baseStyles =
 
 const variants: Record<NonNullable<ButtonProps['variant']>, string> = {
   primary:
-    'bg-interaction-primary-default text-text-white ' +
-    'hover:bg-interaction-primary-hover active:bg-interaction-primary-pressed ' +
-    'focus-visible:ring-interaction-primary-default',
+    'bg-primary text-txt-white ' +
+    'hover:bg-primary-hover active:bg-primary-press ' +
+    'focus-visible:ring-primary',
   secondary:
-    'bg-interaction-secondary-default text-text-white ' +
-    'hover:bg-interaction-secondary-hover active:bg-interaction-secondary-pressed ' +
-    'focus-visible:ring-interaction-secondary-default',
+    'bg-secondary text-txt-primary ' +
+    'hover:bg-secondary-hover active:bg-secondary-press ' +
+    'focus-visible:ring-secondary',
   bare:
-    'bg-transparent text-interaction-primary-default border border-interaction-primary-default ' +
-    'hover:text-interaction-primary-hover hover:border-interaction-primary-hover ' +
-    'active:text-interaction-primary-pressed active:border-interaction-primary-pressed ' +
-    'focus-visible:ring-interaction-primary-default',
+    'bg-transparent text-primary border border-primary ' +
+    'hover:text-primary-hover hover:border-primary-hover ' +
+    'active:text-primary-press active:border-primary-press ' +
+    'focus-visible:ring-primary',
   soul:
-    'bg-transparent text-interaction-primary-default ' +
-    'hover:bg-interaction-tertiary-default active:bg-interaction-tertiary-hover ' +
-    'focus-visible:ring-interaction-primary-default',
+    'bg-transparent text-primary ' +
+    'hover:text-primary-hover active:text-primary-press ' +
+    'focus-visible:ring-primary',
 };
 
 const sizes: Record<NonNullable<ButtonProps['size']>, string> = {

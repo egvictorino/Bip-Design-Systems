@@ -12,7 +12,9 @@ Monorepo basado en **pnpm workspaces** que centraliza la librería de componente
 - [Inicio Rápido](#inicio-rápido)
 - [Comandos](#comandos)
 - [Componentes UI](#componentes-ui)
+- [Utilidades Compartidas](#utilidades-compartidas)
 - [Tokens de Diseño](#tokens-de-diseño)
+- [Estilos Tailwind en los Componentes](#estilos-tailwind-en-los-componentes)
 - [Estrategia de Branches](#estrategia-de-branches)
 - [CI/CD](#cicd)
 - [Usar en un Proyecto Externo](#usar-en-un-proyecto-externo)
@@ -99,9 +101,16 @@ pnpm dev     # Modo desarrollo paralelo
 | `Input` | Campo de texto con label, helper text, estados `error`, `disabled` y `readOnly` |
 | `Textarea` | Área de texto con control de resize (`none / vertical / horizontal / both`) |
 | `Select` | Selector nativo con chevron custom, variantes y accesibilidad |
+| `MultiSelect` | Selector múltiple con chips, búsqueda interna y navegación por teclado |
 | `Checkbox` | Checkbox accesible con soporte para estado indeterminado |
 | `Radio` | Radio button con label y helper text |
 | `Toggle` | Interruptor on/off con label integrado |
+| `DatePicker` | Selector de fecha con calendario, rangos min/max y accesibilidad completa |
+| `TimePicker` | Selector de hora con columnas H/M scrollables y `step` configurable |
+| `DateRangePicker` | Selector de rango de fechas (inicio + fin) con dos calendarios |
+| `Calendar` | Calendario standalone reutilizable |
+| `FileUpload` | Zona de arrastre y selección de archivos |
+| `SearchInput` | Input con icono de búsqueda integrado |
 
 ### Retroalimentación
 
@@ -112,6 +121,7 @@ pnpm dev     # Modo desarrollo paralelo
 | `Badge` | Etiqueta compacta con variantes semánticas y punto indicador opcional |
 | `Spinner` | Indicador de carga animado con tamaños y colores |
 | `Skeleton` | Placeholder de carga con variantes `text`, `circle`, `rect` y prop `lines` |
+| `ProgressBar` | Barra de progreso con variantes de color y animación |
 
 ### Contenido y datos
 
@@ -119,6 +129,11 @@ pnpm dev     # Modo desarrollo paralelo
 |------------|-------------|
 | `Card` | Tarjeta compuesta: `CardHeader`, `CardBody`, `CardFooter` |
 | `Table` | Tabla responsiva: `TableHead`, `TableBody`, `TableRow`, `TableHeader`, `TableCell` — soporta ordenamiento, striped, compact y filas seleccionables (`selected`) |
+| `DataTable` | Tabla avanzada con paginación, ordenamiento y filtrado integrados |
+| `StatsCard` | Tarjeta de estadística con valor principal, etiqueta y tendencia |
+| `Avatar` / `AvatarGroup` | Avatar de usuario con imagen o iniciales; `AvatarGroup` para apilado con desbordamiento |
+| `Timeline` / `TimelineItem` | Línea de tiempo vertical con ítems personalizables |
+| `Stepper` / `StepperStep` | Indicador de pasos tipo wizard con estados completado/activo/pendiente |
 
 ### Navegación
 
@@ -129,12 +144,15 @@ pnpm dev     # Modo desarrollo paralelo
 | `Tabs` | Pestañas accesibles: `TabList`, `Tab`, `TabPanel` |
 | `Pagination` | Paginador con salto a primera/última página |
 | `Dropdown` | Menú desplegable compound: `DropdownTrigger`, `DropdownMenu`, `DropdownItem`, `DropdownDivider` — navegación por teclado completa |
+| `Accordion` | Panel expandible compound: `AccordionItem`, `AccordionTrigger`, `AccordionContent` |
 
 ### Overlay
 
 | Componente | Descripción |
 |------------|-------------|
 | `Modal` | Diálogo con focus trap y portal: `ModalHeader`, `ModalBody`, `ModalFooter` |
+| `ConfirmDialog` | Diálogo de confirmación con acciones positiva/negativa |
+| `DrawerPanel` | Panel deslizable lateral con overlay de fondo |
 | `Tooltip` | Tooltip posicionable con delay configurable |
 
 ### Navegación lateral
@@ -142,6 +160,14 @@ pnpm dev     # Modo desarrollo paralelo
 | Componente | Descripción |
 |------------|-------------|
 | `Sidebar` | Panel lateral compound: `SidebarHeader`, `SidebarBrand`, `SidebarContent`, `SidebarGroup`, `SidebarGroupLabel`, `SidebarItem`, `SidebarFooter`, `SidebarTrigger` — colapsable (w-60↔w-16), drawer móvil, Tooltip en ítems colapsados |
+
+### Utilidades y Misceláneos
+
+| Componente | Descripción |
+|------------|-------------|
+| `Divider` | Línea separadora horizontal o vertical con etiqueta opcional |
+| `EmptyState` | Estado vacío con icono, título, descripción y acción principal |
+| `Odontogram` | Odontograma interactivo para registrar condiciones dentales por pieza |
 
 ---
 
@@ -168,30 +194,89 @@ validateRFC('abc800101AA1');    // false — no acepta minúsculas
 
 ## Tokens de Diseño
 
-Fuente única de verdad: `packages/ui-components/tailwind.tokens.js` — importado por `tailwind.preset.js` (tema Tailwind) y `Colors.stories.tsx` (documentación Storybook). Para agregar un token: editar `tailwind.tokens.js` → registrar en `src/lib/cn.ts`.
+Fuente única de verdad: `packages/ui-components/tailwind.tokens.js` — **generado automáticamente** con `pnpm sync:tokens` desde Figma. No editar manualmente. Importado por `tailwind.preset.js` (tema Tailwind) y `Colors.stories.tsx` (documentación Storybook).
 
 ```
 // Interaction
-interaction-primary-{default|hover|pressed}    →  #1643A8 / #10327D / #0B2152
-interaction-secondary-{default|hover|pressed}  →  #4B5468 / #3A404B / #282C33
-interaction-tertiary-{default|hover|pressed}   →  #DEE4ED / #B6BBC3 / #8E9298
-interaction-disabled                           →  #EFEFEF  (fondo campos deshabilitados)
-interaction-field                              →  #FCFCFC  (fondo campos outlined)
-interaction-field-readonly                     →  #F2F2F2  (fondo campos read-only)
-interaction-selected                           →  #E4FCFF  (fondo TableRow seleccionado)
+active                                         (estado activo/resaltado)
+primary, primary-{hover|press}
+secondary, secondary-{hover|press}
+danger, danger-{hover|light|muted|press|subtle|text}
+disabled                                       (fondo campos deshabilitados)
+field                                          (fondo campos outlined)
+field-readonly                                 (fondo campos read-only)
+selected                                       (fondo TableRow seleccionado)
+unique                                         (color acento único)
 
 // Text
-text-primary    →  #23232A
-text-secondary  →  #5E5E60
-text-disabled   →  #A6A7A8
-text-white      →  #FFFFFF
+txt, txt-{black|disabled|important|secondary|utility|white}
+link, link-{hover|press}
+
+// Surface
+scrim                                          (fondo overlay)
+surface-{1|2|3|4}                              (capas de fondo)
+
+// Border / Edge
+edge, edge-{disabled|focus|heavy|hover|important|medium|success|unique|warning}
 
 // Feedback
-feedback-error-{default|light|subtle|muted|text}   →  #EF4444 / #FEF2F2 / #FEE2E2 / #FECACA / #B91C1C
-feedback-success-{default|light|subtle|text}       →  #22C55E / #F0FDF4 / #DCFCE7 / #15803D
-feedback-warning-{default|light|subtle|text}       →  #EAB308 / #FEFCE8 / #FEF9C3 / #A16207
-feedback-info-{light|subtle|text}                  →  #EFF6FF / #DBEAFE / #1D4ED8
+info, info-{light|subtle|text}
+success, success-{light|subtle|text}
+warning, warning-{light|subtle|text}
 ```
+
+> Para agregar un token: editar `tailwind.tokens.js` → ejecutar `pnpm sync:tokens` (actualiza también `src/lib/cn.ts`).
+> Nunca editar `tailwind.tokens.js` ni `src/lib/cn.ts` manualmente.
+
+---
+
+## Estilos Tailwind en los Componentes
+
+Los estilos de todos los componentes se basan exclusivamente en **clases Tailwind** — sin CSS modules ni estilos inline. Los colores del sistema parten de tokens de diseño custom registrados en Tailwind.
+
+### Dónde vive cada pieza
+
+| Archivo | Rol |
+|---------|-----|
+| `packages/ui-components/tailwind.tokens.js` | **Fuente de verdad** — define todos los tokens de color (`primary`, `txt`, `edge`, `surface-*`, etc.). Generado automáticamente con `pnpm sync:tokens`. |
+| `packages/ui-components/tailwind.preset.js` | Registra los tokens en el tema de Tailwind. Exportado en `@bip/ui-components/tailwind.preset` para que proyectos consumidores los usen. |
+| `packages/ui-components/src/lib/cn.ts` | Utilidad `cn()` — combina `clsx` (lógica condicional) con `extendTailwindMerge` (resolución de conflictos para tokens custom). Generada automáticamente junto con los tokens. |
+| `src/components/**/*.tsx` | Componentes — usan `cn()` con clases Tailwind estándar y tokens custom. Nunca importan `clsx` directamente. |
+| `src/foundations/Colors.stories.tsx` | Documentación visual de todos los tokens en Storybook. |
+
+### Cómo se usan los tokens en los componentes
+
+Los tokens se usan como cualquier clase Tailwind, con los prefijos habituales (`bg-`, `text-`, `border-`, `ring-`):
+
+```tsx
+// Fondo de botón primario
+className="bg-primary hover:bg-primary-hover active:bg-primary-press"
+
+// Texto
+className="text-txt"            // texto principal
+className="text-txt-secondary"  // texto secundario
+className="text-txt-disabled"   // texto deshabilitado
+
+// Bordes
+className="border-edge focus:border-edge-focus"
+
+// Superficies / capas de fondo
+className="bg-surface-1"        // fondo base
+className="bg-surface-2"        // capa elevada
+
+// Feedback
+className="bg-danger text-danger-text"
+className="bg-success-light text-success-text"
+```
+
+### Flujo de actualización de tokens
+
+```
+Figma  →  pnpm sync:tokens  →  tailwind.tokens.js + src/lib/cn.ts  →  pnpm build
+```
+
+> `pnpm sync:tokens` regenera `tailwind.tokens.js` y `src/lib/cn.ts` de forma sincronizada.
+> Nunca edites esos dos archivos manualmente — los cambios manuales se perderán en el siguiente sync.
 
 ---
 

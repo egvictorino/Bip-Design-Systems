@@ -68,8 +68,8 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
               sizes[size].box,
               error
-                ? 'border-feedback-error-default group-has-[:focus-visible]:ring-feedback-error-default'
-                : 'border-interaction-primary-default group-has-[:checked]:border-interaction-primary-default group-has-[:focus-visible]:ring-interaction-primary-default hover:border-interaction-primary-hover',
+                ? 'border-danger group-has-[:focus-visible]:ring-danger'
+                : 'border-primary group-has-[:checked]:border-primary group-has-[:focus-visible]:ring-primary hover:border-primary-hover',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
           >
@@ -90,8 +90,8 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
                 'scale-0 group-has-[:checked]:scale-100',
                 sizes[size].dot,
                 error
-                  ? 'bg-feedback-error-default'
-                  : 'bg-interaction-primary-default'
+                  ? 'bg-danger'
+                  : 'bg-primary'
               )}
             />
           </div>
@@ -103,7 +103,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               className={cn(
                 'select-none font-medium transition-colors cursor-pointer',
                 sizes[size].label,
-                error ? 'text-feedback-error-default' : 'text-text-primary',
+                error ? 'text-danger' : 'text-txt',
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
             >
@@ -116,7 +116,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-feedback-error-default', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-danger', sizes[size].indent)}
             role="alert"
           >
             {errorMessage}
@@ -124,7 +124,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
         ) : helperText ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-text-secondary', sizes[size].indent)}
+            className={cn(sizes[size].helper, 'text-txt-secondary', sizes[size].indent)}
           >
             {helperText}
           </span>

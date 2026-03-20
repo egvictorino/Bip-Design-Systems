@@ -25,6 +25,7 @@ pnpm --filter @bip/ui-components test   # component tests (vitest + happy-dom)
 pnpm build
 pnpm lint
 pnpm dev   # parallel dev mode
+pnpm sync:tokens  # Regenerates tailwind.tokens.js + src/lib/cn.ts from Figma
 ```
 
 ## Branch Strategy
@@ -44,7 +45,7 @@ PRs always go: `feature/xxx → dev → qa → main`. Hotfixes branch from `main
 
 ## Tailwind consumer setup
 
-`ui-components` ships a **Tailwind preset** at `@bip/ui-components/tailwind.preset`. Any project that consumes the library must configure Tailwind with this preset so the design tokens (`interaction-*`, `text-*`) resolve correctly.
+`ui-components` ships a **Tailwind preset** at `@bip/ui-components/tailwind.preset`. Any project that consumes the library must configure Tailwind with this preset so the design tokens (`primary`, `txt`, `edge`, `surface-*`) resolve correctly.
 
 ```js
 // tailwind.config.js (proyecto consumidor)
@@ -158,7 +159,7 @@ import { cn } from '../../lib/cn';
 className={cn('base-class', condition && 'conditional-class', className)}
 ```
 
-Plain `clsx` does not resolve conflicts between same-type utilities (e.g. `w-full` vs `w-1/2` — the one that appears later in Tailwind's generated CSS wins, not the one listed last in the attribute). `cn()` guarantees the last argument wins, including for custom tokens like `bg-interaction-*`, `text-text-*`, `border-interaction-*`.
+Plain `clsx` does not resolve conflicts between same-type utilities (e.g. `w-full` vs `w-1/2` — the one that appears later in Tailwind's generated CSS wins, not the one listed last in the attribute). `cn()` guarantees the last argument wins, including for custom tokens like `bg-primary`, `text-txt`, `border-edge`.
 
 **Mantenimiento:** cuando se agreguen nuevos tokens a `tailwind.tokens.js`, deben registrarse también en el `extendTailwindMerge` de `src/lib/cn.ts`. Si no, `cn()` no resolverá conflictos para esos tokens y los overrides fallarán silenciosamente.
 
@@ -200,32 +201,40 @@ Export all sub-components from both `index.ts` and `src/index.ts`.
 
 Single source of truth: `tailwind.tokens.js` — imported by `tailwind.preset.js` (Tailwind theme) and `src/foundations/Colors.stories.tsx` (Storybook docs). To add a token: edit `tailwind.tokens.js` → register in `cn.ts`.
 
+Token names come from `tailwind.tokens.js` (auto-generated — run `pnpm sync:tokens` to update):
+
 ```
 // Interaction
-interaction-primary-{default|hover|pressed}    → #1643A8 / #10327D / #0B2152
-interaction-secondary-{default|hover|pressed}  → #4B5468 / #3A404B / #282C33
-interaction-tertiary-{default|hover|pressed}   → #DEE4ED / #B6BBC3 / #8E9298
-interaction-disabled                           → #EFEFEF   (bg of disabled fields)
-interaction-field                              → #FCFCFC   (bg of outlined fields)
-interaction-field-readonly                     → #F2F2F2   (bg of read-only fields, via read-only: pseudo)
-interaction-selected                           → #E4FCFF   (bg of selected TableRow)
+active                                         (highlight/active state)
+primary, primary-{hover|press}
+secondary, secondary-{hover|press}
+danger, danger-{hover|light|muted|press|subtle|text}
+disabled                                       (bg of disabled fields)
+field                                          (bg of outlined fields)
+field-readonly                                 (bg of read-only fields, via read-only: pseudo)
+selected                                       (bg of selected TableRow)
+unique                                         (accent/unique state)
 
 // Text
-text-primary    → #23232A
-text-secondary  → #5E5E60
-text-disabled   → #A6A7A8
-text-white      → #FFFFFF
+txt, txt-{black|disabled|important|secondary|utility|white}
+link, link-{hover|press}
+
+// Surface
+scrim                                          (overlay backdrop)
+surface-{1|2|3|4}                              (layered background levels)
+
+// Border / Edge
+edge, edge-{disabled|focus|heavy|hover|important|medium|success|unique|warning}
 
 // Feedback
-feedback-error-{default|light|subtle|muted|text}     → #EF4444 / #FEF2F2 / #FEE2E2 / #FECACA / #B91C1C
-feedback-success-{default|light|subtle|text}         → #22C55E / #F0FDF4 / #DCFCE7 / #15803D
-feedback-warning-{default|light|subtle|text}         → #EAB308 / #FEFCE8 / #FEF9C3 / #A16207
-feedback-info-{light|subtle|text}                    → #EFF6FF / #DBEAFE / #1D4ED8
+info, info-{light|subtle|text}
+success, success-{light|subtle|text}
+warning, warning-{light|subtle|text}
 ```
 
 **Pseudo-variant states for form fields** (work automatically via HTML attributes — no extra config):
-- `disabled:bg-interaction-disabled` → applied via `disabled` HTML attribute on Input, Select, Textarea
-- `read-only:bg-interaction-field-readonly` → applied via `readOnly` HTML attribute on Input, Textarea
+- `disabled:bg-disabled` → applied via `disabled` HTML attribute on Input, Select, Textarea
+- `read-only:bg-field-readonly` → applied via `readOnly` HTML attribute on Input, Textarea
 
 ### `displayName` requirement
 
