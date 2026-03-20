@@ -256,7 +256,7 @@ interface EventChipProps {
   onDragStart: (e: React.DragEvent, event: CalendarEvent) => void;
 }
 
-const EventChip: React.FC<EventChipProps> = ({ event, resources, onClick, onDragStart }) => {
+const EventChip = React.memo<EventChipProps>(({ event, resources, onClick, onDragStart }) => {
   const doctor = resources?.find((r) => r.id === event.doctorId);
   const customStyle = event.color
     ? { borderLeftColor: event.color, backgroundColor: event.color + '26' }
@@ -289,7 +289,7 @@ const EventChip: React.FC<EventChipProps> = ({ event, resources, onClick, onDrag
       )}
     </div>
   );
-};
+});
 EventChip.displayName = 'EventChip';
 
 // ─── EventBlock (TimeGrid) ────────────────────────────────────────────────────
@@ -306,7 +306,7 @@ interface EventBlockProps {
   onResizeStart: (e: React.MouseEvent, event: CalendarEvent) => void;
 }
 
-const EventBlock: React.FC<EventBlockProps> = ({
+const EventBlock = React.memo<EventBlockProps>(({
   event, resources, topPct, heightPct, leftPct, widthPct,
   onClick, onDragStart, onResizeStart,
 }) => {
@@ -375,7 +375,7 @@ const EventBlock: React.FC<EventBlockProps> = ({
       />
     </div>
   );
-};
+});
 EventBlock.displayName = 'EventBlock';
 
 // ─── MonthView ────────────────────────────────────────────────────────────────
@@ -415,10 +415,10 @@ const MonthView: React.FC<MonthViewProps> = ({
 
   const dragEventRef = useRef<CalendarEvent | null>(null);
 
-  const handleDragStart = (e: React.DragEvent, event: CalendarEvent) => {
+  const handleDragStart = useCallback((e: React.DragEvent, event: CalendarEvent) => {
     e.dataTransfer.setData('eventId', event.id);
     dragEventRef.current = event;
-  };
+  }, []);
 
   const handleDrop = (e: React.DragEvent, cellDate: Date) => {
     e.preventDefault();
@@ -493,7 +493,7 @@ const MonthView: React.FC<MonthViewProps> = ({
                     key={ev.id}
                     event={ev}
                     resources={resources}
-                    onClick={(clickedEv) => { onEventClick(clickedEv); }}
+                    onClick={onEventClick}
                     onDragStart={handleDragStart}
                   />
                 ))}
@@ -579,11 +579,11 @@ const TimeGrid: React.FC<TimeGridProps> = ({
   const dragOffsetRef = useRef(0);
   const resizeRef = useRef<{ event: CalendarEvent; startY: number; colEl: HTMLElement } | null>(null);
 
-  const handleEventDragStart = (e: React.DragEvent, event: CalendarEvent, offsetMin: number) => {
+  const handleEventDragStart = useCallback((e: React.DragEvent, event: CalendarEvent, offsetMin: number) => {
     e.dataTransfer.setData('eventId', event.id);
     dragEventRef.current = event;
     dragOffsetRef.current = offsetMin;
-  };
+  }, []);
 
   const handleColDrop = (e: React.DragEvent, col: { day: Date; resource: CalendarResource | null }) => {
     e.preventDefault();
@@ -752,7 +752,7 @@ const TimeGrid: React.FC<TimeGridProps> = ({
                         heightPct={heightPct}
                         leftPct={1}
                         widthPct={98}
-                        onClick={(ev) => { onEventClick(ev); }}
+                        onClick={onEventClick}
                         onDragStart={handleEventDragStart}
                         onResizeStart={handleResizeStart}
                       />
