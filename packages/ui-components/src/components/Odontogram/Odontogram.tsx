@@ -1,4 +1,5 @@
-import React, { forwardRef, useCallback, useId, useRef } from 'react';
+import React, { forwardRef, useCallback, useEffect, useId, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
 
 export type ToothSurface = 'occlusal' | 'mesial' | 'distal' | 'buccal' | 'lingual';
@@ -187,6 +188,90 @@ const PRIMARY_UPPER_LEFT = [61, 62, 63, 64, 65];
 const PRIMARY_LOWER_RIGHT = [85, 84, 83, 82, 81];
 const PRIMARY_LOWER_LEFT = [71, 72, 73, 74, 75];
 
+// ─── NotePopover ─────────────────────────────────────────────────────────────
+
+interface NotePopoverProps {
+  toothNumber: number;
+  initialNote: string;
+  editable: boolean;
+  position: { top: number; left: number };
+  onClose: () => void;
+  onSave: (note: string) => void;
+}
+
+const NotePopover = React.memo<NotePopoverProps>(({
+  toothNumber,
+  initialNote,
+  editable,
+  position,
+  onClose,
+  onSave,
+}) => {
+  const [draft, setDraft] = useState(initialNote);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  return ReactDOM.createPortal(
+    <>
+      <div className="fixed inset-0 z-40" aria-hidden="true" onClick={onClose} />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Nota del diente ${toothNumber}`}
+        style={{ top: position.top, left: position.left }}
+        className="fixed z-50 w-64 bg-white border border-edge rounded-md shadow-lg p-3 flex flex-col gap-2"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-txt">Diente {toothNumber}</span>
+          <button
+            onClick={onClose}
+            aria-label="Cerrar nota"
+            className="text-txt-secondary hover:text-txt rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus"
+          >
+            ✕
+          </button>
+        </div>
+        <textarea
+          ref={textareaRef}
+          value={draft}
+          onChange={editable ? (e) => setDraft(e.target.value) : undefined}
+          readOnly={!editable}
+          rows={4}
+          placeholder={editable ? 'Escribe una nota...' : undefined}
+          className={cn(
+            'w-full resize-none rounded border border-edge text-sm text-txt p-2 outline-none',
+            'focus-visible:border-edge-focus focus-visible:ring-1 focus-visible:ring-edge-focus',
+            !editable && 'bg-field-readonly cursor-default'
+          )}
+        />
+        {editable && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => onSave(draft)}
+              className="px-3 py-1 rounded bg-primary text-txt-white text-xs font-medium hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+            >
+              Guardar
+            </button>
+          </div>
+        )}
+      </div>
+    </>,
+    document.body
+  );
+});
+NotePopover.displayName = 'NotePopover';
+
 // ─── ToothSVG ────────────────────────────────────────────────────────────────
 
 interface ToothSVGProps {
@@ -295,6 +380,11 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
     const activeToolRef = useRef(activeTool);
     activeToolRef.current = activeTool;
 
+    // Note popover state
+    const [openNoteTooth, setOpenNoteTooth] = useState<number | null>(null);
+    const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null);
+    const popoverTriggerRef = useRef<HTMLButtonElement | null>(null);
+
     const handleSurfaceClick = useCallback((toothNumber: number, surface: ToothSurface) => {
       const currentOnChange = onChangeRef.current;
       if (!currentOnChange) return;
@@ -331,38 +421,88 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
       }
     }, []); // empty deps — reads latest values via refs
 
+    const handleNoteOpen = (toothNumber: number, el: HTMLButtonElement) => {
+      const rect = el.getBoundingClientRect();
+      popoverTriggerRef.current = el;
+      setOpenNoteTooth(toothNumber);
+      setPopoverPos({ top: rect.bottom + 4, left: rect.left });
+    };
+
+    const handleNoteClose = () => {
+      setOpenNoteTooth(null);
+      setPopoverPos(null);
+      popoverTriggerRef.current?.focus();
+    };
+
+    const handleNoteSave = (note: string) => {
+      const currentOnChange = onChangeRef.current;
+      if (currentOnChange && openNoteTooth !== null) {
+        const trimmed = note.trim();
+        const current = valueRef.current[openNoteTooth] ?? {};
+        const { notes: _omitted, ...rest } = current;
+        const updated: ToothData = trimmed ? { ...rest, notes: trimmed } : rest;
+        currentOnChange({ ...valueRef.current, [openNoteTooth]: updated });
+      }
+      handleNoteClose();
+    };
+
     const isPrimary = dentition === 'primary';
     const upperRight = isPrimary ? PRIMARY_UPPER_RIGHT : UPPER_RIGHT;
     const upperLeft = isPrimary ? PRIMARY_UPPER_LEFT : UPPER_LEFT;
     const lowerRight = isPrimary ? PRIMARY_LOWER_RIGHT : LOWER_RIGHT;
     const lowerLeft = isPrimary ? PRIMARY_LOWER_LEFT : LOWER_LEFT;
 
-    const renderTooth = (toothNumber: number, arch: 'upper' | 'lower') => (
-      <div key={toothNumber} className="flex flex-col items-center">
-        {arch === 'lower' && (
-          <span
-            className={cn('font-mono leading-none mb-0.5 text-text-secondary', NUMBER_TEXT_SIZE[size])}
-          >
-            {toothNumber}
-          </span>
-        )}
-        <ToothSVG
-          toothNumber={toothNumber}
-          arch={arch}
-          data={value[toothNumber] ?? EMPTY_TOOTH}
-          size={size}
-          interactive={interactive}
-          onSurfaceClick={handleSurfaceClick}
-        />
-        {arch === 'upper' && (
-          <span
-            className={cn('font-mono leading-none mt-0.5 text-text-secondary', NUMBER_TEXT_SIZE[size])}
-          >
-            {toothNumber}
-          </span>
-        )}
-      </div>
-    );
+    const renderTooth = (toothNumber: number, arch: 'upper' | 'lower') => {
+      const hasNote = Boolean(value[toothNumber]?.notes);
+      // Show note button if interactive (can edit) or if there's a note to view
+      const showNoteButton = interactive || hasNote;
+
+      const numberEl = showNoteButton ? (
+        <button
+          onClick={(e) => handleNoteOpen(toothNumber, e.currentTarget)}
+          aria-label={`Nota del diente ${toothNumber}${hasNote ? ' — tiene nota' : ''}`}
+          className={cn(
+            'inline-flex items-center gap-0.5 font-mono leading-none rounded',
+            'text-text-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus',
+            NUMBER_TEXT_SIZE[size],
+            arch === 'upper' ? 'mt-0.5' : 'mb-0.5'
+          )}
+        >
+          {toothNumber}
+          {hasNote && (
+            <span
+              aria-hidden="true"
+              className="inline-block w-1 h-1 rounded-full bg-primary flex-shrink-0"
+            />
+          )}
+        </button>
+      ) : (
+        <span
+          className={cn(
+            'font-mono leading-none text-text-secondary',
+            NUMBER_TEXT_SIZE[size],
+            arch === 'upper' ? 'mt-0.5' : 'mb-0.5'
+          )}
+        >
+          {toothNumber}
+        </span>
+      );
+
+      return (
+        <div key={toothNumber} className="flex flex-col items-center">
+          {arch === 'lower' && numberEl}
+          <ToothSVG
+            toothNumber={toothNumber}
+            arch={arch}
+            data={value[toothNumber] ?? EMPTY_TOOTH}
+            size={size}
+            interactive={interactive}
+            onSurfaceClick={handleSurfaceClick}
+          />
+          {arch === 'upper' && numberEl}
+        </div>
+      );
+    };
 
     const renderArch = (left: number[], right: number[], arch: 'upper' | 'lower') => (
       <div className="flex flex-row items-center">
@@ -384,6 +524,16 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
           <div className="h-3 border-b border-gray-300 mb-1" aria-hidden="true" />
           {renderArch(lowerRight, lowerLeft, 'lower')}
         </div>
+        {openNoteTooth !== null && popoverPos !== null && (
+          <NotePopover
+            toothNumber={openNoteTooth}
+            initialNote={value[openNoteTooth]?.notes ?? ''}
+            editable={interactive}
+            position={popoverPos}
+            onClose={handleNoteClose}
+            onSave={handleNoteSave}
+          />
+        )}
       </div>
     );
   }

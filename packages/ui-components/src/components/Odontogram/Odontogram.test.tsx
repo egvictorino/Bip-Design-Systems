@@ -381,3 +381,164 @@ describe('Odontogram — primary dentition', () => {
     ).toBeInTheDocument();
   });
 });
+
+// ─── Notas por diente ─────────────────────────────────────────────────────────
+
+describe('Odontogram — notas', () => {
+  it('muestra botón en el número del diente en modo interactivo', () => {
+    render(<Odontogram onChange={() => {}} />);
+    expect(screen.getByRole('button', { name: /Nota del diente 11/ })).toBeInTheDocument();
+  });
+
+  it('muestra botón en el número del diente si hay nota en modo readOnly', () => {
+    const value: OdontogramValue = { 11: { notes: 'revisión pendiente' } };
+    render(<Odontogram value={value} readOnly />);
+    expect(screen.getByRole('button', { name: /Nota del diente 11/ })).toBeInTheDocument();
+  });
+
+  it('NO muestra botón si readOnly y el diente no tiene nota', () => {
+    render(<Odontogram readOnly />);
+    expect(screen.queryByRole('button', { name: /Nota del diente 11/ })).not.toBeInTheDocument();
+  });
+
+  it('muestra indicador visual en dientes que tienen nota', () => {
+    const value: OdontogramValue = { 11: { notes: 'fractura leve' } };
+    render(<Odontogram value={value} onChange={() => {}} />);
+    const btn = screen.getByRole('button', { name: /Nota del diente 11 — tiene nota/ });
+    expect(btn).toBeInTheDocument();
+  });
+
+  it('NO muestra indicador en dientes sin nota', () => {
+    render(<Odontogram onChange={() => {}} />);
+    const btn = screen.getByRole('button', { name: 'Nota del diente 11' });
+    // aria-label does not mention "tiene nota"
+    expect(btn).toHaveAttribute('aria-label', 'Nota del diente 11');
+  });
+
+  it('click en número abre el popover con textarea', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+
+    expect(screen.getByRole('dialog', { name: /Nota del diente 11/ })).toBeInTheDocument();
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+  });
+
+  it('el textarea se prelllena con la nota existente', async () => {
+    const user = userEvent.setup();
+    const value: OdontogramValue = { 16: { notes: 'corona temporal' } };
+    render(<Odontogram value={value} onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 16/ }));
+
+    expect(screen.getByRole('textbox')).toHaveValue('corona temporal');
+  });
+
+  it('click en ✕ cierra el popover sin llamar onChange', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Odontogram onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Cerrar nota' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('tecla Escape cierra el popover sin llamar onChange', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Odontogram onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('click en Guardar llama onChange con la nota actualizada', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Odontogram onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    await user.type(screen.getByRole('textbox'), 'caries interproximal');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(handleChange).toHaveBeenCalledOnce();
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    expect(updated[11]?.notes).toBe('caries interproximal');
+  });
+
+  it('guardar texto vacío elimina la clave notes del diente', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    const value: OdontogramValue = { 11: { notes: 'nota a borrar' } };
+    render(<Odontogram value={value} onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    await user.clear(screen.getByRole('textbox'));
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(handleChange).toHaveBeenCalledOnce();
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    expect(updated[11]?.notes).toBeUndefined();
+  });
+
+  it('guardar nota en diente sin data previa crea la entrada correctamente', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Odontogram onChange={handleChange} value={{}} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 21/ }));
+    await user.type(screen.getByRole('textbox'), 'nueva nota');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    expect(updated[21]?.notes).toBe('nueva nota');
+  });
+
+  it('guardar cierra el popover', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('popover en readOnly muestra textarea con atributo readOnly y sin botón Guardar', async () => {
+    const user = userEvent.setup();
+    const value: OdontogramValue = { 11: { notes: 'solo lectura' } };
+    render(<Odontogram value={value} readOnly />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+
+    const textarea = screen.getByRole('textbox');
+    expect(textarea).toHaveAttribute('readonly');
+    expect(screen.queryByRole('button', { name: 'Guardar' })).not.toBeInTheDocument();
+  });
+
+  it('guardar preserva otras propiedades del diente (condición, superficies)', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    const value: OdontogramValue = { 16: { condition: 'crown', surfaces: {} } };
+    render(<Odontogram value={value} onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 16/ }));
+    await user.type(screen.getByRole('textbox'), 'corona provisional');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    expect(updated[16]?.condition).toBe('crown');
+    expect(updated[16]?.notes).toBe('corona provisional');
+  });
+});
