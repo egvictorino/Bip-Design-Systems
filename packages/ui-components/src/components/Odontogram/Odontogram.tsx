@@ -19,10 +19,19 @@ export type ToothCondition =
 
 export type SurfaceCondition = Partial<Record<ToothSurface, ToothCondition>>;
 
+export type ToothImageType = 'radiograph' | 'photo' | 'other';
+
+export interface ToothImage {
+  type: ToothImageType;
+  /** base64 data URL or external URL */
+  url: string;
+}
+
 export interface ToothData {
   condition?: ToothCondition;
   surfaces?: SurfaceCondition;
   notes?: string;
+  images?: ToothImage[];
 }
 
 export type OdontogramValue = Record<number, ToothData>;
@@ -188,6 +197,14 @@ const PRIMARY_UPPER_LEFT = [61, 62, 63, 64, 65];
 const PRIMARY_LOWER_RIGHT = [85, 84, 83, 82, 81];
 const PRIMARY_LOWER_LEFT = [71, 72, 73, 74, 75];
 
+const IMAGE_TYPE_LABELS: Record<ToothImageType, string> = {
+  radiograph: 'Radiografía',
+  photo: 'Fotografía',
+  other: 'Otra',
+};
+
+const IMAGE_TYPES: ToothImageType[] = ['radiograph', 'photo', 'other'];
+
 // ─── NotePopover ─────────────────────────────────────────────────────────────
 
 interface NotePopoverProps {
@@ -271,6 +288,294 @@ const NotePopover = React.memo<NotePopoverProps>(({
   );
 });
 NotePopover.displayName = 'NotePopover';
+
+// ─── ImagePopover ─────────────────────────────────────────────────────────────
+
+interface ImagePopoverProps {
+  toothNumber: number;
+  initialImages: ToothImage[];
+  editable: boolean;
+  position: { top: number; left: number };
+  onClose: () => void;
+  onSave: (images: ToothImage[]) => void;
+}
+
+const ImagePopover = React.memo<ImagePopoverProps>(({
+  toothNumber,
+  initialImages,
+  editable,
+  position,
+  onClose,
+  onSave,
+}) => {
+  const [images, setImages] = useState<ToothImage[]>(initialImages);
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(
+    initialImages.length > 0 ? 0 : null
+  );
+  const [adding, setAdding] = useState(initialImages.length === 0 && editable);
+  const [addType, setAddType] = useState<ToothImageType>('radiograph');
+  const [addUrl, setAddUrl] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const addSelectRef = useRef<HTMLSelectElement>(null);
+
+  useEffect(() => {
+    if (adding) {
+      addSelectRef.current?.focus();
+    } else {
+      closeButtonRef.current?.focus();
+    }
+  }, [adding]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const result = ev.target?.result;
+      if (typeof result === 'string') setAddUrl(result);
+    };
+    reader.readAsDataURL(file);
+    // Reset input so same file can be re-selected
+    e.target.value = '';
+  };
+
+  const handleAddConfirm = () => {
+    if (!addUrl) return;
+    const newImage: ToothImage = { type: addType, url: addUrl };
+    const updated = [...images, newImage];
+    setImages(updated);
+    setSelectedIdx(updated.length - 1);
+    onSave(updated);
+    setAdding(false);
+    setAddUrl('');
+    setAddType('radiograph');
+  };
+
+  const handleAddCancel = () => {
+    setAdding(false);
+    setAddUrl('');
+    setAddType('radiograph');
+  };
+
+  const handleDelete = (idx: number) => {
+    const updated = images.filter((_, i) => i !== idx);
+    setImages(updated);
+    setSelectedIdx(updated.length > 0 ? Math.min(idx, updated.length - 1) : null);
+    onSave(updated);
+    if (updated.length === 0 && editable) setAdding(true);
+  };
+
+  const selectedImage = selectedIdx !== null ? images[selectedIdx] : null;
+
+  return ReactDOM.createPortal(
+    <>
+      <div className="fixed inset-0 z-40" aria-hidden="true" onClick={onClose} />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Imágenes del diente ${toothNumber}`}
+        style={{ top: position.top, left: position.left }}
+        className="fixed z-50 w-80 bg-white border border-edge rounded-md shadow-lg p-3 flex flex-col gap-3"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-txt">
+            Imágenes — Diente {toothNumber}
+            {images.length > 0 && (
+              <span className="ml-1.5 text-xs font-normal text-txt-secondary">
+                ({images.length})
+              </span>
+            )}
+          </span>
+          <button
+            ref={closeButtonRef}
+            onClick={onClose}
+            aria-label="Cerrar imágenes"
+            className="text-txt-secondary hover:text-txt rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Thumbnail gallery */}
+        {images.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-2" role="list" aria-label="Imágenes adjuntas">
+              {images.map((img, idx) => (
+                <div
+                  key={idx}
+                  role="listitem"
+                  className="relative group flex-shrink-0"
+                >
+                  <button
+                    onClick={() => setSelectedIdx(idx === selectedIdx ? null : idx)}
+                    aria-label={`Ver imagen ${idx + 1}: ${IMAGE_TYPE_LABELS[img.type]}`}
+                    aria-pressed={selectedIdx === idx}
+                    className={cn(
+                      'w-16 h-16 rounded border-2 overflow-hidden block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-edge-focus',
+                      selectedIdx === idx ? 'border-primary' : 'border-edge hover:border-edge-hover'
+                    )}
+                  >
+                    <img
+                      src={img.url}
+                      alt={IMAGE_TYPE_LABELS[img.type]}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                  {editable && (
+                    <button
+                      onClick={() => handleDelete(idx)}
+                      aria-label={`Eliminar imagen ${idx + 1}`}
+                      className={cn(
+                        'absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-danger text-white',
+                        'text-[9px] leading-none flex items-center justify-center',
+                        'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
+                        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-danger'
+                      )}
+                    >
+                      ✕
+                    </button>
+                  )}
+                  <p className="text-[9px] text-txt-secondary text-center mt-0.5 leading-tight">
+                    {IMAGE_TYPE_LABELS[img.type]}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Selected image preview */}
+            {selectedImage && (
+              <div className="flex flex-col gap-1">
+                <img
+                  src={selectedImage.url}
+                  alt={`${IMAGE_TYPE_LABELS[selectedImage.type]} — diente ${toothNumber}`}
+                  className="w-full max-h-44 object-contain rounded border border-edge bg-surface-1"
+                />
+                <p className="text-xs text-txt-secondary text-center">
+                  {IMAGE_TYPE_LABELS[selectedImage.type]}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {images.length === 0 && !adding && (
+          <p className="text-xs text-txt-secondary italic">Sin imágenes adjuntas</p>
+        )}
+
+        {/* Add image form */}
+        {editable && adding && (
+          <div className="flex flex-col gap-2 border-t border-edge pt-2">
+            <p className="text-xs font-medium text-txt">Nueva imagen</p>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-txt-secondary">Tipo</label>
+              <select
+                ref={addSelectRef}
+                value={addType}
+                onChange={(e) => setAddType(e.target.value as ToothImageType)}
+                className={cn(
+                  'w-full rounded border border-edge text-sm text-txt p-1.5 outline-none bg-white',
+                  'focus-visible:border-edge-focus focus-visible:ring-1 focus-visible:ring-edge-focus'
+                )}
+              >
+                {IMAGE_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {IMAGE_TYPE_LABELS[t]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              aria-label="Seleccionar archivo de imagen"
+              className="sr-only"
+              onChange={handleFileChange}
+            />
+            {addUrl ? (
+              <img
+                src={addUrl}
+                alt="Vista previa"
+                className="w-full max-h-32 object-contain rounded border border-edge bg-surface-1"
+              />
+            ) : null}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                'w-full px-3 py-1.5 rounded border border-edge text-sm text-txt',
+                'hover:bg-surface-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus'
+              )}
+            >
+              {addUrl ? 'Cambiar archivo' : 'Seleccionar archivo'}
+            </button>
+            <div className="flex gap-2 justify-end">
+              {images.length > 0 && (
+                <button
+                  onClick={handleAddCancel}
+                  className={cn(
+                    'px-3 py-1 rounded border border-edge text-xs text-txt',
+                    'hover:bg-surface-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus'
+                  )}
+                >
+                  Cancelar
+                </button>
+              )}
+              <button
+                onClick={handleAddConfirm}
+                disabled={!addUrl}
+                className={cn(
+                  'px-3 py-1 rounded bg-primary text-txt-white text-xs font-medium',
+                  'hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary',
+                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                )}
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Add button (when not in adding mode) */}
+        {editable && !adding && (
+          <button
+            onClick={() => setAdding(true)}
+            className={cn(
+              'w-full px-3 py-1.5 rounded border border-edge text-sm text-txt-secondary',
+              'hover:bg-surface-1 hover:text-txt focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus',
+              'flex items-center justify-center gap-1.5'
+            )}
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              className="w-3 h-3"
+            >
+              <line x1="8" y1="2" x2="8" y2="14" />
+              <line x1="2" y1="8" x2="14" y2="8" />
+            </svg>
+            Agregar imagen
+          </button>
+        )}
+      </div>
+    </>,
+    document.body
+  );
+});
+ImagePopover.displayName = 'ImagePopover';
 
 // ─── ToothSVG ────────────────────────────────────────────────────────────────
 
@@ -385,6 +690,13 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
     const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null);
     const popoverTriggerRef = useRef<HTMLButtonElement | null>(null);
 
+    // Image popover state
+    const [imageState, setImageState] = useState<{
+      toothNumber: number;
+      position: { top: number; left: number };
+    } | null>(null);
+    const imageTriggerRef = useRef<HTMLButtonElement | null>(null);
+
     const handleSurfaceClick = useCallback((toothNumber: number, surface: ToothSurface) => {
       const currentOnChange = onChangeRef.current;
       if (!currentOnChange) return;
@@ -446,6 +758,36 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
       handleNoteClose();
     };
 
+    const handleImageOpen = (toothNumber: number, el: HTMLButtonElement) => {
+      const rect = el.getBoundingClientRect();
+      imageTriggerRef.current = el;
+      setImageState({ toothNumber, position: { top: rect.bottom + 4, left: rect.left } });
+    };
+
+    const handleImageClose = () => {
+      setImageState(null);
+      imageTriggerRef.current?.focus();
+    };
+
+    const handleImageSave = (toothNumber: number, images: ToothImage[]) => {
+      const currentOnChange = onChangeRef.current;
+      if (currentOnChange) {
+        const current = { ...(valueRef.current[toothNumber] ?? {}) };
+        if (images.length > 0) {
+          current.images = images;
+        } else {
+          delete current.images;
+        }
+        if (Object.keys(current).length === 0) {
+          const next = { ...valueRef.current };
+          delete next[toothNumber];
+          currentOnChange(next);
+        } else {
+          currentOnChange({ ...valueRef.current, [toothNumber]: current });
+        }
+      }
+    };
+
     const isPrimary = dentition === 'primary';
     const upperRight = isPrimary ? PRIMARY_UPPER_RIGHT : UPPER_RIGHT;
     const upperLeft = isPrimary ? PRIMARY_UPPER_LEFT : UPPER_LEFT;
@@ -454,18 +796,21 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
 
     const renderTooth = (toothNumber: number, arch: 'upper' | 'lower') => {
       const hasNote = Boolean(value[toothNumber]?.notes);
+      const imageCount = value[toothNumber]?.images?.length ?? 0;
+      const hasImages = imageCount > 0;
       // Show note button if interactive (can edit) or if there's a note to view
       const showNoteButton = interactive || hasNote;
+      // Show image button if interactive (can upload) or if there are images to view
+      const showImageButton = interactive || hasImages;
 
-      const numberEl = showNoteButton ? (
+      const noteButton = showNoteButton ? (
         <button
           onClick={(e) => handleNoteOpen(toothNumber, e.currentTarget)}
           aria-label={`Nota del diente ${toothNumber}${hasNote ? ' — tiene nota' : ''}`}
           className={cn(
             'inline-flex items-center gap-0.5 font-mono leading-none rounded',
-            'text-text-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus',
-            NUMBER_TEXT_SIZE[size],
-            arch === 'upper' ? 'mt-0.5' : 'mb-0.5'
+            'text-txt-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus',
+            NUMBER_TEXT_SIZE[size]
           )}
         >
           {toothNumber}
@@ -479,18 +824,61 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
       ) : (
         <span
           className={cn(
-            'font-mono leading-none text-text-secondary',
-            NUMBER_TEXT_SIZE[size],
-            arch === 'upper' ? 'mt-0.5' : 'mb-0.5'
+            'font-mono leading-none text-txt-secondary',
+            NUMBER_TEXT_SIZE[size]
           )}
         >
           {toothNumber}
         </span>
       );
 
+      const imageButton = showImageButton ? (
+        <button
+          onClick={(e) => handleImageOpen(toothNumber, e.currentTarget)}
+          aria-label={`Imágenes del diente ${toothNumber}${hasImages ? ` — ${imageCount} imagen${imageCount > 1 ? 'es' : ''}` : ''}`}
+          className={cn(
+            'inline-flex items-center gap-0.5 leading-none rounded text-txt-secondary',
+            'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus'
+          )}
+        >
+          {/* Camera icon */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="w-2.5 h-2.5 flex-shrink-0"
+          >
+            <path d="M1 5.5A1.5 1.5 0 0 1 2.5 4h.535l.707-1.414A1 1 0 0 1 4.638 2h6.724a1 1 0 0 1 .896.553L13 4h.5A1.5 1.5 0 0 1 15 5.5v7A1.5 1.5 0 0 1 13.5 14h-11A1.5 1.5 0 0 1 1 12.5v-7Z" />
+            <circle cx="8" cy="9" r="2.5" />
+          </svg>
+          {hasImages && (
+            <span
+              aria-hidden="true"
+              className="inline-block w-1 h-1 rounded-full bg-info flex-shrink-0"
+            />
+          )}
+        </button>
+      ) : null;
+
+      const numberRow = (
+        <div
+          className={cn(
+            'flex items-center gap-0.5',
+            arch === 'upper' ? 'mt-0.5' : 'mb-0.5'
+          )}
+        >
+          {noteButton}
+          {imageButton}
+        </div>
+      );
+
       return (
         <div key={toothNumber} className="flex flex-col items-center">
-          {arch === 'lower' && numberEl}
+          {arch === 'lower' && numberRow}
           <ToothSVG
             toothNumber={toothNumber}
             arch={arch}
@@ -499,7 +887,7 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
             interactive={interactive}
             onSurfaceClick={handleSurfaceClick}
           />
-          {arch === 'upper' && numberEl}
+          {arch === 'upper' && numberRow}
         </div>
       );
     };
@@ -532,6 +920,16 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
             position={popoverPos}
             onClose={handleNoteClose}
             onSave={handleNoteSave}
+          />
+        )}
+        {imageState !== null && (
+          <ImagePopover
+            toothNumber={imageState.toothNumber}
+            initialImages={value[imageState.toothNumber]?.images ?? []}
+            editable={interactive}
+            position={imageState.position}
+            onClose={handleImageClose}
+            onSave={(imgs) => handleImageSave(imageState.toothNumber, imgs)}
           />
         )}
       </div>

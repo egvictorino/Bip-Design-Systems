@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Odontogram } from './Odontogram';
-import type { OdontogramValue } from './Odontogram';
+import type { OdontogramValue, ToothImage } from './Odontogram';
+
+const SAMPLE_IMG: ToothImage = { type: 'radiograph', url: 'data:image/png;base64,abc123' };
+const SAMPLE_IMG2: ToothImage = { type: 'photo', url: 'data:image/png;base64,xyz789' };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -540,5 +543,179 @@ describe('Odontogram — notas', () => {
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[16]?.condition).toBe('crown');
     expect(updated[16]?.notes).toBe('corona provisional');
+  });
+});
+
+// ─── Imágenes por diente ───────────────────────────────────────────────────────
+
+describe('Odontogram — imágenes', () => {
+  it('muestra botón de imagen en modo interactivo', () => {
+    render(<Odontogram onChange={() => {}} />);
+    expect(screen.getByRole('button', { name: /Imágenes del diente 11/ })).toBeInTheDocument();
+  });
+
+  it('NO muestra botón de imagen en readOnly sin imágenes', () => {
+    render(<Odontogram readOnly />);
+    expect(screen.queryByRole('button', { name: /Imágenes del diente 11/ })).not.toBeInTheDocument();
+  });
+
+  it('muestra botón de imagen en readOnly si el diente tiene imágenes', () => {
+    const value: OdontogramValue = { 11: { images: [SAMPLE_IMG] } };
+    render(<Odontogram value={value} readOnly />);
+    expect(screen.getByRole('button', { name: /Imágenes del diente 11/ })).toBeInTheDocument();
+  });
+
+  it('aria-label indica cuántas imágenes tiene el diente', () => {
+    const value: OdontogramValue = { 16: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
+    render(<Odontogram value={value} onChange={() => {}} />);
+    const btn = screen.getByRole('button', { name: /Imágenes del diente 16/ });
+    expect(btn.getAttribute('aria-label')).toMatch(/2 imagen/);
+  });
+
+  it('aria-label no menciona imágenes cuando el diente no tiene ninguna', () => {
+    render(<Odontogram onChange={() => {}} />);
+    const btn = screen.getByRole('button', { name: 'Imágenes del diente 11' });
+    expect(btn).toHaveAttribute('aria-label', 'Imágenes del diente 11');
+  });
+
+  it('click en botón abre el popover', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+
+    expect(screen.getByRole('dialog', { name: /Imágenes del diente 11/ })).toBeInTheDocument();
+  });
+
+  it('popover en modo editable muestra selector de tipo y botón Agregar imagen', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Seleccionar archivo/ })).toBeInTheDocument();
+  });
+
+  it('selector de tipo tiene las 3 opciones correctas', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+
+    expect(screen.getByRole('option', { name: 'Radiografía' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Fotografía' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Otra' })).toBeInTheDocument();
+  });
+
+  it('tecla Escape cierra el popover sin llamar onChange', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Odontogram onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('popover con imágenes muestra miniaturas con aria-label', async () => {
+    const user = userEvent.setup();
+    const value: OdontogramValue = { 11: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
+    render(<Odontogram value={value} onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+
+    expect(screen.getByRole('button', { name: /Ver imagen 1: Radiografía/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Ver imagen 2: Fotografía/ })).toBeInTheDocument();
+  });
+
+  it('popover muestra el contador de imágenes en el header', async () => {
+    const user = userEvent.setup();
+    const value: OdontogramValue = { 11: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
+    render(<Odontogram value={value} onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+
+    expect(screen.getByText('(2)')).toBeInTheDocument();
+  });
+
+  it('popover readOnly muestra miniaturas sin botones Eliminar', async () => {
+    const user = userEvent.setup();
+    const value: OdontogramValue = { 11: { images: [SAMPLE_IMG] } };
+    render(<Odontogram value={value} readOnly />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+
+    expect(screen.queryByRole('button', { name: /Eliminar imagen/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Agregar imagen/ })).not.toBeInTheDocument();
+  });
+
+  it('click en miniatura muestra la imagen en vista previa', async () => {
+    const user = userEvent.setup();
+    const value: OdontogramValue = { 11: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
+    render(<Odontogram value={value} onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    await user.click(screen.getByRole('button', { name: /Ver imagen 2/ }));
+
+    const preview = screen.getByAltText(/Fotografía — diente 11/);
+    expect(preview).toHaveAttribute('src', SAMPLE_IMG2.url);
+  });
+
+  it('eliminar una imagen llama onChange con el array actualizado', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    const value: OdontogramValue = { 11: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
+    render(<Odontogram value={value} onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    await user.click(screen.getByRole('button', { name: 'Eliminar imagen 1' }));
+
+    expect(handleChange).toHaveBeenCalled();
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    expect(updated[11]?.images).toHaveLength(1);
+    expect(updated[11]?.images?.[0].url).toBe(SAMPLE_IMG2.url);
+  });
+
+  it('eliminar la única imagen deja images vacío y lo elimina del value', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    const value: OdontogramValue = { 11: { images: [SAMPLE_IMG] } };
+    render(<Odontogram value={value} onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    await user.click(screen.getByRole('button', { name: 'Eliminar imagen 1' }));
+
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    expect(updated[11]?.images).toBeUndefined();
+  });
+
+  it('eliminar imagen preserva otras propiedades del diente', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    const value: OdontogramValue = { 16: { condition: 'crown', images: [SAMPLE_IMG] } };
+    render(<Odontogram value={value} onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 16/ }));
+    await user.click(screen.getByRole('button', { name: 'Eliminar imagen 1' }));
+
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    expect(updated[16]?.condition).toBe('crown');
+    expect(updated[16]?.images).toBeUndefined();
+  });
+
+  it('cerrar el popover restaura el foco al botón de imagen', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const imageBtn = screen.getByRole('button', { name: 'Imágenes del diente 11' });
+    await user.click(imageBtn);
+    await user.click(screen.getByRole('button', { name: 'Cerrar imágenes' }));
+
+    expect(imageBtn).toHaveFocus();
   });
 });
