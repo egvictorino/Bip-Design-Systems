@@ -309,3 +309,75 @@ describe('Odontogram — size', () => {
     expect(svg).toHaveAttribute('height', '40');
   });
 });
+
+// ─── Primary dentition ────────────────────────────────────────────────────────
+
+describe('Odontogram — primary dentition', () => {
+  const PRIMARY_TEETH = [51, 52, 53, 54, 55, 61, 62, 63, 64, 65, 71, 72, 73, 74, 75, 81, 82, 83, 84, 85];
+  const PERMANENT_TEETH = [11, 12, 21, 22, 31, 32, 41, 42];
+
+  it('renders 20 teeth in primary mode', () => {
+    render(<Odontogram dentition="primary" />);
+    const svgs = screen.getAllByRole('img');
+    expect(svgs).toHaveLength(20);
+  });
+
+  it('renders all primary FDI tooth numbers', () => {
+    render(<Odontogram dentition="primary" />);
+    PRIMARY_TEETH.forEach((n) => {
+      expect(getToothSVG(n)).toBeInTheDocument();
+    });
+  });
+
+  it('does not render permanent teeth in primary mode', () => {
+    render(<Odontogram dentition="primary" />);
+    PERMANENT_TEETH.forEach((n) => {
+      expect(getToothSVGQuery(n)).not.toBeInTheDocument();
+    });
+  });
+
+  it('interactive onChange works with primary teeth', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(
+      <Odontogram
+        dentition="primary"
+        onChange={handleChange}
+        activeTool="caries"
+        value={{}}
+      />
+    );
+    const surfaces = screen.getAllByRole('button', {
+      name: /oclusal/i,
+    });
+    await user.click(surfaces[0]);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    const changedTooth = Object.values(updated)[0];
+    expect(changedTooth?.surfaces?.occlusal).toBe('caries');
+  });
+
+  it('readOnly prevents changes in primary mode', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(
+      <Odontogram
+        dentition="primary"
+        onChange={handleChange}
+        readOnly
+        value={{}}
+      />
+    );
+    const surfaces = screen.queryAllByRole('button');
+    expect(surfaces).toHaveLength(0);
+    await user.click(getToothSVG(51));
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('renders correct aria-label for primary tooth 51', () => {
+    render(<Odontogram dentition="primary" />);
+    expect(
+      screen.getByRole('img', { name: /Diente 51.*Incisivo central temporal superior derecho/i })
+    ).toBeInTheDocument();
+  });
+});

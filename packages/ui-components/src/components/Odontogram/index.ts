@@ -6,4 +6,5 @@ export type {
   ToothCondition,
   ToothSurface,
   SurfaceCondition,
+  DentitionMode,
 } from './Odontogram';

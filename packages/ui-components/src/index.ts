@@ -182,4 +182,5 @@ export type {
   ToothCondition,
   ToothSurface,
   SurfaceCondition,
+  DentitionMode,
 } from './components/Odontogram';

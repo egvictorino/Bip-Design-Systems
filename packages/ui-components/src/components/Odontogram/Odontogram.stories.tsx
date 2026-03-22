@@ -16,6 +16,7 @@ const meta = {
       control: 'select',
       options: Object.keys(CONDITION_LABELS) as ToothCondition[],
     },
+    dentition: { control: 'select', options: ['permanent', 'primary'] },
   },
 } satisfies Meta<typeof Odontogram>;
 
@@ -133,4 +134,31 @@ export const SizeLg: Story = {
 
 export const Interactive: Story = {
   render: () => <InteractiveOdontogram />,
+};
+
+export const PrimaryDentition: Story = {
+  render: () => (
+    <Odontogram
+      label="Dentición primaria"
+      dentition="primary"
+    />
+  ),
+};
+
+export const PrimaryDentitionWithData: Story = {
+  render: () => (
+    <Odontogram
+      label="Dentición primaria con condiciones"
+      dentition="primary"
+      value={{
+        51: { surfaces: { occlusal: 'caries' } },
+        55: { condition: 'missing' },
+        61: { surfaces: { occlusal: 'restoration' } },
+        65: { condition: 'crown' },
+        74: { surfaces: { occlusal: 'caries', mesial: 'caries' } },
+        84: { condition: 'extraction_planned' },
+      }}
+      readOnly
+    />
+  ),
 };
