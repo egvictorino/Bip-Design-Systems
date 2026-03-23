@@ -167,47 +167,49 @@ export const WithNotes: Story = {
   ),
 };
 
-export const WithNotesInteractive: Story = {
-  render: () => {
-    const [value, setValue] = useState<OdontogramValue>(SAMPLE_VALUE_WITH_NOTES);
-    const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
-    const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap gap-2">
-          {conditions.map(([condition, label]) => (
-            <button
-              key={condition}
-              onClick={() => setActiveTool(condition)}
-              className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
-                activeTool === condition
-                  ? 'border-interaction-primary-default bg-interaction-primary-default text-text-white'
-                  : 'border-gray-300 bg-white text-text-secondary hover:border-interaction-primary-default'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <p className="text-xs text-text-secondary">
-          Haz clic en las superficies para marcar condiciones. Haz clic en el número del diente para agregar notas.
-          Los dientes con nota muestran un punto azul.
-        </p>
-        <Odontogram
-          value={value}
-          onChange={setValue}
-          activeTool={activeTool}
-          label="Odontograma interactivo con notas"
-          size="md"
-        />
-        {Object.keys(value).length > 0 && (
-          <div className="text-xs text-text-secondary font-mono bg-gray-50 rounded p-2 max-w-lg">
-            <pre>{JSON.stringify(value, null, 2)}</pre>
-          </div>
-        )}
+const WithNotesInteractiveDemo = () => {
+  const [value, setValue] = useState<OdontogramValue>(SAMPLE_VALUE_WITH_NOTES);
+  const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
+  const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        {conditions.map(([condition, label]) => (
+          <button
+            key={condition}
+            onClick={() => setActiveTool(condition)}
+            className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
+              activeTool === condition
+                ? 'border-interaction-primary-default bg-interaction-primary-default text-text-white'
+                : 'border-gray-300 bg-white text-text-secondary hover:border-interaction-primary-default'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-    );
-  },
+      <p className="text-xs text-text-secondary">
+        Haz clic en las superficies para marcar condiciones. Haz clic en el número del diente para agregar notas.
+        Los dientes con nota muestran un punto azul.
+      </p>
+      <Odontogram
+        value={value}
+        onChange={setValue}
+        activeTool={activeTool}
+        label="Odontograma interactivo con notas"
+        size="md"
+      />
+      {Object.keys(value).length > 0 && (
+        <div className="text-xs text-text-secondary font-mono bg-gray-50 rounded p-2 max-w-lg">
+          <pre>{JSON.stringify(value, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const WithNotesInteractive: Story = {
+  render: () => <WithNotesInteractiveDemo />,
 };
 
 export const WithImages: Story = {
@@ -238,47 +240,49 @@ export const WithImages: Story = {
   ),
 };
 
-export const WithImagesInteractive: Story = {
-  render: () => {
-    const [value, setValue] = useState<OdontogramValue>({});
-    const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
-    const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap gap-2">
-          {conditions.map(([condition, label]) => (
-            <button
-              key={condition}
-              onClick={() => setActiveTool(condition)}
-              className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
-                activeTool === condition
-                  ? 'border-interaction-primary-default bg-interaction-primary-default text-text-white'
-                  : 'border-gray-300 bg-white text-text-secondary hover:border-interaction-primary-default'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <p className="text-xs text-text-secondary">
-          Haz clic en el ícono de cámara junto al número del diente para adjuntar una imagen.
-          Los dientes con imagen muestran un punto azul claro.
-        </p>
-        <Odontogram
-          value={value}
-          onChange={setValue}
-          activeTool={activeTool}
-          label="Odontograma interactivo con imágenes"
-          size="md"
-        />
-        {Object.keys(value).length > 0 && (
-          <div className="text-xs text-text-secondary font-mono bg-gray-50 rounded p-2 max-w-lg">
-            <pre>{JSON.stringify(value, null, 2)}</pre>
-          </div>
-        )}
+const WithImagesInteractiveDemo = () => {
+  const [value, setValue] = useState<OdontogramValue>({});
+  const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
+  const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        {conditions.map(([condition, label]) => (
+          <button
+            key={condition}
+            onClick={() => setActiveTool(condition)}
+            className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
+              activeTool === condition
+                ? 'border-interaction-primary-default bg-interaction-primary-default text-text-white'
+                : 'border-gray-300 bg-white text-text-secondary hover:border-interaction-primary-default'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-    );
-  },
+      <p className="text-xs text-text-secondary">
+        Haz clic en el ícono de cámara junto al número del diente para adjuntar una imagen.
+        Los dientes con imagen muestran un punto azul claro.
+      </p>
+      <Odontogram
+        value={value}
+        onChange={setValue}
+        activeTool={activeTool}
+        label="Odontograma interactivo con imágenes"
+        size="md"
+      />
+      {Object.keys(value).length > 0 && (
+        <div className="text-xs text-text-secondary font-mono bg-gray-50 rounded p-2 max-w-lg">
+          <pre>{JSON.stringify(value, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const WithImagesInteractive: Story = {
+  render: () => <WithImagesInteractiveDemo />,
 };
 
 export const PrimaryDentitionWithData: Story = {

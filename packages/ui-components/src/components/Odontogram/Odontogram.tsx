@@ -315,6 +315,7 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
   const [adding, setAdding] = useState(initialImages.length === 0 && editable);
   const [addType, setAddType] = useState<ToothImageType>('radiograph');
   const [addUrl, setAddUrl] = useState('');
+  const addTypeId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const addSelectRef = useRef<HTMLSelectElement>(null);
@@ -477,8 +478,9 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
           <div className="flex flex-col gap-2 border-t border-edge pt-2">
             <p className="text-xs font-medium text-txt">Nueva imagen</p>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-txt-secondary">Tipo</label>
+              <label htmlFor={addTypeId} className="text-xs text-txt-secondary">Tipo</label>
               <select
+                id={addTypeId}
                 ref={addSelectRef}
                 value={addType}
                 onChange={(e) => setAddType(e.target.value as ToothImageType)}
