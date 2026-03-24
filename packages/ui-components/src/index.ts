@@ -21,6 +21,8 @@ export type { FileUploadProps } from './components/FileUpload';
 
 export { Checkbox } from './components/Checkbox';
 export type { CheckboxProps } from './components/Checkbox';
+export { CheckboxGroup } from './components/Checkbox';
+export type { CheckboxGroupProps } from './components/Checkbox';
 
 export { Radio } from './components/Radio';
 export type { RadioProps } from './components/Radio';

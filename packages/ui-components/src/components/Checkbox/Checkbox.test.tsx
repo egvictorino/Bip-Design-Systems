@@ -144,4 +144,57 @@ describe('Checkbox', () => {
     const box = container.querySelector('div.relative') as HTMLElement;
     expect(box).toHaveClass(w, h);
   });
+
+  // ── Indeterminate state ────────────────────────────────────────────────────
+
+  it('sets input.indeterminate to true when indeterminate={true}', async () => {
+    render(<Checkbox indeterminate />);
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    // Wait for useEffect to run
+    await new Promise((r) => setTimeout(r, 0));
+    expect(checkbox.indeterminate).toBe(true);
+  });
+
+  it('sets input.indeterminate to false when indeterminate={false}', async () => {
+    render(<Checkbox indeterminate={false} />);
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    await new Promise((r) => setTimeout(r, 0));
+    expect(checkbox.indeterminate).toBe(false);
+  });
+
+  it('updates indeterminate when prop changes', async () => {
+    const { rerender } = render(<Checkbox indeterminate={false} />);
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    await new Promise((r) => setTimeout(r, 0));
+    expect(checkbox.indeterminate).toBe(false);
+    rerender(<Checkbox indeterminate={true} />);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(checkbox.indeterminate).toBe(true);
+  });
+
+  // ── Required state ─────────────────────────────────────────────────────────
+
+  it('renders an asterisk when required=true and label is provided', () => {
+    render(<Checkbox required label="Campo obligatorio" />);
+    // The asterisk span is aria-hidden but still in the DOM
+    const label = screen.getByText('Campo obligatorio').closest('label') as HTMLElement;
+    expect(label.querySelector('span[aria-hidden="true"]')).toBeInTheDocument();
+  });
+
+  it('passes required attribute to the underlying input', () => {
+    render(<Checkbox required label="Campo" />);
+    expect(screen.getByRole('checkbox')).toBeRequired();
+  });
+
+  it('does not crash when required=true and no label is provided', () => {
+    expect(() => render(<Checkbox required />)).not.toThrow();
+  });
+
+  // ── Hover class on error state ─────────────────────────────────────────────
+
+  it('error state box has hover:border-danger-hover class', () => {
+    const { container } = render(<Checkbox error />);
+    const box = container.querySelector('div.relative') as HTMLElement;
+    expect(box.className).toContain('hover:border-danger-hover');
+  });
 });
