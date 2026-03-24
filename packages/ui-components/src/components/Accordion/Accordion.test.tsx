@@ -269,6 +269,48 @@ describe('Accordion — className', () => {
   });
 });
 
+// ─── Variantes ────────────────────────────────────────────────────────────────
+
+describe('Accordion — variantes', () => {
+  it('variant="default" aplica divide-y al root', () => {
+    const { container } = render(<DefaultAccordion />);
+    expect(container.firstChild).toHaveClass('divide-y');
+  });
+
+  it('variant="bordered" aplica border a cada AccordionItem', () => {
+    const { container } = render(
+      <Accordion variant="bordered">
+        <AccordionItem value="a">
+          <AccordionTrigger>A</AccordionTrigger>
+          <AccordionContent>Content A</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="b">
+          <AccordionTrigger>B</AccordionTrigger>
+          <AccordionContent>Content B</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    const items = container.firstChild?.childNodes;
+    expect(items).toHaveLength(2);
+    items?.forEach((item) => {
+      expect(item).toHaveClass('border');
+    });
+  });
+
+  it('variant="ghost" no tiene divide-y ni border en ningún elemento', () => {
+    const { container } = render(
+      <Accordion variant="ghost">
+        <AccordionItem value="a">
+          <AccordionTrigger>A</AccordionTrigger>
+          <AccordionContent>Content A</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    expect(container.firstChild).not.toHaveClass('divide-y');
+    expect(container.querySelector('.border')).toBeNull();
+  });
+});
+
 // ─── Error guard ──────────────────────────────────────────────────────────────
 
 describe('Accordion — error guard', () => {

@@ -1,12 +1,17 @@
 import React, { useContext, useId, useState } from 'react';
 import { cn } from '../../lib/cn';
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type AccordionVariant = 'default' | 'bordered' | 'ghost';
+
 // ─── Accordion Context (root) ─────────────────────────────────────────────────
 
 interface AccordionContextValue {
   openItems: Set<string>;
   toggleItem: (value: string) => void;
   instanceId: string;
+  variant: AccordionVariant;
 }
 
 const AccordionContext = React.createContext<AccordionContextValue | null>(null);
@@ -44,6 +49,7 @@ const useAccordionItemContext = (): AccordionItemContextValue => {
 export interface AccordionProps {
   type?: 'single' | 'multiple';
   collapsible?: boolean;
+  variant?: AccordionVariant;
   defaultValue?: string | string[];
   value?: string | string[];
   onChange?: (value: string | string[]) => void;
@@ -56,9 +62,16 @@ const toSet = (value: string | string[] | undefined): Set<string> => {
   return new Set(Array.isArray(value) ? value : [value]);
 };
 
+const rootVariantStyles: Record<AccordionVariant, string> = {
+  default: 'divide-y divide-interaction-tertiary-default',
+  bordered: 'space-y-2',
+  ghost: '',
+};
+
 export const Accordion: React.FC<AccordionProps> = ({
   type = 'single',
   collapsible = false,
+  variant = 'default',
   defaultValue,
   value,
   onChange,
@@ -99,10 +112,8 @@ export const Accordion: React.FC<AccordionProps> = ({
   };
 
   return (
-    <AccordionContext.Provider value={{ openItems, toggleItem, instanceId }}>
-      <div className={cn('w-full divide-y divide-interaction-tertiary-default', className)}>
-        {children}
-      </div>
+    <AccordionContext.Provider value={{ openItems, toggleItem, instanceId, variant }}>
+      <div className={cn('w-full', rootVariantStyles[variant], className)}>{children}</div>
     </AccordionContext.Provider>
   );
 };
@@ -116,20 +127,26 @@ export interface AccordionItemProps {
   children: React.ReactNode;
 }
 
+const itemVariantStyles: Record<AccordionVariant, string> = {
+  default: '',
+  bordered: 'rounded-lg border border-edge overflow-hidden',
+  ghost: '',
+};
+
 export const AccordionItem: React.FC<AccordionItemProps> = ({
   value,
   disabled = false,
   className,
   children,
 }) => {
-  const { openItems, instanceId } = useAccordionContext();
+  const { openItems, instanceId, variant } = useAccordionContext();
   const isOpen = openItems.has(value);
   const triggerId = `${instanceId}-trigger-${value}`;
   const contentId = `${instanceId}-content-${value}`;
 
   return (
     <AccordionItemContext.Provider value={{ value, isOpen, disabled, triggerId, contentId }}>
-      <div className={cn('w-full', className)}>{children}</div>
+      <div className={cn('w-full', itemVariantStyles[variant], className)}>{children}</div>
     </AccordionItemContext.Provider>
   );
 };
@@ -141,8 +158,14 @@ export interface AccordionTriggerProps {
   children: React.ReactNode;
 }
 
+const triggerVariantStyles: Record<AccordionVariant, string> = {
+  default: 'py-4',
+  bordered: 'px-4 py-4',
+  ghost: 'py-3',
+};
+
 export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({ className, children }) => {
-  const { toggleItem } = useAccordionContext();
+  const { toggleItem, variant } = useAccordionContext();
   const { value, isOpen, disabled, triggerId, contentId } = useAccordionItemContext();
 
   return (
@@ -154,7 +177,8 @@ export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({ className, c
       disabled={disabled}
       onClick={() => toggleItem(value)}
       className={cn(
-        'flex w-full items-center justify-between py-4 text-left text-sm font-medium',
+        'flex w-full items-center justify-between text-left text-sm font-medium',
+        triggerVariantStyles[variant],
         'text-text-primary transition-colors',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-offset-1',
         'disabled:cursor-not-allowed disabled:text-text-disabled',
@@ -189,7 +213,14 @@ export interface AccordionContentProps {
   children: React.ReactNode;
 }
 
+const contentVariantStyles: Record<AccordionVariant, string> = {
+  default: 'pb-4',
+  bordered: 'px-4 pb-4',
+  ghost: 'pb-3',
+};
+
 export const AccordionContent: React.FC<AccordionContentProps> = ({ className, children }) => {
+  const { variant } = useAccordionContext();
   const { isOpen, triggerId, contentId } = useAccordionItemContext();
 
   return (
@@ -203,7 +234,9 @@ export const AccordionContent: React.FC<AccordionContentProps> = ({ className, c
       )}
     >
       <div className="overflow-hidden">
-        <div className={cn('pb-4 text-sm text-text-secondary', className)}>{children}</div>
+        <div className={cn('text-sm text-text-secondary', contentVariantStyles[variant], className)}>
+          {children}
+        </div>
       </div>
     </div>
   );

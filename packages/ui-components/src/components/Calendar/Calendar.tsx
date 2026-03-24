@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -48,6 +49,7 @@ export interface CalendarProps {
   onDateChange?: (date: Date) => void;
   onEventClick?: (event: CalendarEvent) => void;
   onEventCreate?: (slotInfo: CalendarSlotInfo) => void;
+  onRangeSelect?: (start: Date, end: Date) => void;
   onEventMove?: (event: CalendarEvent, start: Date, end: Date, doctorId?: string) => void;
   onEventResize?: (event: CalendarEvent, newEnd: Date) => void;
   minTime?: string;
@@ -378,6 +380,63 @@ const EventBlock = React.memo<EventBlockProps>(({
 });
 EventBlock.displayName = 'EventBlock';
 
+// ─── RangePopover ─────────────────────────────────────────────────────────────
+
+interface RangePopoverProps {
+  start: Date;
+  end: Date; // exclusive (day after last selected)
+  position: { top: number; left: number };
+  onConfirm: () => void;
+  onClose: () => void;
+}
+
+const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onConfirm, onClose }) => {
+  const displayEnd = addDays(end, -1); // back to inclusive for display
+  const fmt = (d: Date) =>
+    d.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
+  const label = isSameDay(start, displayEnd) ? fmt(start) : `${fmt(start)} — ${fmt(displayEnd)}`;
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return ReactDOM.createPortal(
+    <>
+      <div className="fixed inset-0 z-40" aria-hidden="true" onClick={onClose} />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Rango de fechas seleccionado"
+        style={{ top: position.top, left: position.left }}
+        className="fixed z-50 w-64 bg-white border border-edge rounded-lg shadow-xl p-3 flex flex-col gap-3"
+      >
+        <div className="flex items-start justify-between gap-2">
+          <span className="text-sm font-medium text-txt leading-tight">{label}</span>
+          <button
+            onClick={onClose}
+            aria-label="Cerrar"
+            className="shrink-0 p-0.5 rounded hover:bg-surface-2 text-txt-secondary focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            ✕
+          </button>
+        </div>
+        <button
+          onClick={onConfirm}
+          className="w-full px-3 py-1.5 rounded-md bg-primary text-txt-white text-sm font-medium hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          Crear evento
+        </button>
+      </div>
+    </>,
+    document.body
+  );
+});
+RangePopover.displayName = 'RangePopover';
+
 // ─── MonthView ────────────────────────────────────────────────────────────────
 
 interface MonthViewProps {
@@ -386,22 +445,102 @@ interface MonthViewProps {
   date: Date;
   onEventClick: (e: CalendarEvent) => void;
   onEventCreate?: (info: CalendarSlotInfo) => void;
+  onRangeSelect?: (start: Date, end: Date) => void;
   onEventMove?: (event: CalendarEvent, start: Date, end: Date, doctorId?: string) => void;
   onDateChange?: (d: Date) => void;
   onViewChange?: (v: CalendarView) => void;
 }
 
 const MonthView: React.FC<MonthViewProps> = ({
-  events, resources, date, onEventClick, onEventCreate, onEventMove, onDateChange, onViewChange,
+  events, resources, date, onEventClick, onEventCreate, onRangeSelect, onEventMove, onDateChange, onViewChange,
 }) => {
   const today = useMemo(() => startOfDay(new Date()), []);
 
-  // Build 6×7 grid starting on Monday
+  // ── Range popover state ────────────────────────────────────────────────────
+  const [rangePopover, setRangePopover] = useState<{
+    start: Date;
+    end: Date;
+    position: { top: number; left: number };
+  } | null>(null);
+
+  // ── Range selection state ──────────────────────────────────────────────────
+  const [rangeAnchor, setRangeAnchorState] = useState<Date | null>(null);
+  const [rangeHover, setRangeHoverState] = useState<Date | null>(null);
+  const rangeAnchorRef = useRef<Date | null>(null);
+  const rangeHoverRef = useRef<Date | null>(null);
+  const isSelectingRef = useRef(false);
+
+  const setRangeAnchor = useCallback((d: Date | null) => {
+    rangeAnchorRef.current = d;
+    setRangeAnchorState(d);
+  }, []);
+  const setRangeHover = useCallback((d: Date | null) => {
+    rangeHoverRef.current = d;
+    setRangeHoverState(d);
+  }, []);
+
+  const rangeMin = useMemo(() => {
+    if (!rangeAnchor || !rangeHover) return null;
+    return startOfDay(rangeAnchor <= rangeHover ? rangeAnchor : rangeHover);
+  }, [rangeAnchor, rangeHover]);
+
+  const rangeMax = useMemo(() => {
+    if (!rangeAnchor || !rangeHover) return null;
+    return startOfDay(rangeAnchor <= rangeHover ? rangeHover : rangeAnchor);
+  }, [rangeAnchor, rangeHover]);
+
+  const isInRange = useCallback(
+    (d: Date): boolean => {
+      if (!rangeMin || !rangeMax) return false;
+      const day = startOfDay(d);
+      return day >= rangeMin && day <= rangeMax;
+    },
+    [rangeMin, rangeMax]
+  );
+
+  // Build 6×7 grid starting on Monday (must be defined before finalizeRange)
   const cells = useMemo(() => {
     const monthStart = startOfMonth(date);
     const gridStart = startOfWeek(monthStart);
     return Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
   }, [date]);
+
+  const finalizeRange = useCallback(() => {
+    isSelectingRef.current = false;
+    const anchor = rangeAnchorRef.current;
+    const hover = rangeHoverRef.current;
+    const min = anchor && hover ? startOfDay(anchor <= hover ? anchor : hover) : null;
+    const max = anchor && hover ? startOfDay(anchor <= hover ? hover : anchor) : null;
+
+    if (min && max) {
+      if (isSameDay(min, max)) {
+        onEventCreate?.({ start: min, end: addDays(min, 1) });
+      } else {
+        // Position popover below the cell corresponding to max
+        const maxIdx = cells.findIndex((c) => isSameDay(c, max));
+        const cellEl = maxIdx >= 0 ? document.querySelector(`[data-cell-idx="${maxIdx}"]`) : null;
+        const rect = cellEl?.getBoundingClientRect();
+        const top = rect
+          ? Math.min(rect.bottom + 8, window.innerHeight - 132)
+          : window.innerHeight / 2;
+        const left = rect
+          ? Math.min(rect.left, window.innerWidth - 272)
+          : window.innerWidth / 2 - 128;
+        setRangePopover({ start: min, end: addDays(max, 1), position: { top, left } });
+      }
+    }
+
+    setRangeAnchor(null);
+    setRangeHover(null);
+  }, [cells, onEventCreate, setRangeAnchor, setRangeHover]);
+
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isSelectingRef.current) finalizeRange();
+    };
+    document.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => document.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, [finalizeRange]);
 
   const eventsByDay = useMemo(() => {
     const map = new Map<string, CalendarEvent[]>();
@@ -447,8 +586,23 @@ const MonthView: React.FC<MonthViewProps> = ({
       <div
         role="grid"
         aria-label={`Mes ${MONTH_FORMATTER.format(date)}`}
-        className="grid grid-cols-7 flex-1 overflow-y-auto"
+        tabIndex={0}
+        className="grid grid-cols-7 flex-1 overflow-y-auto select-none"
         style={{ gridTemplateRows: 'repeat(6, minmax(0, 1fr))' }}
+        onMouseMove={(e) => {
+          if (!isSelectingRef.current) return;
+          const el = document.elementFromPoint(e.clientX, e.clientY);
+          const cellEl = el?.closest('[data-cell-idx]');
+          if (!cellEl) return;
+          const idxStr = cellEl.getAttribute('data-cell-idx');
+          if (idxStr === null) return;
+          const hoverDate = cells[parseInt(idxStr, 10)];
+          if (hoverDate) setRangeHover(startOfDay(hoverDate));
+        }}
+        onMouseUp={() => {
+          if (!isSelectingRef.current) return;
+          finalizeRange();
+        }}
       >
         {cells.map((cellDate, idx) => {
           const key = startOfDay(cellDate).toISOString();
@@ -457,24 +611,40 @@ const MonthView: React.FC<MonthViewProps> = ({
           const isToday = isSameDay(cellDate, today);
           const visible = dayEvents.slice(0, 3);
           const overflow = dayEvents.length - 3;
+          const inRange = isInRange(cellDate);
 
-          const handleCellCreate = () =>
-            onEventCreate?.({ start: cellDate, end: addDays(cellDate, 1) });
+          const handleCellKeyDown = (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              onEventCreate?.({ start: startOfDay(cellDate), end: addDays(startOfDay(cellDate), 1) });
+            }
+          };
 
           return (
             <div
               key={idx}
               role="gridcell"
               tabIndex={0}
+              data-cell-idx={idx}
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => handleDrop(e, cellDate)}
-              onClick={handleCellCreate}
-              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleCellCreate()}
+              onMouseDown={(e) => {
+                if (e.button !== 0) return;
+                e.preventDefault();
+                isSelectingRef.current = true;
+                setRangeAnchor(startOfDay(cellDate));
+                setRangeHover(startOfDay(cellDate));
+              }}
+              onMouseEnter={() => {
+                if (!isSelectingRef.current) return;
+                setRangeHover(startOfDay(cellDate));
+              }}
+              onKeyDown={handleCellKeyDown}
               className={cn(
-                'min-h-[100px] p-1 border-b border-r border-edge cursor-pointer hover:bg-surface-2 transition-colors',
+                'min-h-[100px] p-1 border-b border-r border-edge cursor-pointer transition-colors',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
-                !isCurrentMonth && 'bg-surface-2 opacity-60',
-                isToday && 'bg-selected'
+                !isCurrentMonth && !inRange && 'bg-surface-2 opacity-60',
+                isToday && !inRange && 'bg-selected',
+                inRange ? 'bg-info-subtle ring-1 ring-inset ring-primary' : 'hover:bg-surface-2'
               )}
             >
               <div className="flex items-center justify-end mb-1">
@@ -515,6 +685,19 @@ const MonthView: React.FC<MonthViewProps> = ({
           );
         })}
       </div>
+
+      {rangePopover && (
+        <RangePopover
+          start={rangePopover.start}
+          end={rangePopover.end}
+          position={rangePopover.position}
+          onConfirm={() => {
+            onRangeSelect?.(rangePopover.start, rangePopover.end);
+            setRangePopover(null);
+          }}
+          onClose={() => setRangePopover(null)}
+        />
+      )}
     </div>
   );
 };
@@ -831,11 +1014,42 @@ const DAY_FULL_FORMATTER = new Intl.DateTimeFormat('es-MX', {
   year: 'numeric',
 });
 
+const STATUS_FILTER_CONFIG: { status: CalendarEventStatus; label: string; activeClass: string }[] =
+  [
+    { status: 'pending', label: 'Pendiente', activeClass: 'bg-warning text-txt-white' },
+    { status: 'confirmed', label: 'Confirmada', activeClass: 'bg-primary text-txt-white' },
+    { status: 'completed', label: 'Completada', activeClass: 'bg-success-light text-success-text' },
+    { status: 'cancelled', label: 'Cancelada', activeClass: 'bg-disabled text-txt-disabled' },
+  ];
+
 const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEventClick }) => {
+  const [activeStatuses, setActiveStatuses] = useState<Set<CalendarEventStatus>>(
+    () => new Set(['pending', 'confirmed', 'completed', 'cancelled'])
+  );
+
+  const today = useMemo(() => startOfDay(new Date()), []);
+
+  const toggleStatus = useCallback((status: CalendarEventStatus) => {
+    setActiveStatuses((prev) => {
+      const next = new Set(prev);
+      if (next.has(status)) {
+        next.delete(status);
+      } else {
+        next.add(status);
+      }
+      return next;
+    });
+  }, []);
+
+  const hasEventsInRange = useMemo(() => {
+    const horizon = addDays(date, 30);
+    return events.some((ev) => ev.start >= date && ev.start <= horizon);
+  }, [events, date]);
+
   const groups = useMemo(() => {
     const horizon = addDays(date, 30);
     const filtered = events
-      .filter((ev) => ev.start >= date && ev.start <= horizon)
+      .filter((ev) => ev.start >= date && ev.start <= horizon && activeStatuses.has(ev.status))
       .sort((a, b) => a.start.getTime() - b.start.getTime());
 
     const map = new Map<string, CalendarEvent[]>();
@@ -848,107 +1062,169 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
       date: new Date(key),
       events: evs,
     }));
-  }, [events, date]);
-
-  if (groups.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center flex-1 py-16 text-txt-secondary">
-        <svg aria-hidden="true" className="w-12 h-12 mb-4 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="3" y="4" width="18" height="18" rx="2" />
-          <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round" />
-        </svg>
-        <p className="text-sm font-medium">No hay eventos en los próximos 30 días</p>
-      </div>
-    );
-  }
+  }, [events, date, activeStatuses]);
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
-      {groups.map(({ date: groupDate, events: groupEvents }) => (
-        <div key={groupDate.toISOString()}>
-          <h3 className="text-sm font-semibold text-txt-secondary mb-2 capitalize">
-            {DAY_FULL_FORMATTER.format(groupDate)}
-          </h3>
-          <div className="space-y-2">
-            {groupEvents.map((ev) => {
-              const doctor = resources?.find((r) => r.id === ev.doctorId);
-              return (
-                <div
-                  key={ev.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => onEventClick(ev)}
-                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onEventClick(ev)}
-                  aria-label={`${ev.title}, ${TIME_FORMATTER.format(ev.start)}, ${STATUS_LABELS[ev.status]}`}
-                  className={cn(
-                    'flex items-start gap-3 p-3 rounded-lg border cursor-pointer',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                    'hover:bg-surface-2 transition-colors',
-                    ev.status === 'cancelled' && 'opacity-60'
-                  )}
-                >
-                  {/* Time */}
-                  <div className="flex-shrink-0 text-sm font-semibold text-txt-secondary w-20">
-                    {TIME_FORMATTER.format(ev.start)}
-                    <div className="text-xs font-normal text-txt-disabled">
-                      {TIME_FORMATTER.format(ev.end)}
-                    </div>
-                  </div>
+    <div className="flex flex-col flex-1 overflow-hidden">
+      {/* Filter chips */}
+      <div className="flex flex-wrap gap-2 px-4 py-3 border-b border-edge shrink-0">
+        {STATUS_FILTER_CONFIG.map(({ status, label, activeClass }) => (
+          <button
+            key={status}
+            role="checkbox"
+            aria-checked={activeStatuses.has(status)}
+            onClick={() => toggleStatus(status)}
+            className={cn(
+              'text-xs px-3 py-1 rounded-full font-medium transition-colors',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+              activeStatuses.has(status)
+                ? activeClass
+                : 'bg-surface-2 text-txt-secondary hover:bg-surface-3'
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
 
-                  {/* Color bar */}
-                  <div
-                    className="w-1 self-stretch rounded-full flex-shrink-0"
-                    style={{
-                      backgroundColor: ev.color ??
-                        (ev.status === 'pending' ? 'var(--color-warning)' :
-                         ev.status === 'confirmed' ? 'var(--color-primary)' :
-                         ev.status === 'completed' ? 'var(--color-success)' :
-                         'var(--color-edge-disabled)'),
-                    }}
-                    aria-hidden="true"
-                  />
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-sm text-txt truncate">{ev.title}</div>
-                    {ev.patientName && (
-                      <div className="text-xs text-txt-secondary truncate">{ev.patientName}</div>
+      {/* Content */}
+      {groups.length === 0 ? (
+        <div className="flex flex-col items-center justify-center flex-1 py-16 text-txt-secondary">
+          <svg
+            aria-hidden="true"
+            className="w-12 h-12 mb-4 opacity-40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round" />
+          </svg>
+          <p className="text-sm font-medium">
+            {hasEventsInRange
+              ? 'No hay eventos con los filtros seleccionados'
+              : 'No hay eventos en los próximos 30 días'}
+          </p>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+          {groups.map(({ date: groupDate, events: groupEvents }) => {
+            const isToday = isSameDay(groupDate, today);
+            return (
+              <div key={groupDate.toISOString()}>
+                {/* Sticky day header */}
+                <div className="sticky top-0 z-10 bg-surface-1 -mx-4 px-4 py-1 mb-2">
+                  <h3
+                    className={cn(
+                      'text-sm font-semibold capitalize flex items-center gap-2',
+                      isToday ? 'text-primary' : 'text-txt-secondary'
                     )}
-                    {ev.treatmentType && (
-                      <div className="text-xs text-txt-secondary truncate">{ev.treatmentType}</div>
+                  >
+                    {DAY_FULL_FORMATTER.format(groupDate)}
+                    {isToday && (
+                      <span className="text-xs bg-primary text-txt-white px-1.5 py-0.5 rounded-full font-normal normal-case">
+                        Hoy
+                      </span>
                     )}
-                  </div>
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  {groupEvents.map((ev) => {
+                    const doctor = resources?.find((r) => r.id === ev.doctorId);
+                    return (
+                      <div
+                        key={ev.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => onEventClick(ev)}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onEventClick(ev)}
+                        aria-label={`${ev.title}, ${TIME_FORMATTER.format(ev.start)}, ${STATUS_LABELS[ev.status]}`}
+                        className={cn(
+                          'flex items-start gap-3 p-3 rounded-lg border cursor-pointer',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                          'hover:bg-surface-2 transition-colors',
+                          ev.status === 'cancelled' && 'opacity-60'
+                        )}
+                      >
+                        {/* Time */}
+                        <div className="flex-shrink-0 text-sm font-semibold text-txt-secondary w-20">
+                          {TIME_FORMATTER.format(ev.start)}
+                          <div className="text-xs font-normal text-txt-disabled">
+                            {TIME_FORMATTER.format(ev.end)}
+                          </div>
+                        </div>
 
-                  {/* Doctor + Status */}
-                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                    <span
-                      className={cn(
-                        'text-xs px-1.5 py-0.5 rounded-full font-medium',
-                        ev.status === 'pending' && 'bg-warning-light text-warning-text',
-                        ev.status === 'confirmed' && 'bg-primary text-txt-white',
-                        ev.status === 'completed' && 'bg-success-light text-success-text',
-                        ev.status === 'cancelled' && 'bg-disabled text-txt-disabled'
-                      )}
-                    >
-                      {STATUS_LABELS[ev.status]}
-                    </span>
-                    {doctor && (
-                      <div className="flex items-center gap-1 text-xs text-txt-secondary">
-                        <span
-                          className="w-1.5 h-1.5 rounded-full"
-                          style={{ backgroundColor: doctor.color }}
+                        {/* Color bar */}
+                        <div
+                          className="w-1 self-stretch rounded-full flex-shrink-0"
+                          style={{
+                            backgroundColor:
+                              ev.color ??
+                              (ev.status === 'pending'
+                                ? 'var(--color-warning)'
+                                : ev.status === 'confirmed'
+                                  ? 'var(--color-primary)'
+                                  : ev.status === 'completed'
+                                    ? 'var(--color-success)'
+                                    : 'var(--color-edge-disabled)'),
+                          }}
                           aria-hidden="true"
                         />
-                        {doctor.name}
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-sm text-txt truncate">{ev.title}</div>
+                          {ev.patientName && (
+                            <div className="text-xs text-txt-secondary truncate">
+                              {ev.patientName}
+                            </div>
+                          )}
+                          {ev.treatmentType && (
+                            <div className="text-xs text-txt-secondary truncate">
+                              {ev.treatmentType}
+                            </div>
+                          )}
+                          {ev.notes && (
+                            <div className="text-xs text-txt-secondary mt-1 line-clamp-2 italic">
+                              {ev.notes}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Doctor + Status */}
+                        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                          <span
+                            className={cn(
+                              'text-xs px-1.5 py-0.5 rounded-full font-medium',
+                              ev.status === 'pending' && 'bg-warning-light text-warning-text',
+                              ev.status === 'confirmed' && 'bg-primary text-txt-white',
+                              ev.status === 'completed' && 'bg-success-light text-success-text',
+                              ev.status === 'cancelled' && 'bg-disabled text-txt-disabled'
+                            )}
+                          >
+                            {STATUS_LABELS[ev.status]}
+                          </span>
+                          {doctor && (
+                            <div className="flex items-center gap-1 text-xs text-txt-secondary">
+                              <span
+                                className="w-1.5 h-1.5 rounded-full"
+                                style={{ backgroundColor: doctor.color }}
+                                aria-hidden="true"
+                              />
+                              {doctor.name}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    )}
-                  </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
-      ))}
+      )}
     </div>
   );
 };
@@ -967,6 +1243,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
       onDateChange,
       onEventClick,
       onEventCreate,
+      onRangeSelect,
       onEventMove,
       onEventResize,
       minTime = '07:00',
@@ -1033,6 +1310,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
             date={date}
             onEventClick={handleEventClick}
             onEventCreate={onEventCreate}
+            onRangeSelect={onRangeSelect}
             onEventMove={onEventMove}
             onDateChange={handleDateChange}
             onViewChange={handleViewChange}

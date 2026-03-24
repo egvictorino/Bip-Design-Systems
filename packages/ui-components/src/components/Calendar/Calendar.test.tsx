@@ -218,7 +218,8 @@ describe('Calendar', () => {
       const onEventCreate = vi.fn();
       renderCalendar({ view: 'month', onEventCreate });
       const cells = screen.getAllByRole('gridcell');
-      fireEvent.click(cells[10]);
+      fireEvent.mouseDown(cells[10], { button: 0 });
+      fireEvent.mouseUp(cells[10]);
       expect(onEventCreate).toHaveBeenCalledTimes(1);
       expect(onEventCreate.mock.calls[0][0]).toHaveProperty('start');
     });
@@ -297,7 +298,8 @@ describe('Calendar', () => {
 
     it('shows status label in agenda row', () => {
       renderCalendar({ view: 'agenda', events: EVENTS, date: EVENTS[0].start });
-      expect(screen.getByText('Confirmada')).toBeInTheDocument();
+      // Multiple "Confirmada" texts exist (filter chip + event badge)
+      expect(screen.getAllByText('Confirmada').length).toBeGreaterThan(0);
     });
 
     it('shows doctor name when resources provided', () => {
@@ -308,6 +310,120 @@ describe('Calendar', () => {
         date: EVENTS[0].start,
       });
       expect(screen.getAllByText('Dr. García').length).toBeGreaterThan(0);
+    });
+
+    // ── Filter chips ──────────────────────────────────────────────────────────
+
+    it('renders 4 status filter chips', () => {
+      renderCalendar({ view: 'agenda', events: EVENTS, date: EVENTS[0].start });
+      const chips = screen.getAllByRole('checkbox');
+      expect(chips).toHaveLength(4);
+    });
+
+    it('all filter chips start checked', () => {
+      renderCalendar({ view: 'agenda', events: EVENTS, date: EVENTS[0].start });
+      const chips = screen.getAllByRole('checkbox');
+      chips.forEach((chip) => expect(chip).toHaveAttribute('aria-checked', 'true'));
+    });
+
+    it('clicking a filter chip unchecks it', () => {
+      renderCalendar({ view: 'agenda', events: EVENTS, date: EVENTS[0].start });
+      const pendienteChip = screen.getByRole('checkbox', { name: /pendiente/i });
+      fireEvent.click(pendienteChip);
+      expect(pendienteChip).toHaveAttribute('aria-checked', 'false');
+    });
+
+    it('unchecking a status hides events of that status', () => {
+      renderCalendar({ view: 'agenda', events: EVENTS, date: EVENTS[0].start });
+      // "Limpieza dental" is pending — uncheck Pendiente
+      expect(screen.getByText('Limpieza dental')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('checkbox', { name: /pendiente/i }));
+      expect(screen.queryByText('Limpieza dental')).not.toBeInTheDocument();
+    });
+
+    it('unchecking a status keeps events of other statuses visible', () => {
+      renderCalendar({ view: 'agenda', events: EVENTS, date: EVENTS[0].start });
+      fireEvent.click(screen.getByRole('checkbox', { name: /pendiente/i }));
+      // "Revisión general" is confirmed — should still be visible
+      expect(screen.getByText('Revisión general')).toBeInTheDocument();
+    });
+
+    it('filtering all events out shows "no hay eventos con los filtros seleccionados"', () => {
+      renderCalendar({ view: 'agenda', events: EVENTS, date: EVENTS[0].start });
+      // Uncheck all chips
+      screen.getAllByRole('checkbox').forEach((chip) => fireEvent.click(chip));
+      expect(
+        screen.getByText(/no hay eventos con los filtros seleccionados/i)
+      ).toBeInTheDocument();
+    });
+
+    it('re-checking a chip restores the hidden events', () => {
+      renderCalendar({ view: 'agenda', events: EVENTS, date: EVENTS[0].start });
+      const pendienteChip = screen.getByRole('checkbox', { name: /pendiente/i });
+      fireEvent.click(pendienteChip); // uncheck
+      expect(screen.queryByText('Limpieza dental')).not.toBeInTheDocument();
+      fireEvent.click(pendienteChip); // re-check
+      expect(screen.getByText('Limpieza dental')).toBeInTheDocument();
+    });
+
+    // ── Notes ─────────────────────────────────────────────────────────────────
+
+    it('shows event notes when present', () => {
+      const eventWithNotes: CalendarEvent = {
+        id: 'n1',
+        title: 'Cita con notas',
+        start: makeDate(0, 10, 0),
+        end: makeDate(0, 10, 30),
+        status: 'confirmed',
+        notes: 'Nota de prueba para verificar renderizado.',
+      };
+      renderCalendar({ view: 'agenda', events: [eventWithNotes], date: eventWithNotes.start });
+      expect(screen.getByText('Nota de prueba para verificar renderizado.')).toBeInTheDocument();
+    });
+
+    it('does not render notes section when event has no notes', () => {
+      renderCalendar({ view: 'agenda', events: EVENTS, date: EVENTS[0].start });
+      // EVENTS[0] has no notes — check that no italic note element appears for that event
+      const row = screen.getByText('Revisión general').closest('[role="button"]') as HTMLElement;
+      expect(row.querySelector('.italic')).toBeNull();
+    });
+
+    // ── Today indicator ───────────────────────────────────────────────────────
+
+    it('shows "Hoy" badge inside the heading when events fall on today', () => {
+      const todayEvent: CalendarEvent = {
+        id: 't1',
+        title: 'Evento de hoy',
+        start: (() => {
+          const d = new Date();
+          d.setHours(10, 0, 0, 0);
+          return d;
+        })(),
+        end: (() => {
+          const d = new Date();
+          d.setHours(10, 30, 0, 0);
+          return d;
+        })(),
+        status: 'confirmed',
+      };
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      renderCalendar({ view: 'agenda', events: [todayEvent], date: todayStart });
+      // The header always has a "Hoy" nav button; the badge adds a second one inside an h3
+      const allHoy = screen.getAllByText('Hoy');
+      expect(allHoy.length).toBeGreaterThan(1);
+      // The badge is a <span> inside an <h3>
+      const badge = allHoy.find((el) => el.tagName === 'SPAN');
+      expect(badge).toBeTruthy();
+    });
+
+    it('does not show "Hoy" badge in headings for non-today groups', () => {
+      // BASE_DATE is 2026-03-10, which is not today
+      renderCalendar({ view: 'agenda', events: EVENTS, date: BASE_DATE });
+      // Only the nav "Hoy" button should exist — no <span> badge
+      const allHoy = screen.getAllByText('Hoy');
+      const badge = allHoy.find((el) => el.tagName === 'SPAN');
+      expect(badge).toBeUndefined();
     });
   });
 
@@ -400,6 +516,181 @@ describe('Calendar', () => {
       const chip = screen.getByRole('button', { name: /revisión general/i });
       fireEvent.keyDown(chip, { key: 'Enter' });
       expect(onEventClick).toHaveBeenCalledWith(EVENTS[0]);
+    });
+  });
+
+  // ─── Range Selection ─────────────────────────────────────────────────────────
+
+  describe('Range Selection', () => {
+    it('mousedown + mouseup on the same cell fires onEventCreate (single click)', () => {
+      const onEventCreate = vi.fn();
+      const onRangeSelect = vi.fn();
+      renderCalendar({ view: 'month', date: BASE_DATE, onEventCreate, onRangeSelect });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseUp(grid);
+      expect(onEventCreate).toHaveBeenCalledTimes(1);
+      expect(onRangeSelect).not.toHaveBeenCalled();
+    });
+
+    it('mousedown on cell A + mouseenter cell B + mouseup on grid opens range popover', () => {
+      const onEventCreate = vi.fn();
+      const onRangeSelect = vi.fn();
+      renderCalendar({ view: 'month', date: BASE_DATE, onEventCreate, onRangeSelect });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseEnter(cells[4]);
+      fireEvent.mouseUp(grid);
+      // onRangeSelect is NOT called yet — popover appears first
+      expect(onRangeSelect).not.toHaveBeenCalled();
+      expect(onEventCreate).not.toHaveBeenCalled();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+
+    it('range end date is always >= range start date (inverse drag normalizes, popover opens)', () => {
+      const onRangeSelect = vi.fn();
+      renderCalendar({ view: 'month', date: BASE_DATE, onRangeSelect });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[6], { button: 0 });
+      fireEvent.mouseEnter(cells[2]);
+      fireEvent.mouseUp(grid);
+      // Popover opens — onRangeSelect fires only when "Crear evento" is clicked
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /crear evento/i }));
+      expect(onRangeSelect).toHaveBeenCalledTimes(1);
+      const [start, end] = onRangeSelect.mock.calls[0] as [Date, Date];
+      expect(end.getTime()).toBeGreaterThan(start.getTime());
+    });
+
+    it('right-click mousedown does not start range selection', () => {
+      const onEventCreate = vi.fn();
+      const onRangeSelect = vi.fn();
+      renderCalendar({ view: 'month', date: BASE_DATE, onEventCreate, onRangeSelect });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 2 });
+      fireEvent.mouseEnter(cells[4]);
+      fireEvent.mouseUp(grid);
+      expect(onRangeSelect).not.toHaveBeenCalled();
+      expect(onEventCreate).not.toHaveBeenCalled();
+    });
+
+    it('onRangeSelect not provided does not throw', () => {
+      renderCalendar({ view: 'month', date: BASE_DATE });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      expect(() => {
+        fireEvent.mouseDown(cells[0], { button: 0 });
+        fireEvent.mouseEnter(cells[3]);
+        fireEvent.mouseUp(grid);
+      }).not.toThrow();
+    });
+
+    it('cells in range get the highlight class bg-info-subtle', () => {
+      renderCalendar({ view: 'month', date: BASE_DATE });
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseEnter(cells[2]);
+      expect(cells[0].className).toContain('bg-info-subtle');
+      expect(cells[1].className).toContain('bg-info-subtle');
+      expect(cells[2].className).toContain('bg-info-subtle');
+      expect(cells[5].className).not.toContain('bg-info-subtle');
+    });
+
+    it('global mouseup outside grid finalizes range and opens popover', () => {
+      const onRangeSelect = vi.fn();
+      renderCalendar({ view: 'month', date: BASE_DATE, onRangeSelect });
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseEnter(cells[3]);
+      fireEvent.mouseUp(document);
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(onRangeSelect).not.toHaveBeenCalled();
+    });
+  });
+
+  // ─── Range Popover ───────────────────────────────────────────────────────────
+
+  describe('Range Popover', () => {
+    function openPopover() {
+      renderCalendar({ view: 'month', date: BASE_DATE });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseEnter(cells[4]);
+      fireEvent.mouseUp(grid);
+      return screen.getByRole('dialog');
+    }
+
+    it('popover shows "Crear evento" button and close button', () => {
+      openPopover();
+      expect(screen.getByRole('button', { name: /crear evento/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /cerrar/i })).toBeInTheDocument();
+    });
+
+    it('clicking "Crear evento" calls onRangeSelect with correct dates and closes popover', () => {
+      const onRangeSelect = vi.fn();
+      renderCalendar({ view: 'month', date: BASE_DATE, onRangeSelect });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseEnter(cells[4]);
+      fireEvent.mouseUp(grid);
+      fireEvent.click(screen.getByRole('button', { name: /crear evento/i }));
+      expect(onRangeSelect).toHaveBeenCalledTimes(1);
+      const [start, end] = onRangeSelect.mock.calls[0] as [Date, Date];
+      expect(start).toBeInstanceOf(Date);
+      expect(end).toBeInstanceOf(Date);
+      expect(end.getTime()).toBeGreaterThan(start.getTime());
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('clicking the backdrop closes popover without calling onRangeSelect', () => {
+      const onRangeSelect = vi.fn();
+      renderCalendar({ view: 'month', date: BASE_DATE, onRangeSelect });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseEnter(cells[4]);
+      fireEvent.mouseUp(grid);
+      // The backdrop is the first sibling — the fixed inset-0 div
+      const dialog = screen.getByRole('dialog');
+      const backdrop = dialog.previousSibling as HTMLElement;
+      fireEvent.click(backdrop);
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(onRangeSelect).not.toHaveBeenCalled();
+    });
+
+    it('pressing Escape closes popover without calling onRangeSelect', () => {
+      const onRangeSelect = vi.fn();
+      renderCalendar({ view: 'month', date: BASE_DATE, onRangeSelect });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseEnter(cells[4]);
+      fireEvent.mouseUp(grid);
+      fireEvent.keyDown(document, { key: 'Escape' });
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(onRangeSelect).not.toHaveBeenCalled();
+    });
+
+    it('second drag while popover is open replaces the popover', () => {
+      renderCalendar({ view: 'month', date: BASE_DATE });
+      const grid = screen.getByRole('grid');
+      const cells = screen.getAllByRole('gridcell');
+      // First drag → popover opens
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseEnter(cells[4]);
+      fireEvent.mouseUp(grid);
+      expect(screen.getAllByRole('dialog')).toHaveLength(1);
+      // Second drag → same popover replaces (still 1)
+      fireEvent.mouseDown(cells[7], { button: 0 });
+      fireEvent.mouseEnter(cells[12]);
+      fireEvent.mouseUp(grid);
+      expect(screen.getAllByRole('dialog')).toHaveLength(1);
     });
   });
 });
