@@ -17,21 +17,21 @@ type SizeTokens = { box: string; check: string; label: string; helper: string; i
 const sizes: Record<NonNullable<CheckboxProps['size']>, SizeTokens> = {
   sm: {
     box: 'w-3.5 h-3.5',
-    check: 'w-2 h-2',
+    check: 'w-3.5 h-3.5',
     label: 'text-xs',
     helper: 'text-xs',
     indent: 'ml-[22px]',
   },
   md: {
     box: 'w-4 h-4',
-    check: 'w-2.5 h-2.5',
+    check: 'w-4 h-4',
     label: 'text-sm',
     helper: 'text-xs',
     indent: 'ml-6',
   },
   lg: {
     box: 'w-5 h-5',
-    check: 'w-3 h-3',
+    check: 'w-5 h-5',
     label: 'text-base',
     helper: 'text-sm',
     indent: 'ml-7',
