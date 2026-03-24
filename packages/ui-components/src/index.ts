@@ -46,8 +46,8 @@ export type { ToastProviderProps, ToastConfig, ToastPosition } from './component
 export { Spinner } from './components/Spinner';
 export type { SpinnerProps } from './components/Spinner';
 
-export { Card, CardHeader, CardBody, CardFooter } from './components/Card';
-export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps } from './components/Card';
+export { Card, CardHeader, CardBody, CardFooter, CardMedia } from './components/Card';
+export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps, CardMediaProps } from './components/Card';
 
 export { Toggle } from './components/Toggle';
 export type { ToggleProps } from './components/Toggle';
