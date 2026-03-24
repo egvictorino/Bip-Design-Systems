@@ -130,4 +130,65 @@ describe('Button', () => {
     expect(button).toHaveClass('mt-4');
     expect(button).toHaveClass('bg-primary');
   });
+
+  // ── Danger variant ──────────────────────────────────────────────────────────
+
+  it('applies danger variant', () => {
+    render(<Button variant="danger">Eliminar</Button>);
+    const btn = screen.getByRole('button');
+    expect(btn).toHaveClass('bg-danger', 'text-txt-white');
+  });
+
+  // ── Loading state ───────────────────────────────────────────────────────────
+
+  it('loading=true renders a spinner SVG', () => {
+    render(<Button loading>Guardando</Button>);
+    const btn = screen.getByRole('button');
+    expect(btn.querySelector('svg')).toBeInTheDocument();
+  });
+
+  it('loading=true keeps children text visible', () => {
+    render(<Button loading>Guardando</Button>);
+    expect(screen.getByRole('button')).toHaveTextContent('Guardando');
+  });
+
+  it('loading=true disables the button', () => {
+    render(<Button loading>Guardando</Button>);
+    expect(screen.getByRole('button')).toBeDisabled();
+  });
+
+  it('loading=true does not call onClick', async () => {
+    const onClick = vi.fn();
+    const user = userEvent.setup();
+    render(<Button loading onClick={onClick}>Guardando</Button>);
+    await user.click(screen.getByRole('button'));
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('loading=true sets aria-busy="true"', () => {
+    render(<Button loading>Guardando</Button>);
+    expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('loading=false (default) does not set aria-busy', () => {
+    render(<Button>Normal</Button>);
+    expect(screen.getByRole('button')).not.toHaveAttribute('aria-busy');
+  });
+
+  it('loading=true does not render spinner when false', () => {
+    render(<Button>Normal</Button>);
+    expect(screen.getByRole('button').querySelector('svg')).not.toBeInTheDocument();
+  });
+
+  // ── fullWidth ────────────────────────────────────────────────────────────────
+
+  it('fullWidth=true applies w-full class', () => {
+    render(<Button fullWidth>Ancho completo</Button>);
+    expect(screen.getByRole('button')).toHaveClass('w-full');
+  });
+
+  it('fullWidth=false (default) does not apply w-full', () => {
+    render(<Button>Normal</Button>);
+    expect(screen.getByRole('button')).not.toHaveClass('w-full');
+  });
 });
