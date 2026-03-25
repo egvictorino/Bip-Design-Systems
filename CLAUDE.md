@@ -25,7 +25,7 @@ pnpm --filter @bip/ui-components test   # component tests (vitest + happy-dom)
 pnpm build
 pnpm lint
 pnpm dev   # parallel dev mode
-pnpm sync:tokens  # Regenerates tailwind.tokens.js + src/lib/cn.ts from Figma
+pnpm sync:tokens  # Regenerates src/tokens.css from Figma
 ```
 
 ## Branch Strategy
@@ -43,34 +43,16 @@ PRs always go: `feature/xxx → dev → qa → main`. Hotfixes branch from `main
 - `packages/ui-components` — React component library. Main deliverable. Builds to `dist/` with one file per component (ES only, `preserveModules: true`) + individual `.d.ts` files. Entry: `dist/index.js`.
 - `packages/shared-utils` — Pure TypeScript utilities (formatting, validation). No runtime deps.
 
-## Tailwind consumer setup
+## Consumer setup
 
-`ui-components` ships a **Tailwind preset** at `@bip/ui-components/tailwind.preset`. Any project that consumes the library must configure Tailwind with this preset so the design tokens (`primary`, `txt`, `edge`, `surface-*`) resolve correctly.
+`ui-components` ships a single compiled CSS file at `@bip/ui-components/style.css` that includes all component styles and design tokens. No Tailwind configuration is required.
 
-```js
-// tailwind.config.js (proyecto consumidor)
-import bipPreset from '@bip/ui-components/tailwind.preset';
-
-export default {
-  content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
-    // No hace falta agregar el path de la librería — el preset lo incluye automáticamente
-  ],
-  presets: [bipPreset],
-};
+```ts
+// src/main.tsx (o index.tsx) del proyecto consumidor
+import '@bip/ui-components/style.css';
 ```
 
-```css
-/* src/index.css (proyecto consumidor) */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-El preset resuelve el `content` path de `dist/**/*.js` con una ruta absoluta desde su propia ubicación (`import.meta.url`), por lo que funciona tanto en el monorepo como en proyectos externos instalados vía npm.
-
-Para proyectos externos, instalar primero `tailwindcss`, `postcss` y `autoprefixer` como devDependencies.
+Peer dependencies required: `react` and `react-dom`. No additional CSS tooling needed.
 
 ## shared-utils (`packages/shared-utils`)
 
@@ -144,24 +126,28 @@ Component.displayName = 'Component';
 **ID generation rule:** always use `useId()` from React 18 — never derive IDs from label text. Label-based IDs (`\`input-${label}\``) produce duplicate `id` attributes when two instances share the same label, breaking `htmlFor`/`id` linkage and screen reader accessibility. `useId()` is guaranteed unique per component instance and SSR-safe.
 
 ### Styling rules
-- **Only Tailwind** — no CSS modules, no inline styles.
-- Use `cn()` from `../../lib/cn` for all conditional class composition — **never import `clsx` directly** in component files.
-- Use design tokens (see below) for colors, never hardcode hex values.
-- `group-has-[:checked]` and `group-has-[:focus-visible]` (Tailwind 3.4+) for custom form controls (Checkbox, Radio).
+- **CSS Modules** — one `ComponentName.module.css` per component, no inline styles.
+- Import the module as `styles` and apply with `cn()`:
+  ```tsx
+  import styles from './Button.module.css';
+  import { cn } from '../../lib/cn';
+
+  className={cn(styles.button, styles[variant], styles[size], className)}
+  ```
+- Use design tokens via CSS custom properties (e.g. `var(--color-primary)`) in `.module.css` files — **never hardcode hex values**.
+- CSS Modules provide automatic scoping — class name conflicts between components are impossible by design.
 
 ### `cn()` utility
 
-Lives at `src/lib/cn.ts`. Combines `clsx` (conditional logic) + `extendTailwindMerge` configured with all project custom tokens so that class overrides work reliably:
+Lives at `src/lib/cn.ts`. Thin wrapper around `clsx` for conditional CSS Module class composition:
 
 ```ts
 import { cn } from '../../lib/cn';
 
-className={cn('base-class', condition && 'conditional-class', className)}
+className={cn(styles.base, condition && styles.active, className)}
 ```
 
-Plain `clsx` does not resolve conflicts between same-type utilities (e.g. `w-full` vs `w-1/2` — the one that appears later in Tailwind's generated CSS wins, not the one listed last in the attribute). `cn()` guarantees the last argument wins, including for custom tokens like `bg-primary`, `text-txt`, `border-edge`.
-
-**Mantenimiento:** cuando se agreguen nuevos tokens a `tailwind.tokens.js`, deben registrarse también en el `extendTailwindMerge` de `src/lib/cn.ts`. Si no, `cn()` no resolverá conflictos para esos tokens y los overrides fallarán silenciosamente.
+CSS Modules guarantee scoping at build time, so merge conflict resolution (tailwind-merge) is not needed.
 
 ### Compound component pattern
 
@@ -199,42 +185,35 @@ Export all sub-components from both `index.ts` and `src/index.ts`.
 
 ### Design tokens
 
-Single source of truth: `tailwind.tokens.js` — imported by `tailwind.preset.js` (Tailwind theme) and `src/foundations/Colors.stories.tsx` (Storybook docs). To add a token: edit `tailwind.tokens.js` → register in `cn.ts`.
+Single source of truth: `src/tokens.css` — defines all design tokens as CSS custom properties under `:root`. Auto-generated by `pnpm sync:tokens`. Do not edit manually.
 
-Token names come from `tailwind.tokens.js` (auto-generated — run `pnpm sync:tokens` to update):
+```css
+/* Interaction */
+--color-active, --color-primary, --color-primary-{hover|press}
+--color-secondary, --color-secondary-{hover|press}
+--color-danger, --color-danger-{hover|light|muted|press|subtle|text}
+--color-disabled, --color-field, --color-field-readonly
+--color-selected, --color-unique
 
-```
-// Interaction
-active                                         (highlight/active state)
-primary, primary-{hover|press}
-secondary, secondary-{hover|press}
-danger, danger-{hover|light|muted|press|subtle|text}
-disabled                                       (bg of disabled fields)
-field                                          (bg of outlined fields)
-field-readonly                                 (bg of read-only fields, via read-only: pseudo)
-selected                                       (bg of selected TableRow)
-unique                                         (accent/unique state)
+/* Text */
+--color-txt, --color-txt-{black|disabled|important|secondary|utility|white}
+--color-link, --color-link-{hover|press}
 
-// Text
-txt, txt-{black|disabled|important|secondary|utility|white}
-link, link-{hover|press}
+/* Surface */
+--color-scrim, --color-surface-{1|2|3|4}
 
-// Surface
-scrim                                          (overlay backdrop)
-surface-{1|2|3|4}                              (layered background levels)
+/* Border / Edge */
+--color-edge, --color-edge-{disabled|focus|heavy|hover|important|medium|success|unique|warning}
 
-// Border / Edge
-edge, edge-{disabled|focus|heavy|hover|important|medium|success|unique|warning}
-
-// Feedback
-info, info-{light|subtle|text}
-success, success-{light|subtle|text}
-warning, warning-{light|subtle|text}
+/* Feedback */
+--color-info, --color-info-{light|subtle|text}
+--color-success, --color-success-{light|subtle|text}
+--color-warning, --color-warning-{light|subtle|text}
 ```
 
-**Pseudo-variant states for form fields** (work automatically via HTML attributes — no extra config):
-- `disabled:bg-disabled` → applied via `disabled` HTML attribute on Input, Select, Textarea
-- `read-only:bg-field-readonly` → applied via `readOnly` HTML attribute on Input, Textarea
+To use in a `.module.css` file: `background-color: var(--color-primary);`
+
+To add a token: edit `tokens.css` directly (or run `pnpm sync:tokens` to regenerate from Figma). No registration in `cn.ts` required.
 
 ### `displayName` requirement
 
