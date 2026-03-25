@@ -2,6 +2,7 @@ import React, { useId } from 'react';
 import type { ReactNode } from 'react';
 import { cn } from '../../lib/cn';
 import { CheckboxGroupContext } from './CheckboxGroupContext';
+import styles from './CheckboxGroup.module.css';
 
 export interface CheckboxGroupProps {
   label?: string;
@@ -17,9 +18,9 @@ export interface CheckboxGroupProps {
 type GroupSizeTokens = { legend: string; helper: string };
 
 const groupSizes: Record<NonNullable<CheckboxGroupProps['size']>, GroupSizeTokens> = {
-  sm: { legend: 'text-xs', helper: 'text-xs' },
-  md: { legend: 'text-sm', helper: 'text-xs' },
-  lg: { legend: 'text-base', helper: 'text-sm' },
+  sm: { legend: styles.legendSm, helper: styles.helperSm },
+  md: { legend: styles.legendMd, helper: styles.helperMd },
+  lg: { legend: styles.legendLg, helper: styles.helperLg },
 };
 
 export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
@@ -39,33 +40,33 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   return (
     <CheckboxGroupContext.Provider value={{ error, disabled, size }}>
       <fieldset
-        className={cn('flex flex-col gap-2 border-0 p-0 m-0', className)}
+        className={cn(styles.fieldset, className)}
         aria-describedby={messageId}
       >
         {label && (
           <legend
             className={cn(
-              'font-medium',
+              styles.legend,
               groupSizes[size].legend,
-              error ? 'text-danger' : 'text-txt'
+              error ? styles.legendError : styles.legendDefault
             )}
           >
             {label}
           </legend>
         )}
 
-        <div className="flex flex-col gap-1">{children}</div>
+        <div className={styles.items}>{children}</div>
 
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(groupSizes[size].helper, 'text-danger')}
+            className={cn(groupSizes[size].helper, styles.messageError)}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span id={messageId} className={cn(groupSizes[size].helper, 'text-txt-secondary')}>
+          <span id={messageId} className={cn(groupSizes[size].helper, styles.messageHelper)}>
             {helperText}
           </span>
         ) : null}

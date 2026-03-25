@@ -134,13 +134,13 @@ describe('Toggle', () => {
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
   it.each([
-    ['sm', 'text-xs', 'w-8', 'h-4'],
-    ['md', 'text-sm', 'w-10', 'h-5'],
-    ['lg', 'text-base', 'w-12', 'h-6'],
-  ] as const)('size %s applies correct label and track classes', (size, labelClass, w, h) => {
+    ['sm', 'labelSm', 'trackSm'],
+    ['md', 'labelMd', 'trackMd'],
+    ['lg', 'labelLg', 'trackLg'],
+  ] as const)('size %s applies correct label and track classes', (size, labelClass, trackClass) => {
     const { container } = render(<Toggle size={size} label="Toggle" />);
     expect(screen.getByText('Toggle')).toHaveClass(labelClass);
-    const track = container.querySelector('div.relative') as HTMLElement;
-    expect(track).toHaveClass(w, h);
+    const track = container.querySelector('.track') as HTMLElement;
+    expect(track).toHaveClass(trackClass);
   });
 });

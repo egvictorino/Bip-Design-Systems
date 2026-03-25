@@ -272,12 +272,12 @@ describe('Accordion — className', () => {
 // ─── Variantes ────────────────────────────────────────────────────────────────
 
 describe('Accordion — variantes', () => {
-  it('variant="default" aplica divide-y al root', () => {
+  it('variant="default" aplica rootDefault al root', () => {
     const { container } = render(<DefaultAccordion />);
-    expect(container.firstChild).toHaveClass('divide-y');
+    expect(container.firstChild).toHaveClass('rootDefault');
   });
 
-  it('variant="bordered" aplica border a cada AccordionItem', () => {
+  it('variant="bordered" aplica itemBordered a cada AccordionItem', () => {
     const { container } = render(
       <Accordion variant="bordered">
         <AccordionItem value="a">
@@ -293,11 +293,11 @@ describe('Accordion — variantes', () => {
     const items = container.firstChild?.childNodes;
     expect(items).toHaveLength(2);
     items?.forEach((item) => {
-      expect(item).toHaveClass('border');
+      expect(item).toHaveClass('itemBordered');
     });
   });
 
-  it('variant="ghost" no tiene divide-y ni border en ningún elemento', () => {
+  it('variant="ghost" no tiene rootDefault ni itemBordered en ningún elemento', () => {
     const { container } = render(
       <Accordion variant="ghost">
         <AccordionItem value="a">
@@ -306,8 +306,8 @@ describe('Accordion — variantes', () => {
         </AccordionItem>
       </Accordion>
     );
-    expect(container.firstChild).not.toHaveClass('divide-y');
-    expect(container.querySelector('.border')).toBeNull();
+    expect(container.firstChild).not.toHaveClass('rootDefault');
+    expect(container.querySelector('.itemBordered')).toBeNull();
   });
 });
 

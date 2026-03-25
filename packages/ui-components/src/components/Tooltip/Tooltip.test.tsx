@@ -59,40 +59,40 @@ describe('Tooltip', () => {
     expect(screen.getByText('Texto plano')).toBeInTheDocument();
   });
 
-  it('position top applies bottom-full class on tooltip', () => {
+  it('position top applies top class on tooltip', () => {
     render(
       <Tooltip content="Tip" position="top">
         <button>T</button>
       </Tooltip>
     );
-    expect(screen.getByRole('tooltip').className).toMatch(/bottom-full/);
+    expect(screen.getByRole('tooltip')).toHaveClass('top');
   });
 
-  it('position bottom applies top-full class on tooltip', () => {
+  it('position bottom applies bottom class on tooltip', () => {
     render(
       <Tooltip content="Tip" position="bottom">
         <button>T</button>
       </Tooltip>
     );
-    expect(screen.getByRole('tooltip').className).toMatch(/top-full/);
+    expect(screen.getByRole('tooltip')).toHaveClass('bottom');
   });
 
-  it('position left applies right-full class on tooltip', () => {
+  it('position left applies left class on tooltip', () => {
     render(
       <Tooltip content="Tip" position="left">
         <button>T</button>
       </Tooltip>
     );
-    expect(screen.getByRole('tooltip').className).toMatch(/right-full/);
+    expect(screen.getByRole('tooltip')).toHaveClass('left');
   });
 
-  it('position right applies left-full class on tooltip', () => {
+  it('position right applies right class on tooltip', () => {
     render(
       <Tooltip content="Tip" position="right">
         <button>T</button>
       </Tooltip>
     );
-    expect(screen.getByRole('tooltip').className).toMatch(/left-full/);
+    expect(screen.getByRole('tooltip')).toHaveClass('right');
   });
 
   it('forwards className to the wrapper span', () => {

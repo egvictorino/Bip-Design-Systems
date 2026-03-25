@@ -111,21 +111,17 @@ describe('Textarea', () => {
 
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'text-xs'],
-    ['md', 'text-sm'],
-    ['lg', 'text-lg'],
-  ] as const)('size %s applies the correct text class', (size, textClass) => {
+  it.each(['sm', 'md', 'lg'] as const)('size %s applies the correct size class', (size) => {
     render(<Textarea size={size} />);
-    expect(screen.getByRole('textbox')).toHaveClass(textClass);
+    expect(screen.getByRole('textbox')).toHaveClass(size);
   });
 
   // ── fullWidth ───────────────────────────────────────────────────────────────
 
-  it('fullWidth applies w-full to container and textarea', () => {
+  it('fullWidth applies fullWidth class to container and textarea', () => {
     const { container } = render(<Textarea fullWidth />);
-    expect(container.firstChild).toHaveClass('w-full');
-    expect(screen.getByRole('textbox')).toHaveClass('w-full');
+    expect(container.firstChild).toHaveClass('fullWidth');
+    expect(screen.getByRole('textbox')).toHaveClass('fullWidth');
   });
 
   // ── Focus / Blur callbacks ──────────────────────────────────────────────────

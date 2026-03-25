@@ -1,0 +1,43 @@
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.base {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background-color: var(--color-surface-3);
+}
+
+/* ─── Variants ──────────────────────────────────────────────────────────────── */
+
+.text {
+  height: 1rem;
+  width: 100%;
+  border-radius: 0.125rem;
+}
+
+.circle {
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.rect {
+  height: 8rem;
+  width: 100%;
+  border-radius: 0.375rem;
+}
+
+/* ─── Multi-line ────────────────────────────────────────────────────────────── */
+
+.multiline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lineFull  { width: 100%; }
+.lineShort { width: 75%; }

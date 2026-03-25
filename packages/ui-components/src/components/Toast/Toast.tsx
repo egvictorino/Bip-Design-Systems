@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
+import styles from './Toast.module.css';
 import { Alert } from '../Alert/Alert';
 import type { AlertProps } from '../Alert/Alert';
 
@@ -63,32 +64,32 @@ const SCALE_STEP = 0.05; // scale reduction per step from front
 
 // ─── Position classes ─────────────────────────────────────────────────────────
 
-const positionClasses: Record<ToastPosition, string> = {
-  'top-left': 'top-4 left-4',
-  'top-center': 'top-4 left-1/2 -translate-x-1/2',
-  'top-right': 'top-4 right-4',
-  'bottom-left': 'bottom-4 left-4',
-  'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2',
-  'bottom-right': 'bottom-4 right-4',
+const positionClass: Record<ToastPosition, string> = {
+  'top-left':      styles.topLeft,
+  'top-center':    styles.topCenter,
+  'top-right':     styles.topRight,
+  'bottom-left':   styles.bottomLeft,
+  'bottom-center': styles.bottomCenter,
+  'bottom-right':  styles.bottomRight,
 };
 
 // Slide direction for enter/exit animation based on position
-const slideOutClasses: Record<ToastPosition, string> = {
-  'top-left': 'opacity-0 -translate-x-6',
-  'top-center': 'opacity-0 -translate-y-2',
-  'top-right': 'opacity-0 translate-x-6',
-  'bottom-left': 'opacity-0 -translate-x-6',
-  'bottom-center': 'opacity-0 translate-y-2',
-  'bottom-right': 'opacity-0 translate-x-6',
+const slideOutClass: Record<ToastPosition, string> = {
+  'top-left':      styles.slideOutTopLeft,
+  'top-center':    styles.slideOutTopCenter,
+  'top-right':     styles.slideOutTopRight,
+  'bottom-left':   styles.slideOutBottomLeft,
+  'bottom-center': styles.slideOutBottomCenter,
+  'bottom-right':  styles.slideOutBottomRight,
 };
 
 // ─── Progress bar color per variant ──────────────────────────────────────────
 
-const progressBarColor: Record<NonNullable<ToastConfig['variant']>, string> = {
-  info: 'bg-primary',
-  success: 'bg-success',
-  warning: 'bg-warning',
-  error: 'bg-danger',
+const progressBarClass: Record<NonNullable<ToastConfig['variant']>, string> = {
+  info:    styles.progressInfo,
+  success: styles.progressSuccess,
+  warning: styles.progressWarning,
+  error:   styles.progressError,
 };
 
 // ─── ToastItemComponent (internal) ────────────────────────────────────────────
@@ -166,28 +167,20 @@ const ToastItemComponent: React.FC<ToastItemComponentProps> = ({
   return (
     <div
       ref={wrapperRef}
-      className={cn(
-        'transition-all ease-out will-change-transform',
-        isIn
-          ? 'duration-300 opacity-100 translate-x-0 translate-y-0'
-          : ['duration-[250ms]', slideOutClasses[position]]
-      )}
+      className={cn(styles.toastItem, isIn ? styles.toastItemIn : slideOutClass[position])}
     >
       {/* Card wrapper: shadow + rounding */}
-      <div className="rounded-lg overflow-hidden shadow-lg ring-1 ring-black/10">
-        <Alert variant={item.variant} title={item.title} onClose={dismiss} className="rounded-none">
+      <div className={styles.card}>
+        <Alert variant={item.variant} title={item.title} onClose={dismiss}>
           {item.message}
         </Alert>
 
         {/* Auto-dismiss progress bar — only when duration > 0 */}
         {showProgress && (
-          <div className="h-1 bg-black/10">
+          <div className={styles.progressTrack}>
             <div
               data-testid="toast-progress-bar"
-              className={cn(
-                'h-full transition-[width] duration-100 ease-linear',
-                progressBarColor[variant]
-              )}
+              className={cn(styles.progressBar, progressBarClass[variant])}
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -198,7 +191,6 @@ const ToastItemComponent: React.FC<ToastItemComponentProps> = ({
 };
 
 // ─── ToastStack (internal) ────────────────────────────────────────────────────
-// Manages the Sonner-style stacking: collapsed depth effect + hover to expand.
 
 interface ToastStackProps {
   toasts: ToastItem[];
@@ -246,7 +238,7 @@ const ToastStack: React.FC<ToastStackProps> = ({ toasts, onRemove, position }) =
 
   return (
     <div
-      className="relative w-80 pointer-events-none transition-[height] duration-300 ease-out"
+      className={styles.stack}
       style={{ height: containerHeight }}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
@@ -281,7 +273,7 @@ const ToastStack: React.FC<ToastStackProps> = ({ toasts, onRemove, position }) =
         return (
           <div
             key={item.id}
-            className="absolute w-full transition-[transform,opacity] duration-300 ease-out"
+            className={styles.toastWrapper}
             style={wrapperStyle}
           >
             <ToastItemComponent
@@ -346,7 +338,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
           <div
             role="region"
             aria-label="Notificaciones"
-            className={cn('fixed z-[100] pointer-events-none', positionClasses[position])}
+            className={cn(styles.region, positionClass[position])}
           >
             <ToastStack toasts={toasts} onRemove={removeToast} position={position} />
           </div>,

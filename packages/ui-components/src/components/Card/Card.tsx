@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import { cn } from '../../lib/cn';
 import { Skeleton } from '../Skeleton';
+import styles from './Card.module.css';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -35,49 +36,43 @@ export interface CardMediaProps {
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
 
-const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
-  elevated: 'bg-white shadow-md',
-  outlined: 'bg-white border border-edge',
-  flat: 'bg-surface-3',
+const paddingClass: Record<NonNullable<CardProps['padding']>, string> = {
+  none: styles.paddingNone,
+  sm:   styles.paddingSm,
+  md:   styles.paddingMd,
+  lg:   styles.paddingLg,
 };
 
-const paddingStyles: Record<NonNullable<CardProps['padding']>, string> = {
-  none: '',
-  sm: 'p-3',
-  md: 'p-5',
-  lg: 'p-7',
+const radiusClass: Record<NonNullable<CardProps['radius']>, string> = {
+  none: styles.radiusNone,
+  sm:   styles.radiusSm,
+  md:   styles.radiusMd,
+  lg:   styles.radiusLg,
+  xl:   styles.radiusXl,
 };
 
-const radiusStyles: Record<NonNullable<CardProps['radius']>, string> = {
-  none: 'rounded-none',
-  sm: 'rounded-sm',
-  md: 'rounded-md',
-  lg: 'rounded-lg',
-  xl: 'rounded-xl',
-};
-
-const aspectRatioStyles: Record<NonNullable<CardMediaProps['aspectRatio']>, string> = {
-  video: 'aspect-video',
-  square: 'aspect-square',
-  wide: 'aspect-[21/9]',
+const aspectClass: Record<NonNullable<CardMediaProps['aspectRatio']>, string> = {
+  video:  styles.aspectVideo,
+  square: styles.aspectSquare,
+  wide:   styles.aspectWide,
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ className, children, ...props }) => (
-  <div className={cn('border-b border-edge px-5 py-4', className)} {...props}>
+  <div className={cn(styles.cardHeader, className)} {...props}>
     {children}
   </div>
 );
 
 export const CardBody: React.FC<CardBodyProps> = ({ className, children, ...props }) => (
-  <div className={cn('p-5', className)} {...props}>
+  <div className={cn(styles.cardBody, className)} {...props}>
     {children}
   </div>
 );
 
 export const CardFooter: React.FC<CardFooterProps> = ({ className, children, ...props }) => (
-  <div className={cn('border-t border-edge px-5 py-4', className)} {...props}>
+  <div className={cn(styles.cardFooter, className)} {...props}>
     {children}
   </div>
 );
@@ -88,8 +83,8 @@ export const CardMedia: React.FC<CardMediaProps> = ({
   aspectRatio = 'video',
   className,
 }) => (
-  <div className={cn('overflow-hidden w-full', aspectRatioStyles[aspectRatio], className)}>
-    <img src={src} alt={alt} className="w-full h-full object-cover" />
+  <div className={cn(styles.cardMedia, aspectClass[aspectRatio], className)}>
+    <img src={src} alt={alt} className={styles.mediaImg} />
   </div>
 );
 
@@ -133,21 +128,20 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'overflow-hidden',
-          variantStyles[variant],
-          radiusStyles[radius],
-          paddingStyles[padding],
-          fullWidth && 'w-full',
-          clickable &&
-            'cursor-pointer transition-shadow hover:shadow-lg active:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+          styles.card,
+          styles[variant],
+          radiusClass[radius],
+          paddingClass[padding],
+          fullWidth && styles.fullWidth,
+          clickable && styles.clickable,
           className
         )}
         {...interactiveProps}
         {...props}
       >
         {loading ? (
-          <div className="p-5 flex flex-col gap-3" aria-busy="true" aria-label="Cargando...">
-            <Skeleton variant="text" className="w-1/2" />
+          <div className={styles.loadingContainer} aria-busy="true" aria-label="Cargando...">
+            <Skeleton variant="text" className={styles.skeletonShort} />
             <Skeleton variant="text" lines={3} />
           </div>
         ) : (

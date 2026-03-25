@@ -230,16 +230,16 @@ describe('Sidebar', () => {
     consoleError.mockRestore();
   });
 
-  it('aside has w-60 class when expanded', () => {
+  it('aside has panelExpanded class when expanded', () => {
     render(<DefaultSidebar />);
     const aside = screen.getByRole('complementary', { name: 'Navegación lateral' });
-    expect(aside.className).toMatch(/w-60/);
+    expect(aside).toHaveClass('panelExpanded');
   });
 
-  it('aside has w-16 class when collapsed', () => {
+  it('aside has panelCollapsed class when collapsed', () => {
     render(<DefaultSidebar defaultCollapsed />);
     const aside = screen.getByRole('complementary', { name: 'Navegación lateral' });
-    expect(aside.className).toMatch(/w-16/);
+    expect(aside).toHaveClass('panelCollapsed');
   });
 
   it('Sidebar forwards className to the aside panel', () => {

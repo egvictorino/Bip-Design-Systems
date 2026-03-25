@@ -1,0 +1,180 @@
+/* ─── Stepper ──────────────────────────────────────────────────────────────── */
+
+.stepper {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* ─── StepperStep li wrapper ─────────────────────────────────────────────── */
+
+.stepItem {
+  display: flex;
+  align-items: flex-start;
+}
+
+.stepItemFlex {
+  flex: 1;
+}
+
+/* ─── Step inner (div for active, button for inactive) ───────────────────── */
+
+.stepInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stepButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  outline: none;
+}
+
+.stepButton:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  border-radius: 0.25rem;
+}
+
+.stepButtonPointer {
+  cursor: pointer;
+}
+
+.stepButtonDisabled {
+  cursor: not-allowed;
+}
+
+/* ─── Circle indicator ───────────────────────────────────────────────────── */
+
+.circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.circleError {
+  background-color: var(--color-danger);
+  color: var(--color-txt-white);
+}
+
+.circleCompleted {
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+}
+
+.circleActive {
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.circleIdle {
+  background-color: var(--color-disabled);
+  color: var(--color-txt-secondary);
+}
+
+.circleDisabled {
+  opacity: 0.5;
+}
+
+/* ─── Dot indicator ──────────────────────────────────────────────────────── */
+
+.dot {
+  border-radius: 9999px;
+  width: 0.75rem;
+  height: 0.75rem;
+  transition: background-color 0.15s;
+  margin-top: 11px;
+}
+
+.dotError {
+  background-color: var(--color-danger);
+}
+
+.dotCompleted {
+  background-color: var(--color-primary);
+}
+
+.dotActive {
+  background-color: var(--color-primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.dotIdle {
+  background-color: var(--color-disabled);
+}
+
+.dotDisabled {
+  opacity: 0.5;
+}
+
+/* ─── Label ──────────────────────────────────────────────────────────────── */
+
+.label {
+  font-size: 0.75rem;
+  margin-top: 0.375rem;
+  text-align: center;
+  font-weight: 500;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+
+.labelError {
+  color: var(--color-danger);
+}
+
+.labelActive {
+  color: var(--color-txt);
+}
+
+.labelIdle {
+  color: var(--color-txt-secondary);
+}
+
+.labelDisabled {
+  color: var(--color-txt-disabled);
+}
+
+/* ─── Description ────────────────────────────────────────────────────────── */
+
+.description {
+  font-size: 0.75rem;
+  color: var(--color-txt-secondary);
+  text-align: center;
+}
+
+/* ─── Connector ──────────────────────────────────────────────────────────── */
+
+.connector {
+  flex: 1;
+  height: 1px;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  transition: background-color 0.15s;
+}
+
+.connectorCircle {
+  margin-top: 1rem;
+}
+
+.connectorDot {
+  margin-top: 5px;
+}
+
+.connectorCompleted {
+  background-color: var(--color-primary);
+}
+
+.connectorIncomplete {
+  background-color: var(--color-disabled);
+}

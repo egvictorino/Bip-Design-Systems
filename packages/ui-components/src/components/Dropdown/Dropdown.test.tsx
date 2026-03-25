@@ -176,11 +176,11 @@ describe('Dropdown', () => {
 
   // ── danger variant ────────────────────────────────────────────────────────
 
-  it('danger item has error text color class', () => {
+  it('danger item has itemDanger class', () => {
     render(<DefaultDropdown />);
     open();
     expect(screen.getByRole('menuitem', { name: 'Eliminar' })).toHaveClass(
-      'text-danger'
+      'itemDanger'
     );
   });
 

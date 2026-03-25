@@ -135,14 +135,14 @@ describe('Checkbox', () => {
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
   it.each([
-    ['sm', 'text-xs', 'w-3.5', 'h-3.5'],
-    ['md', 'text-sm', 'w-4', 'h-4'],
-    ['lg', 'text-base', 'w-5', 'h-5'],
-  ] as const)('size %s applies correct label and box classes', (size, labelClass, w, h) => {
+    ['sm', 'labelSm', 'boxSm'],
+    ['md', 'labelMd', 'boxMd'],
+    ['lg', 'labelLg', 'boxLg'],
+  ] as const)('size %s applies correct label and box classes', (size, labelClass, boxClass) => {
     const { container } = render(<Checkbox size={size} label="Opción" />);
     expect(screen.getByText('Opción')).toHaveClass(labelClass);
-    const box = container.querySelector('div.relative') as HTMLElement;
-    expect(box).toHaveClass(w, h);
+    const box = container.querySelector('.box') as HTMLElement;
+    expect(box).toHaveClass(boxClass);
   });
 
   // ── Indeterminate state ────────────────────────────────────────────────────
@@ -192,9 +192,9 @@ describe('Checkbox', () => {
 
   // ── Hover class on error state ─────────────────────────────────────────────
 
-  it('error state box has hover:border-danger-hover class', () => {
+  it('error state box has boxError class', () => {
     const { container } = render(<Checkbox error />);
-    const box = container.querySelector('div.relative') as HTMLElement;
-    expect(box.className).toContain('hover:border-danger-hover');
+    const box = container.querySelector('.box') as HTMLElement;
+    expect(box).toHaveClass('boxError');
   });
 });

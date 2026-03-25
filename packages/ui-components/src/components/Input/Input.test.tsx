@@ -119,50 +119,44 @@ describe('Input', () => {
 
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'text-xs'],
-    ['md', 'text-sm'],
-    ['lg', 'text-lg'],
-  ] as const)('size %s applies the correct text class', (size, textClass) => {
+  it.each(['sm', 'md', 'lg'] as const)('size %s applies the correct size class', (size) => {
     render(<Input size={size} />);
-    expect(screen.getByRole('textbox')).toHaveClass(textClass);
+    expect(screen.getByRole('textbox')).toHaveClass(size);
   });
 
   it('sm size text is smaller than md size text (correct progression)', () => {
     const { rerender } = render(<Input size="sm" />);
     const smEl = screen.getByRole('textbox');
-    expect(smEl).toHaveClass('text-xs');
-    expect(smEl).not.toHaveClass('text-sm');
+    expect(smEl).toHaveClass('sm');
+    expect(smEl).not.toHaveClass('md');
 
     rerender(<Input size="md" />);
-    expect(screen.getByRole('textbox')).toHaveClass('text-sm');
+    expect(screen.getByRole('textbox')).toHaveClass('md');
   });
 
   // ── Variants ────────────────────────────────────────────────────────────────
 
-  it('defaults to outlined variant with border and bg-field', () => {
+  it('defaults to outlined variant', () => {
     render(<Input />);
-    expect(screen.getByRole('textbox')).toHaveClass('border', 'bg-field');
+    expect(screen.getByRole('textbox')).toHaveClass('outlined');
   });
 
-  it('filled variant uses bg-secondary with edge border', () => {
+  it('filled variant applies filled class', () => {
     render(<Input variant="filled" />);
-    const input = screen.getByRole('textbox');
-    expect(input).toHaveClass('bg-secondary');
-    expect(input).toHaveClass('border', 'border-edge');
+    expect(screen.getByRole('textbox')).toHaveClass('filled');
   });
 
-  it('bare variant has bottom border only', () => {
+  it('bare variant applies bare class', () => {
     render(<Input variant="bare" />);
-    expect(screen.getByRole('textbox')).toHaveClass('border-0', 'border-b-2');
+    expect(screen.getByRole('textbox')).toHaveClass('bare');
   });
 
   // ── fullWidth ───────────────────────────────────────────────────────────────
 
-  it('fullWidth applies w-full to container and input', () => {
+  it('fullWidth applies fullWidth class to container and input', () => {
     const { container } = render(<Input fullWidth />);
-    expect(container.firstChild).toHaveClass('w-full');
-    expect(screen.getByRole('textbox')).toHaveClass('w-full');
+    expect(container.firstChild).toHaveClass('fullWidth');
+    expect(screen.getByRole('textbox')).toHaveClass('fullWidth');
   });
 
   // ── Focus / Blur callbacks ──────────────────────────────────────────────────

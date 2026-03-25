@@ -116,7 +116,7 @@ describe('CheckboxGroup', () => {
         <Checkbox label="Pequeño" />
       </CheckboxGroup>
     );
-    expect(screen.getByText('Pequeño')).toHaveClass('text-xs');
+    expect(screen.getByText('Pequeño')).toHaveClass('labelSm');
   });
 
   it('propagates size=lg to child Checkboxes label text class', () => {
@@ -125,7 +125,7 @@ describe('CheckboxGroup', () => {
         <Checkbox label="Grande" />
       </CheckboxGroup>
     );
-    expect(screen.getByText('Grande')).toHaveClass('text-base');
+    expect(screen.getByText('Grande')).toHaveClass('labelLg');
   });
 
   // ── Individual prop override ───────────────────────────────────────────────

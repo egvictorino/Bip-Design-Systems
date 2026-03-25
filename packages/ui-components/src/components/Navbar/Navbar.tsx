@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Navbar.module.css';
 
 // ─── Context ───────────────────────────────────────────────────────────────
 
@@ -58,12 +59,9 @@ export const Navbar: React.FC<NavbarProps> = ({ children, className }) => {
       <nav
         ref={navRef}
         aria-label="Navegación principal"
-        className={cn(
-          'sticky top-0 z-50 bg-white border-b border-edge',
-          className
-        )}
+        className={cn(styles.nav, className)}
       >
-        <div className="flex h-16 items-center justify-between px-4 md:px-6">
+        <div className={styles.container}>
           {children}
 
           {/* Hamburger button — mobile only */}
@@ -74,18 +72,13 @@ export const Navbar: React.FC<NavbarProps> = ({ children, className }) => {
             aria-controls={mobileMenuId}
             aria-label={isMobileOpen ? 'Cerrar menú' : 'Abrir menú'}
             onClick={toggleMobile}
-            className={cn(
-              'md:hidden flex items-center justify-center w-9 h-9 rounded-md text-txt-secondary',
-              'hover:bg-surface-3 hover:text-txt',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1',
-              'transition-colors'
-            )}
+            className={styles.hamburger}
           >
             {isMobileOpen ? (
               // X icon
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5"
+                className={styles.hamburgerIcon}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -101,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({ children, className }) => {
               // Hamburger icon
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5"
+                className={styles.hamburgerIcon}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -135,20 +128,17 @@ export interface NavbarBrandProps {
 export const NavbarBrand: React.FC<NavbarBrandProps> = ({ children, href, className }) => {
   const { closeMobile } = useNavbar();
 
-  const baseClass = cn(
-    'flex items-center gap-2 font-semibold text-sm text-txt shrink-0',
-    className
-  );
+  const brandClass = cn(styles.brand, className);
 
   if (href) {
     return (
-      <a href={href} onClick={closeMobile} className={baseClass}>
+      <a href={href} onClick={closeMobile} className={brandClass}>
         {children}
       </a>
     );
   }
 
-  return <span className={baseClass}>{children}</span>;
+  return <span className={brandClass}>{children}</span>;
 };
 
 NavbarBrand.displayName = 'NavbarBrand';
@@ -166,16 +156,13 @@ export const NavbarNav: React.FC<NavbarNavProps> = ({ children, className }) => 
   return (
     <>
       {/* Desktop nav */}
-      <ul className={cn('hidden md:flex items-center gap-1 list-none', className)}>
+      <ul className={cn(styles.desktopNav, className)}>
         {children}
       </ul>
 
       {/* Mobile panel */}
       {isMobileOpen && (
-        <ul
-          id={mobileMenuId}
-          className="absolute top-full left-0 right-0 bg-white border-b border-edge shadow-md flex flex-col md:hidden px-4 py-3 gap-1 list-none"
-        >
+        <ul id={mobileMenuId} className={styles.mobilePanel}>
           {children}
         </ul>
       )}
@@ -206,14 +193,10 @@ export const NavbarItem: React.FC<NavbarItemProps> = ({
 }) => {
   const { closeMobile } = useNavbar();
 
-  const baseClass = cn(
-    'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1',
-    'w-full md:w-auto',
-    active
-      ? 'bg-surface-3 text-txt'
-      : 'text-txt-secondary hover:bg-surface-3 hover:text-txt',
-    disabled && 'text-txt-disabled cursor-not-allowed pointer-events-none',
+  const itemClass = cn(
+    styles.navItem,
+    active ? styles.navItemActive : styles.navItemDefault,
+    disabled && styles.navItemDisabled,
     className
   );
 
@@ -224,14 +207,14 @@ export const NavbarItem: React.FC<NavbarItemProps> = ({
 
   if (href) {
     return (
-      <li className="contents">
+      <li style={{ display: 'contents' }}>
         <a
           href={href}
           aria-current={active ? 'page' : undefined}
           aria-disabled={disabled || undefined}
           tabIndex={disabled ? -1 : undefined}
           onClick={handleClick}
-          className={baseClass}
+          className={itemClass}
         >
           {children}
         </a>
@@ -246,7 +229,7 @@ export const NavbarItem: React.FC<NavbarItemProps> = ({
         aria-current={active ? 'page' : undefined}
         disabled={disabled || undefined}
         onClick={handleClick}
-        className={baseClass}
+        className={itemClass}
       >
         {children}
       </button>
@@ -265,7 +248,7 @@ export interface NavbarActionsProps {
 
 export const NavbarActions: React.FC<NavbarActionsProps> = ({ children, className }) => {
   return (
-    <div className={cn('hidden md:flex items-center gap-2', className)}>{children}</div>
+    <div className={cn(styles.actions, className)}>{children}</div>
   );
 };
 

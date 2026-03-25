@@ -65,67 +65,67 @@ describe('Odontogram — render', () => {
 // ─── Conditions & colors ──────────────────────────────────────────────────────
 
 describe('Odontogram — conditions', () => {
-  it('applies fill-red-400 on surface with caries', () => {
+  it('applies fillCaries class on surface with caries', () => {
     const value: OdontogramValue = { 11: { surfaces: { occlusal: 'caries' } } };
     render(<Odontogram value={value} readOnly />);
     const surfaces = getToothSVG(11).querySelectorAll('[aria-label="Oclusal"]');
-    expect(surfaces[0]).toHaveClass('fill-red-400');
+    expect(surfaces[0]).toHaveClass('fillCaries');
   });
 
-  it('applies fill-blue-400 on surface with restoration', () => {
+  it('applies fillRestoration class on surface with restoration', () => {
     const value: OdontogramValue = { 21: { surfaces: { buccal: 'restoration' } } };
     render(<Odontogram value={value} readOnly />);
     const surface = getToothSVG(21).querySelector('[aria-label="Bucal"]');
-    expect(surface).toHaveClass('fill-blue-400');
+    expect(surface).toHaveClass('fillRestoration');
   });
 
-  it('applies fill-yellow-400 to all surfaces for crown', () => {
+  it('applies fillCrown class to all surfaces for crown', () => {
     const value: OdontogramValue = { 16: { condition: 'crown' } };
     render(<Odontogram value={value} readOnly />);
     const surfaces = getToothSVG(16).querySelectorAll('polygon');
-    surfaces.forEach((s) => expect(s).toHaveClass('fill-yellow-400'));
+    surfaces.forEach((s) => expect(s).toHaveClass('fillCrown'));
   });
 
-  it('applies fill-gray-300 to all surfaces for missing tooth', () => {
+  it('applies fillMissing class to all surfaces for missing tooth', () => {
     const value: OdontogramValue = { 18: { condition: 'missing' } };
     render(<Odontogram value={value} readOnly />);
     const surfaces = getToothSVG(18).querySelectorAll('polygon');
-    surfaces.forEach((s) => expect(s).toHaveClass('fill-gray-300'));
+    surfaces.forEach((s) => expect(s).toHaveClass('fillMissing'));
   });
 
-  it('applies fill-purple-400 to all surfaces for implant', () => {
+  it('applies fillImplant class to all surfaces for implant', () => {
     const value: OdontogramValue = { 36: { condition: 'implant' } };
     render(<Odontogram value={value} readOnly />);
     const surfaces = getToothSVG(36).querySelectorAll('polygon');
-    surfaces.forEach((s) => expect(s).toHaveClass('fill-purple-400'));
+    surfaces.forEach((s) => expect(s).toHaveClass('fillImplant'));
   });
 
-  it('applies fill-orange-400 on surface with fracture', () => {
+  it('applies fillFracture class on surface with fracture', () => {
     const value: OdontogramValue = { 47: { surfaces: { occlusal: 'fracture' } } };
     render(<Odontogram value={value} readOnly />);
     const surface = getToothSVG(47).querySelector('[aria-label="Oclusal"]');
-    expect(surface).toHaveClass('fill-orange-400');
+    expect(surface).toHaveClass('fillFracture');
   });
 
-  it('applies fill-teal-400 on surface with root canal', () => {
+  it('applies fillRootCanal class on surface with root canal', () => {
     const value: OdontogramValue = { 46: { surfaces: { occlusal: 'root_canal' } } };
     render(<Odontogram value={value} readOnly />);
     const surface = getToothSVG(46).querySelector('[aria-label="Oclusal"]');
-    expect(surface).toHaveClass('fill-teal-400');
+    expect(surface).toHaveClass('fillRootCanal');
   });
 
-  it('applies fill-red-200 to all surfaces for extraction_planned', () => {
+  it('applies fillExtractionPlanned class to all surfaces for extraction_planned', () => {
     const value: OdontogramValue = { 48: { condition: 'extraction_planned' } };
     render(<Odontogram value={value} readOnly />);
     // extraction_planned is treated as a surface-level condition
     const surface = getToothSVG(48).querySelector('[aria-label="Oclusal"]');
-    expect(surface).toHaveClass('fill-red-200');
+    expect(surface).toHaveClass('fillExtractionPlanned');
   });
 
-  it('renders healthy surfaces as fill-white', () => {
+  it('renders healthy surfaces with fillHealthy class', () => {
     render(<Odontogram />);
     const surfaces = getToothSVG(11).querySelectorAll('polygon');
-    surfaces.forEach((s) => expect(s).toHaveClass('fill-white'));
+    surfaces.forEach((s) => expect(s).toHaveClass('fillHealthy'));
   });
 
   it('renders X marker lines for missing tooth', () => {

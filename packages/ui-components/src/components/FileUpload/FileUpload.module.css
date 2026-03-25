@@ -1,0 +1,240 @@
+/* ─── Wrapper ─────────────────────────────────────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wrapperFull {
+  width: 100%;
+}
+
+/* ─── Outer label ─────────────────────────────────────────────────────────── */
+
+.outerLabel {
+  font-weight: 500;
+  transition: color 150ms;
+}
+
+.outerLabelSm {
+  font-size: 0.75rem;
+}
+
+.outerLabelMd {
+  font-size: 0.875rem;
+}
+
+.outerLabelLg {
+  font-size: 1rem;
+}
+
+.outerLabelNormal {
+  color: var(--color-txt);
+}
+
+.outerLabelError {
+  color: var(--color-danger);
+}
+
+.outerLabelDisabled {
+  opacity: 0.5;
+}
+
+/* ─── Dropzone ────────────────────────────────────────────────────────────── */
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  border: 2px dashed;
+  border-radius: 0.5rem;
+  transition: background-color 150ms, border-color 150ms;
+  cursor: pointer;
+}
+
+.dropzoneFull {
+  width: 100%;
+}
+
+.dropzoneDefault {
+  border-color: var(--color-primary);
+  background-color: var(--color-field);
+}
+
+.dropzoneDefault:hover {
+  border-color: var(--color-primary-hover);
+  background-color: var(--color-surface-3);
+}
+
+.dropzoneDragging {
+  border-color: var(--color-primary-hover);
+  background-color: var(--color-surface-3);
+}
+
+.dropzoneError {
+  border-color: var(--color-danger);
+  background-color: var(--color-field);
+}
+
+.dropzoneError:hover {
+  background-color: var(--color-danger-light);
+}
+
+.dropzoneErrorDragging {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger-light);
+}
+
+.dropzoneDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ─── Upload icon ─────────────────────────────────────────────────────────── */
+
+.uploadIcon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.uploadIconNormal {
+  color: var(--color-txt-secondary);
+}
+
+.uploadIconError {
+  color: var(--color-danger);
+}
+
+/* ─── Dropzone text ───────────────────────────────────────────────────────── */
+
+.dropzoneText {
+  text-align: center;
+}
+
+.dropzoneTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dropzoneTitleNormal {
+  color: var(--color-txt);
+}
+
+.dropzoneTitleError {
+  color: var(--color-danger);
+}
+
+.dropzoneSubtitle {
+  font-size: 0.75rem;
+  color: var(--color-txt-secondary);
+  margin-top: 0.125rem;
+}
+
+.dropzoneHint {
+  font-size: 0.75rem;
+  color: var(--color-txt-secondary);
+  margin-top: 0.25rem;
+  opacity: 0.7;
+}
+
+/* ─── File list ───────────────────────────────────────────────────────────── */
+
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  list-style: none;
+  padding: 0;
+  margin-left: 0;
+}
+
+.fileItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  background-color: var(--color-surface-3);
+  font-size: 0.875rem;
+}
+
+.fileIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--color-txt-secondary);
+}
+
+.fileName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  color: var(--color-txt);
+}
+
+.fileSize {
+  font-size: 0.75rem;
+  color: var(--color-txt-secondary);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Remove button ───────────────────────────────────────────────────────── */
+
+.removeBtn {
+  flex-shrink: 0;
+  padding: 0.125rem;
+  border-radius: 0.25rem;
+  transition: color 150ms, background-color 150ms;
+  color: var(--color-txt-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.removeBtn:hover {
+  color: var(--color-danger);
+  background-color: var(--color-surface-3);
+}
+
+.removeBtn:focus {
+  outline: none;
+}
+
+.removeBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.removeBtnIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* ─── Helper / error text ─────────────────────────────────────────────────── */
+
+.helperTextSm {
+  font-size: 0.75rem;
+}
+
+.helperTextMd {
+  font-size: 0.75rem;
+}
+
+.helperTextLg {
+  font-size: 0.875rem;
+}
+
+.helperText {
+  color: var(--color-txt-secondary);
+}
+
+.errorText {
+  color: var(--color-danger);
+}

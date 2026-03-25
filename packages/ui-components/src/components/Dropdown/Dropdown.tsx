@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Dropdown.module.css';
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 
@@ -65,7 +66,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ children, className }) => {
 
   return (
     <DropdownContext.Provider value={{ isOpen, toggle, close, menuId, triggerId }}>
-      <div ref={containerRef} className={cn('relative inline-block', className)}>
+      <div ref={containerRef} className={cn(styles.container, className)}>
         {children}
       </div>
     </DropdownContext.Provider>
@@ -118,11 +119,11 @@ export interface DropdownMenuProps {
   className?: string;
 }
 
-const placementStyles: Record<NonNullable<DropdownMenuProps['placement']>, string> = {
-  'bottom-start': 'top-full left-0 mt-1',
-  'bottom-end': 'top-full right-0 mt-1',
-  'top-start': 'bottom-full left-0 mb-1',
-  'top-end': 'bottom-full right-0 mb-1',
+const placementClass: Record<NonNullable<DropdownMenuProps['placement']>, string> = {
+  'bottom-start': styles.bottomStart,
+  'bottom-end': styles.bottomEnd,
+  'top-start': styles.topStart,
+  'top-end': styles.topEnd,
 };
 
 export const DropdownMenu: React.FC<DropdownMenuProps> = ({
@@ -178,11 +179,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
       aria-labelledby={triggerId}
       tabIndex={-1}
       onKeyDown={handleKeyDown}
-      className={cn(
-        'absolute z-50 min-w-[160px] rounded-md border border-edge bg-white py-1 shadow-md',
-        placementStyles[placement],
-        className
-      )}
+      className={cn(styles.menu, placementClass[placement], className)}
     >
       {children}
     </div>
@@ -218,20 +215,12 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
       type="button"
       disabled={disabled}
       onClick={handleClick}
-      className={cn(
-        'flex w-full items-center gap-2 px-4 py-2 text-sm text-left transition-colors',
-        'focus:outline-none focus-visible:bg-surface-3',
-        danger
-          ? 'text-danger hover:bg-danger-light focus-visible:bg-danger-light'
-          : 'text-txt hover:bg-surface-3',
-        disabled && 'cursor-not-allowed opacity-50',
-        className
-      )}
+      className={cn(styles.item, danger && styles.itemDanger, className)}
       {...props}
       role="menuitem"
     >
       {icon && (
-        <span className="flex shrink-0 items-center justify-center w-4 h-4" aria-hidden="true">
+        <span className={styles.icon} aria-hidden="true">
           {icon}
         </span>
       )}
@@ -246,7 +235,7 @@ export const DropdownDivider: React.FC = () => (
   <div
     role="separator"
     aria-orientation="horizontal"
-    className="my-1 border-t border-edge"
+    className={styles.divider}
   />
 );
 

@@ -38,54 +38,46 @@ describe('Badge', () => {
   it.each(['primary', 'success', 'warning', 'error', 'neutral'] as const)(
     'renders variant %s with the correct text color class',
     (variant) => {
-      const classMap = {
-        primary: 'text-primary',
-        success: 'text-success-text',
-        warning: 'text-warning-text',
-        error: 'text-danger-text',
-        neutral: 'text-txt-secondary',
-      };
       const { container } = render(<Badge variant={variant}>{variant}</Badge>);
-      expect(container.firstChild).toHaveClass(classMap[variant]);
+      expect(container.firstChild).toHaveClass(variant);
     }
   );
 
   it('defaults to neutral variant', () => {
     const { container } = render(<Badge>Texto</Badge>);
-    expect(container.firstChild).toHaveClass('text-txt-secondary');
+    expect(container.firstChild).toHaveClass('neutral');
   });
 
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'text-xs', 'px-1.5', 'py-0.5'],
-    ['md', 'text-xs', 'px-2.5', 'py-1'],
-    ['lg', 'text-sm', 'px-3', 'py-1.5'],
-  ] as const)('size %s applies correct text and padding classes', (size, textClass, px, py) => {
-    const { container } = render(<Badge size={size}>Texto</Badge>);
-    expect(container.firstChild).toHaveClass(textClass, px, py);
-  });
+  it.each(['sm', 'md', 'lg'] as const)(
+    'size %s applies correct size class',
+    (size) => {
+      const { container } = render(<Badge size={size}>Texto</Badge>);
+      expect(container.firstChild).toHaveClass(size);
+    }
+  );
 
   it('defaults to md size', () => {
     const { container } = render(<Badge>Texto</Badge>);
-    expect(container.firstChild).toHaveClass('px-2.5', 'py-1', 'text-xs');
+    expect(container.firstChild).toHaveClass('md');
   });
 
   // ── Dot scales with size ───────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'w-1.5', 'h-1.5'],
-    ['md', 'w-2', 'h-2'],
-    ['lg', 'w-2.5', 'h-2.5'],
-  ] as const)('dot size scales correctly for badge size %s', (size, w, h) => {
-    const { container } = render(
-      <Badge size={size} dot>
-        Texto
-      </Badge>
-    );
-    const dot = container.querySelector('span[aria-hidden="true"]');
-    expect(dot).toHaveClass(w, h);
-  });
+  it.each(['sm', 'md', 'lg'] as const)(
+    'dot size scales correctly for badge size %s',
+    (size) => {
+      const { container } = render(
+        <Badge size={size} dot>
+          Texto
+        </Badge>
+      );
+      const dotClass = `dot${size.charAt(0).toUpperCase() + size.slice(1)}`;
+      const dot = container.querySelector('span[aria-hidden="true"]');
+      expect(dot).toHaveClass(dotClass);
+    }
+  );
 
   // ── Misc ───────────────────────────────────────────────────────────────────
 
@@ -93,6 +85,6 @@ describe('Badge', () => {
     const { container } = render(<Badge className="custom-class">Texto</Badge>);
     const badge = container.firstChild as HTMLElement;
     expect(badge).toHaveClass('custom-class');
-    expect(badge).toHaveClass('rounded-full', 'font-medium');
+    expect(badge).toHaveClass('badge');
   });
 });

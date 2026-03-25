@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './DatePicker.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,22 +23,22 @@ export interface DatePickerProps {
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
 
-const sizes: Record<NonNullable<DatePickerProps['size']>, string> = {
-  sm: 'px-[12px] py-[6px] text-xs',
-  md: 'px-[20px] py-[10px] text-sm',
-  lg: 'px-[24px] py-[12px] text-lg',
+const triggerSizeClass: Record<NonNullable<DatePickerProps['size']>, string> = {
+  sm: styles.triggerSm,
+  md: styles.triggerMd,
+  lg: styles.triggerLg,
 };
 
-const labelSizeStyles: Record<NonNullable<DatePickerProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-base',
+const labelSizeClass: Record<NonNullable<DatePickerProps['size']>, string> = {
+  sm: styles.labelSm,
+  md: styles.labelMd,
+  lg: styles.labelLg,
 };
 
-const helperSizeStyles: Record<NonNullable<DatePickerProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-xs',
-  lg: 'text-sm',
+const helperSizeClass: Record<NonNullable<DatePickerProps['size']>, string> = {
+  sm: styles.helperSm,
+  md: styles.helperMd,
+  lg: styles.helperLg,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -132,22 +133,17 @@ const CalendarGrid = ({
   const isTodayDisabled = (!!minDay && today < minDay) || (!!maxDay && today > maxDay);
 
   return (
-    <div className="flex flex-col gap-3 p-3 w-[280px]">
+    <div className={styles.calendarGrid}>
       {/* Month navigation */}
-      <div className="flex items-center justify-between">
+      <div className={styles.monthNav}>
         <button
           type="button"
           onClick={onPrevMonth}
           disabled={!canGoPrev}
           aria-label="Mes anterior"
-          className={cn(
-            'p-1 rounded text-text-secondary transition-colors',
-            canGoPrev
-              ? 'hover:bg-interaction-tertiary-default hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default'
-              : 'opacity-30 cursor-not-allowed'
-          )}
+          className={styles.monthNavBtn}
         >
-          <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
             <path
               fillRule="evenodd"
               d="M10.78 3.22a.75.75 0 0 1 0 1.06L7.06 8l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0z"
@@ -156,7 +152,7 @@ const CalendarGrid = ({
           </svg>
         </button>
 
-        <span id={headingId} className="text-sm font-semibold text-text-primary">
+        <span id={headingId} className={styles.monthHeading}>
           {MONTH_NAMES[month]} {year}
         </span>
 
@@ -165,14 +161,9 @@ const CalendarGrid = ({
           onClick={onNextMonth}
           disabled={!canGoNext}
           aria-label="Mes siguiente"
-          className={cn(
-            'p-1 rounded text-text-secondary transition-colors',
-            canGoNext
-              ? 'hover:bg-interaction-tertiary-default hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default'
-              : 'opacity-30 cursor-not-allowed'
-          )}
+          className={styles.monthNavBtn}
         >
-          <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
             <path
               fillRule="evenodd"
               d="M5.22 3.22a.75.75 0 0 0 0 1.06L8.94 8 5.22 11.72a.75.75 0 1 0 1.06 1.06l4.25-4.25a.75.75 0 0 0 0-1.06L6.28 3.22a.75.75 0 0 0-1.06 0z"
@@ -183,14 +174,10 @@ const CalendarGrid = ({
       </div>
 
       {/* Day grid */}
-      <div role="grid" aria-labelledby={headingId} className="grid grid-cols-7 gap-0.5">
+      <div role="grid" aria-labelledby={headingId} className={styles.dayGrid}>
         {/* Column headers */}
         {DAY_LABELS.map((d) => (
-          <div
-            key={d}
-            role="columnheader"
-            className="text-center text-[10px] font-semibold text-text-secondary py-1"
-          >
+          <div key={d} role="columnheader" className={styles.columnHeader}>
             {d}
           </div>
         ))}
@@ -209,21 +196,19 @@ const CalendarGrid = ({
 
           return (
             // aria-selected belongs on the gridcell per WAI-ARIA grid pattern
-            <div key={day} role="gridcell" aria-selected={isSelected || undefined}>
+            <div key={day} role="gridcell" aria-selected={isSelected || undefined} className={styles.dayCell}>
               <button
                 type="button"
                 disabled={isDisabled}
                 onClick={() => onSelectDay(cellDate)}
                 aria-label={DAY_ARIA_LABEL_FORMATTER.format(cellDate)}
                 className={cn(
-                  'w-full aspect-square flex items-center justify-center rounded text-sm transition-colors',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default',
-                  isDisabled && 'opacity-30 cursor-not-allowed',
+                  styles.dayBtn,
                   isSelected
-                    ? 'bg-interaction-primary-default text-text-white font-semibold'
+                    ? styles.dayBtnSelected
                     : isToday
-                      ? 'border border-interaction-primary-default text-interaction-primary-default hover:bg-interaction-tertiary-default'
-                      : !isDisabled && 'hover:bg-interaction-tertiary-default text-text-primary'
+                      ? styles.dayBtnToday
+                      : undefined
                 )}
               >
                 {day}
@@ -234,18 +219,12 @@ const CalendarGrid = ({
       </div>
 
       {/* Today shortcut */}
-      <div className="border-t border-interaction-tertiary-default pt-2">
+      <div className={styles.todaySection}>
         <button
           type="button"
           onClick={() => onSelectDay(today)}
           disabled={isTodayDisabled}
-          className={cn(
-            'w-full text-xs font-medium py-1.5 rounded transition-colors',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default',
-            isTodayDisabled
-              ? 'text-text-disabled cursor-not-allowed'
-              : 'text-interaction-primary-default hover:bg-interaction-tertiary-default'
-          )}
+          className={styles.todayBtn}
         >
           Hoy
         </button>
@@ -338,22 +317,25 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     };
 
     return (
-      <div ref={containerRef} className={cn('flex flex-col gap-1', fullWidth && 'w-full')}>
+      <div
+        ref={containerRef}
+        className={cn(styles.container, fullWidth && styles.containerFullWidth)}
+      >
         {label && (
           <label
             htmlFor={inputId}
             className={cn(
-              'font-medium transition-colors',
-              labelSizeStyles[size],
-              error ? 'text-feedback-error-default' : 'text-text-primary',
-              disabled && 'opacity-50'
+              styles.label,
+              labelSizeClass[size],
+              error ? styles.labelError : styles.labelNormal,
+              disabled && styles.labelDisabled
             )}
           >
             {label}
           </label>
         )}
 
-        <div className={cn('relative', fullWidth && 'w-full')}>
+        <div className={cn(styles.triggerWrapper, fullWidth && styles.triggerWrapperFullWidth)}>
           <button
             ref={ref}
             id={inputId}
@@ -364,18 +346,14 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             aria-describedby={messageId}
             onClick={() => setIsOpen((v) => !v)}
             className={cn(
-              'w-full text-left rounded-[1px] transition-colors border bg-interaction-field',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-              sizes[size],
-              'pr-9',
-              error
-                ? 'border-feedback-error-default focus-visible:ring-feedback-error-default'
-                : 'border-interaction-primary-default focus-visible:ring-interaction-primary-default hover:border-interaction-primary-hover',
-              disabled ? 'opacity-50 cursor-not-allowed bg-interaction-disabled' : 'cursor-pointer',
+              styles.trigger,
+              triggerSizeClass[size],
+              error && styles.triggerError,
+              disabled && styles.triggerDisabled,
               className
             )}
           >
-            <span className={displayValue ? 'text-text-primary' : 'text-text-secondary'}>
+            <span className={displayValue ? styles.triggerValue : styles.triggerPlaceholder}>
               {displayValue || placeholder}
             </span>
           </button>
@@ -383,13 +361,13 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
           {/* Calendar icon */}
           <span
             className={cn(
-              'pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2',
-              error ? 'text-feedback-error-default' : 'text-text-secondary',
-              disabled && 'opacity-50'
+              styles.calendarIcon,
+              error && styles.calendarIconError,
+              disabled && styles.calendarIconDisabled
             )}
             aria-hidden="true"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <svg viewBox="0 0 20 20" fill="currentColor" className={styles.iconMd}>
               <path
                 fillRule="evenodd"
                 d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
@@ -404,7 +382,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
               role="dialog"
               aria-modal="true"
               aria-label="Calendario"
-              className="absolute z-50 mt-1 top-full left-0 rounded-lg border border-interaction-tertiary-default bg-white shadow-lg"
+              className={styles.popover}
             >
               <CalendarGrid
                 viewDate={viewDate}
@@ -424,13 +402,13 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(helperSizeStyles[size], 'text-feedback-error-default')}
+            className={cn(helperSizeClass[size], styles.errorText)}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span id={messageId} className={cn(helperSizeStyles[size], 'text-text-secondary')}>
+          <span id={messageId} className={cn(helperSizeClass[size], styles.helperText)}>
             {helperText}
           </span>
         ) : null}

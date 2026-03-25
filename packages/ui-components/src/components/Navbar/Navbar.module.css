@@ -1,0 +1,137 @@
+/* ─── Nav root ───────────────────────────────────────────────────────────────── */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: white;
+  border-bottom: 1px solid var(--color-edge);
+}
+
+.container {
+  display: flex;
+  height: 4rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .container { padding: 0 1.5rem; }
+}
+
+/* ─── Hamburger ──────────────────────────────────────────────────────────────── */
+
+.hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.375rem;
+  color: var(--color-txt-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+}
+
+.hamburger:hover { background-color: var(--color-surface-3); color: var(--color-txt); }
+.hamburger:focus { outline: none; }
+.hamburger:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.hamburgerIcon { width: 1.25rem; height: 1.25rem; }
+
+@media (min-width: 768px) {
+  .hamburger { display: none; }
+}
+
+/* ─── Desktop nav ────────────────────────────────────────────────────────────── */
+
+.desktopNav {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .desktopNav { display: flex; }
+}
+
+/* ─── Mobile panel ───────────────────────────────────────────────────────────── */
+
+.mobilePanel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-bottom: 1px solid var(--color-edge);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  list-style: none;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .mobilePanel { display: none; }
+}
+
+/* ─── NavbarBrand ────────────────────────────────────────────────────────────── */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-txt);
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+/* ─── NavbarItem ─────────────────────────────────────────────────────────────── */
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 150ms, color 150ms;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.navItem:focus { outline: none; }
+.navItem:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+
+@media (min-width: 768px) {
+  .navItem { width: auto; }
+}
+
+.navItemActive  { background-color: var(--color-surface-3); color: var(--color-txt); }
+.navItemDefault { color: var(--color-txt-secondary); }
+.navItemDefault:hover { background-color: var(--color-surface-3); color: var(--color-txt); }
+.navItemDisabled { color: var(--color-txt-disabled); cursor: not-allowed; pointer-events: none; }
+
+/* ─── NavbarActions ──────────────────────────────────────────────────────────── */
+
+.actions {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .actions { display: flex; }
+}

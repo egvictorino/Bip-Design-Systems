@@ -1,0 +1,242 @@
+/* ─── Container ──────────────────────────────────────────────────────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.containerFullWidth {
+  width: 100%;
+}
+
+/* ─── Label ───────────────────────────────────────────────────────────────────── */
+
+.label {
+  font-weight: 500;
+  transition: color 150ms;
+}
+
+.labelSm { font-size: 0.75rem; }
+.labelMd { font-size: 0.875rem; }
+.labelLg { font-size: 1rem; }
+
+.labelNormal  { color: var(--color-txt); }
+.labelError   { color: var(--color-danger); }
+.labelDisabled { opacity: 0.5; }
+
+/* ─── Trigger button wrapper ─────────────────────────────────────────────────── */
+
+.triggerWrapper {
+  position: relative;
+}
+
+.triggerWrapperFullWidth {
+  width: 100%;
+}
+
+/* ─── Trigger button ──────────────────────────────────────────────────────────── */
+
+.trigger {
+  width: 100%;
+  text-align: left;
+  border-radius: 1px;
+  transition: background-color 150ms, color 150ms, border-color 150ms;
+  border: 1px solid var(--color-primary);
+  background-color: var(--color-field);
+  /* extra right padding to leave room for the clock icon */
+  padding-right: 2.25rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.trigger:hover:not(:disabled) {
+  border-color: var(--color-primary-hover);
+}
+
+.trigger:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.triggerError {
+  border-color: var(--color-danger);
+}
+
+.triggerError:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+}
+
+.triggerError:hover:not(:disabled) {
+  border-color: var(--color-danger);
+}
+
+.triggerDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-disabled);
+}
+
+/* Sizes */
+.triggerSm { padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; font-size: 0.75rem; }
+.triggerMd { padding-top: 0.625rem; padding-bottom: 0.625rem; padding-left: 1.25rem; font-size: 0.875rem; }
+.triggerLg { padding-top: 0.75rem;  padding-bottom: 0.75rem;  padding-left: 1.5rem;  font-size: 1.125rem; }
+
+/* ─── Trigger text span ───────────────────────────────────────────────────────── */
+
+.triggerValue {
+  color: var(--color-txt);
+}
+
+.triggerPlaceholder {
+  color: var(--color-txt-secondary);
+}
+
+/* ─── Clock icon ──────────────────────────────────────────────────────────────── */
+
+.clockIcon {
+  pointer-events: none;
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-txt-secondary);
+}
+
+.clockIconError {
+  color: var(--color-danger);
+}
+
+.clockIconDisabled {
+  opacity: 0.5;
+}
+
+.iconMd {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ─── Time panel popover ──────────────────────────────────────────────────────── */
+
+.popover {
+  position: absolute;
+  z-index: 50;
+  margin-top: 0.25rem;
+  top: 100%;
+  left: 0;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-surface-3);
+  background-color: var(--color-surface-1);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+}
+
+/* ─── Columns wrapper ─────────────────────────────────────────────────────────── */
+
+.columnsWrapper {
+  display: flex;
+  /* divide-x: border between the two columns */
+  border-bottom: none;
+}
+
+.columnsWrapper > * + * {
+  border-left: 1px solid var(--color-surface-3);
+}
+
+/* ─── TimeColumn ──────────────────────────────────────────────────────────────── */
+
+.timeColumn {
+  display: flex;
+  flex-direction: column;
+  width: 5rem; /* w-20 */
+}
+
+.timeColumnHeader {
+  font-size: 0.625rem; /* 10px */
+  font-weight: 600;
+  color: var(--color-txt-secondary);
+  text-align: center;
+  padding: 0.375rem 0;
+  border-bottom: 1px solid var(--color-surface-3);
+}
+
+.timeColumnList {
+  overflow-y: auto;
+  height: 12rem; /* h-48 */
+  padding: 0.25rem 0;
+}
+
+/* ─── Time option button ──────────────────────────────────────────────────────── */
+
+.timeOption {
+  width: 100%;
+  height: 2.25rem; /* h-9 = 36px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  border-radius: 0.125rem;
+  transition: background-color 150ms, color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  color: var(--color-txt);
+}
+
+.timeOption:hover:not(.timeOptionSelected) {
+  background-color: var(--color-surface-3);
+}
+
+.timeOption:focus-visible {
+  /* ring-inset: shadow inside the button boundary */
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.timeOptionSelected {
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+  font-weight: 600;
+}
+
+/* ─── "Now" shortcut ──────────────────────────────────────────────────────────── */
+
+.nowSection {
+  border-top: 1px solid var(--color-surface-3);
+  padding: 0.5rem;
+}
+
+.nowBtn {
+  width: 100%;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem 0;
+  border-radius: 0.25rem;
+  transition: background-color 150ms, color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  color: var(--color-primary);
+}
+
+.nowBtn:hover {
+  background-color: var(--color-surface-3);
+}
+
+.nowBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+/* ─── Helper / Error message ─────────────────────────────────────────────────── */
+
+.helperText {
+  color: var(--color-txt-secondary);
+}
+
+.errorText {
+  color: var(--color-danger);
+}
+
+.helperSm { font-size: 0.75rem; }
+.helperMd { font-size: 0.75rem; }
+.helperLg { font-size: 0.875rem; }

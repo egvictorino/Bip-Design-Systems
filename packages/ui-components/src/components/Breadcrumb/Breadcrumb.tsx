@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/cn';
+import styles from './Breadcrumb.module.css';
 
 export interface BreadcrumbItem {
   label: string;
@@ -15,7 +15,7 @@ const ChevronIcon = () => (
   <svg
     viewBox="0 0 16 16"
     fill="currentColor"
-    className="w-3.5 h-3.5 shrink-0 text-txt-disabled"
+    className={styles.chevron}
     aria-hidden="true"
   >
     <path
@@ -33,35 +33,23 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
   ...props
 }) => {
   return (
-    // aria-label first so consumers can override it via ...props (e.g. for i18n)
     <nav aria-label="Breadcrumb" {...props} className={className}>
-      <ol className="flex flex-wrap items-center gap-1.5 text-sm">
+      <ol className={styles.list}>
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           return (
-            <li key={`${item.label}-${index}`} className="flex items-center gap-1.5">
+            <li key={`${item.label}-${index}`} className={styles.item}>
               {index > 0 && (separator ?? <ChevronIcon />)}
               {isLast ? (
-                <span
-                  aria-current="page"
-                  className="font-medium text-txt max-w-[240px] truncate"
-                >
+                <span aria-current="page" className={styles.current}>
                   {item.label}
                 </span>
               ) : item.href ? (
-                <a
-                  href={item.href}
-                  className={cn(
-                    'max-w-[200px] truncate text-txt-secondary hover:text-txt transition-colors',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded'
-                  )}
-                >
+                <a href={item.href} className={styles.link}>
                   {item.label}
                 </a>
               ) : (
-                // No href on a non-current item: render as non-interactive span
-                // (an <a href="#"> would be a misleading dead link)
-                <span className="max-w-[200px] truncate text-txt-secondary">{item.label}</span>
+                <span className={styles.nonLink}>{item.label}</span>
               )}
             </li>
           );

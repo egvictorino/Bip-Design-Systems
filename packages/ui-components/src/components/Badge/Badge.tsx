@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Badge.module.css';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: 'primary' | 'success' | 'warning' | 'error' | 'neutral';
@@ -8,32 +9,18 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;
 }
 
-const variants: Record<NonNullable<BadgeProps['variant']>, string> = {
-  primary: 'bg-info-subtle text-primary',
-  success: 'bg-success-subtle text-success-text',
-  warning: 'bg-warning-subtle text-warning-text',
-  error: 'bg-danger-subtle text-danger-text',
-  neutral: 'bg-surface-3 text-txt-secondary',
+const dotVariantClasses: Record<NonNullable<BadgeProps['variant']>, string> = {
+  primary: styles.dotPrimary,
+  success: styles.dotSuccess,
+  warning: styles.dotWarning,
+  error:   styles.dotError,
+  neutral: styles.dotNeutral,
 };
 
-const dotVariants: Record<NonNullable<BadgeProps['variant']>, string> = {
-  primary: 'bg-primary',
-  success: 'bg-success',
-  warning: 'bg-warning',
-  error: 'bg-danger',
-  neutral: 'bg-text-secondary',
-};
-
-const sizes: Record<NonNullable<BadgeProps['size']>, string> = {
-  sm: 'px-1.5 py-0.5 text-xs',
-  md: 'px-2.5 py-1 text-xs',
-  lg: 'px-3 py-1.5 text-sm',
-};
-
-const dotSizes: Record<NonNullable<BadgeProps['size']>, string> = {
-  sm: 'w-1.5 h-1.5',
-  md: 'w-2 h-2',
-  lg: 'w-2.5 h-2.5',
+const dotSizeClasses: Record<NonNullable<BadgeProps['size']>, string> = {
+  sm: styles.dotSm,
+  md: styles.dotMd,
+  lg: styles.dotLg,
 };
 
 export const Badge: React.FC<BadgeProps> = ({
@@ -46,17 +33,12 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   return (
     <span
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-full font-medium',
-        variants[variant],
-        sizes[size],
-        className
-      )}
+      className={cn(styles.badge, styles[variant], styles[size], className)}
       {...props}
     >
       {dot && (
         <span
-          className={cn('shrink-0 rounded-full', dotVariants[variant], dotSizes[size])}
+          className={cn(styles.dot, dotVariantClasses[variant], dotSizeClasses[size])}
           aria-hidden="true"
         />
       )}

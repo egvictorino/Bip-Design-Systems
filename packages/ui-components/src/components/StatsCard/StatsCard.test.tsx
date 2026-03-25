@@ -27,20 +27,20 @@ describe('StatsCard', () => {
     render(<StatsCard title="Citas" value={10} trend={8} />);
     const trendEl = screen.getByLabelText('Tendencia: +8%');
     expect(trendEl).toBeInTheDocument();
-    expect(trendEl).toHaveClass('text-success');
+    expect(trendEl).toHaveClass('trendPositive');
   });
 
   it('renders negative trend', () => {
     render(<StatsCard title="Citas" value={10} trend={-5} />);
     const trendEl = screen.getByLabelText('Tendencia: -5%');
     expect(trendEl).toBeInTheDocument();
-    expect(trendEl).toHaveClass('text-danger');
+    expect(trendEl).toHaveClass('trendNegative');
   });
 
   it('renders zero trend with neutral color', () => {
     render(<StatsCard title="Citas" value={10} trend={0} />);
     const trendEl = screen.getByLabelText('Tendencia: 0%');
-    expect(trendEl).toHaveClass('text-txt-secondary');
+    expect(trendEl).toHaveClass('trendNeutral');
   });
 
   it('does not render trend when not provided', () => {

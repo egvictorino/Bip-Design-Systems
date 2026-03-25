@@ -75,37 +75,34 @@ describe('ProgressBar', () => {
 
   // ── Variants ───────────────────────────────────────────────────────────────
 
-  it.each([
-    ['default', 'bg-primary'],
-    ['success', 'bg-success'],
-    ['warning', 'bg-warning'],
-    ['error', 'bg-danger'],
-  ] as const)('variant %s applies correct fill color class', (variant, expectedClass) => {
-    const { container } = render(<ProgressBar value={50} variant={variant} />);
-    const fill = container.querySelector('[aria-hidden="true"]');
-    expect(fill).toHaveClass(expectedClass);
-  });
+  it.each(['default', 'success', 'warning', 'error'] as const)(
+    'variant %s applies correct fill color class',
+    (variant) => {
+      const { container } = render(<ProgressBar value={50} variant={variant} />);
+      const fill = container.querySelector('[aria-hidden="true"]');
+      expect(fill).toHaveClass(variant);
+    }
+  );
 
-  it('defaults to "default" variant (bg-primary)', () => {
+  it('defaults to "default" variant', () => {
     const { container } = render(<ProgressBar value={50} />);
     const fill = container.querySelector('[aria-hidden="true"]');
-    expect(fill).toHaveClass('bg-primary');
+    expect(fill).toHaveClass('default');
   });
 
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'h-1'],
-    ['md', 'h-2'],
-    ['lg', 'h-3'],
-  ] as const)('size %s applies correct track height class', (size, expectedClass) => {
-    render(<ProgressBar value={50} size={size} />);
-    expect(screen.getByRole('progressbar')).toHaveClass(expectedClass);
-  });
+  it.each(['sm', 'md', 'lg'] as const)(
+    'size %s applies correct track height class',
+    (size) => {
+      render(<ProgressBar value={50} size={size} />);
+      expect(screen.getByRole('progressbar')).toHaveClass(size);
+    }
+  );
 
-  it('defaults to "md" size (h-2)', () => {
+  it('defaults to "md" size', () => {
     render(<ProgressBar value={50} />);
-    expect(screen.getByRole('progressbar')).toHaveClass('h-2');
+    expect(screen.getByRole('progressbar')).toHaveClass('md');
   });
 
   // ── Label & showValue ──────────────────────────────────────────────────────
@@ -169,8 +166,8 @@ describe('ProgressBar', () => {
     expect(container.firstChild).toHaveClass('custom-class');
   });
 
-  it('outer wrapper always has w-full class', () => {
+  it('outer wrapper always has wrapper class', () => {
     const { container } = render(<ProgressBar value={50} />);
-    expect(container.firstChild).toHaveClass('w-full');
+    expect(container.firstChild).toHaveClass('wrapper');
   });
 });

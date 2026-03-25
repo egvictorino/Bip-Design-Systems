@@ -71,21 +71,21 @@ describe('DrawerPanel', () => {
 
   it('applies right placement by default', () => {
     render(<DrawerPanel {...defaultProps} />);
-    expect(screen.getByRole('dialog')).toHaveClass('right-0');
+    expect(screen.getByRole('dialog')).toHaveClass('placementRight');
   });
 
   it('applies left placement', () => {
     render(<DrawerPanel {...defaultProps} placement="left" />);
-    expect(screen.getByRole('dialog')).toHaveClass('left-0');
+    expect(screen.getByRole('dialog')).toHaveClass('placementLeft');
   });
 
   it('applies sm size class', () => {
     render(<DrawerPanel {...defaultProps} size="sm" />);
-    expect(screen.getByRole('dialog')).toHaveClass('w-80');
+    expect(screen.getByRole('dialog')).toHaveClass('sizeSm');
   });
 
   it('applies lg size class', () => {
     render(<DrawerPanel {...defaultProps} size="lg" />);
-    expect(screen.getByRole('dialog')).toHaveClass('w-[640px]');
+    expect(screen.getByRole('dialog')).toHaveClass('sizeLg');
   });
 });

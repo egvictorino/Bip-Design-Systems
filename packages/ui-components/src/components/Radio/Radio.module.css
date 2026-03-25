@@ -1,0 +1,110 @@
+/* ─── Outer wrapper ─────────────────────────────────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* ─── Row (group) ───────────────────────────────────────────────────────────── */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─── Visual radio ring ─────────────────────────────────────────────────────── */
+
+.ring {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid var(--color-primary);
+  transition: border-color 150ms;
+}
+
+.ring:hover { border-color: var(--color-primary-hover); }
+
+.ring.ringError { border-color: var(--color-danger); }
+
+/* Focus ring via group selector */
+.row:has(:focus-visible) .ring {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+.row:has(:focus-visible) .ring.ringError {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+}
+
+.ringDisabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ─── Ring sizes ────────────────────────────────────────────────────────────── */
+
+.ringSm { width: 0.875rem; height: 0.875rem; }
+.ringMd { width: 1rem;     height: 1rem; }
+.ringLg { width: 1.25rem;  height: 1.25rem; }
+
+/* ─── Native input (hidden, overlays ring) ──────────────────────────────────── */
+
+.nativeInput {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.nativeInput:disabled { cursor: not-allowed; }
+
+/* ─── Inner dot ─────────────────────────────────────────────────────────────── */
+
+.dot {
+  border-radius: 9999px;
+  background-color: var(--color-primary);
+  transform: scale(0);
+  transition: transform 150ms;
+}
+
+.dot.dotError { background-color: var(--color-danger); }
+
+/* Dot: checked state */
+.row:has(:checked) .dot { transform: scale(1); }
+
+/* Dot sizes */
+.dotSm { width: 0.375rem; height: 0.375rem; }
+.dotMd { width: 0.5rem;   height: 0.5rem; }
+.dotLg { width: 0.625rem; height: 0.625rem; }
+
+/* ─── Label ─────────────────────────────────────────────────────────────────── */
+
+.label {
+  user-select: none;
+  font-weight: 500;
+  transition: color 150ms;
+  cursor: pointer;
+}
+
+.labelSm { font-size: 0.75rem;  line-height: 1rem; }
+.labelMd { font-size: 0.875rem; line-height: 1.25rem; }
+.labelLg { font-size: 1rem;     line-height: 1.5rem; }
+
+.labelNormal   { color: var(--color-txt); }
+.labelError    { color: var(--color-danger); }
+.labelDisabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ─── Helper / Error message ────────────────────────────────────────────────── */
+
+.helperSm { font-size: 0.75rem;  line-height: 1rem; }
+.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+
+.helperText { color: var(--color-txt-secondary); }
+.errorText  { color: var(--color-danger); }
+
+/* Indent to align with label */
+.indentSm { margin-left: 1.375rem; }
+.indentMd { margin-left: 1.5rem; }
+.indentLg { margin-left: 1.75rem; }

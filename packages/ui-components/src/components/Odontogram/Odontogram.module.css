@@ -1,0 +1,580 @@
+/* ─── Root ────────────────────────────────────────────────────────────────────── */
+
+.root {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-txt);
+}
+
+/* ─── Chart panel ────────────────────────────────────────────────────────────── */
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  background-color: #fff;
+  overflow-x: auto;
+}
+
+/* ─── Arch row ───────────────────────────────────────────────────────────────── */
+
+.arch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.archSection {
+  display: flex;
+  flex-direction: row;
+  gap: 0.125rem;
+}
+
+.archDivider {
+  width: 1px;
+  align-self: stretch;
+  background-color: #d1d5db; /* gray-300 */
+  margin: 0 0.375rem;
+}
+
+/* ─── Midline divider between upper and lower ────────────────────────────────── */
+
+.midline {
+  height: 0.75rem;
+  border-bottom: 1px solid #d1d5db; /* gray-300 */
+  margin-bottom: 0.25rem;
+}
+
+/* ─── Single tooth cell ──────────────────────────────────────────────────────── */
+
+.toothCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ─── Number row (FDI number + note/image buttons) ───────────────────────────── */
+
+.numberRowUpper {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin-top: 0.125rem;
+}
+
+.numberRowLower {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin-bottom: 0.125rem;
+}
+
+/* FDI number button (opens note popover) */
+.numberButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  font-family: ui-monospace, monospace;
+  line-height: 1;
+  border-radius: 0.125rem;
+  color: var(--color-txt-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.numberButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-edge-focus);
+}
+
+/* FDI number static span (read-only, no note) */
+.numberSpan {
+  font-family: ui-monospace, monospace;
+  line-height: 1;
+  color: var(--color-txt-secondary);
+}
+
+/* Size variants for number text */
+.numberSm { font-size: 7px; }
+.numberMd { font-size: 9px; }
+.numberLg { font-size: 10px; }
+
+/* Note indicator dot */
+.noteDot {
+  display: inline-block;
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* Image button (opens image popover) */
+.imageButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  line-height: 1;
+  border-radius: 0.125rem;
+  color: var(--color-txt-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.imageButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-edge-focus);
+}
+
+/* Image indicator dot (info/blue) */
+.imageDot {
+  display: inline-block;
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background-color: var(--color-info);
+  flex-shrink: 0;
+}
+
+/* Camera icon sizing */
+.iconCamera {
+  width: 0.625rem;
+  height: 0.625rem;
+  flex-shrink: 0;
+}
+
+/* ─── Tooth SVG ──────────────────────────────────────────────────────────────── */
+
+.toothSvg {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Surface polygon fills (condition colors) */
+.fillHealthy          { fill: #ffffff; }
+.fillCaries           { fill: #f87171; }   /* red-400 */
+.fillRestoration      { fill: #60a5fa; }   /* blue-400 */
+.fillCrown            { fill: #facc15; }   /* yellow-400 */
+.fillMissing          { fill: #d1d5db; }   /* gray-300 */
+.fillImplant          { fill: #c084fc; }   /* purple-400 */
+.fillFracture         { fill: #fb923c; }   /* orange-400 */
+.fillRootCanal        { fill: #2dd4bf; }   /* teal-400 */
+.fillExtractionPlanned { fill: #fca5a5; }  /* red-200 */
+
+/* Surface polygon stroke */
+.surfaceStroke {
+  stroke: #9ca3af; /* gray-400 */
+  outline: none;
+}
+
+.surfaceInteractive {
+  cursor: pointer;
+}
+
+.surfaceInteractive:hover,
+.surfaceInteractive:focus-visible {
+  opacity: 0.7;
+}
+
+/* ─── NotePopover ────────────────────────────────────────────────────────────── */
+
+.popoverBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.notePopover {
+  position: fixed;
+  z-index: 50;
+  width: 16rem;
+  background-color: #fff;
+  border: 1px solid var(--color-edge);
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.popoverHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.popoverTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-txt);
+}
+
+.popoverClose {
+  color: var(--color-txt-secondary);
+  border-radius: 0.125rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.popoverClose:hover {
+  color: var(--color-txt);
+}
+
+.popoverClose:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-edge-focus);
+}
+
+.noteTextarea {
+  width: 100%;
+  resize: none;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-edge);
+  font-size: 0.875rem;
+  color: var(--color-txt);
+  padding: 0.5rem;
+  outline: none;
+}
+
+.noteTextarea:focus-visible {
+  border-color: var(--color-edge-focus);
+  box-shadow: 0 0 0 1px var(--color-edge-focus);
+}
+
+.noteTextareaReadOnly {
+  background-color: var(--color-field-readonly);
+  cursor: default;
+}
+
+.popoverActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saveButton {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.saveButton:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.saveButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+/* ─── ImagePopover ───────────────────────────────────────────────────────────── */
+
+.imagePopover {
+  position: fixed;
+  z-index: 50;
+  width: 20rem;
+  background-color: #fff;
+  border: 1px solid var(--color-edge);
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.thumbnailCount {
+  margin-left: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-txt-secondary);
+}
+
+/* Thumbnail gallery */
+.thumbnailGallery {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.thumbnailList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.thumbnailItem {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Wrapper to show delete button on hover */
+.thumbnailItemGroup:hover .thumbnailDeleteButton,
+.thumbnailDeleteButton:focus-visible {
+  opacity: 1;
+}
+
+.thumbnailButton {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 0.25rem;
+  border: 2px solid var(--color-edge);
+  overflow: hidden;
+  display: block;
+  outline: none;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+}
+
+.thumbnailButton:hover {
+  border-color: var(--color-edge-hover);
+}
+
+.thumbnailButton:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-edge-focus);
+}
+
+.thumbnailButtonSelected {
+  border-color: var(--color-primary);
+}
+
+.thumbnailImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnailDeleteButton {
+  position: absolute;
+  top: -0.375rem;
+  right: -0.375rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background-color: var(--color-danger);
+  color: #fff;
+  font-size: 9px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.thumbnailDeleteButton:focus-visible {
+  opacity: 1;
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-danger);
+}
+
+.thumbnailLabel {
+  font-size: 9px;
+  color: var(--color-txt-secondary);
+  text-align: center;
+  margin-top: 0.125rem;
+  line-height: 1.2;
+}
+
+/* Preview pane */
+.previewPane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.previewImg {
+  width: 100%;
+  max-height: 11rem;
+  object-fit: contain;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-edge);
+  background-color: var(--color-surface-1);
+}
+
+.previewLabel {
+  font-size: 0.75rem;
+  color: var(--color-txt-secondary);
+  text-align: center;
+}
+
+.emptyImages {
+  font-size: 0.75rem;
+  color: var(--color-txt-secondary);
+  font-style: italic;
+}
+
+/* ─── Add image form ─────────────────────────────────────────────────────────── */
+
+.addForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-top: 1px solid var(--color-edge);
+  padding-top: 0.5rem;
+}
+
+.addFormTitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-txt);
+}
+
+.addFormField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.addFormLabel {
+  font-size: 0.75rem;
+  color: var(--color-txt-secondary);
+}
+
+.addFormSelect {
+  width: 100%;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-edge);
+  font-size: 0.875rem;
+  color: var(--color-txt);
+  padding: 0.375rem;
+  outline: none;
+  background-color: #fff;
+}
+
+.addFormSelect:focus-visible {
+  border-color: var(--color-edge-focus);
+  box-shadow: 0 0 0 1px var(--color-edge-focus);
+}
+
+.addFormPreviewImg {
+  width: 100%;
+  max-height: 8rem;
+  object-fit: contain;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-edge);
+  background-color: var(--color-surface-1);
+}
+
+.fileButton {
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-edge);
+  font-size: 0.875rem;
+  color: var(--color-txt);
+  background: none;
+  cursor: pointer;
+}
+
+.fileButton:hover {
+  background-color: var(--color-surface-1);
+}
+
+.fileButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-edge-focus);
+}
+
+.addFormActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.cancelButton {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-edge);
+  font-size: 0.75rem;
+  color: var(--color-txt);
+  background: none;
+  cursor: pointer;
+}
+
+.cancelButton:hover {
+  background-color: var(--color-surface-1);
+}
+
+.cancelButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-edge-focus);
+}
+
+.confirmButton {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.confirmButton:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.confirmButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.confirmButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Add image button (when not in adding mode) */
+.addImageButton {
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-edge);
+  font-size: 0.875rem;
+  color: var(--color-txt-secondary);
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+}
+
+.addImageButton:hover {
+  background-color: var(--color-surface-1);
+  color: var(--color-txt);
+}
+
+.addImageButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-edge-focus);
+}
+
+.iconPlus {
+  width: 0.75rem;
+  height: 0.75rem;
+}

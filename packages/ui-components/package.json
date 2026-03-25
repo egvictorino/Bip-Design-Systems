@@ -5,18 +5,16 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "sideEffects": false,
+  "sideEffects": ["**/*.css"],
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./tailwind.preset": "./tailwind.preset.js"
+    "./style.css": "./dist/style.css"
   },
   "files": [
-    "dist",
-    "tailwind.preset.js",
-    "tailwind.tokens.js"
+    "dist"
   ],
   "scripts": {
     "dev": "vite",
@@ -31,8 +29,7 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
-    "clsx": "^2.0.0",
-    "tailwind-merge": "^3.5.0"
+    "clsx": "^2.0.0"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.6.15",
@@ -54,7 +51,6 @@
     "happy-dom": "^20.7.0",
     "postcss": "^8.4.32",
     "storybook": "^8.6.15",
-    "tailwindcss": "^3.4.0",
     "typescript": "^5.3.3",
     "vite": "^5.4.11",
     "vite-plugin-dts": "^4.5.4",

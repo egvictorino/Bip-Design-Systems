@@ -1,6 +1,7 @@
 import { forwardRef, useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Toggle.module.css';
 
 export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   size?: 'sm' | 'md' | 'lg';
@@ -13,36 +14,32 @@ export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
 type SizeTokens = {
   track: string;
   thumb: string;
-  translate: string;
   label: string;
   helper: string;
   indent: string;
 };
 
-const sizes: Record<NonNullable<ToggleProps['size']>, SizeTokens> = {
+const sizeClasses: Record<NonNullable<ToggleProps['size']>, SizeTokens> = {
   sm: {
-    track: 'w-8 h-4',
-    thumb: 'w-3 h-3',
-    translate: 'group-has-[:checked]:translate-x-4',
-    label: 'text-xs',
-    helper: 'text-xs',
-    indent: 'ml-10',
+    track:  styles.trackSm,
+    thumb:  styles.thumbSm,
+    label:  styles.labelSm,
+    helper: styles.helperSm,
+    indent: styles.indentSm,
   },
   md: {
-    track: 'w-10 h-5',
-    thumb: 'w-4 h-4',
-    translate: 'group-has-[:checked]:translate-x-5',
-    label: 'text-sm',
-    helper: 'text-xs',
-    indent: 'ml-12',
+    track:  styles.trackMd,
+    thumb:  styles.thumbMd,
+    label:  styles.labelMd,
+    helper: styles.helperSm,
+    indent: styles.indentMd,
   },
   lg: {
-    track: 'w-12 h-6',
-    thumb: 'w-5 h-5',
-    translate: 'group-has-[:checked]:translate-x-6',
-    label: 'text-base',
-    helper: 'text-sm',
-    indent: 'ml-14',
+    track:  styles.trackLg,
+    thumb:  styles.thumbLg,
+    label:  styles.labelLg,
+    helper: styles.helperLg,
+    indent: styles.indentLg,
   },
 };
 
@@ -62,28 +59,23 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
     ref
   ) => {
     const generatedId = useId();
-    // Always fall back to generatedId so aria-describedby linkage works
-    // even when no label or explicit id is provided
     const toggleId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage ? `${toggleId}-message` : undefined;
+    const sz = sizeClasses[size];
 
     return (
-      <div className={cn('flex flex-col gap-1', className)}>
-        <div className="group flex items-center gap-2">
+      <div className={cn(styles.wrapper, className)}>
+        <div className={styles.row}>
           {/* Track */}
           <div
             className={cn(
-              'relative shrink-0 rounded-full transition-colors',
-              'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
-              sizes[size].track,
-              error
-                ? 'bg-danger-muted group-has-[:checked]:bg-danger group-has-[:focus-visible]:ring-danger'
-                : 'bg-surface-4 group-has-[:checked]:bg-primary group-has-[:focus-visible]:ring-primary',
-              disabled && 'opacity-50 cursor-not-allowed'
+              styles.track,
+              sz.track,
+              error && styles.trackError,
+              disabled && styles.trackDisabled
             )}
           >
-            {/* Native input — overlays the entire track */}
             <input
               ref={ref}
               id={toggleId}
@@ -92,19 +84,10 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
               disabled={disabled}
               aria-invalid={error || undefined}
               aria-describedby={messageId}
-              className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+              className={styles.nativeInput}
               {...props}
             />
-
-            {/* Thumb — slides on check */}
-            <span
-              className={cn(
-                'absolute top-1/2 left-[2px] -translate-y-1/2 rounded-full bg-white shadow-sm transition-transform',
-                sizes[size].thumb,
-                sizes[size].translate
-              )}
-              aria-hidden="true"
-            />
+            <span className={cn(styles.thumb, sz.thumb)} aria-hidden="true" />
           </div>
 
           {/* Label */}
@@ -112,10 +95,10 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
             <label
               htmlFor={toggleId}
               className={cn(
-                'select-none font-medium transition-colors cursor-pointer',
-                sizes[size].label,
-                error ? 'text-danger' : 'text-txt',
-                disabled && 'opacity-50 cursor-not-allowed'
+                styles.label,
+                sz.label,
+                error ? styles.labelError : styles.labelNormal,
+                disabled && styles.labelDisabled
               )}
             >
               {label}
@@ -127,16 +110,13 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-danger', sizes[size].indent)}
+            className={cn(sz.helper, styles.errorText, sz.indent)}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span
-            id={messageId}
-            className={cn(sizes[size].helper, 'text-txt-secondary', sizes[size].indent)}
-          >
+          <span id={messageId} className={cn(sz.helper, styles.helperText, sz.indent)}>
             {helperText}
           </span>
         ) : null}

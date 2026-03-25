@@ -130,13 +130,13 @@ describe('Radio', () => {
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
   it.each([
-    ['sm', 'text-xs', 'w-3.5', 'h-3.5'],
-    ['md', 'text-sm', 'w-4', 'h-4'],
-    ['lg', 'text-base', 'w-5', 'h-5'],
-  ] as const)('size %s applies correct label and box classes', (size, labelClass, w, h) => {
+    ['sm', 'labelSm', 'ringSm'],
+    ['md', 'labelMd', 'ringMd'],
+    ['lg', 'labelLg', 'ringLg'],
+  ] as const)('size %s applies correct label and box classes', (size, labelClass, ringClass) => {
     const { container } = render(<Radio size={size} label="Opción" />);
     expect(screen.getByText('Opción')).toHaveClass(labelClass);
-    const box = container.querySelector('div.relative') as HTMLElement;
-    expect(box).toHaveClass(w, h);
+    const ring = container.querySelector('.ring') as HTMLElement;
+    expect(ring).toHaveClass(ringClass);
   });
 });

@@ -1,0 +1,77 @@
+/* ─── Portal container ───────────────────────────────────────────────────────── */
+
+.region {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* ─── Positions ──────────────────────────────────────────────────────────────── */
+
+.topLeft     { top: 1rem; left: 1rem; }
+.topCenter   { top: 1rem; left: 50%; transform: translateX(-50%); }
+.topRight    { top: 1rem; right: 1rem; }
+.bottomLeft  { bottom: 1rem; left: 1rem; }
+.bottomCenter { bottom: 1rem; left: 50%; transform: translateX(-50%); }
+.bottomRight { bottom: 1rem; right: 1rem; }
+
+/* ─── Stack ──────────────────────────────────────────────────────────────────── */
+
+.stack {
+  position: relative;
+  width: 20rem;
+  pointer-events: none;
+  transition: height 300ms ease-out;
+}
+
+/* ─── Toast wrapper (absolute — positioned via inline style) ─────────────────── */
+
+.toastWrapper {
+  position: absolute;
+  width: 100%;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
+}
+
+/* ─── Toast item animation ───────────────────────────────────────────────────── */
+
+.toastItem {
+  will-change: transform;
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.toastItemIn {
+  opacity: 1;
+  transform: translate(0, 0);
+  transition-duration: 300ms;
+}
+
+/* ─── Slide-out directions ───────────────────────────────────────────────────── */
+
+.slideOutTopLeft     { opacity: 0; transform: translateX(-1.5rem); transition-duration: 250ms; }
+.slideOutTopCenter   { opacity: 0; transform: translateY(-0.5rem); transition-duration: 250ms; }
+.slideOutTopRight    { opacity: 0; transform: translateX(1.5rem);  transition-duration: 250ms; }
+.slideOutBottomLeft  { opacity: 0; transform: translateX(-1.5rem); transition-duration: 250ms; }
+.slideOutBottomCenter { opacity: 0; transform: translateY(0.5rem); transition-duration: 250ms; }
+.slideOutBottomRight { opacity: 0; transform: translateX(1.5rem);  transition-duration: 250ms; }
+
+/* ─── Card wrapper ───────────────────────────────────────────────────────────── */
+
+.card {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Progress bar ───────────────────────────────────────────────────────────── */
+
+.progressTrack { height: 0.25rem; background-color: rgba(0, 0, 0, 0.1); }
+
+.progressBar { height: 100%; transition: width 100ms linear; }
+
+.progressInfo    { background-color: var(--color-primary); }
+.progressSuccess { background-color: var(--color-success); }
+.progressWarning { background-color: var(--color-warning); }
+.progressError   { background-color: var(--color-danger); }

@@ -1,0 +1,264 @@
+/* ─── Wrapper ────────────────────────────────────────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fullWidth { width: 100%; }
+
+/* ─── Label ──────────────────────────────────────────────────────────────────── */
+
+.label {
+  font-weight: 500;
+  transition: color 150ms;
+}
+
+.labelSm   { font-size: 0.75rem;  line-height: 1rem; }
+.labelMd   { font-size: 0.875rem; line-height: 1.25rem; }
+.labelLg   { font-size: 1rem;     line-height: 1.5rem; }
+
+.labelNormal   { color: var(--color-txt-utility); }
+.labelError    { color: var(--color-danger); }
+.labelDisabled { opacity: 0.5; }
+
+/* ─── Trigger button ─────────────────────────────────────────────────────────── */
+
+.triggerWrapper {
+  position: relative;
+}
+
+.trigger {
+  width: 100%;
+  text-align: left;
+  border-radius: 1px;
+  transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+  border: 1px solid var(--color-edge);
+  background-color: var(--color-field);
+}
+
+.trigger:focus {
+  outline: none;
+}
+
+.trigger:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.trigger:hover:not(:disabled) {
+  border-color: var(--color-edge-hover);
+}
+
+.triggerError {
+  border-color: var(--color-danger);
+}
+
+.triggerError:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+}
+
+.triggerDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-disabled);
+}
+
+.triggerEnabled {
+  cursor: pointer;
+}
+
+/* ─── Trigger sizes ──────────────────────────────────────────────────────────── */
+
+.triggerSm { padding: 6px 12px;  padding-right: 2.25rem; font-size: 0.75rem;  line-height: 1rem; }
+.triggerMd { padding: 10px 20px; padding-right: 2.25rem; font-size: 0.875rem; line-height: 1.25rem; }
+.triggerLg { padding: 12px 24px; padding-right: 2.25rem; font-size: 1.125rem; line-height: 1.75rem; }
+
+/* ─── Display value / placeholder ───────────────────────────────────────────── */
+
+.valueText       { color: var(--color-txt); }
+.placeholderText { color: var(--color-txt-secondary); }
+
+/* ─── Calendar icon ──────────────────────────────────────────────────────────── */
+
+.calendarIcon {
+  pointer-events: none;
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-txt-secondary);
+}
+
+.calendarIconError    { color: var(--color-danger); }
+.calendarIconDisabled { opacity: 0.5; }
+
+.iconSm { width: 1rem; height: 1rem; }
+
+/* ─── Popover (calendar dialog) ──────────────────────────────────────────────── */
+
+.popover {
+  position: absolute;
+  z-index: 50;
+  margin-top: 0.25rem;
+  top: 100%;
+  left: 0;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-edge);
+  background-color: #fff;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* ─── Calendar grid container ────────────────────────────────────────────────── */
+
+.calendarGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  width: 280px;
+}
+
+/* ─── Month navigation ───────────────────────────────────────────────────────── */
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navButton {
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  color: var(--color-txt-secondary);
+  transition: background-color 150ms, color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.navButtonEnabled:hover {
+  background-color: var(--color-surface-3);
+  color: var(--color-txt);
+}
+
+.navButtonDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.monthHeading {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-txt);
+}
+
+/* ─── Day grid ───────────────────────────────────────────────────────────────── */
+
+.dayGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.125rem;
+}
+
+.dayHeader {
+  text-align: center;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--color-txt-secondary);
+  padding: 0.25rem 0;
+}
+
+.dayCellInRange {
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.dayButton {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  transition: background-color 150ms, color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-txt);
+}
+
+.dayButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.dayButtonSelected {
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+  font-weight: 600;
+}
+
+.dayButtonToday {
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dayButtonToday:hover {
+  background-color: var(--color-surface-3);
+}
+
+.dayButtonDefault:hover {
+  background-color: var(--color-surface-3);
+}
+
+.dayButtonDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ─── Clear footer ───────────────────────────────────────────────────────────── */
+
+.clearFooter {
+  border-top: 1px solid var(--color-edge);
+  padding-top: 0.5rem;
+}
+
+.clearButton {
+  width: 100%;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem;
+  border-radius: 0.25rem;
+  transition: background-color 150ms;
+  color: var(--color-txt-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.clearButton:hover {
+  background-color: var(--color-surface-3);
+}
+
+.clearButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+/* ─── Helper / Error message ─────────────────────────────────────────────────── */
+
+.helperSm { font-size: 0.75rem;  line-height: 1rem; }
+.helperMd { font-size: 0.75rem;  line-height: 1rem; }
+.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+
+.helperText { color: var(--color-txt-secondary); }
+.errorText  { color: var(--color-danger); }

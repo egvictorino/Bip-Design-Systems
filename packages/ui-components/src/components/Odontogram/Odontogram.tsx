@@ -1,6 +1,7 @@
 import React, { forwardRef, useCallback, useEffect, useId, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
+import styles from './Odontogram.module.css';
 
 export type ToothSurface = 'occlusal' | 'mesial' | 'distal' | 'buccal' | 'lingual';
 
@@ -51,16 +52,16 @@ export interface OdontogramProps {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const CONDITION_FILL: Record<ToothCondition, string> = {
-  healthy: 'fill-white',
-  caries: 'fill-red-400',
-  restoration: 'fill-blue-400',
-  crown: 'fill-yellow-400',
-  missing: 'fill-gray-300',
-  implant: 'fill-purple-400',
-  fracture: 'fill-orange-400',
-  root_canal: 'fill-teal-400',
-  extraction_planned: 'fill-red-200',
+const CONDITION_FILL_CLASS: Record<ToothCondition, string> = {
+  healthy: styles.fillHealthy,
+  caries: styles.fillCaries,
+  restoration: styles.fillRestoration,
+  crown: styles.fillCrown,
+  missing: styles.fillMissing,
+  implant: styles.fillImplant,
+  fracture: styles.fillFracture,
+  root_canal: styles.fillRootCanal,
+  extraction_planned: styles.fillExtractionPlanned,
 };
 
 export const CONDITION_LABELS: Record<ToothCondition, string> = {
@@ -81,10 +82,10 @@ const TOOTH_SIZE: Record<'sm' | 'md' | 'lg', number> = {
   lg: 40,
 };
 
-const NUMBER_TEXT_SIZE: Record<'sm' | 'md' | 'lg', string> = {
-  sm: 'text-[7px]',
-  md: 'text-[9px]',
-  lg: 'text-[10px]',
+const NUMBER_TEXT_SIZE_CLASS: Record<'sm' | 'md' | 'lg', string> = {
+  sm: styles.numberSm,
+  md: styles.numberMd,
+  lg: styles.numberLg,
 };
 
 /** Conditions that apply to the whole tooth, not per surface */
@@ -241,20 +242,20 @@ const NotePopover = React.memo<NotePopoverProps>(({
 
   return ReactDOM.createPortal(
     <>
-      <div className="fixed inset-0 z-40" aria-hidden="true" onClick={onClose} />
+      <div className={styles.popoverBackdrop} aria-hidden="true" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
         aria-label={`Nota del diente ${toothNumber}`}
         style={{ top: position.top, left: position.left }}
-        className="fixed z-50 w-64 bg-white border border-edge rounded-md shadow-lg p-3 flex flex-col gap-2"
+        className={styles.notePopover}
       >
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-txt">Diente {toothNumber}</span>
+        <div className={styles.popoverHeader}>
+          <span className={styles.popoverTitle}>Diente {toothNumber}</span>
           <button
             onClick={onClose}
             aria-label="Cerrar nota"
-            className="text-txt-secondary hover:text-txt rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus"
+            className={styles.popoverClose}
           >
             ✕
           </button>
@@ -267,16 +268,15 @@ const NotePopover = React.memo<NotePopoverProps>(({
           rows={4}
           placeholder={editable ? 'Escribe una nota...' : undefined}
           className={cn(
-            'w-full resize-none rounded border border-edge text-sm text-txt p-2 outline-none',
-            'focus-visible:border-edge-focus focus-visible:ring-1 focus-visible:ring-edge-focus',
-            !editable && 'bg-field-readonly cursor-default'
+            styles.noteTextarea,
+            !editable && styles.noteTextareaReadOnly
           )}
         />
         {editable && (
-          <div className="flex justify-end">
+          <div className={styles.popoverActions}>
             <button
               onClick={() => onSave(draft)}
-              className="px-3 py-1 rounded bg-primary text-txt-white text-xs font-medium hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+              className={styles.saveButton}
             >
               Guardar
             </button>
@@ -379,20 +379,20 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
 
   return ReactDOM.createPortal(
     <>
-      <div className="fixed inset-0 z-40" aria-hidden="true" onClick={onClose} />
+      <div className={styles.popoverBackdrop} aria-hidden="true" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
         aria-label={`Imágenes del diente ${toothNumber}`}
         style={{ top: position.top, left: position.left }}
-        className="fixed z-50 w-80 bg-white border border-edge rounded-md shadow-lg p-3 flex flex-col gap-3"
+        className={styles.imagePopover}
       >
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-txt">
+        <div className={styles.popoverHeader}>
+          <span className={styles.popoverTitle}>
             Imágenes — Diente {toothNumber}
             {images.length > 0 && (
-              <span className="ml-1.5 text-xs font-normal text-txt-secondary">
+              <span className={styles.thumbnailCount}>
                 ({images.length})
               </span>
             )}
@@ -401,7 +401,7 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
             ref={closeButtonRef}
             onClick={onClose}
             aria-label="Cerrar imágenes"
-            className="text-txt-secondary hover:text-txt rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus"
+            className={styles.popoverClose}
           >
             ✕
           </button>
@@ -409,44 +409,39 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
 
         {/* Thumbnail gallery */}
         {images.length > 0 && (
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap gap-2" role="list" aria-label="Imágenes adjuntas">
+          <div className={styles.thumbnailGallery}>
+            <div className={styles.thumbnailList} role="list" aria-label="Imágenes adjuntas">
               {images.map((img, idx) => (
                 <div
                   key={idx}
                   role="listitem"
-                  className="relative group flex-shrink-0"
+                  className={cn(styles.thumbnailItem, styles.thumbnailItemGroup)}
                 >
                   <button
                     onClick={() => setSelectedIdx(idx === selectedIdx ? null : idx)}
                     aria-label={`Ver imagen ${idx + 1}: ${IMAGE_TYPE_LABELS[img.type]}`}
                     aria-pressed={selectedIdx === idx}
                     className={cn(
-                      'w-16 h-16 rounded border-2 overflow-hidden block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-edge-focus',
-                      selectedIdx === idx ? 'border-primary' : 'border-edge hover:border-edge-hover'
+                      styles.thumbnailButton,
+                      selectedIdx === idx && styles.thumbnailButtonSelected
                     )}
                   >
                     <img
                       src={img.url}
                       alt={IMAGE_TYPE_LABELS[img.type]}
-                      className="w-full h-full object-cover"
+                      className={styles.thumbnailImg}
                     />
                   </button>
                   {editable && (
                     <button
                       onClick={() => handleDelete(idx)}
                       aria-label={`Eliminar imagen ${idx + 1}`}
-                      className={cn(
-                        'absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-danger text-white',
-                        'text-[9px] leading-none flex items-center justify-center',
-                        'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
-                        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-danger'
-                      )}
+                      className={styles.thumbnailDeleteButton}
                     >
                       ✕
                     </button>
                   )}
-                  <p className="text-[9px] text-txt-secondary text-center mt-0.5 leading-tight">
+                  <p className={styles.thumbnailLabel}>
                     {IMAGE_TYPE_LABELS[img.type]}
                   </p>
                 </div>
@@ -455,13 +450,13 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
 
             {/* Selected image preview */}
             {selectedImage && (
-              <div className="flex flex-col gap-1">
+              <div className={styles.previewPane}>
                 <img
                   src={selectedImage.url}
                   alt={`${IMAGE_TYPE_LABELS[selectedImage.type]} — diente ${toothNumber}`}
-                  className="w-full max-h-44 object-contain rounded border border-edge bg-surface-1"
+                  className={styles.previewImg}
                 />
-                <p className="text-xs text-txt-secondary text-center">
+                <p className={styles.previewLabel}>
                   {IMAGE_TYPE_LABELS[selectedImage.type]}
                 </p>
               </div>
@@ -470,24 +465,21 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
         )}
 
         {images.length === 0 && !adding && (
-          <p className="text-xs text-txt-secondary italic">Sin imágenes adjuntas</p>
+          <p className={styles.emptyImages}>Sin imágenes adjuntas</p>
         )}
 
         {/* Add image form */}
         {editable && adding && (
-          <div className="flex flex-col gap-2 border-t border-edge pt-2">
-            <p className="text-xs font-medium text-txt">Nueva imagen</p>
-            <div className="flex flex-col gap-1">
-              <label htmlFor={addTypeId} className="text-xs text-txt-secondary">Tipo</label>
+          <div className={styles.addForm}>
+            <p className={styles.addFormTitle}>Nueva imagen</p>
+            <div className={styles.addFormField}>
+              <label htmlFor={addTypeId} className={styles.addFormLabel}>Tipo</label>
               <select
                 id={addTypeId}
                 ref={addSelectRef}
                 value={addType}
                 onChange={(e) => setAddType(e.target.value as ToothImageType)}
-                className={cn(
-                  'w-full rounded border border-edge text-sm text-txt p-1.5 outline-none bg-white',
-                  'focus-visible:border-edge-focus focus-visible:ring-1 focus-visible:ring-edge-focus'
-                )}
+                className={styles.addFormSelect}
               >
                 {IMAGE_TYPES.map((t) => (
                   <option key={t} value={t}>
@@ -508,26 +500,20 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
               <img
                 src={addUrl}
                 alt="Vista previa"
-                className="w-full max-h-32 object-contain rounded border border-edge bg-surface-1"
+                className={styles.addFormPreviewImg}
               />
             ) : null}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className={cn(
-                'w-full px-3 py-1.5 rounded border border-edge text-sm text-txt',
-                'hover:bg-surface-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus'
-              )}
+              className={styles.fileButton}
             >
               {addUrl ? 'Cambiar archivo' : 'Seleccionar archivo'}
             </button>
-            <div className="flex gap-2 justify-end">
+            <div className={styles.addFormActions}>
               {images.length > 0 && (
                 <button
                   onClick={handleAddCancel}
-                  className={cn(
-                    'px-3 py-1 rounded border border-edge text-xs text-txt',
-                    'hover:bg-surface-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus'
-                  )}
+                  className={styles.cancelButton}
                 >
                   Cancelar
                 </button>
@@ -535,11 +521,7 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
               <button
                 onClick={handleAddConfirm}
                 disabled={!addUrl}
-                className={cn(
-                  'px-3 py-1 rounded bg-primary text-txt-white text-xs font-medium',
-                  'hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary',
-                  'disabled:opacity-50 disabled:cursor-not-allowed'
-                )}
+                className={styles.confirmButton}
               >
                 Agregar
               </button>
@@ -551,11 +533,7 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
         {editable && !adding && (
           <button
             onClick={() => setAdding(true)}
-            className={cn(
-              'w-full px-3 py-1.5 rounded border border-edge text-sm text-txt-secondary',
-              'hover:bg-surface-1 hover:text-txt focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus',
-              'flex items-center justify-center gap-1.5'
-            )}
+            className={styles.addImageButton}
           >
             <svg
               aria-hidden="true"
@@ -564,7 +542,7 @@ const ImagePopover = React.memo<ImagePopoverProps>(({
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
-              className="w-3 h-3"
+              className={styles.iconPlus}
             >
               <line x1="8" y1="2" x2="8" y2="14" />
               <line x1="2" y1="8" x2="14" y2="8" />
@@ -604,9 +582,9 @@ const ToothSVG = React.memo<ToothSVGProps>(({
   // Any tooth-level condition (not just missing/crown/implant) overrides all surfaces
   const hasToothCondition = data.condition != null;
 
-  const getSurfaceFill = (surface: ToothSurface): string => {
-    if (hasToothCondition) return CONDITION_FILL[data.condition!];
-    return CONDITION_FILL[data.surfaces?.[surface] ?? 'healthy'];
+  const getSurfaceFillClass = (surface: ToothSurface): string => {
+    if (hasToothCondition) return CONDITION_FILL_CLASS[data.condition!];
+    return CONDITION_FILL_CLASS[data.surfaces?.[surface] ?? 'healthy'];
   };
 
   const toothLabel = `Diente ${toothNumber}${isMissing ? ' - Ausente' : ''}: ${TOOTH_NAMES[toothNumber] ?? ''}`;
@@ -618,7 +596,7 @@ const ToothSVG = React.memo<ToothSVGProps>(({
       height={toothSize}
       role="img"
       aria-label={toothLabel}
-      className="block flex-shrink-0"
+      className={styles.toothSvg}
     >
       {SURFACES.map((surface) => {
         const condition = hasToothCondition
@@ -632,9 +610,9 @@ const ToothSVG = React.memo<ToothSVGProps>(({
             key={surface}
             points={points[surface]}
             className={cn(
-              getSurfaceFill(surface),
-              'stroke-gray-400 outline-none',
-              canClick && 'cursor-pointer hover:opacity-70 focus-visible:opacity-70'
+              getSurfaceFillClass(surface),
+              styles.surfaceStroke,
+              canClick && styles.surfaceInteractive
             )}
             strokeWidth="2"
             aria-label={SURFACE_LABELS[surface]}
@@ -809,27 +787,18 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
         <button
           onClick={(e) => handleNoteOpen(toothNumber, e.currentTarget)}
           aria-label={`Nota del diente ${toothNumber}${hasNote ? ' — tiene nota' : ''}`}
-          className={cn(
-            'inline-flex items-center gap-0.5 font-mono leading-none rounded',
-            'text-txt-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus',
-            NUMBER_TEXT_SIZE[size]
-          )}
+          className={cn(styles.numberButton, NUMBER_TEXT_SIZE_CLASS[size])}
         >
           {toothNumber}
           {hasNote && (
             <span
               aria-hidden="true"
-              className="inline-block w-1 h-1 rounded-full bg-primary flex-shrink-0"
+              className={styles.noteDot}
             />
           )}
         </button>
       ) : (
-        <span
-          className={cn(
-            'font-mono leading-none text-txt-secondary',
-            NUMBER_TEXT_SIZE[size]
-          )}
-        >
+        <span className={cn(styles.numberSpan, NUMBER_TEXT_SIZE_CLASS[size])}>
           {toothNumber}
         </span>
       );
@@ -838,10 +807,7 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
         <button
           onClick={(e) => handleImageOpen(toothNumber, e.currentTarget)}
           aria-label={`Imágenes del diente ${toothNumber}${hasImages ? ` — ${imageCount} imagen${imageCount > 1 ? 'es' : ''}` : ''}`}
-          className={cn(
-            'inline-flex items-center gap-0.5 leading-none rounded text-txt-secondary',
-            'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-edge-focus'
-          )}
+          className={styles.imageButton}
         >
           {/* Camera icon */}
           <svg
@@ -852,7 +818,7 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="w-2.5 h-2.5 flex-shrink-0"
+            className={styles.iconCamera}
           >
             <path d="M1 5.5A1.5 1.5 0 0 1 2.5 4h.535l.707-1.414A1 1 0 0 1 4.638 2h6.724a1 1 0 0 1 .896.553L13 4h.5A1.5 1.5 0 0 1 15 5.5v7A1.5 1.5 0 0 1 13.5 14h-11A1.5 1.5 0 0 1 1 12.5v-7Z" />
             <circle cx="8" cy="9" r="2.5" />
@@ -860,26 +826,21 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
           {hasImages && (
             <span
               aria-hidden="true"
-              className="inline-block w-1 h-1 rounded-full bg-info flex-shrink-0"
+              className={styles.imageDot}
             />
           )}
         </button>
       ) : null;
 
       const numberRow = (
-        <div
-          className={cn(
-            'flex items-center gap-0.5',
-            arch === 'upper' ? 'mt-0.5' : 'mb-0.5'
-          )}
-        >
+        <div className={arch === 'upper' ? styles.numberRowUpper : styles.numberRowLower}>
           {noteButton}
           {imageButton}
         </div>
       );
 
       return (
-        <div key={toothNumber} className="flex flex-col items-center">
+        <div key={toothNumber} className={styles.toothCell}>
           {arch === 'lower' && numberRow}
           <ToothSVG
             toothNumber={toothNumber}
@@ -895,23 +856,23 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
     };
 
     const renderArch = (left: number[], right: number[], arch: 'upper' | 'lower') => (
-      <div className="flex flex-row items-center">
-        <div className="flex flex-row gap-0.5">{left.map((n) => renderTooth(n, arch))}</div>
-        <div className="w-px self-stretch bg-gray-300 mx-1.5" aria-hidden="true" />
-        <div className="flex flex-row gap-0.5">{right.map((n) => renderTooth(n, arch))}</div>
+      <div className={styles.arch}>
+        <div className={styles.archSection}>{left.map((n) => renderTooth(n, arch))}</div>
+        <div className={styles.archDivider} aria-hidden="true" />
+        <div className={styles.archSection}>{right.map((n) => renderTooth(n, arch))}</div>
       </div>
     );
 
     return (
-      <div ref={ref} role="group" aria-labelledby={labelId} className={cn('inline-flex flex-col gap-1.5', className)}>
+      <div ref={ref} role="group" aria-labelledby={labelId} className={cn(styles.root, className)}>
         {label && (
-          <span id={labelId} className="text-sm font-medium text-text-primary">
+          <span id={labelId} className={styles.label}>
             {label}
           </span>
         )}
-        <div className="flex flex-col border border-gray-200 rounded-md p-2 bg-white overflow-x-auto">
+        <div className={styles.chart}>
           {renderArch(upperRight, upperLeft, 'upper')}
-          <div className="h-3 border-b border-gray-300 mb-1" aria-hidden="true" />
+          <div className={styles.midline} aria-hidden="true" />
           {renderArch(lowerRight, lowerLeft, 'lower')}
         </div>
         {openNoteTooth !== null && popoverPos !== null && (

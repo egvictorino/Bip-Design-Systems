@@ -472,7 +472,7 @@ describe('Calendar', () => {
       };
       renderCalendar({ view: 'month', events: [cancelledEvent], date: cancelledEvent.start });
       const chip = screen.getByRole('button', { name: /cita cancelada/i });
-      expect(chip.className).toContain('line-through');
+      expect(chip.className).toContain('statusCancelled');
     });
   });
 
@@ -589,15 +589,15 @@ describe('Calendar', () => {
       }).not.toThrow();
     });
 
-    it('cells in range get the highlight class bg-info-subtle', () => {
+    it('cells in range get the highlight class monthCellInRange', () => {
       renderCalendar({ view: 'month', date: BASE_DATE });
       const cells = screen.getAllByRole('gridcell');
       fireEvent.mouseDown(cells[0], { button: 0 });
       fireEvent.mouseEnter(cells[2]);
-      expect(cells[0].className).toContain('bg-info-subtle');
-      expect(cells[1].className).toContain('bg-info-subtle');
-      expect(cells[2].className).toContain('bg-info-subtle');
-      expect(cells[5].className).not.toContain('bg-info-subtle');
+      expect(cells[0].className).toContain('monthCellInRange');
+      expect(cells[1].className).toContain('monthCellInRange');
+      expect(cells[2].className).toContain('monthCellInRange');
+      expect(cells[5].className).not.toContain('monthCellInRange');
     });
 
     it('global mouseup outside grid finalizes range and opens popover', () => {

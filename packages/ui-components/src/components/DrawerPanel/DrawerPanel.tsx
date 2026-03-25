@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
+import styles from './DrawerPanel.module.css';
 
 export interface DrawerPanelProps {
   open: boolean;
@@ -15,9 +16,9 @@ export interface DrawerPanelProps {
 // ─── Static maps ──────────────────────────────────────────────────────────────
 
 const sizeStyles: Record<NonNullable<DrawerPanelProps['size']>, string> = {
-  sm: 'w-80',
-  md: 'w-[480px]',
-  lg: 'w-[640px]',
+  sm: styles.sizeSm,
+  md: styles.sizeMd,
+  lg: styles.sizeLg,
 };
 
 const FOCUSABLE_SELECTORS =
@@ -96,13 +97,13 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
   if (!open) return null;
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-50">
+    <div className={styles.overlay}>
       {/* Backdrop — click to close (hidden from a11y tree; drawer closes via X button and Escape) */}
       <button
         type="button"
         aria-hidden="true"
         tabIndex={-1}
-        className="absolute inset-0 w-full h-full bg-black/50 cursor-default"
+        className={styles.backdrop}
         onClick={onClose}
       />
       {/* Panel */}
@@ -113,30 +114,26 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
         aria-label={title}
         tabIndex={-1}
         className={cn(
-          'absolute top-0 bottom-0 flex flex-col bg-white shadow-xl focus:outline-none',
+          styles.panel,
           sizeStyles[size],
-          placement === 'right' ? 'right-0' : 'left-0',
+          placement === 'right' ? styles.placementRight : styles.placementLeft,
           className
         )}
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between border-b border-edge px-6 py-4 shrink-0">
-            <h2 className="text-lg font-semibold text-txt">{title}</h2>
+          <div className={styles.header}>
+            <h2 className={styles.title}>{title}</h2>
             <button
               type="button"
               onClick={onClose}
               aria-label="Cerrar panel"
-              className={cn(
-                'shrink-0 rounded p-1 text-txt-secondary transition-colors',
-                'hover:bg-surface-3 hover:text-txt',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1'
-              )}
+              className={styles.closeBtn}
             >
               <svg
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                className="w-5 h-5"
+                className={styles.closeBtnIcon}
                 aria-hidden="true"
               >
                 <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
@@ -146,7 +143,7 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
         )}
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
+        <div className={styles.content}>{children}</div>
       </div>
     </div>,
     document.body

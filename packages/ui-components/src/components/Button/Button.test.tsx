@@ -37,41 +37,37 @@ describe('Button', () => {
 
   it('applies primary variant by default', () => {
     render(<Button>Primary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-primary', 'text-txt-white');
+    expect(screen.getByRole('button')).toHaveClass('primary');
   });
 
   it('applies secondary variant with dark text on light background', () => {
     render(<Button variant="secondary">Secondary</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('bg-secondary', 'text-txt-primary');
+    expect(btn).toHaveClass('secondary');
   });
 
   it('applies bare variant', () => {
     render(<Button variant="bare">Bare</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('border', 'border-primary', 'bg-transparent');
+    expect(btn).toHaveClass('bare');
   });
 
   it('applies soul variant', () => {
     render(<Button variant="soul">Soul</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('bg-transparent', 'text-primary');
+    expect(btn).toHaveClass('soul');
   });
 
   // ── Sizes ───────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'text-xs', 'px-[12px]', 'py-[6px]'],
-    ['md', 'text-sm', 'px-[20px]', 'py-[10px]'],
-    ['lg', 'text-lg', 'px-[24px]', 'py-[12px]'],
-  ] as const)('size %s applies correct text and padding classes', (size, text, px, py) => {
+  it.each(['sm', 'md', 'lg'] as const)('size %s applies correct size class', (size) => {
     render(<Button size={size}>Texto</Button>);
-    expect(screen.getByRole('button')).toHaveClass(text, px, py);
+    expect(screen.getByRole('button')).toHaveClass(size);
   });
 
   it('defaults to md size', () => {
     render(<Button>Texto</Button>);
-    expect(screen.getByRole('button')).toHaveClass('text-sm', 'px-[20px]');
+    expect(screen.getByRole('button')).toHaveClass('md');
   });
 
   // ── Disabled state ──────────────────────────────────────────────────────────
@@ -82,16 +78,6 @@ describe('Button', () => {
     render(<Button onClick={onClick} disabled>Disabled</Button>);
     await user.click(screen.getByRole('button'));
     expect(onClick).not.toHaveBeenCalled();
-  });
-
-  it('disabled button has cursor-not-allowed class', () => {
-    render(<Button disabled>Disabled</Button>);
-    expect(screen.getByRole('button')).toHaveClass('disabled:cursor-not-allowed');
-  });
-
-  it('disabled button has opacity-50 class for visual distinction', () => {
-    render(<Button disabled>Disabled</Button>);
-    expect(screen.getByRole('button')).toHaveClass('disabled:opacity-50');
   });
 
   // ── Keyboard interaction ─────────────────────────────────────────────────────
@@ -128,7 +114,7 @@ describe('Button', () => {
     render(<Button className="mt-4">Custom</Button>);
     const button = screen.getByRole('button');
     expect(button).toHaveClass('mt-4');
-    expect(button).toHaveClass('bg-primary');
+    expect(button).toHaveClass('primary');
   });
 
   // ── Danger variant ──────────────────────────────────────────────────────────
@@ -136,7 +122,7 @@ describe('Button', () => {
   it('applies danger variant', () => {
     render(<Button variant="danger">Eliminar</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('bg-danger', 'text-txt-white');
+    expect(btn).toHaveClass('danger');
   });
 
   // ── Loading state ───────────────────────────────────────────────────────────
@@ -182,13 +168,13 @@ describe('Button', () => {
 
   // ── fullWidth ────────────────────────────────────────────────────────────────
 
-  it('fullWidth=true applies w-full class', () => {
+  it('fullWidth=true applies fullWidth class', () => {
     render(<Button fullWidth>Ancho completo</Button>);
-    expect(screen.getByRole('button')).toHaveClass('w-full');
+    expect(screen.getByRole('button')).toHaveClass('fullWidth');
   });
 
-  it('fullWidth=false (default) does not apply w-full', () => {
+  it('fullWidth=false (default) does not apply fullWidth', () => {
     render(<Button>Normal</Button>);
-    expect(screen.getByRole('button')).not.toHaveClass('w-full');
+    expect(screen.getByRole('button')).not.toHaveClass('fullWidth');
   });
 });

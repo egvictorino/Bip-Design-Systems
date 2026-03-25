@@ -51,9 +51,9 @@ describe('Breadcrumb', () => {
     expect(screen.getByText('Detalle del producto').tagName).toBe('SPAN');
   });
 
-  it('last item has truncate class for long labels', () => {
+  it('last item has current class (includes truncation styles)', () => {
     render(<Breadcrumb items={items} />);
-    expect(screen.getByText('Detalle del producto')).toHaveClass('truncate');
+    expect(screen.getByText('Detalle del producto')).toHaveClass('current');
   });
 
   // ── Ancestor items with href ────────────────────────────────────────────────
@@ -64,9 +64,9 @@ describe('Breadcrumb', () => {
     expect(screen.getByRole('link', { name: 'Productos' })).toHaveAttribute('href', '/productos');
   });
 
-  it('non-last items with href have truncate class for long labels', () => {
+  it('non-last items with href have link class (includes truncation styles)', () => {
     render(<Breadcrumb items={items} />);
-    expect(screen.getByRole('link', { name: 'Inicio' })).toHaveClass('truncate');
+    expect(screen.getByRole('link', { name: 'Inicio' })).toHaveClass('link');
   });
 
   it('non-last items do not have aria-current', () => {

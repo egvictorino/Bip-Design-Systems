@@ -2,6 +2,7 @@ import { forwardRef, useId, useRef, useEffect, useCallback, useContext } from 'r
 import type { InputHTMLAttributes, MutableRefObject } from 'react';
 import { cn } from '../../lib/cn';
 import { CheckboxGroupContext } from './CheckboxGroupContext';
+import styles from './Checkbox.module.css';
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   size?: 'sm' | 'md' | 'lg';
@@ -12,29 +13,29 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
   indeterminate?: boolean;
 }
 
-type SizeTokens = { box: string; check: string; label: string; helper: string; indent: string };
+type SizeTokens = { box: string; icon: string; label: string; helper: string; indent: string };
 
-const sizes: Record<NonNullable<CheckboxProps['size']>, SizeTokens> = {
+const sizeClasses: Record<NonNullable<CheckboxProps['size']>, SizeTokens> = {
   sm: {
-    box: 'w-3.5 h-3.5',
-    check: 'w-3.5 h-3.5',
-    label: 'text-xs',
-    helper: 'text-xs',
-    indent: 'ml-[22px]',
+    box:    styles.boxSm,
+    icon:   styles.iconSm,
+    label:  styles.labelSm,
+    helper: styles.helperSm,
+    indent: styles.indentSm,
   },
   md: {
-    box: 'w-4 h-4',
-    check: 'w-4 h-4',
-    label: 'text-sm',
-    helper: 'text-xs',
-    indent: 'ml-6',
+    box:    styles.boxMd,
+    icon:   styles.iconMd,
+    label:  styles.labelMd,
+    helper: styles.helperSm,
+    indent: styles.indentMd,
   },
   lg: {
-    box: 'w-5 h-5',
-    check: 'w-5 h-5',
-    label: 'text-base',
-    helper: 'text-sm',
-    indent: 'ml-7',
+    box:    styles.boxLg,
+    icon:   styles.iconLg,
+    label:  styles.labelLg,
+    helper: styles.helperLg,
+    indent: styles.indentLg,
   },
 };
 
@@ -61,13 +62,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     const size = sizeProp ?? groupCtx?.size ?? 'md';
 
     const generatedId = useId();
-    // Always fall back to generatedId so aria-describedby linkage works
-    // even when no label or explicit id is provided
     const checkboxId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage ? `${checkboxId}-message` : undefined;
+    const sz = sizeClasses[size];
 
-    // Internal ref to set .indeterminate (not an HTML attribute, must be set via JS)
     const internalRef = useRef<HTMLInputElement>(null);
     const mergedRef = useCallback(
       (node: HTMLInputElement | null) => {
@@ -85,31 +84,17 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     }, [indeterminate]);
 
     return (
-      <div className={cn('flex flex-col gap-1', className)}>
-        <div className="group flex items-center gap-2">
+      <div className={cn(styles.wrapper, className)}>
+        <div className={styles.row}>
           {/* Visual checkbox box */}
           <div
             className={cn(
-              'relative flex shrink-0 items-center justify-center rounded-sm border-2 transition-colors',
-              'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
-              sizes[size].box,
-              error
-                ? [
-                    'border-danger hover:border-danger-hover',
-                    'group-has-[:checked]:bg-danger group-has-[:checked]:border-danger',
-                    'group-has-[:indeterminate]:bg-danger group-has-[:indeterminate]:border-danger',
-                    'group-has-[:focus-visible]:ring-danger',
-                  ]
-                : [
-                    'border-primary hover:border-primary-hover',
-                    'group-has-[:checked]:bg-primary group-has-[:checked]:border-primary',
-                    'group-has-[:indeterminate]:bg-primary group-has-[:indeterminate]:border-primary',
-                    'group-has-[:focus-visible]:ring-primary',
-                  ],
-              disabled && 'opacity-50 cursor-not-allowed'
+              styles.box,
+              sz.box,
+              error && styles.boxError,
+              disabled && styles.boxDisabled
             )}
           >
-            {/* Native input overlaying the visual box */}
             <input
               ref={mergedRef}
               id={checkboxId}
@@ -118,16 +103,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               required={required}
               aria-invalid={error || undefined}
               aria-describedby={messageId}
-              className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+              className={styles.nativeInput}
               {...props}
             />
             {/* Checkmark icon — visible when checked, hidden when indeterminate */}
             <svg
-              className={cn(
-                'pointer-events-none text-white transition-opacity',
-                'opacity-0 group-has-[:checked]:opacity-100 group-has-[:indeterminate]:!opacity-0',
-                sizes[size].check
-              )}
+              className={cn(styles.checkIcon, sz.icon)}
               viewBox="0 0 16 16"
               fill="currentColor"
               aria-hidden="true"
@@ -136,11 +117,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             </svg>
             {/* Dash icon — visible only when indeterminate */}
             <svg
-              className={cn(
-                'pointer-events-none text-white transition-opacity',
-                'opacity-0 group-has-[:indeterminate]:opacity-100',
-                sizes[size].check
-              )}
+              className={cn(styles.dashIcon, sz.icon)}
               viewBox="0 0 16 16"
               fill="currentColor"
               aria-hidden="true"
@@ -154,15 +131,15 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             <label
               htmlFor={checkboxId}
               className={cn(
-                'select-none font-medium transition-colors cursor-pointer',
-                sizes[size].label,
-                error ? 'text-danger' : 'text-txt',
-                disabled && 'opacity-50 cursor-not-allowed'
+                styles.label,
+                sz.label,
+                error ? styles.labelError : styles.labelNormal,
+                disabled && styles.labelDisabled
               )}
             >
               {label}
               {required && (
-                <span aria-hidden="true" className="ml-0.5 text-danger">
+                <span aria-hidden="true" className={styles.required}>
                   *
                 </span>
               )}
@@ -174,16 +151,13 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-danger', sizes[size].indent)}
+            className={cn(sz.helper, styles.errorText, sz.indent)}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span
-            id={messageId}
-            className={cn(sizes[size].helper, 'text-txt-secondary', sizes[size].indent)}
-          >
+          <span id={messageId} className={cn(sz.helper, styles.helperText, sz.indent)}>
             {helperText}
           </span>
         ) : null}

@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
+import styles from './Calendar.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -135,11 +136,11 @@ const VIEWS: { value: CalendarView; label: string }[] = [
   { value: 'agenda', label: 'Agenda' },
 ];
 
-const STATUS_STYLES: Record<CalendarEventStatus, string> = {
-  pending: 'bg-warning-light text-warning-text border-l-2 border-warning',
-  confirmed: 'bg-primary text-txt-white border-l-2 border-primary-press',
-  completed: 'bg-success-light text-success-text border-l-2 border-success',
-  cancelled: 'bg-disabled text-txt-disabled border-l-2 border-edge-disabled line-through',
+const STATUS_CLASSES: Record<CalendarEventStatus, string> = {
+  pending: styles.statusPending,
+  confirmed: styles.statusConfirmed,
+  completed: styles.statusCompleted,
+  cancelled: styles.statusCancelled,
 };
 
 const STATUS_LABELS: Record<CalendarEventStatus, string> = {
@@ -192,23 +193,23 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({ view, date, onViewChang
   const handleToday = () => onDateChange(new Date());
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-b border-edge bg-surface-1 flex-shrink-0">
+    <div className={styles.header}>
       {/* Nav */}
-      <div className="flex items-center gap-1">
+      <div className={styles.headerNav}>
         <button
           type="button"
           aria-label="Período anterior"
           onClick={handlePrev}
-          className="p-1.5 rounded hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
+          className={styles.headerNavBtn}
         >
-          <svg aria-hidden="true" className="w-4 h-4 text-txt-secondary" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg aria-hidden="true" className={styles.headerNavIcon} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M10 12L6 8l4-4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
         <button
           type="button"
           onClick={handleToday}
-          className="px-3 py-1 text-sm rounded border border-edge hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-txt transition-colors"
+          className={styles.headerTodayBtn}
         >
           Hoy
         </button>
@@ -216,19 +217,19 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({ view, date, onViewChang
           type="button"
           aria-label="Período siguiente"
           onClick={handleNext}
-          className="p-1.5 rounded hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
+          className={styles.headerNavBtn}
         >
-          <svg aria-hidden="true" className="w-4 h-4 text-txt-secondary" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg aria-hidden="true" className={styles.headerNavIcon} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M6 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>
 
       {/* Title */}
-      <h2 className="text-base font-semibold text-txt capitalize">{title}</h2>
+      <h2 className={styles.headerTitle}>{title}</h2>
 
       {/* View switcher */}
-      <div className="flex items-center gap-1 rounded-md border border-edge overflow-hidden">
+      <div className={styles.viewSwitcher}>
         {VIEWS.map((v) => (
           <button
             key={v.value}
@@ -236,8 +237,8 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({ view, date, onViewChang
             aria-pressed={view === v.value}
             onClick={() => onViewChange(v.value)}
             className={cn(
-              'px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
-              view === v.value ? 'bg-primary text-txt-white' : 'bg-surface-1 text-txt-secondary hover:bg-surface-2'
+              styles.viewBtn,
+              view === v.value ? styles.viewBtnActive : styles.viewBtnInactive
             )}
           >
             {v.label}
@@ -274,17 +275,13 @@ const EventChip = React.memo<EventChipProps>(({ event, resources, onClick, onDra
       onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick(event)}
       aria-label={`${event.title}, ${TIME_FORMATTER.format(event.start)}, ${STATUS_LABELS[event.status]}`}
       style={customStyle}
-      className={cn(
-        'w-full text-left text-xs px-1.5 py-0.5 rounded truncate cursor-pointer mb-0.5',
-        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary',
-        !event.color && STATUS_STYLES[event.status]
-      )}
+      className={cn(styles.eventChip, !event.color && STATUS_CLASSES[event.status])}
     >
-      <span className="font-medium">{TIME_FORMATTER.format(event.start)}</span>{' '}
+      <span className={styles.eventChipTime}>{TIME_FORMATTER.format(event.start)}</span>{' '}
       {event.title}
       {doctor && (
         <span
-          className="ml-1 inline-block w-1.5 h-1.5 rounded-full align-middle"
+          className={styles.eventChipDoctorDot}
           style={{ backgroundColor: doctor.color }}
           aria-hidden="true"
         />
@@ -345,24 +342,20 @@ const EventBlock = React.memo<EventBlockProps>(({
         width: `${widthPct}%`,
         ...customStyle,
       }}
-      className={cn(
-        'rounded px-1.5 py-0.5 overflow-hidden cursor-pointer z-10 select-none',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-        !event.color && STATUS_STYLES[event.status]
-      )}
+      className={cn(styles.eventBlock, !event.color && STATUS_CLASSES[event.status])}
     >
-      <div className="text-xs font-semibold truncate">{event.title}</div>
+      <div className={styles.eventBlockTitle}>{event.title}</div>
       {heightPct > 4 && (
-        <div className="text-xs opacity-80 truncate">
+        <div className={styles.eventBlockMeta}>
           {event.patientName && <span>{event.patientName}</span>}
           {event.patientName && event.treatmentType && <span> · </span>}
           {event.treatmentType && <span>{event.treatmentType}</span>}
         </div>
       )}
       {doctor && heightPct > 6 && (
-        <div className="text-xs opacity-70 truncate flex items-center gap-1">
+        <div className={styles.eventBlockDoctor}>
           <span
-            className="inline-block w-1.5 h-1.5 rounded-full"
+            className={styles.eventBlockDoctorDot}
             style={{ backgroundColor: doctor.color }}
             aria-hidden="true"
           />
@@ -371,7 +364,7 @@ const EventBlock = React.memo<EventBlockProps>(({
       )}
       {/* Resize handle */}
       <div
-        className="absolute bottom-0 inset-x-0 h-2 cursor-s-resize"
+        className={styles.eventBlockResizeHandle}
         onMouseDown={(e) => { e.stopPropagation(); onResizeStart(e, event); }}
         aria-hidden="true"
       />
@@ -406,27 +399,27 @@ const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onCo
 
   return ReactDOM.createPortal(
     <>
-      <div className="fixed inset-0 z-40" aria-hidden="true" onClick={onClose} />
+      <div className={styles.rangeOverlay} aria-hidden="true" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Rango de fechas seleccionado"
         style={{ top: position.top, left: position.left }}
-        className="fixed z-50 w-64 bg-white border border-edge rounded-lg shadow-xl p-3 flex flex-col gap-3"
+        className={styles.rangePopover}
       >
-        <div className="flex items-start justify-between gap-2">
-          <span className="text-sm font-medium text-txt leading-tight">{label}</span>
+        <div className={styles.rangePopoverHeader}>
+          <span className={styles.rangePopoverLabel}>{label}</span>
           <button
             onClick={onClose}
             aria-label="Cerrar"
-            className="shrink-0 p-0.5 rounded hover:bg-surface-2 text-txt-secondary focus-visible:ring-2 focus-visible:ring-primary"
+            className={styles.rangePopoverClose}
           >
             ✕
           </button>
         </div>
         <button
           onClick={onConfirm}
-          className="w-full px-3 py-1.5 rounded-md bg-primary text-txt-white text-sm font-medium hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary"
+          className={styles.rangePopoverConfirm}
         >
           Crear evento
         </button>
@@ -572,11 +565,11 @@ const MonthView: React.FC<MonthViewProps> = ({
   };
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
+    <div className={styles.monthView}>
       {/* Day headers */}
-      <div className="grid grid-cols-7 border-b border-edge bg-surface-2">
+      <div className={styles.monthDayHeaders}>
         {DAY_NAMES.map((d) => (
-          <div key={d} className="py-2 text-center text-xs font-semibold text-txt-secondary">
+          <div key={d} className={styles.monthDayHeader}>
             {d}
           </div>
         ))}
@@ -587,8 +580,7 @@ const MonthView: React.FC<MonthViewProps> = ({
         role="grid"
         aria-label={`Mes ${MONTH_FORMATTER.format(date)}`}
         tabIndex={0}
-        className="grid grid-cols-7 flex-1 overflow-y-auto select-none"
-        style={{ gridTemplateRows: 'repeat(6, minmax(0, 1fr))' }}
+        className={styles.monthGrid}
         onMouseMove={(e) => {
           if (!isSelectingRef.current) return;
           const el = document.elementFromPoint(e.clientX, e.clientY);
@@ -640,18 +632,21 @@ const MonthView: React.FC<MonthViewProps> = ({
               }}
               onKeyDown={handleCellKeyDown}
               className={cn(
-                'min-h-[100px] p-1 border-b border-r border-edge cursor-pointer transition-colors',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
-                !isCurrentMonth && !inRange && 'bg-surface-2 opacity-60',
-                isToday && !inRange && 'bg-selected',
-                inRange ? 'bg-info-subtle ring-1 ring-inset ring-primary' : 'hover:bg-surface-2'
+                styles.monthCell,
+                inRange
+                  ? styles.monthCellInRange
+                  : cn(
+                      styles.monthCellDefault,
+                      !isCurrentMonth && styles.monthCellOtherMonth,
+                      isToday && styles.monthCellToday
+                    )
               )}
             >
-              <div className="flex items-center justify-end mb-1">
+              <div className={styles.monthCellDateRow}>
                 <span
                   className={cn(
-                    'text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full',
-                    isToday ? 'bg-primary text-txt-white' : 'text-txt-secondary'
+                    styles.monthCellDateNum,
+                    isToday ? styles.monthCellDateNumToday : undefined
                   )}
                 >
                   {cellDate.getDate()}
@@ -670,7 +665,7 @@ const MonthView: React.FC<MonthViewProps> = ({
                 {overflow > 0 && (
                   <button
                     type="button"
-                    className="text-xs text-primary hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                    className={styles.monthCellOverflow}
                     onClick={(e) => {
                       e.stopPropagation();
                       onDateChange?.(cellDate);
@@ -844,14 +839,14 @@ const TimeGrid: React.FC<TimeGridProps> = ({
   };
 
   return (
-    <div className="flex flex-1 overflow-hidden">
+    <div className={styles.timeGrid}>
       {/* Time labels */}
-      <div className="w-14 flex-shrink-0 border-r border-edge bg-surface-1 overflow-y-auto">
+      <div className={styles.timeLabels}>
         <div style={{ height: totalHeight, position: 'relative' }}>
           {hourSlots.slice(0, -1).map((m) => (
             <div
               key={m}
-              className="absolute w-full pr-2 text-right text-xs text-txt-disabled"
+              className={styles.timeLabelItem}
               style={{ top: ((m - minMinutes) / rangeMinutes) * totalHeight - 8 }}
             >
               {minutesToTimeStr(m)}
@@ -861,8 +856,8 @@ const TimeGrid: React.FC<TimeGridProps> = ({
       </div>
 
       {/* Columns */}
-      <div className="flex flex-1 overflow-x-auto overflow-y-auto">
-        <div className="flex flex-1 min-w-0">
+      <div className={styles.timeColumnsOuter}>
+        <div className={styles.timeColumnsInner}>
           {columns.map((col) => {
             const colKey = col.day.toISOString() + (col.resource?.id ?? '');
             const colEvents = eventsByColumn.get(colKey) ?? [];
@@ -871,34 +866,34 @@ const TimeGrid: React.FC<TimeGridProps> = ({
             return (
               <div
                 key={colKey}
-                className="flex flex-col flex-1 min-w-[80px] border-r border-edge last:border-r-0"
+                className={styles.timeColumn}
               >
                 {/* Column header */}
                 <div
                   className={cn(
-                    'px-2 py-2 text-center text-xs border-b border-edge bg-surface-2 flex-shrink-0',
-                    isToday && 'bg-selected'
+                    styles.timeColumnHeader,
+                    isToday && styles.timeColumnHeaderToday
                   )}
                 >
-                  <div className={cn('font-semibold', isToday ? 'text-primary' : 'text-txt-secondary')}>
+                  <div className={cn(styles.timeColumnHeaderWeekday, isToday && styles.timeColumnHeaderWeekdayToday)}>
                     {new Intl.DateTimeFormat('es-MX', { weekday: 'short' }).format(col.day).replace('.', '').toUpperCase()}
                   </div>
                   <div
                     className={cn(
-                      'text-sm font-bold mx-auto w-7 h-7 flex items-center justify-center rounded-full',
-                      isToday ? 'bg-primary text-txt-white' : 'text-txt'
+                      styles.timeColumnHeaderDay,
+                      isToday && styles.timeColumnHeaderDayToday
                     )}
                   >
                     {col.day.getDate()}
                   </div>
                   {col.resource && (
-                    <div className="flex items-center justify-center gap-1 mt-1">
+                    <div className={styles.timeColumnResourceRow}>
                       <span
-                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        className={styles.timeColumnResourceDot}
                         style={{ backgroundColor: col.resource.color }}
                         aria-hidden="true"
                       />
-                      <span className="truncate text-txt-secondary">{col.resource.name}</span>
+                      <span className={styles.timeColumnResourceName}>{col.resource.name}</span>
                     </div>
                   )}
                 </div>
@@ -907,7 +902,7 @@ const TimeGrid: React.FC<TimeGridProps> = ({
                 <div
                   data-timegrid-col="true"
                   role="presentation"
-                  className="relative flex-1 cursor-pointer"
+                  className={styles.timeSlots}
                   style={{ height: totalHeight }}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleColDrop(e, col)}
@@ -917,7 +912,7 @@ const TimeGrid: React.FC<TimeGridProps> = ({
                   {hourSlots.slice(0, -1).map((m) => (
                     <div
                       key={m}
-                      className="absolute inset-x-0 border-t border-edge"
+                      className={styles.timeGridLine}
                       style={{ top: ((m - minMinutes) / rangeMinutes) * totalHeight }}
                       aria-hidden="true"
                     />
@@ -1014,13 +1009,19 @@ const DAY_FULL_FORMATTER = new Intl.DateTimeFormat('es-MX', {
   year: 'numeric',
 });
 
-const STATUS_FILTER_CONFIG: { status: CalendarEventStatus; label: string; activeClass: string }[] =
-  [
-    { status: 'pending', label: 'Pendiente', activeClass: 'bg-warning text-txt-white' },
-    { status: 'confirmed', label: 'Confirmada', activeClass: 'bg-primary text-txt-white' },
-    { status: 'completed', label: 'Completada', activeClass: 'bg-success-light text-success-text' },
-    { status: 'cancelled', label: 'Cancelada', activeClass: 'bg-disabled text-txt-disabled' },
-  ];
+const STATUS_FILTER_CONFIG: { status: CalendarEventStatus; label: string }[] = [
+  { status: 'pending', label: 'Pendiente' },
+  { status: 'confirmed', label: 'Confirmada' },
+  { status: 'completed', label: 'Completada' },
+  { status: 'cancelled', label: 'Cancelada' },
+];
+
+const AGENDA_FILTER_ACTIVE_CLASSES: Record<CalendarEventStatus, string> = {
+  pending: styles.agendaFilterActivePending,
+  confirmed: styles.agendaFilterActiveConfirmed,
+  completed: styles.agendaFilterActiveCompleted,
+  cancelled: styles.agendaFilterActiveCancelled,
+};
 
 const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEventClick }) => {
   const [activeStatuses, setActiveStatuses] = useState<Set<CalendarEventStatus>>(
@@ -1065,21 +1066,20 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
   }, [events, date, activeStatuses]);
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
+    <div className={styles.agendaView}>
       {/* Filter chips */}
-      <div className="flex flex-wrap gap-2 px-4 py-3 border-b border-edge shrink-0">
-        {STATUS_FILTER_CONFIG.map(({ status, label, activeClass }) => (
+      <div className={styles.agendaFilters}>
+        {STATUS_FILTER_CONFIG.map(({ status, label }) => (
           <button
             key={status}
             role="checkbox"
             aria-checked={activeStatuses.has(status)}
             onClick={() => toggleStatus(status)}
             className={cn(
-              'text-xs px-3 py-1 rounded-full font-medium transition-colors',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+              styles.agendaFilterBtn,
               activeStatuses.has(status)
-                ? activeClass
-                : 'bg-surface-2 text-txt-secondary hover:bg-surface-3'
+                ? AGENDA_FILTER_ACTIVE_CLASSES[status]
+                : styles.agendaFilterBtnInactive
             )}
           >
             {label}
@@ -1089,10 +1089,10 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
 
       {/* Content */}
       {groups.length === 0 ? (
-        <div className="flex flex-col items-center justify-center flex-1 py-16 text-txt-secondary">
+        <div className={styles.agendaEmpty}>
           <svg
             aria-hidden="true"
-            className="w-12 h-12 mb-4 opacity-40"
+            className={styles.agendaEmptyIcon}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -1101,35 +1101,35 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
             <rect x="3" y="4" width="18" height="18" rx="2" />
             <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round" />
           </svg>
-          <p className="text-sm font-medium">
+          <p className={styles.agendaEmptyText}>
             {hasEventsInRange
               ? 'No hay eventos con los filtros seleccionados'
               : 'No hay eventos en los próximos 30 días'}
           </p>
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+        <div className={styles.agendaList}>
           {groups.map(({ date: groupDate, events: groupEvents }) => {
             const isToday = isSameDay(groupDate, today);
             return (
-              <div key={groupDate.toISOString()}>
+              <div key={groupDate.toISOString()} className={styles.agendaGroup}>
                 {/* Sticky day header */}
-                <div className="sticky top-0 z-10 bg-surface-1 -mx-4 px-4 py-1 mb-2">
+                <div className={styles.agendaDayHeader}>
                   <h3
                     className={cn(
-                      'text-sm font-semibold capitalize flex items-center gap-2',
-                      isToday ? 'text-primary' : 'text-txt-secondary'
+                      styles.agendaDayTitle,
+                      isToday && styles.agendaDayTitleToday
                     )}
                   >
                     {DAY_FULL_FORMATTER.format(groupDate)}
                     {isToday && (
-                      <span className="text-xs bg-primary text-txt-white px-1.5 py-0.5 rounded-full font-normal normal-case">
+                      <span className={styles.agendaTodayBadge}>
                         Hoy
                       </span>
                     )}
                   </h3>
                 </div>
-                <div className="space-y-2">
+                <div className={styles.agendaEvents}>
                   {groupEvents.map((ev) => {
                     const doctor = resources?.find((r) => r.id === ev.doctorId);
                     return (
@@ -1141,23 +1141,21 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
                         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onEventClick(ev)}
                         aria-label={`${ev.title}, ${TIME_FORMATTER.format(ev.start)}, ${STATUS_LABELS[ev.status]}`}
                         className={cn(
-                          'flex items-start gap-3 p-3 rounded-lg border cursor-pointer',
-                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                          'hover:bg-surface-2 transition-colors',
-                          ev.status === 'cancelled' && 'opacity-60'
+                          styles.agendaEventCard,
+                          ev.status === 'cancelled' && styles.agendaEventCardCancelled
                         )}
                       >
                         {/* Time */}
-                        <div className="flex-shrink-0 text-sm font-semibold text-txt-secondary w-20">
+                        <div className={styles.agendaEventTime}>
                           {TIME_FORMATTER.format(ev.start)}
-                          <div className="text-xs font-normal text-txt-disabled">
+                          <div className={styles.agendaEventTimeEnd}>
                             {TIME_FORMATTER.format(ev.end)}
                           </div>
                         </div>
 
                         {/* Color bar */}
                         <div
-                          className="w-1 self-stretch rounded-full flex-shrink-0"
+                          className={styles.agendaEventColorBar}
                           style={{
                             backgroundColor:
                               ev.color ??
@@ -1173,42 +1171,39 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
                         />
 
                         {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-sm text-txt truncate">{ev.title}</div>
+                        <div className={styles.agendaEventContent}>
+                          <div className={styles.agendaEventTitle}>{ev.title}</div>
                           {ev.patientName && (
-                            <div className="text-xs text-txt-secondary truncate">
+                            <div className={styles.agendaEventSubtext}>
                               {ev.patientName}
                             </div>
                           )}
                           {ev.treatmentType && (
-                            <div className="text-xs text-txt-secondary truncate">
+                            <div className={styles.agendaEventSubtext}>
                               {ev.treatmentType}
                             </div>
                           )}
                           {ev.notes && (
-                            <div className="text-xs text-txt-secondary mt-1 line-clamp-2 italic">
+                            <div className={styles.agendaEventNotes}>
                               {ev.notes}
                             </div>
                           )}
                         </div>
 
                         {/* Doctor + Status */}
-                        <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                          <span
-                            className={cn(
-                              'text-xs px-1.5 py-0.5 rounded-full font-medium',
-                              ev.status === 'pending' && 'bg-warning-light text-warning-text',
-                              ev.status === 'confirmed' && 'bg-primary text-txt-white',
-                              ev.status === 'completed' && 'bg-success-light text-success-text',
-                              ev.status === 'cancelled' && 'bg-disabled text-txt-disabled'
-                            )}
-                          >
+                        <div className={styles.agendaEventMeta}>
+                          <span className={cn(styles.agendaStatusBadge, {
+                            [styles.agendaStatusPending]: ev.status === 'pending',
+                            [styles.agendaStatusConfirmed]: ev.status === 'confirmed',
+                            [styles.agendaStatusCompleted]: ev.status === 'completed',
+                            [styles.agendaStatusCancelled]: ev.status === 'cancelled',
+                          })}>
                             {STATUS_LABELS[ev.status]}
                           </span>
                           {doctor && (
-                            <div className="flex items-center gap-1 text-xs text-txt-secondary">
+                            <div className={styles.agendaDoctorRow}>
                               <span
-                                className="w-1.5 h-1.5 rounded-full"
+                                className={styles.agendaDoctorDot}
                                 style={{ backgroundColor: doctor.color }}
                                 aria-hidden="true"
                               />
@@ -1294,7 +1289,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
         ref={ref}
         role="application"
         aria-label="Calendario"
-        className={cn('flex flex-col bg-surface-1 border border-edge rounded-lg overflow-hidden', className)}
+        className={cn(styles.calendar, className)}
       >
         <CalendarHeader
           view={view}

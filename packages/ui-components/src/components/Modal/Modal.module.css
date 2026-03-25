@@ -1,0 +1,90 @@
+/* ─── Backdrop ───────────────────────────────────────────────────────────────── */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Dialog ─────────────────────────────────────────────────────────────────── */
+
+.dialog {
+  position: relative;
+  width: 100%;
+  border-radius: 0.5rem;
+  background-color: white;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.dialog:focus { outline: none; }
+
+/* ─── Sizes ──────────────────────────────────────────────────────────────────── */
+
+.sm { max-width: 24rem; }
+.md { max-width: 28rem; }
+.lg { max-width: 32rem; }
+.xl { max-width: 36rem; }
+
+/* ─── Header ─────────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-edge);
+  padding: 1rem 1.5rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-txt);
+  margin: 0;
+}
+
+.closeBtn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  color: var(--color-txt-secondary);
+  transition: background-color 150ms, color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background-color: var(--color-surface-3);
+  color: var(--color-txt);
+}
+
+.closeBtn:focus { outline: none; }
+
+.closeBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.closeBtnIcon { width: 1.25rem; height: 1.25rem; }
+
+/* ─── Body ───────────────────────────────────────────────────────────────────── */
+
+.body { padding: 1.25rem 1.5rem; }
+
+/* ─── Footer ─────────────────────────────────────────────────────────────────── */
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid var(--color-edge);
+  padding: 1rem 1.5rem;
+}

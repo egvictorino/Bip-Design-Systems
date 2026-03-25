@@ -24,30 +24,26 @@ describe('Card', () => {
     expect(screen.getByRole('region', { name: 'Resumen de pedido' })).toBeInTheDocument();
   });
 
-  it('always has overflow-hidden base class', () => {
+  it('always has card base class', () => {
     const { container } = render(<Card>Contenido</Card>);
-    expect(container.firstChild).toHaveClass('overflow-hidden');
+    expect(container.firstChild).toHaveClass('card');
   });
 
   it('accepts a custom className without losing base classes', () => {
     const { container } = render(<Card className="mt-6">Contenido</Card>);
-    expect(container.firstChild).toHaveClass('mt-6', 'overflow-hidden');
+    expect(container.firstChild).toHaveClass('mt-6', 'card');
   });
 
   // ── Variants ───────────────────────────────────────────────────────────────
 
   it('defaults to elevated variant', () => {
     const { container } = render(<Card>Contenido</Card>);
-    expect(container.firstChild).toHaveClass('shadow-md', 'bg-white');
+    expect(container.firstChild).toHaveClass('elevated');
   });
 
-  it.each([
-    ['elevated', 'shadow-md'],
-    ['outlined', 'border'],
-    ['flat', 'bg-surface-3'],
-  ] as const)('variant %s applies correct class', (variant, cls) => {
+  it.each(['elevated', 'outlined', 'flat'] as const)('variant %s applies correct class', (variant) => {
     const { container } = render(<Card variant={variant}>Contenido</Card>);
-    expect(container.firstChild).toHaveClass(cls);
+    expect(container.firstChild).toHaveClass(variant);
   });
 
   // ── Padding ────────────────────────────────────────────────────────────────
@@ -55,15 +51,15 @@ describe('Card', () => {
   it('defaults to padding none (no padding class)', () => {
     const { container } = render(<Card>Contenido</Card>);
     const el = container.firstChild as HTMLElement;
-    expect(el).not.toHaveClass('p-3');
-    expect(el).not.toHaveClass('p-5');
-    expect(el).not.toHaveClass('p-7');
+    expect(el).not.toHaveClass('paddingSm');
+    expect(el).not.toHaveClass('paddingMd');
+    expect(el).not.toHaveClass('paddingLg');
   });
 
   it.each([
-    ['sm', 'p-3'],
-    ['md', 'p-5'],
-    ['lg', 'p-7'],
+    ['sm', 'paddingSm'],
+    ['md', 'paddingMd'],
+    ['lg', 'paddingLg'],
   ] as const)('padding %s applies correct class', (padding, cls) => {
     const { container } = render(<Card padding={padding}>Contenido</Card>);
     expect(container.firstChild).toHaveClass(cls);
@@ -71,17 +67,17 @@ describe('Card', () => {
 
   // ── Radius ─────────────────────────────────────────────────────────────────
 
-  it('defaults to rounded-lg', () => {
+  it('defaults to radiusLg', () => {
     const { container } = render(<Card>Contenido</Card>);
-    expect(container.firstChild).toHaveClass('rounded-lg');
+    expect(container.firstChild).toHaveClass('radiusLg');
   });
 
   it.each([
-    ['none', 'rounded-none'],
-    ['sm', 'rounded-sm'],
-    ['md', 'rounded-md'],
-    ['lg', 'rounded-lg'],
-    ['xl', 'rounded-xl'],
+    ['none', 'radiusNone'],
+    ['sm', 'radiusSm'],
+    ['md', 'radiusMd'],
+    ['lg', 'radiusLg'],
+    ['xl', 'radiusXl'],
   ] as const)('radius %s applies correct class', (radius, cls) => {
     const { container } = render(<Card radius={radius}>Contenido</Card>);
     expect(container.firstChild).toHaveClass(cls);
@@ -89,14 +85,14 @@ describe('Card', () => {
 
   // ── fullWidth ──────────────────────────────────────────────────────────────
 
-  it('does not apply w-full by default', () => {
+  it('does not apply fullWidth by default', () => {
     const { container } = render(<Card>Contenido</Card>);
-    expect(container.firstChild).not.toHaveClass('w-full');
+    expect(container.firstChild).not.toHaveClass('fullWidth');
   });
 
-  it('fullWidth=true applies w-full', () => {
+  it('fullWidth=true applies fullWidth class', () => {
     const { container } = render(<Card fullWidth>Contenido</Card>);
-    expect(container.firstChild).toHaveClass('w-full');
+    expect(container.firstChild).toHaveClass('fullWidth');
   });
 
   // ── Loading ────────────────────────────────────────────────────────────────
@@ -129,9 +125,9 @@ describe('Card', () => {
     expect(container.firstChild).toHaveAttribute('tabindex', '0');
   });
 
-  it('clickable=true adds cursor-pointer class', () => {
+  it('clickable=true adds clickable class', () => {
     const { container } = render(<Card clickable>Contenido</Card>);
-    expect(container.firstChild).toHaveClass('cursor-pointer');
+    expect(container.firstChild).toHaveClass('clickable');
   });
 
   it('clickable=true adds role="button" when no role provided', () => {
@@ -193,22 +189,22 @@ describe('Card', () => {
 
   // ── CardHeader ─────────────────────────────────────────────────────────────
 
-  it('CardHeader has bottom border', () => {
+  it('CardHeader has cardHeader class', () => {
     render(
       <Card>
         <CardHeader data-testid="header">Título</CardHeader>
       </Card>
     );
-    expect(screen.getByTestId('header')).toHaveClass('border-b');
+    expect(screen.getByTestId('header')).toHaveClass('cardHeader');
   });
 
-  it('CardHeader applies horizontal and vertical padding', () => {
+  it('CardHeader applies padding via cardHeader class', () => {
     render(
       <Card>
         <CardHeader data-testid="header">Título</CardHeader>
       </Card>
     );
-    expect(screen.getByTestId('header')).toHaveClass('px-5', 'py-4');
+    expect(screen.getByTestId('header')).toHaveClass('cardHeader');
   });
 
   it('CardHeader accepts custom className', () => {
@@ -219,18 +215,18 @@ describe('Card', () => {
         </CardHeader>
       </Card>
     );
-    expect(screen.getByTestId('header')).toHaveClass('bg-red-50', 'border-b');
+    expect(screen.getByTestId('header')).toHaveClass('bg-red-50', 'cardHeader');
   });
 
   // ── CardBody ───────────────────────────────────────────────────────────────
 
-  it('CardBody applies p-5 padding', () => {
+  it('CardBody applies cardBody class', () => {
     render(
       <Card>
         <CardBody data-testid="body">Contenido</CardBody>
       </Card>
     );
-    expect(screen.getByTestId('body')).toHaveClass('p-5');
+    expect(screen.getByTestId('body')).toHaveClass('cardBody');
   });
 
   it('CardBody accepts custom className', () => {
@@ -241,27 +237,27 @@ describe('Card', () => {
         </CardBody>
       </Card>
     );
-    expect(screen.getByTestId('body')).toHaveClass('text-sm', 'p-5');
+    expect(screen.getByTestId('body')).toHaveClass('text-sm', 'cardBody');
   });
 
   // ── CardFooter ─────────────────────────────────────────────────────────────
 
-  it('CardFooter has top border', () => {
+  it('CardFooter has cardFooter class', () => {
     render(
       <Card>
         <CardFooter data-testid="footer">Acciones</CardFooter>
       </Card>
     );
-    expect(screen.getByTestId('footer')).toHaveClass('border-t');
+    expect(screen.getByTestId('footer')).toHaveClass('cardFooter');
   });
 
-  it('CardFooter applies horizontal and vertical padding', () => {
+  it('CardFooter applies padding via cardFooter class', () => {
     render(
       <Card>
         <CardFooter data-testid="footer">Acciones</CardFooter>
       </Card>
     );
-    expect(screen.getByTestId('footer')).toHaveClass('px-5', 'py-4');
+    expect(screen.getByTestId('footer')).toHaveClass('cardFooter');
   });
 
   it('CardFooter accepts custom className', () => {
@@ -272,7 +268,7 @@ describe('Card', () => {
         </CardFooter>
       </Card>
     );
-    expect(screen.getByTestId('footer')).toHaveClass('justify-end', 'border-t');
+    expect(screen.getByTestId('footer')).toHaveClass('justify-end', 'cardFooter');
   });
 
   // ── CardMedia ──────────────────────────────────────────────────────────────
@@ -282,16 +278,16 @@ describe('Card', () => {
     expect(screen.getByAltText('Foto de producto')).toBeInTheDocument();
   });
 
-  it('CardMedia applies aspect-video by default', () => {
+  it('CardMedia applies aspectVideo class by default', () => {
     const { container } = render(
       <CardMedia src="https://example.com/img.jpg" alt="Imagen" />
     );
-    expect(container.firstChild).toHaveClass('aspect-video');
+    expect(container.firstChild).toHaveClass('aspectVideo');
   });
 
   it.each([
-    ['video', 'aspect-video'],
-    ['square', 'aspect-square'],
+    ['video', 'aspectVideo'],
+    ['square', 'aspectSquare'],
   ] as const)('CardMedia aspectRatio %s applies correct class', (ratio, cls) => {
     const { container } = render(
       <CardMedia src="https://example.com/img.jpg" alt="Imagen" aspectRatio={ratio} />
@@ -299,13 +295,11 @@ describe('Card', () => {
     expect(container.firstChild).toHaveClass(cls);
   });
 
-  it('CardMedia wide applies aspect-[21/9] via inline class', () => {
+  it('CardMedia wide applies aspectWide class', () => {
     const { container } = render(
       <CardMedia src="https://example.com/img.jpg" alt="Imagen" aspectRatio="wide" />
     );
-    // aspect-[21/9] is an arbitrary Tailwind class — check the class is present in the string
-    const el = container.firstChild as HTMLElement;
-    expect(el.className).toContain('aspect-[21/9]');
+    expect(container.firstChild).toHaveClass('aspectWide');
   });
 
   it('CardMedia accepts custom className', () => {

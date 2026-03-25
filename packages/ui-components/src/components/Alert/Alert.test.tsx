@@ -80,10 +80,10 @@ describe('Alert', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('close button uses focus-visible ring (not focus:ring) for keyboard-only focus indicator', () => {
+  it('close button has closeBtn class for focus-visible styling', () => {
     render(<Alert onClose={() => {}}>Mensaje</Alert>);
     const button = screen.getByRole('button', { name: 'Cerrar alerta' });
-    expect(button.className).toMatch(/focus-visible:ring-2/);
+    expect(button).toHaveClass('closeBtn');
   });
 
   // ── All variants render ───────────────────────────────────────────────────

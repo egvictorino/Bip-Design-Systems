@@ -206,21 +206,18 @@ describe('DatePicker', () => {
 
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'text-xs'],
-    ['md', 'text-sm'],
-    ['lg', 'text-lg'],
-  ] as const)('size %s applies correct text class', (size, textClass) => {
+  it.each(['sm', 'md', 'lg'] as const)('size %s applies correct size class to trigger', (size) => {
     render(<DatePicker size={size} />);
-    expect(screen.getByRole('button')).toHaveClass(textClass);
+    const sizeClass = `trigger${size.charAt(0).toUpperCase() + size.slice(1)}`;
+    expect(screen.getByRole('button')).toHaveClass(sizeClass);
   });
 
   // ── fullWidth ──────────────────────────────────────────────────────────────
 
-  it('fullWidth applies w-full to container and trigger', () => {
+  it('fullWidth applies containerFullWidth to container and triggerWrapperFullWidth to wrapper', () => {
     const { container } = render(<DatePicker fullWidth />);
-    expect(container.firstChild).toHaveClass('w-full');
-    expect(screen.getByRole('button')).toHaveClass('w-full');
+    expect(container.firstChild).toHaveClass('containerFullWidth');
+    expect(screen.getByRole('button').parentElement).toHaveClass('triggerWrapperFullWidth');
   });
 
   // ── Botón "Hoy" ───────────────────────────────────────────────────────────
