@@ -11,6 +11,7 @@ const meta = {
     value: { control: false },
     min: { control: false },
     max: { control: false },
+    disabledDates: { control: false },
     onChange: { control: false },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
   },
@@ -24,10 +25,10 @@ type Story = StoryObj<typeof meta>;
 const ControlledDatePicker = (props: Omit<React.ComponentProps<typeof DatePicker>, 'onChange'>) => {
   const [value, setValue] = useState<Date | null>(props.value ?? null);
   return (
-    <div className="min-w-[240px]">
+    <div style={{ minWidth: 240 }}>
       <DatePicker {...props} value={value} onChange={setValue} />
       {value && (
-        <p className="mt-2 text-xs text-text-secondary">
+        <p style={{ marginTop: 8, fontSize: '0.75rem', color: 'var(--color-txt-secondary)' }}>
           Seleccionado: {value.toLocaleDateString('es-MX')}
         </p>
       )}
@@ -107,8 +108,63 @@ export const SizeLg: Story = {
 export const FullWidth: Story = {
   parameters: { layout: 'padded' },
   render: () => (
-    <div className="w-full max-w-sm">
+    <div style={{ width: '100%', maxWidth: 384 }}>
       <ControlledDatePicker label="Fecha de ingreso" fullWidth placeholder="DD/MM/AAAA" />
     </div>
+  ),
+};
+
+// ─── Nuevas stories (mejoras) ─────────────────────────────────────────────────
+
+/** Muestra el botón X para limpiar la fecha seleccionada */
+export const WithClearButton: Story = {
+  render: () => (
+    <ControlledDatePicker
+      label="Fecha de nacimiento"
+      helperText="Selecciona una fecha y luego usa el botón X para limpiarla"
+      value={new Date(2026, 2, 15)}
+    />
+  ),
+};
+
+/** Fechas específicas deshabilitadas (fines de semana de marzo 2026) */
+export const WithDisabledDates: Story = {
+  render: () => {
+    const weekends: Date[] = [];
+    for (let d = 1; d <= 31; d++) {
+      const date = new Date(2026, 2, d);
+      const day = date.getDay();
+      if (day === 0 || day === 6) weekends.push(date);
+    }
+    return (
+      <ControlledDatePicker
+        label="Día hábil"
+        helperText="Los fines de semana están deshabilitados"
+        disabledDates={weekends}
+        value={new Date(2026, 2, 16)} // lunes
+      />
+    );
+  },
+};
+
+/** Selector rápido de mes/año — clic en el encabezado del mes */
+export const MonthYearPicker: Story = {
+  render: () => (
+    <ControlledDatePicker
+      label="Fecha"
+      helperText="Haz clic en el encabezado del mes para navegar rápido"
+      value={new Date(2026, 2, 15)}
+    />
+  ),
+};
+
+/** Navegación con teclado — flechas, Enter, Home/End, PageUp/Down */
+export const KeyboardNavigation: Story = {
+  render: () => (
+    <ControlledDatePicker
+      label="Fecha"
+      helperText="Abre el calendario y navega con ↑ ↓ ← → · Enter selecciona · Esc cierra"
+      value={new Date(2026, 2, 15)}
+    />
   ),
 };

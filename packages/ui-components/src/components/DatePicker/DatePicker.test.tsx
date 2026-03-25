@@ -5,6 +5,9 @@ import { DatePicker } from './DatePicker';
 
 const MARCH_15_2026 = new Date(2026, 2, 15);
 
+/** Returns the trigger button via aria-haspopup (works regardless of other buttons present) */
+const getTrigger = () => document.querySelector('[aria-haspopup="dialog"]') as HTMLElement;
+
 describe('DatePicker', () => {
   // ── Rendering & ref ────────────────────────────────────────────────────────
 
@@ -38,7 +41,7 @@ describe('DatePicker', () => {
 
   it('label is linked to trigger via htmlFor/id', () => {
     render(<DatePicker label="Fecha" />);
-    const btn = screen.getByRole('button');
+    const btn = getTrigger();
     const label = screen.getByText('Fecha');
     expect(label.tagName).toBe('LABEL');
     expect(label).toHaveAttribute('for', btn.id);
@@ -58,7 +61,7 @@ describe('DatePicker', () => {
 
   it('displays the day number when value is provided', () => {
     render(<DatePicker value={MARCH_15_2026} />);
-    expect(screen.getByRole('button').textContent).toContain('15');
+    expect(getTrigger().textContent).toContain('15');
   });
 
   // ── Calendar open / close ──────────────────────────────────────────────────
@@ -82,8 +85,7 @@ describe('DatePicker', () => {
   it('trigger has aria-expanded=true when open', () => {
     render(<DatePicker />);
     fireEvent.click(screen.getByRole('button'));
-    const trigger = document.querySelector('[aria-haspopup="dialog"]') as HTMLElement;
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(getTrigger()).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('closes calendar on Escape key', () => {
@@ -111,14 +113,14 @@ describe('DatePicker', () => {
 
   it('navigates to next month when "Mes siguiente" is clicked', () => {
     render(<DatePicker value={MARCH_15_2026} />);
-    fireEvent.click(screen.getByRole('button')); // open trigger
+    fireEvent.click(getTrigger());
     fireEvent.click(screen.getByRole('button', { name: 'Mes siguiente' }));
     expect(screen.getByText('Abril 2026')).toBeInTheDocument();
   });
 
   it('navigates to prev month when "Mes anterior" is clicked', () => {
     render(<DatePicker value={MARCH_15_2026} />);
-    fireEvent.click(screen.getByRole('button')); // open trigger
+    fireEvent.click(getTrigger());
     fireEvent.click(screen.getByRole('button', { name: 'Mes anterior' }));
     expect(screen.getByText('Febrero 2026')).toBeInTheDocument();
   });
@@ -128,7 +130,7 @@ describe('DatePicker', () => {
   it('calls onChange when a day is selected', () => {
     const onChange = vi.fn();
     render(<DatePicker value={MARCH_15_2026} onChange={onChange} />);
-    fireEvent.click(screen.getByRole('button')); // open trigger
+    fireEvent.click(getTrigger());
     const buttons = screen.getAllByRole('button');
     const day20 = buttons.find((b) => b.textContent?.trim() === '20');
     fireEvent.click(day20!);
@@ -140,7 +142,7 @@ describe('DatePicker', () => {
 
   it('closes calendar after selecting a day', () => {
     render(<DatePicker value={MARCH_15_2026} />);
-    fireEvent.click(screen.getByRole('button')); // open
+    fireEvent.click(getTrigger());
     const buttons = screen.getAllByRole('button');
     const day10 = buttons.find((b) => b.textContent?.trim() === '10');
     fireEvent.click(day10!);
@@ -158,14 +160,14 @@ describe('DatePicker', () => {
   it('"Mes anterior" is disabled when viewing the min month', () => {
     const min = new Date(2026, 2, 1); // March 2026 minimum
     render(<DatePicker value={MARCH_15_2026} min={min} />);
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(getTrigger());
     expect(screen.getByRole('button', { name: 'Mes anterior' })).toBeDisabled();
   });
 
   it('"Mes siguiente" is disabled when viewing the max month', () => {
     const max = new Date(2026, 2, 31); // March 2026 maximum
     render(<DatePicker value={MARCH_15_2026} max={max} />);
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(getTrigger());
     expect(screen.getByRole('button', { name: 'Mes siguiente' })).toBeDisabled();
   });
 
@@ -185,7 +187,7 @@ describe('DatePicker', () => {
 
   it('links trigger to errorMessage via aria-describedby', () => {
     render(<DatePicker error errorMessage="Error" />);
-    const btn = screen.getByRole('button');
+    const btn = getTrigger();
     const alert = screen.getByRole('alert');
     expect(btn).toHaveAttribute('aria-describedby', alert.id);
   });
@@ -199,7 +201,7 @@ describe('DatePicker', () => {
 
   it('links trigger to helperText via aria-describedby', () => {
     render(<DatePicker helperText="Ayuda" />);
-    const btn = screen.getByRole('button');
+    const btn = getTrigger();
     const helper = screen.getByText('Ayuda');
     expect(btn).toHaveAttribute('aria-describedby', helper.id);
   });
@@ -209,7 +211,7 @@ describe('DatePicker', () => {
   it.each(['sm', 'md', 'lg'] as const)('size %s applies correct size class to trigger', (size) => {
     render(<DatePicker size={size} />);
     const sizeClass = `trigger${size.charAt(0).toUpperCase() + size.slice(1)}`;
-    expect(screen.getByRole('button')).toHaveClass(sizeClass);
+    expect(getTrigger()).toHaveClass(sizeClass);
   });
 
   // ── fullWidth ──────────────────────────────────────────────────────────────
@@ -217,7 +219,7 @@ describe('DatePicker', () => {
   it('fullWidth applies containerFullWidth to container and triggerWrapperFullWidth to wrapper', () => {
     const { container } = render(<DatePicker fullWidth />);
     expect(container.firstChild).toHaveClass('containerFullWidth');
-    expect(screen.getByRole('button').parentElement).toHaveClass('triggerWrapperFullWidth');
+    expect(getTrigger().parentElement).toHaveClass('triggerWrapperFullWidth');
   });
 
   // ── Botón "Hoy" ───────────────────────────────────────────────────────────
@@ -248,5 +250,184 @@ describe('DatePicker', () => {
     render(<DatePicker min={min} />);
     fireEvent.click(screen.getByRole('button'));
     expect(screen.getByRole('button', { name: 'Hoy' })).toBeDisabled();
+  });
+
+  // ── Botón limpiar (clear button) ───────────────────────────────────────────
+
+  it('renders clear button when value is provided', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    expect(screen.getByRole('button', { name: 'Limpiar fecha' })).toBeInTheDocument();
+  });
+
+  it('does not render clear button when value is null', () => {
+    render(<DatePicker />);
+    expect(screen.queryByRole('button', { name: 'Limpiar fecha' })).not.toBeInTheDocument();
+  });
+
+  it('does not render clear button when disabled prop is true', () => {
+    render(<DatePicker value={MARCH_15_2026} disabled />);
+    expect(screen.queryByRole('button', { name: 'Limpiar fecha' })).not.toBeInTheDocument();
+  });
+
+  it('clicking clear button calls onChange with null', () => {
+    const onChange = vi.fn();
+    render(<DatePicker value={MARCH_15_2026} onChange={onChange} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Limpiar fecha' }));
+    expect(onChange).toHaveBeenCalledOnce();
+    expect(onChange.mock.calls[0][0]).toBeNull();
+  });
+
+  it('clicking clear button does not open the calendar', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Limpiar fecha' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  // ── disabledDates ──────────────────────────────────────────────────────────
+
+  it('disabledDates disables specific individual dates', () => {
+    const disabledDates = [new Date(2026, 2, 10), new Date(2026, 2, 20)];
+    render(<DatePicker value={MARCH_15_2026} disabledDates={disabledDates} />);
+    fireEvent.click(getTrigger());
+    const btn10 = document.querySelector('[data-date="2026-2-10"]') as HTMLButtonElement;
+    const btn20 = document.querySelector('[data-date="2026-2-20"]') as HTMLButtonElement;
+    expect(btn10).toBeDisabled();
+    expect(btn20).toBeDisabled();
+  });
+
+  it('disabledDates does not disable dates not in the list', () => {
+    const disabledDates = [new Date(2026, 2, 10)];
+    render(<DatePicker value={MARCH_15_2026} disabledDates={disabledDates} />);
+    fireEvent.click(getTrigger());
+    const btn15 = document.querySelector('[data-date="2026-2-15"]') as HTMLButtonElement;
+    expect(btn15).not.toBeDisabled();
+  });
+
+  it('disabledDates disables "Hoy" button when today is in the list', () => {
+    const today = new Date();
+    render(<DatePicker disabledDates={[today]} />);
+    fireEvent.click(screen.getByRole('button'));
+    expect(screen.getByRole('button', { name: 'Hoy' })).toBeDisabled();
+  });
+
+  // ── Selector rápido de mes/año ─────────────────────────────────────────────
+
+  it('shows a clickable month/year heading when calendar is open', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    expect(
+      screen.getByRole('button', { name: /Seleccionar mes y año/ })
+    ).toBeInTheDocument();
+  });
+
+  it('clicking month/year heading opens month picker grid', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    fireEvent.click(screen.getByRole('button', { name: /Seleccionar mes y año/ }));
+    expect(screen.getByRole('grid', { name: 'Seleccionar mes' })).toBeInTheDocument();
+  });
+
+  it('month picker shows 12 month buttons', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    fireEvent.click(screen.getByRole('button', { name: /Seleccionar mes y año/ }));
+    const monthGrid = screen.getByRole('grid', { name: 'Seleccionar mes' });
+    const monthBtns = monthGrid.querySelectorAll('button');
+    expect(monthBtns).toHaveLength(12);
+  });
+
+  it('clicking a month in month picker updates view and returns to day grid', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    fireEvent.click(screen.getByRole('button', { name: /Seleccionar mes y año/ }));
+    // Click Mayo
+    fireEvent.click(screen.getByRole('button', { name: /Mayo 2026/ }));
+    // Returns to days view with May 2026
+    expect(screen.getByRole('button', { name: /Mayo 2026.*Seleccionar mes y año/ })).toBeInTheDocument();
+  });
+
+  it('month picker shows year navigation buttons', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    fireEvent.click(screen.getByRole('button', { name: /Seleccionar mes y año/ }));
+    expect(screen.getByRole('button', { name: 'Año anterior' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Año siguiente' })).toBeInTheDocument();
+  });
+
+  // ── Navegación con teclado ─────────────────────────────────────────────────
+
+  it('day buttons use roving tabindex — focused day has tabIndex=0', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    const btn15 = document.querySelector('[data-date="2026-2-15"]') as HTMLButtonElement;
+    expect(btn15).toHaveAttribute('tabindex', '0');
+    const btn16 = document.querySelector('[data-date="2026-2-16"]') as HTMLButtonElement;
+    expect(btn16).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('ArrowRight moves focus to next day', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    const grid = screen.getByRole('grid');
+    fireEvent.keyDown(grid, { key: 'ArrowRight' });
+    const btn16 = document.querySelector('[data-date="2026-2-16"]') as HTMLButtonElement;
+    expect(btn16).toHaveAttribute('tabindex', '0');
+  });
+
+  it('ArrowLeft moves focus to previous day', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    const grid = screen.getByRole('grid');
+    fireEvent.keyDown(grid, { key: 'ArrowLeft' });
+    const btn14 = document.querySelector('[data-date="2026-2-14"]') as HTMLButtonElement;
+    expect(btn14).toHaveAttribute('tabindex', '0');
+  });
+
+  it('ArrowDown moves focus one week forward', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    const grid = screen.getByRole('grid');
+    fireEvent.keyDown(grid, { key: 'ArrowDown' });
+    const btn22 = document.querySelector('[data-date="2026-2-22"]') as HTMLButtonElement;
+    expect(btn22).toHaveAttribute('tabindex', '0');
+  });
+
+  it('Home key moves focus to first day of month', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    const grid = screen.getByRole('grid');
+    fireEvent.keyDown(grid, { key: 'Home' });
+    const btn1 = document.querySelector('[data-date="2026-2-1"]') as HTMLButtonElement;
+    expect(btn1).toHaveAttribute('tabindex', '0');
+  });
+
+  it('End key moves focus to last day of month', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    const grid = screen.getByRole('grid');
+    fireEvent.keyDown(grid, { key: 'End' });
+    const btn31 = document.querySelector('[data-date="2026-2-31"]') as HTMLButtonElement;
+    expect(btn31).toHaveAttribute('tabindex', '0');
+  });
+
+  it('Enter key selects the focused date', () => {
+    const onChange = vi.fn();
+    render(<DatePicker value={MARCH_15_2026} onChange={onChange} />);
+    fireEvent.click(getTrigger());
+    const grid = screen.getByRole('grid');
+    fireEvent.keyDown(grid, { key: 'Enter' });
+    expect(onChange).toHaveBeenCalledOnce();
+    expect((onChange.mock.calls[0][0] as Date).getDate()).toBe(15);
+    expect((onChange.mock.calls[0][0] as Date).getMonth()).toBe(2);
+  });
+
+  it('Enter key does not select a disabled focused date', () => {
+    const onChange = vi.fn();
+    const disabledDates = [MARCH_15_2026];
+    render(<DatePicker value={MARCH_15_2026} disabledDates={disabledDates} onChange={onChange} />);
+    fireEvent.click(getTrigger());
+    const grid = screen.getByRole('grid');
+    fireEvent.keyDown(grid, { key: 'Enter' });
+    expect(onChange).not.toHaveBeenCalled();
   });
 });
