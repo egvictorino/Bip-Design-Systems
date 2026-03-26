@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
 import styles from './DrawerPanel.module.css';
@@ -11,6 +11,9 @@ export interface DrawerPanelProps {
   placement?: 'right' | 'left';
   className?: string;
   children: React.ReactNode;
+  footer?: React.ReactNode;
+  closeOnBackdrop?: boolean;
+  headerActions?: React.ReactNode;
 }
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
@@ -34,14 +37,34 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
   placement = 'right',
   className,
   children,
+  footer,
+  closeOnBackdrop = true,
+  headerActions,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
+  // Animation state
+  const [mounted, setMounted] = useState(open);
+  const [visible, setVisible] = useState(open);
 
   const restoreFocus = useCallback(() => {
     previouslyFocusedRef.current?.focus();
     previouslyFocusedRef.current = null;
   }, []);
+
+  // Animation lifecycle — controls mount/unmount with delayed exit
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      const raf = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(raf);
+    } else {
+      setVisible(false);
+      const timer = setTimeout(() => setMounted(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
 
   // Lock scroll + save focus when opening
   useEffect(() => {
@@ -94,17 +117,17 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
     };
   }, [open, onClose, restoreFocus]);
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   return ReactDOM.createPortal(
     <div className={styles.overlay}>
-      {/* Backdrop — click to close (hidden from a11y tree; drawer closes via X button and Escape) */}
+      {/* Backdrop — hidden from a11y tree; drawer closes via X button and Escape */}
       <button
         type="button"
         aria-hidden="true"
         tabIndex={-1}
-        className={styles.backdrop}
-        onClick={onClose}
+        className={cn(styles.backdrop, visible && styles.backdropVisible)}
+        onClick={closeOnBackdrop ? onClose : undefined}
       />
       {/* Panel */}
       <div
@@ -117,6 +140,7 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
           styles.panel,
           sizeStyles[size],
           placement === 'right' ? styles.placementRight : styles.placementLeft,
+          visible && styles.panelVisible,
           className
         )}
       >
@@ -124,6 +148,7 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
         {title && (
           <div className={styles.header}>
             <h2 className={styles.title}>{title}</h2>
+            {headerActions && <div className={styles.headerActions}>{headerActions}</div>}
             <button
               type="button"
               onClick={onClose}
@@ -144,6 +169,9 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
 
         {/* Scrollable content */}
         <div className={styles.content}>{children}</div>
+
+        {/* Sticky footer */}
+        {footer && <div className={styles.footer}>{footer}</div>}
       </div>
     </div>,
     document.body
