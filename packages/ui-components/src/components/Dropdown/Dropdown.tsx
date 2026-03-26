@@ -447,6 +447,7 @@ export const DropdownSubmenu: React.FC<DropdownSubmenuProps> = ({
           ref={submenuRef}
           id={submenuId}
           role="menu"
+          tabIndex={-1}
           aria-label={label}
           className={cn(styles.menu, styles.submenu)}
           onKeyDown={handleSubmenuKeyDown}

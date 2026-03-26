@@ -160,7 +160,7 @@ export const Radius: Story = {
       {(['none', 'sm', 'md', 'lg', 'xl'] as const).map((r) => (
         <Card key={r} variant="outlined" radius={r}>
           <CardBody>
-            <p className="text-txt-secondary text-sm">radius="{r}"</p>
+            <p className="text-txt-secondary text-sm">{`radius="${r}"`}</p>
           </CardBody>
         </Card>
       ))}
@@ -233,7 +233,7 @@ export const MediaAspectRatios: Story = {
             aspectRatio={ratio}
           />
           <CardBody>
-            <p className="text-txt-secondary text-sm">aspectRatio="{ratio}"</p>
+            <p className="text-txt-secondary text-sm">{`aspectRatio="${ratio}"`}</p>
           </CardBody>
         </Card>
       ))}

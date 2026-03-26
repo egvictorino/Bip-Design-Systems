@@ -333,6 +333,7 @@ const CalendarGrid = ({
       <div
         ref={gridRef}
         role="grid"
+        tabIndex={-1}
         aria-labelledby={headingId}
         className={styles.dayGrid}
         onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
