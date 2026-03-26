@@ -87,12 +87,26 @@ export type { TooltipProps } from './components/Tooltip';
 export { Breadcrumb } from './components/Breadcrumb';
 export type { BreadcrumbProps, BreadcrumbItem } from './components/Breadcrumb';
 
-export { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownDivider } from './components/Dropdown';
+export {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  DropdownDivider,
+  DropdownGroup,
+  DropdownSearch,
+  DropdownItemCheckbox,
+  DropdownSubmenu,
+} from './components/Dropdown';
 export type {
   DropdownProps,
   DropdownTriggerProps,
   DropdownMenuProps,
   DropdownItemProps,
+  DropdownGroupProps,
+  DropdownSearchProps,
+  DropdownItemCheckboxProps,
+  DropdownSubmenuProps,
 } from './components/Dropdown';
 
 export { Skeleton } from './components/Skeleton';
