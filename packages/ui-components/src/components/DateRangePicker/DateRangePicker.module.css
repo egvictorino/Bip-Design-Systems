@@ -161,6 +161,28 @@
   color: var(--color-txt);
 }
 
+/* Heading button (opens month/year picker) */
+.monthHeadingBtn {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-txt);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+  transition: background-color 150ms;
+}
+
+.monthHeadingBtn:hover {
+  background-color: var(--color-surface-3);
+}
+
+.monthHeadingBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
 /* ─── Day grid ───────────────────────────────────────────────────────────────── */
 
 .dayGrid {
@@ -221,6 +243,47 @@
 }
 
 .dayButtonDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ─── Month picker grid ──────────────────────────────────────────────────────── */
+
+.monthPickerGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.monthPickerBtn {
+  width: 100%;
+  padding: 0.375rem 0.25rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-txt);
+  transition: background-color 150ms;
+  text-align: center;
+}
+
+.monthPickerBtn:hover:not(:disabled) {
+  background-color: var(--color-surface-3);
+}
+
+.monthPickerBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.monthPickerBtnCurrent {
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+  font-weight: 600;
+}
+
+.monthPickerBtnDisabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
