@@ -3,7 +3,7 @@ import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './Input.module.css';
 
-export type InputType = 'text' | 'email' | 'password' | 'number';
+export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   variant?: 'outlined' | 'filled' | 'bare';
