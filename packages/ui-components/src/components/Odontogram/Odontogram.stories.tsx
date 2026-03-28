@@ -3,6 +3,10 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Odontogram, CONDITION_LABELS } from './Odontogram';
 import type { OdontogramValue, ToothCondition } from './Odontogram';
 
+// Minimal placeholder base64 PNG (8x8 gray square) for story demos
+const PLACEHOLDER_IMG =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFElEQVQoU2NkYGD4z8BAAowDEgAA//8AzAADIgAAAABJRU5ErkJggg==';
+
 const meta = {
   title: 'Components/Odontogram',
   component: Odontogram,
@@ -16,6 +20,7 @@ const meta = {
       control: 'select',
       options: Object.keys(CONDITION_LABELS) as ToothCondition[],
     },
+    dentition: { control: 'select', options: ['permanent', 'primary'] },
   },
 } satisfies Meta<typeof Odontogram>;
 
@@ -37,6 +42,14 @@ const SAMPLE_VALUE: OdontogramValue = {
   46: { surfaces: { occlusal: 'root_canal', buccal: 'restoration' } },
   47: { surfaces: { occlusal: 'fracture' } },
   48: { condition: 'extraction_planned' },
+};
+
+const SAMPLE_VALUE_WITH_NOTES: OdontogramValue = {
+  11: { surfaces: { occlusal: 'caries', mesial: 'caries' }, notes: 'Caries interproximal activa. Revisar en 3 meses.' },
+  16: { condition: 'crown', notes: 'Corona provisional desde enero. Programar definitiva.' },
+  18: { condition: 'missing' },
+  36: { condition: 'implant', notes: 'Implante Nobel Biocare colocado 2024-06. Oseointegración completada.' },
+  46: { surfaces: { occlusal: 'root_canal', buccal: 'restoration' }, notes: 'Endodoncia completada. Restauración con composite.' },
 };
 
 // ─── Wrapper interactivo ──────────────────────────────────────────────────────
@@ -133,4 +146,159 @@ export const SizeLg: Story = {
 
 export const Interactive: Story = {
   render: () => <InteractiveOdontogram />,
+};
+
+export const PrimaryDentition: Story = {
+  render: () => (
+    <Odontogram
+      label="Dentición primaria"
+      dentition="primary"
+    />
+  ),
+};
+
+export const WithNotes: Story = {
+  render: () => (
+    <Odontogram
+      label="Odontograma con notas (haz clic en el número del diente)"
+      value={SAMPLE_VALUE_WITH_NOTES}
+      readOnly
+    />
+  ),
+};
+
+const WithNotesInteractiveDemo = () => {
+  const [value, setValue] = useState<OdontogramValue>(SAMPLE_VALUE_WITH_NOTES);
+  const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
+  const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        {conditions.map(([condition, label]) => (
+          <button
+            key={condition}
+            onClick={() => setActiveTool(condition)}
+            className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
+              activeTool === condition
+                ? 'border-interaction-primary-default bg-interaction-primary-default text-text-white'
+                : 'border-gray-300 bg-white text-text-secondary hover:border-interaction-primary-default'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <p className="text-xs text-text-secondary">
+        Haz clic en las superficies para marcar condiciones. Haz clic en el número del diente para agregar notas.
+        Los dientes con nota muestran un punto azul.
+      </p>
+      <Odontogram
+        value={value}
+        onChange={setValue}
+        activeTool={activeTool}
+        label="Odontograma interactivo con notas"
+        size="md"
+      />
+      {Object.keys(value).length > 0 && (
+        <div className="text-xs text-text-secondary font-mono bg-gray-50 rounded p-2 max-w-lg">
+          <pre>{JSON.stringify(value, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const WithNotesInteractive: Story = {
+  render: () => <WithNotesInteractiveDemo />,
+};
+
+export const WithImages: Story = {
+  render: () => (
+    <Odontogram
+      label="Odontograma con imágenes (haz clic en el ícono 📷 del diente)"
+      value={{
+        11: {
+          surfaces: { occlusal: 'caries' },
+          images: [
+            { type: 'radiograph', url: PLACEHOLDER_IMG },
+            { type: 'photo', url: PLACEHOLDER_IMG },
+          ],
+        },
+        16: { condition: 'crown', images: [{ type: 'photo', url: PLACEHOLDER_IMG }] },
+        36: {
+          condition: 'implant',
+          images: [
+            { type: 'radiograph', url: PLACEHOLDER_IMG },
+            { type: 'radiograph', url: PLACEHOLDER_IMG },
+            { type: 'other', url: PLACEHOLDER_IMG },
+          ],
+        },
+        46: { surfaces: { occlusal: 'root_canal' }, images: [{ type: 'other', url: PLACEHOLDER_IMG }] },
+      }}
+      readOnly
+    />
+  ),
+};
+
+const WithImagesInteractiveDemo = () => {
+  const [value, setValue] = useState<OdontogramValue>({});
+  const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
+  const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        {conditions.map(([condition, label]) => (
+          <button
+            key={condition}
+            onClick={() => setActiveTool(condition)}
+            className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
+              activeTool === condition
+                ? 'border-interaction-primary-default bg-interaction-primary-default text-text-white'
+                : 'border-gray-300 bg-white text-text-secondary hover:border-interaction-primary-default'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <p className="text-xs text-text-secondary">
+        Haz clic en el ícono de cámara junto al número del diente para adjuntar una imagen.
+        Los dientes con imagen muestran un punto azul claro.
+      </p>
+      <Odontogram
+        value={value}
+        onChange={setValue}
+        activeTool={activeTool}
+        label="Odontograma interactivo con imágenes"
+        size="md"
+      />
+      {Object.keys(value).length > 0 && (
+        <div className="text-xs text-text-secondary font-mono bg-gray-50 rounded p-2 max-w-lg">
+          <pre>{JSON.stringify(value, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const WithImagesInteractive: Story = {
+  render: () => <WithImagesInteractiveDemo />,
+};
+
+export const PrimaryDentitionWithData: Story = {
+  render: () => (
+    <Odontogram
+      label="Dentición primaria con condiciones"
+      dentition="primary"
+      value={{
+        51: { surfaces: { occlusal: 'caries' } },
+        55: { condition: 'missing' },
+        61: { surfaces: { occlusal: 'restoration' } },
+        65: { condition: 'crown' },
+        74: { surfaces: { occlusal: 'caries', mesial: 'caries' } },
+        84: { condition: 'extraction_planned' },
+      }}
+      readOnly
+    />
+  ),
 };

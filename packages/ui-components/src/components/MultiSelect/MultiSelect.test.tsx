@@ -217,10 +217,10 @@ describe('MultiSelect', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  // 22. fullWidth applies w-full to the outer container
-  it('applies w-full class when fullWidth is true', () => {
+  // 22. fullWidth applies containerFullWidth to the outer container
+  it('applies containerFullWidth class when fullWidth is true', () => {
     const { container } = render(<Controlled options={options} fullWidth />);
-    expect(container.firstChild).toHaveClass('w-full');
+    expect(container.firstChild).toHaveClass('containerFullWidth');
   });
 
   // 23. Keyboard: ArrowDown on trigger opens dropdown and focuses first option

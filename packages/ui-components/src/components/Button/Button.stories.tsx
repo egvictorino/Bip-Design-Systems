@@ -11,7 +11,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['primary', 'secondary', 'bare', 'soul'],
+      options: ['primary', 'secondary', 'bare', 'soul', 'danger'],
     },
     size: {
       control: 'select',
@@ -48,5 +48,37 @@ export const Soul: Story = {
   args: {
     variant: 'soul',
     children: 'Button Soul',
+  },
+};
+
+export const Danger: Story = {
+  args: {
+    variant: 'danger',
+    children: 'Eliminar',
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    variant: 'primary',
+    loading: true,
+    children: 'Guardando...',
+  },
+};
+
+export const LoadingDanger: Story = {
+  args: {
+    variant: 'danger',
+    loading: true,
+    children: 'Eliminando...',
+  },
+};
+
+export const FullWidth: Story = {
+  parameters: { layout: 'padded' },
+  args: {
+    variant: 'primary',
+    fullWidth: true,
+    children: 'Botón de ancho completo',
   },
 };

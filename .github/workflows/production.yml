@@ -39,17 +39,17 @@ jobs:
         run: pnpm audit --audit-level=high
       
       - name: Lint (strict)
-        run: pnpm --filter @bip/ui-components lint
+        run: pnpm --filter @bip-design-systems/ui-components lint
       
       - name: Test
         run: |
-          pnpm --filter @bip/shared-utils test
-          pnpm --filter @bip/ui-components test
+          pnpm --filter @bip-design-systems/shared-utils test
+          pnpm --filter @bip-design-systems/ui-components test
 
       - name: Type check & build (validate)
         run: |
-          pnpm --filter @bip/shared-utils build
-          pnpm --filter @bip/ui-components build
+          pnpm --filter @bip-design-systems/shared-utils build
+          pnpm --filter @bip-design-systems/ui-components build
 
   build-production:
     name: Build Production
@@ -78,8 +78,8 @@ jobs:
       
       - name: Build packages (production mode)
         run: |
-          NODE_ENV=production pnpm --filter @bip/shared-utils build
-          NODE_ENV=production pnpm --filter @bip/ui-components build
+          NODE_ENV=production pnpm --filter @bip-design-systems/shared-utils build
+          NODE_ENV=production pnpm --filter @bip-design-systems/ui-components build
 
       - name: Upload production artifacts
         uses: actions/upload-artifact@v4
@@ -87,6 +87,51 @@ jobs:
           name: production-build
           path: packages/*/dist
           retention-days: 30
+
+  publish-npm:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    needs: build-production
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: |
+          pnpm --filter @bip-design-systems/shared-utils build
+          pnpm --filter @bip-design-systems/ui-components build
+
+      - name: Check if version already published
+        id: version-check
+        run: |
+          PKG_VERSION=$(node -p "require('./packages/ui-components/package.json').version")
+          echo "version=$PKG_VERSION" >> $GITHUB_OUTPUT
+          if npm view @bip-design-systems/ui-components@$PKG_VERSION version 2>/dev/null; then
+            echo "already_published=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Version $PKG_VERSION already published — skipping publish"
+          else
+            echo "already_published=false" >> $GITHUB_OUTPUT
+            echo "✅ Version $PKG_VERSION not published yet — will publish"
+          fi
+
+      - name: Publish @bip-design-systems/ui-components
+        if: steps.version-check.outputs.already_published == 'false'
+        run: pnpm --filter @bip-design-systems/ui-components publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   deploy-storybook-production:
     name: Deploy Storybook to GitHub Pages
@@ -113,7 +158,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       - name: Build Storybook
-        run: pnpm --filter @bip/ui-components build-storybook
+        run: pnpm --filter @bip-design-systems/ui-components build-storybook
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
       
@@ -129,7 +174,7 @@ jobs:
   create-release:
     name: Create Release Tag
     runs-on: ubuntu-latest
-    needs: [deploy-storybook-production]
+    needs: [deploy-storybook-production, publish-npm]
     if: github.event_name == 'push'
     
     steps:
@@ -140,9 +185,9 @@ jobs:
       - name: Get version
         id: version
         run: |
-          VERSION=$(date +%Y.%m.%d)-${{ github.run_number }}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-      
+          PKG_VERSION=$(node -p "require('./packages/ui-components/package.json').version")
+          echo "version=$PKG_VERSION" >> $GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -150,12 +195,21 @@ jobs:
           release_name: Release v${{ steps.version.outputs.version }}
           body: |
             ## 🚀 Cambios en Producción
-            
+
+            **Versión:** `${{ steps.version.outputs.version }}`
             **Commit:** ${{ github.sha }}
             **Autor:** ${{ github.actor }}
-            
-            ### Documentación
-            - [Storybook](https://tu-usuario.github.io/bip-ui/)
+
+            ### Instalación
+            ```sh
+            npm install @bip-design-systems/ui-components@${{ steps.version.outputs.version }}
+            # o
+            pnpm add @bip-design-systems/ui-components@${{ steps.version.outputs.version }}
+            ```
+
+            ### Recursos
+            - [NPM](https://www.npmjs.com/package/@bip-design-systems/ui-components)
+            - [Storybook](https://egvictorino.github.io/bip-ui/)
           draft: false
           prerelease: false
 

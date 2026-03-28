@@ -1,0 +1,139 @@
+/* ─── Avatar container ──────────────────────────────────────────────────────── */
+
+.avatar {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+/* ─── Inner display ─────────────────────────────────────────────────────────── */
+
+.inner {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.initials {
+  color: var(--color-txt-white);
+}
+
+.icon {
+  background-color: var(--color-surface-3);
+  color: var(--color-txt-secondary);
+}
+
+/* ─── Shapes ────────────────────────────────────────────────────────────────── */
+
+.circle { border-radius: 9999px; }
+.square { border-radius: 0.5rem; }
+
+/* ─── Sizes ─────────────────────────────────────────────────────────────────── */
+
+.xs { width: 1.5rem;  height: 1.5rem; }
+.sm { width: 2rem;    height: 2rem; }
+.md { width: 2.5rem;  height: 2.5rem; }
+.lg { width: 3rem;    height: 3rem; }
+.xl { width: 4rem;    height: 4rem; }
+
+/* ─── Text sizes ────────────────────────────────────────────────────────────── */
+
+.textXs   { font-size: 0.625rem; }
+.textSm   { font-size: 0.75rem;  line-height: 1rem; }
+.textMd   { font-size: 0.875rem; line-height: 1.25rem; }
+.textLg   { font-size: 1rem;     line-height: 1.5rem; }
+.textXl   { font-size: 1.25rem;  line-height: 1.75rem; }
+
+/* ─── Initials text ─────────────────────────────────────────────────────────── */
+
+.initialsText {
+  user-select: none;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* ─── Person icon (fallback SVG) ────────────────────────────────────────────── */
+
+.personIcon {
+  height: 60%;
+  width: 60%;
+}
+
+/* ─── Image ─────────────────────────────────────────────────────────────────── */
+
+.img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* ─── Status badge ──────────────────────────────────────────────────────────── */
+
+.status {
+  position: absolute;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px white;
+}
+
+/* Status sizes */
+.statusXs { width: 0.5rem;    height: 0.5rem;   bottom: -0.125rem; right: -0.125rem; }
+.statusSm { width: 0.625rem;  height: 0.625rem; bottom: -0.125rem; right: -0.125rem; }
+.statusMd { width: 0.75rem;   height: 0.75rem;  bottom: 0;         right: 0; }
+.statusLg { width: 0.875rem;  height: 0.875rem; bottom: 0;         right: 0; }
+.statusXl { width: 1rem;      height: 1rem;     bottom: 0.125rem;  right: 0.125rem; }
+
+/* Status colors */
+.online  { background-color: var(--color-success); }
+.offline { background-color: var(--color-txt-disabled); }
+.away    { background-color: var(--color-warning); }
+.busy    { background-color: var(--color-danger); }
+
+/* ─── Initials background colors ────────────────────────────────────────────── */
+
+.bgPrimary     { background-color: var(--color-primary); }
+.bgSecondary   { background-color: var(--color-secondary); }
+.bgDanger      { background-color: var(--color-danger); }
+.bgSuccessText { background-color: var(--color-success-text); }
+.bgWarningText { background-color: var(--color-warning-text); }
+.bgInfoText    { background-color: var(--color-info-text); }
+.bgSlate       { background-color: #64748b; }
+.bgViolet      { background-color: #7c3aed; }
+
+/* ─── AvatarGroup ───────────────────────────────────────────────────────────── */
+
+.group {
+  display: flex;
+  align-items: center;
+}
+
+.groupItem {
+  box-shadow: 0 0 0 2px white;
+  border-radius: 9999px;
+}
+
+.groupItemOffset {
+  margin-left: -0.5rem;
+}
+
+.overflow {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-left: -0.5rem;
+}
+
+.overflowInner {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--color-surface-3);
+  color: var(--color-txt-secondary);
+  box-shadow: 0 0 0 2px white;
+  font-weight: 600;
+}

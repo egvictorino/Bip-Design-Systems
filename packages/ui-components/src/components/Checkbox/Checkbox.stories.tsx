@@ -76,3 +76,25 @@ export const Large: Story = {
 export const NoLabel: Story = {
   args: {},
 };
+
+export const Required: Story = {
+  args: {
+    label: 'Acepto los términos y condiciones',
+    required: true,
+  },
+};
+
+export const Indeterminate: Story = {
+  args: {
+    label: 'Seleccionar todos',
+    indeterminate: true,
+  },
+};
+
+export const IndeterminateDisabled: Story = {
+  args: {
+    label: 'Seleccionar todos (deshabilitado)',
+    indeterminate: true,
+    disabled: true,
+  },
+};

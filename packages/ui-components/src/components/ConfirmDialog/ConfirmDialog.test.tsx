@@ -57,13 +57,13 @@ describe('ConfirmDialog', () => {
   it('applies danger variant styling to confirm button', () => {
     render(<ConfirmDialog {...defaultProps} variant="danger" />);
     const confirmBtn = screen.getByRole('button', { name: 'Confirmar' });
-    expect(confirmBtn).toHaveClass('bg-danger');
+    expect(confirmBtn).toHaveClass('confirmDanger');
   });
 
   it('applies warning variant styling to confirm button', () => {
     render(<ConfirmDialog {...defaultProps} variant="warning" />);
     const confirmBtn = screen.getByRole('button', { name: 'Confirmar' });
-    expect(confirmBtn).toHaveClass('bg-warning');
+    expect(confirmBtn).toHaveClass('confirmWarning');
   });
 
   it('has dialog role', () => {

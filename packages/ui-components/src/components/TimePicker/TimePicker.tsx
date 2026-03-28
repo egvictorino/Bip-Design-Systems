@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './TimePicker.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,22 +24,22 @@ export interface TimePickerProps {
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
 
-const sizes: Record<NonNullable<TimePickerProps['size']>, string> = {
-  sm: 'px-[12px] py-[6px] text-xs',
-  md: 'px-[20px] py-[10px] text-sm',
-  lg: 'px-[24px] py-[12px] text-lg',
+const triggerSizeClass: Record<NonNullable<TimePickerProps['size']>, string> = {
+  sm: styles.triggerSm,
+  md: styles.triggerMd,
+  lg: styles.triggerLg,
 };
 
-const labelSizeStyles: Record<NonNullable<TimePickerProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-base',
+const labelSizeClass: Record<NonNullable<TimePickerProps['size']>, string> = {
+  sm: styles.labelSm,
+  md: styles.labelMd,
+  lg: styles.labelLg,
 };
 
-const helperSizeStyles: Record<NonNullable<TimePickerProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-xs',
-  lg: 'text-sm',
+const helperSizeClass: Record<NonNullable<TimePickerProps['size']>, string> = {
+  sm: styles.helperSm,
+  md: styles.helperMd,
+  lg: styles.helperLg,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -85,15 +86,13 @@ const TimeColumn = ({ label, options, selected, onSelect }: TimeColumnProps) => 
   }, [selected, options]);
 
   return (
-    <div className="flex flex-col w-20">
-      <div className="text-[10px] font-semibold text-text-secondary text-center py-1.5 border-b border-interaction-tertiary-default">
-        {label}
-      </div>
+    <div className={styles.timeColumn}>
+      <div className={styles.timeColumnHeader}>{label}</div>
       <div
         ref={listRef}
         role="listbox"
         aria-label={label}
-        className="overflow-y-auto h-48 py-1"
+        className={styles.timeColumnList}
       >
         {options.map((opt) => (
           <button
@@ -103,11 +102,8 @@ const TimeColumn = ({ label, options, selected, onSelect }: TimeColumnProps) => 
             aria-selected={selected === opt}
             onClick={() => onSelect(opt)}
             className={cn(
-              'w-full h-9 flex items-center justify-center text-sm rounded-sm transition-colors',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default focus-visible:ring-inset',
-              selected === opt
-                ? 'bg-interaction-primary-default text-text-white font-semibold'
-                : 'text-text-primary hover:bg-interaction-tertiary-default'
+              styles.timeOption,
+              selected === opt && styles.timeOptionSelected
             )}
           >
             {pad2(opt)}
@@ -199,22 +195,25 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
     };
 
     return (
-      <div ref={containerRef} className={cn('flex flex-col gap-1', fullWidth && 'w-full')}>
+      <div
+        ref={containerRef}
+        className={cn(styles.container, fullWidth && styles.containerFullWidth)}
+      >
         {label && (
           <label
             htmlFor={inputId}
             className={cn(
-              'font-medium transition-colors',
-              labelSizeStyles[size],
-              error ? 'text-feedback-error-default' : 'text-text-primary',
-              disabled && 'opacity-50'
+              styles.label,
+              labelSizeClass[size],
+              error ? styles.labelError : styles.labelNormal,
+              disabled && styles.labelDisabled
             )}
           >
             {label}
           </label>
         )}
 
-        <div className={cn('relative', fullWidth && 'w-full')}>
+        <div className={cn(styles.triggerWrapper, fullWidth && styles.triggerWrapperFullWidth)}>
           <button
             ref={ref}
             id={inputId}
@@ -225,18 +224,14 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
             aria-describedby={messageId}
             onClick={() => setIsOpen((v) => !v)}
             className={cn(
-              'w-full text-left rounded-[1px] transition-colors border bg-interaction-field',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-              sizes[size],
-              'pr-9',
-              error
-                ? 'border-feedback-error-default focus-visible:ring-feedback-error-default'
-                : 'border-interaction-primary-default focus-visible:ring-interaction-primary-default hover:border-interaction-primary-hover',
-              disabled ? 'opacity-50 cursor-not-allowed bg-interaction-disabled' : 'cursor-pointer',
+              styles.trigger,
+              triggerSizeClass[size],
+              error && styles.triggerError,
+              disabled && styles.triggerDisabled,
               className
             )}
           >
-            <span className={value ? 'text-text-primary' : 'text-text-secondary'}>
+            <span className={value ? styles.triggerValue : styles.triggerPlaceholder}>
               {value || placeholder}
             </span>
           </button>
@@ -244,13 +239,13 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
           {/* Clock icon */}
           <span
             className={cn(
-              'pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2',
-              error ? 'text-feedback-error-default' : 'text-text-secondary',
-              disabled && 'opacity-50'
+              styles.clockIcon,
+              error && styles.clockIconError,
+              disabled && styles.clockIconDisabled
             )}
             aria-hidden="true"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <svg viewBox="0 0 20 20" fill="currentColor" className={styles.iconMd}>
               <path
                 fillRule="evenodd"
                 d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5z"
@@ -265,9 +260,9 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
               role="dialog"
               aria-modal="true"
               aria-label="Seleccionar hora"
-              className="absolute z-50 mt-1 top-full left-0 rounded-lg border border-interaction-tertiary-default bg-white shadow-lg overflow-hidden"
+              className={styles.popover}
             >
-              <div className="flex divide-x divide-interaction-tertiary-default">
+              <div className={styles.columnsWrapper}>
                 <TimeColumn
                   label="Horas"
                   options={HOURS}
@@ -283,15 +278,11 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
               </div>
 
               {/* Now shortcut */}
-              <div className="border-t border-interaction-tertiary-default p-2">
+              <div className={styles.nowSection}>
                 <button
                   type="button"
                   onClick={handleNow}
-                  className={cn(
-                    'w-full text-xs font-medium py-1.5 rounded transition-colors',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default',
-                    'text-interaction-primary-default hover:bg-interaction-tertiary-default'
-                  )}
+                  className={styles.nowBtn}
                 >
                   Ahora
                 </button>
@@ -303,13 +294,13 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(helperSizeStyles[size], 'text-feedback-error-default')}
+            className={cn(helperSizeClass[size], styles.errorText)}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span id={messageId} className={cn(helperSizeStyles[size], 'text-text-secondary')}>
+          <span id={messageId} className={cn(helperSizeClass[size], styles.helperText)}>
             {helperText}
           </span>
         ) : null}

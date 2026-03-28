@@ -1,0 +1,407 @@
+/* ─── Container ──────────────────────────────────────────────────────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.containerFullWidth {
+  width: 100%;
+}
+
+/* ─── Label ───────────────────────────────────────────────────────────────────── */
+
+.label {
+  font-weight: 500;
+  transition: color 150ms;
+}
+
+.labelSm { font-size: 0.75rem; }
+.labelMd { font-size: 0.875rem; }
+.labelLg { font-size: 1rem; }
+
+.labelNormal  { color: var(--color-txt); }
+.labelError   { color: var(--color-danger); }
+.labelDisabled { opacity: 0.5; }
+
+/* ─── Trigger button wrapper ─────────────────────────────────────────────────── */
+
+.triggerWrapper {
+  position: relative;
+}
+
+.triggerWrapperFullWidth {
+  width: 100%;
+}
+
+/* ─── Trigger button ──────────────────────────────────────────────────────────── */
+
+.trigger {
+  width: 100%;
+  text-align: left;
+  border-radius: 1px;
+  transition: background-color 150ms, color 150ms, border-color 150ms;
+  border: 1px solid var(--color-primary);
+  background-color: var(--color-field);
+  /* extra right padding to leave room for the calendar icon */
+  padding-right: 2.25rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.trigger:hover:not(:disabled) {
+  border-color: var(--color-primary-hover);
+}
+
+.trigger:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.triggerError {
+  border-color: var(--color-danger);
+}
+
+.triggerError:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+}
+
+.triggerError:hover:not(:disabled) {
+  border-color: var(--color-danger);
+}
+
+.triggerDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-disabled);
+}
+
+/* Sizes */
+.triggerSm { padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; font-size: 0.75rem; }
+.triggerMd { padding-top: 0.625rem; padding-bottom: 0.625rem; padding-left: 1.25rem; font-size: 0.875rem; }
+.triggerLg { padding-top: 0.75rem;  padding-bottom: 0.75rem;  padding-left: 1.5rem;  font-size: 1.125rem; }
+
+/* ─── Trigger text span ───────────────────────────────────────────────────────── */
+
+.triggerValue {
+  color: var(--color-txt);
+}
+
+.triggerPlaceholder {
+  color: var(--color-txt-secondary);
+}
+
+/* ─── Calendar icon ───────────────────────────────────────────────────────────── */
+
+.calendarIcon {
+  pointer-events: none;
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-txt-secondary);
+}
+
+.calendarIconError {
+  color: var(--color-danger);
+}
+
+.calendarIconDisabled {
+  opacity: 0.5;
+}
+
+.iconMd {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ─── Calendar popover ────────────────────────────────────────────────────────── */
+
+.popover {
+  position: absolute;
+  z-index: 50;
+  margin-top: 0.25rem;
+  top: 100%;
+  left: 0;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-surface-3);
+  background-color: var(--color-surface-1);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* ─── CalendarGrid ────────────────────────────────────────────────────────────── */
+
+.calendarGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  width: 280px;
+}
+
+/* ─── Month nav ───────────────────────────────────────────────────────────────── */
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.monthNavBtn {
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  color: var(--color-txt-secondary);
+  transition: background-color 150ms, color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.monthNavBtn:hover:not(:disabled) {
+  background-color: var(--color-surface-3);
+  color: var(--color-txt);
+}
+
+.monthNavBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.monthNavBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.monthHeading {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-txt);
+}
+
+/* Heading button — opens month/year picker */
+.monthHeadingBtn {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-txt);
+  background: none;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  padding: 0.125rem 0.375rem;
+  transition: background-color 150ms, color 150ms;
+  outline: none;
+}
+
+.monthHeadingBtn:hover {
+  background-color: var(--color-surface-3);
+}
+
+.monthHeadingBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+/* ─── Day grid ────────────────────────────────────────────────────────────────── */
+
+.dayGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.125rem;
+}
+
+.columnHeader {
+  text-align: center;
+  font-size: 0.625rem; /* 10px */
+  font-weight: 600;
+  color: var(--color-txt-secondary);
+  padding: 0.25rem 0;
+}
+
+/* ─── Day cell / button ───────────────────────────────────────────────────────── */
+
+.dayCell {
+  /* transparent wrapper; aria-selected lives here per WAI-ARIA grid pattern */
+}
+
+.dayBtn {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  transition: background-color 150ms, color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  color: var(--color-txt);
+}
+
+.dayBtn:hover:not(:disabled) {
+  background-color: var(--color-surface-3);
+}
+
+.dayBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.dayBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.dayBtnSelected {
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+  font-weight: 600;
+}
+
+.dayBtnSelected:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.dayBtnToday {
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dayBtnToday:hover:not(:disabled) {
+  background-color: var(--color-surface-3);
+}
+
+/* ─── Month picker grid (4×3) ────────────────────────────────────────────────── */
+
+.monthPickerGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.25rem;
+}
+
+.monthPickerBtn {
+  width: 100%;
+  padding: 0.5rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-txt);
+  transition: background-color 150ms, color 150ms;
+  outline: none;
+}
+
+.monthPickerBtn:hover:not(:disabled) {
+  background-color: var(--color-surface-3);
+}
+
+.monthPickerBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.monthPickerBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.monthPickerBtnCurrent {
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.monthPickerBtnCurrent:hover:not(:disabled) {
+  background-color: var(--color-surface-3);
+}
+
+/* ─── Clear button ────────────────────────────────────────────────────────────── */
+
+.clearBtn {
+  pointer-events: auto;
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.125rem;
+  border-radius: 0.25rem;
+  color: var(--color-txt-secondary);
+  transition: color 150ms, background-color 150ms;
+  outline: none;
+}
+
+.clearBtn:hover {
+  color: var(--color-txt);
+  background-color: var(--color-surface-3);
+}
+
+.clearBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.clearBtnError {
+  color: var(--color-danger);
+}
+
+.clearBtnError:hover {
+  color: var(--color-danger);
+  background-color: var(--color-danger-subtle);
+}
+
+/* ─── Today shortcut ──────────────────────────────────────────────────────────── */
+
+.todaySection {
+  border-top: 1px solid var(--color-surface-3);
+  padding-top: 0.5rem;
+}
+
+.todayBtn {
+  width: 100%;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem 0;
+  border-radius: 0.25rem;
+  transition: background-color 150ms, color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  color: var(--color-primary);
+}
+
+.todayBtn:hover:not(:disabled) {
+  background-color: var(--color-surface-3);
+}
+
+.todayBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.todayBtn:disabled {
+  color: var(--color-txt-disabled);
+  cursor: not-allowed;
+}
+
+/* ─── Helper / Error message ─────────────────────────────────────────────────── */
+
+.helperText {
+  color: var(--color-txt-secondary);
+}
+
+.errorText {
+  color: var(--color-danger);
+}
+
+.helperSm { font-size: 0.75rem; }
+.helperMd { font-size: 0.75rem; }
+.helperLg { font-size: 0.875rem; }

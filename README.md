@@ -14,7 +14,7 @@ Monorepo basado en **pnpm workspaces** que centraliza la librería de componente
 - [Componentes UI](#componentes-ui)
 - [Utilidades Compartidas](#utilidades-compartidas)
 - [Tokens de Diseño](#tokens-de-diseño)
-- [Estilos Tailwind en los Componentes](#estilos-tailwind-en-los-componentes)
+- [CSS Modules y Tokens de Diseño](#css-modules-y-tokens-de-diseño)
 - [Estrategia de Branches](#estrategia-de-branches)
 - [CI/CD](#cicd)
 - [Usar en un Proyecto Externo](#usar-en-un-proyecto-externo)
@@ -26,8 +26,8 @@ Monorepo basado en **pnpm workspaces** que centraliza la librería de componente
 ```
 bip-ui/
 └── packages/
-    ├── ui-components/      # Librería de componentes React  →  @bip/ui-components
-    └── shared-utils/       # Utilidades TypeScript puras    →  @bip/shared-utils
+    ├── ui-components/      # Librería de componentes React  →  @bip-design-systems/ui-components
+    └── shared-utils/       # Utilidades TypeScript puras    →  @bip-design-systems/shared-utils
 ```
 
 ---
@@ -38,15 +38,14 @@ bip-ui/
 |------|------------|
 | Lenguaje | TypeScript 5 · `strict: true` |
 | UI | React 18 · `react-jsx` transform |
-| Estilos | Tailwind CSS 3.4 |
-| Composición de clases | `clsx` + `tailwind-merge` → utilidad `cn()` |
+| Estilos | CSS Modules + CSS Custom Properties |
+| Composición de clases | `clsx` → utilidad `cn()` |
 | Build | Vite 5 + `vite-plugin-dts` |
 | Documentación | Storybook 8 (CSF v3 · autodocs) |
 | Package manager | pnpm 9.15.9+ |
 | Linting | ESLint + `@typescript-eslint` |
 
-> **`cn()`** — utilidad en `src/lib/cn.ts` que combina `clsx` (lógica condicional) con
-> `extendTailwindMerge` (resolución de conflictos de clases, incluye tokens de diseño custom).
+> **`cn()`** — utilidad en `src/lib/cn.ts`, wrapper delgado sobre `clsx` para composición condicional de clases de CSS Module.
 
 ---
 
@@ -57,11 +56,11 @@ bip-ui/
 pnpm install
 
 # 2. Construir paquetes en orden (shared-utils primero)
-pnpm --filter @bip/shared-utils build
-pnpm --filter @bip/ui-components build
+pnpm --filter @bip-design-systems/shared-utils build
+pnpm --filter @bip-design-systems/ui-components build
 
 # 3. Abrir Storybook  →  http://localhost:6006
-pnpm --filter @bip/ui-components storybook
+pnpm --filter @bip-design-systems/ui-components storybook
 ```
 
 ---
@@ -71,12 +70,12 @@ pnpm --filter @bip/ui-components storybook
 ### Por paquete
 
 ```bash
-pnpm --filter @bip/ui-components storybook        # Dev Storybook
-pnpm --filter @bip/ui-components build-storybook  # Build estático
-pnpm --filter @bip/ui-components build            # Build librería
-pnpm --filter @bip/ui-components lint             # Lint
-pnpm --filter @bip/shared-utils test              # Tests utilidades (vitest)
-pnpm --filter @bip/ui-components test             # Tests componentes (vitest + happy-dom)
+pnpm --filter @bip-design-systems/ui-components storybook        # Dev Storybook
+pnpm --filter @bip-design-systems/ui-components build-storybook  # Build estático
+pnpm --filter @bip-design-systems/ui-components build            # Build librería
+pnpm --filter @bip-design-systems/ui-components lint             # Lint
+pnpm --filter @bip-design-systems/shared-utils test              # Tests utilidades (vitest)
+pnpm --filter @bip-design-systems/ui-components test             # Tests componentes (vitest + happy-dom)
 ```
 
 ### Monorepo completo
@@ -173,7 +172,7 @@ pnpm dev     # Modo desarrollo paralelo
 
 ## Utilidades Compartidas
 
-`@bip/shared-utils` — utilidades TypeScript puras, sin dependencias de runtime.
+`@bip-design-systems/shared-utils` — utilidades TypeScript puras, sin dependencias de runtime.
 
 | Función | Firma | Descripción |
 |---------|-------|-------------|
@@ -182,7 +181,7 @@ pnpm dev     # Modo desarrollo paralelo
 | `validateRFC` | `(rfc: string) => boolean` | Valida formato RFC mexicano (solo mayúsculas, sin normalización) |
 
 ```ts
-import { formatCurrency, formatDate, validateRFC } from '@bip/shared-utils';
+import { formatCurrency, formatDate, validateRFC } from '@bip-design-systems/shared-utils';
 
 formatCurrency(1500);           // "$1,500.00"
 formatDate(new Date(2026, 5, 15)); // "15/6/2026"
@@ -194,89 +193,86 @@ validateRFC('abc800101AA1');    // false — no acepta minúsculas
 
 ## Tokens de Diseño
 
-Fuente única de verdad: `packages/ui-components/tailwind.tokens.js` — **generado automáticamente** con `pnpm sync:tokens` desde Figma. No editar manualmente. Importado por `tailwind.preset.js` (tema Tailwind) y `Colors.stories.tsx` (documentación Storybook).
+Fuente única de verdad: `packages/ui-components/src/tokens.css` — **generado automáticamente** con `pnpm sync:tokens` desde Figma. No editar manualmente. Define todos los tokens como CSS custom properties bajo `:root` e importado por `Colors.stories.tsx` (documentación Storybook).
 
-```
-// Interaction
-active                                         (estado activo/resaltado)
-primary, primary-{hover|press}
-secondary, secondary-{hover|press}
-danger, danger-{hover|light|muted|press|subtle|text}
-disabled                                       (fondo campos deshabilitados)
-field                                          (fondo campos outlined)
-field-readonly                                 (fondo campos read-only)
-selected                                       (fondo TableRow seleccionado)
-unique                                         (color acento único)
+```css
+/* Interaction */
+--color-active, --color-primary, --color-primary-{hover|press}
+--color-secondary, --color-secondary-{hover|press}
+--color-danger, --color-danger-{hover|light|muted|press|subtle|text}
+--color-disabled, --color-field, --color-field-readonly
+--color-selected, --color-unique
 
-// Text
-txt, txt-{black|disabled|important|secondary|utility|white}
-link, link-{hover|press}
+/* Text */
+--color-txt, --color-txt-{black|disabled|important|secondary|utility|white}
+--color-link, --color-link-{hover|press}
 
-// Surface
-scrim                                          (fondo overlay)
-surface-{1|2|3|4}                              (capas de fondo)
+/* Surface */
+--color-scrim, --color-surface-{1|2|3|4}
 
-// Border / Edge
-edge, edge-{disabled|focus|heavy|hover|important|medium|success|unique|warning}
+/* Border / Edge */
+--color-edge, --color-edge-{disabled|focus|heavy|hover|important|medium|success|unique|warning}
 
-// Feedback
-info, info-{light|subtle|text}
-success, success-{light|subtle|text}
-warning, warning-{light|subtle|text}
+/* Feedback */
+--color-info, --color-info-{light|subtle|text}
+--color-success, --color-success-{light|subtle|text}
+--color-warning, --color-warning-{light|subtle|text}
 ```
 
-> Para agregar un token: editar `tailwind.tokens.js` → ejecutar `pnpm sync:tokens` (actualiza también `src/lib/cn.ts`).
-> Nunca editar `tailwind.tokens.js` ni `src/lib/cn.ts` manualmente.
+> Para agregar un token: ejecutar `pnpm sync:tokens` (regenera `tokens.css` desde Figma).
+> Nunca editar `tokens.css` manualmente.
 
 ---
 
-## Estilos Tailwind en los Componentes
+## CSS Modules y Tokens de Diseño
 
-Los estilos de todos los componentes se basan exclusivamente en **clases Tailwind** — sin CSS modules ni estilos inline. Los colores del sistema parten de tokens de diseño custom registrados en Tailwind.
+Los estilos de todos los componentes usan **CSS Modules** (`ComponentName.module.css`) con **CSS Custom Properties** para los tokens de diseño. No se usa Tailwind CSS.
 
 ### Dónde vive cada pieza
 
 | Archivo | Rol |
 |---------|-----|
-| `packages/ui-components/tailwind.tokens.js` | **Fuente de verdad** — define todos los tokens de color (`primary`, `txt`, `edge`, `surface-*`, etc.). Generado automáticamente con `pnpm sync:tokens`. |
-| `packages/ui-components/tailwind.preset.js` | Registra los tokens en el tema de Tailwind. Exportado en `@bip/ui-components/tailwind.preset` para que proyectos consumidores los usen. |
-| `packages/ui-components/src/lib/cn.ts` | Utilidad `cn()` — combina `clsx` (lógica condicional) con `extendTailwindMerge` (resolución de conflictos para tokens custom). Generada automáticamente junto con los tokens. |
-| `src/components/**/*.tsx` | Componentes — usan `cn()` con clases Tailwind estándar y tokens custom. Nunca importan `clsx` directamente. |
+| `packages/ui-components/src/tokens.css` | **Fuente de verdad** — define todos los tokens de color como variables CSS (`:root { --color-primary: …; }`). Generado automáticamente con `pnpm sync:tokens`. |
+| `packages/ui-components/src/components/**/*.module.css` | Estilos por componente (scoped). Usan las variables de `tokens.css`. |
+| `packages/ui-components/src/lib/cn.ts` | Utilidad `cn()` — wrapper de `clsx` para composición condicional de clases de CSS Module. |
 | `src/foundations/Colors.stories.tsx` | Documentación visual de todos los tokens en Storybook. |
 
 ### Cómo se usan los tokens en los componentes
 
-Los tokens se usan como cualquier clase Tailwind, con los prefijos habituales (`bg-`, `text-`, `border-`, `ring-`):
+Los tokens se consumen desde los archivos `.module.css` mediante `var()`:
 
-```tsx
-// Fondo de botón primario
-className="bg-primary hover:bg-primary-hover active:bg-primary-press"
+```css
+/* Button.module.css */
+.primary {
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+}
+.primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
 
-// Texto
-className="text-txt"            // texto principal
-className="text-txt-secondary"  // texto secundario
-className="text-txt-disabled"   // texto deshabilitado
+/* Texto */
+.label { color: var(--color-txt); }
+.labelSecondary { color: var(--color-txt-secondary); }
+.labelDisabled { color: var(--color-txt-disabled); }
 
-// Bordes
-className="border-edge focus:border-edge-focus"
+/* Bordes */
+.outlined { border: 1px solid var(--color-edge); }
+.outlined:focus-within { border-color: var(--color-edge-focus); }
 
-// Superficies / capas de fondo
-className="bg-surface-1"        // fondo base
-className="bg-surface-2"        // capa elevada
-
-// Feedback
-className="bg-danger text-danger-text"
-className="bg-success-light text-success-text"
+/* Feedback */
+.error { background-color: var(--color-danger); color: var(--color-danger-text); }
+.success { background-color: var(--color-success-light); color: var(--color-success-text); }
 ```
 
 ### Flujo de actualización de tokens
 
 ```
-Figma  →  pnpm sync:tokens  →  tailwind.tokens.js + src/lib/cn.ts  →  pnpm build
+Figma  →  pnpm sync:tokens  →  src/tokens.css  →  pnpm build
 ```
 
-> `pnpm sync:tokens` regenera `tailwind.tokens.js` y `src/lib/cn.ts` de forma sincronizada.
-> Nunca edites esos dos archivos manualmente — los cambios manuales se perderán en el siguiente sync.
+> `pnpm sync:tokens` regenera únicamente `tokens.css`.
+> Nunca edites `tokens.css` manualmente — los cambios se perderán en el siguiente sync.
 
 ---
 
@@ -357,51 +353,38 @@ Pasos para consumir BipUI desde un repositorio independiente.
 
 ```bash
 # Con pnpm
-pnpm add github:TU-ORG/bip-ui#main --filter @bip/ui-components
-pnpm add github:TU-ORG/bip-ui#main --filter @bip/shared-utils
+pnpm add github:TU-ORG/bip-ui#main --filter @bip-design-systems/ui-components
+pnpm add github:TU-ORG/bip-ui#main --filter @bip-design-systems/shared-utils
 ```
 
 **Desde npm / registro privado (cuando se publique):**
 
 ```bash
-pnpm add @bip/ui-components @bip/shared-utils
+pnpm add @bip-design-systems/ui-components @bip-design-systems/shared-utils
 ```
 
 ### 2. Instalar las peer dependencies
 
 ```bash
 pnpm add react react-dom
-pnpm add -D tailwindcss postcss autoprefixer
 ```
 
-### 3. Configurar Tailwind
+### 3. Importar los estilos
 
-```js
-// tailwind.config.js
-import bipPreset from '@bip/ui-components/tailwind.preset';
+En el entry point de tu proyecto, importa el CSS compilado de la librería:
 
-export default {
-  content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
-    // El preset ya incluye automáticamente el path de la librería
-  ],
-  presets: [bipPreset],
-};
+```ts
+// src/main.tsx (o index.tsx)
+import '@bip-design-systems/ui-components/style.css';
 ```
 
-```css
-/* src/index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
+No se requiere configurar Tailwind ni ningún otro preprocesador CSS.
 
 ### 4. Usar los componentes
 
 ```tsx
-import { Button, Input, ToastProvider, useToast } from '@bip/ui-components';
-import { formatCurrency, validateRFC } from '@bip/shared-utils';
+import { Button, Input, ToastProvider, useToast } from '@bip-design-systems/ui-components';
+import { formatCurrency, validateRFC } from '@bip-design-systems/shared-utils';
 
 // Wrap the app root with ToastProvider
 export const App = () => (

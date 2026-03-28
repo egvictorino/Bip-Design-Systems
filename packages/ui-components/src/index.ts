@@ -21,6 +21,8 @@ export type { FileUploadProps } from './components/FileUpload';
 
 export { Checkbox } from './components/Checkbox';
 export type { CheckboxProps } from './components/Checkbox';
+export { CheckboxGroup } from './components/Checkbox';
+export type { CheckboxGroupProps } from './components/Checkbox';
 
 export { Radio } from './components/Radio';
 export type { RadioProps } from './components/Radio';
@@ -46,8 +48,8 @@ export type { ToastProviderProps, ToastConfig, ToastPosition } from './component
 export { Spinner } from './components/Spinner';
 export type { SpinnerProps } from './components/Spinner';
 
-export { Card, CardHeader, CardBody, CardFooter } from './components/Card';
-export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps } from './components/Card';
+export { Card, CardHeader, CardBody, CardFooter, CardMedia } from './components/Card';
+export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps, CardMediaProps } from './components/Card';
 
 export { Toggle } from './components/Toggle';
 export type { ToggleProps } from './components/Toggle';
@@ -85,12 +87,26 @@ export type { TooltipProps } from './components/Tooltip';
 export { Breadcrumb } from './components/Breadcrumb';
 export type { BreadcrumbProps, BreadcrumbItem } from './components/Breadcrumb';
 
-export { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownDivider } from './components/Dropdown';
+export {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  DropdownDivider,
+  DropdownGroup,
+  DropdownSearch,
+  DropdownItemCheckbox,
+  DropdownSubmenu,
+} from './components/Dropdown';
 export type {
   DropdownProps,
   DropdownTriggerProps,
   DropdownMenuProps,
   DropdownItemProps,
+  DropdownGroupProps,
+  DropdownSearchProps,
+  DropdownItemCheckboxProps,
+  DropdownSubmenuProps,
 } from './components/Dropdown';
 
 export { Skeleton } from './components/Skeleton';
@@ -182,4 +198,5 @@ export type {
   ToothCondition,
   ToothSurface,
   SurfaceCondition,
+  DentitionMode,
 } from './components/Odontogram';

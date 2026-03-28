@@ -1,0 +1,56 @@
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ─── Sizes ─────────────────────────────────────────────────────────────────── */
+
+.sm { gap: 0.5rem;  padding: 2rem 1rem; }
+.md { gap: 0.75rem; padding: 3rem 1.5rem; }
+.lg { gap: 1rem;    padding: 4rem 2rem; }
+
+/* ─── Icon box ──────────────────────────────────────────────────────────────── */
+
+.iconBox {
+  color: var(--color-txt-secondary);
+}
+
+.iconBoxSm { width: 2.5rem;  height: 2.5rem; }
+.iconBoxMd { width: 3.5rem;  height: 3.5rem; }
+.iconBoxLg { width: 5rem;    height: 5rem; }
+
+.iconFull {
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── Typography ────────────────────────────────────────────────────────────── */
+
+.title {
+  color: var(--color-txt);
+  font-weight: 600;
+}
+
+.titleSm { font-size: 0.875rem; line-height: 1.25rem; }
+.titleMd { font-size: 1rem;     line-height: 1.5rem; }
+.titleLg { font-size: 1.125rem; line-height: 1.75rem; }
+
+.description {
+  color: var(--color-txt-secondary);
+  max-width: 20rem;
+}
+
+.descriptionSm { font-size: 0.75rem;  line-height: 1rem; }
+.descriptionMd { font-size: 0.875rem; line-height: 1.25rem; }
+.descriptionLg { font-size: 1rem;     line-height: 1.5rem; }
+
+/* ─── Action ────────────────────────────────────────────────────────────────── */
+
+.actionSm { margin-top: 0.5rem; }
+.actionMd { margin-top: 0.75rem; }
+.actionLg { margin-top: 1rem; }

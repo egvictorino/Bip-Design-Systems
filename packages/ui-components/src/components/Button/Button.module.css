@@ -1,0 +1,100 @@
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 1px;
+  font-weight: 500;
+  transition: background-color 150ms, color 150ms, border-color 150ms, opacity 150ms;
+  cursor: pointer;
+  border: none;
+}
+
+.button:focus {
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.button.loading {
+  cursor: wait;
+}
+
+.fullWidth {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ─── Variants ──────────────────────────────────────────────────────────────── */
+
+.primary {
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+}
+.primary:hover:not(:disabled) { background-color: var(--color-primary-hover); }
+.primary:active:not(:disabled) { background-color: var(--color-primary-press); }
+.primary:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+
+.secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-txt);
+}
+.secondary:hover:not(:disabled) { background-color: var(--color-secondary-hover); }
+.secondary:active:not(:disabled) { background-color: var(--color-secondary-press); }
+.secondary:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-secondary); }
+
+.bare {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+.bare:hover:not(:disabled) { color: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+.bare:active:not(:disabled) { color: var(--color-primary-press); border-color: var(--color-primary-press); }
+.bare:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+
+.soul {
+  background-color: transparent;
+  color: var(--color-primary);
+}
+.soul:hover:not(:disabled) { color: var(--color-primary-hover); }
+.soul:active:not(:disabled) { color: var(--color-primary-press); }
+.soul:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+
+.danger {
+  background-color: var(--color-danger);
+  color: var(--color-txt-white);
+}
+.danger:hover:not(:disabled) { background-color: var(--color-danger-hover); }
+.danger:active:not(:disabled) { background-color: var(--color-danger-press); }
+.danger:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+
+/* ─── Sizes ─────────────────────────────────────────────────────────────────── */
+
+.sm { padding: 6px 12px;  font-size: 0.75rem;  line-height: 1rem; }
+.md { padding: 10px 20px; font-size: 0.875rem; line-height: 1.25rem; }
+.lg { padding: 12px 24px; font-size: 1.125rem; line-height: 1.75rem; }
+
+/* ─── Spinner icon ──────────────────────────────────────────────────────────── */
+
+.spinnerIcon {
+  width: 1rem;
+  height: 1rem;
+  animation: spin 1s linear infinite;
+}
+
+.spinnerTrack { opacity: 0.25; }
+.spinnerFill  { opacity: 0.75; }

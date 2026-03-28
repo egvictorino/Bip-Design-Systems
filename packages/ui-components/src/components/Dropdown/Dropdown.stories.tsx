@@ -1,5 +1,16 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownDivider } from './Dropdown';
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  DropdownDivider,
+  DropdownGroup,
+  DropdownSearch,
+  DropdownItemCheckbox,
+  DropdownSubmenu,
+} from './Dropdown';
 import { Button } from '../Button';
 
 const meta = {
@@ -36,6 +47,12 @@ const CopyIcon = () => (
 const TrashIcon = () => (
   <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
     <path d="M11 1.75V3h2.25a.75.75 0 010 1.5H2.75a.75.75 0 010-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75zM4.496 6.675l.66 6.6a.25.25 0 00.249.225h5.19a.25.25 0 00.249-.225l.66-6.6a.75.75 0 011.492.149l-.66 6.6A1.748 1.748 0 0110.595 15h-5.19a1.75 1.75 0 01-1.741-1.576l-.66-6.6a.75.75 0 011.492-.15zM6.5 1.75V3h3V1.75a.25.25 0 00-.25-.25h-2.5a.25.25 0 00-.25.25z" />
+  </svg>
+);
+
+const FolderIcon = () => (
+  <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+    <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5L6.33 1.586A1.75 1.75 0 005.042 1H1.75z" />
   </svg>
 );
 
@@ -86,15 +103,10 @@ export const AlignEnd: Story = {
       <DropdownTrigger>
         <button
           type="button"
-          className="rounded p-1.5 text-txt-secondary hover:bg-surface-3 hover:text-txt focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
           aria-label="Más opciones"
+          style={{ borderRadius: '0.25rem', padding: '0.375rem', border: 'none', background: 'none', cursor: 'pointer' }}
         >
-          <svg
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            className="w-4 h-4"
-            aria-hidden="true"
-          >
+          <svg viewBox="0 0 16 16" fill="currentColor" style={{ width: '1rem', height: '1rem' }} aria-hidden="true">
             <path d="M8 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm-5 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm10 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
           </svg>
         </button>
@@ -143,6 +155,138 @@ export const BareButton: Story = {
         <DropdownItem>Activos</DropdownItem>
         <DropdownItem>Inactivos</DropdownItem>
         <DropdownItem>Archivados</DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  ),
+};
+
+// ─── New stories ──────────────────────────────────────────────────────────────
+
+export const WithGroups: Story = {
+  args: { children: null },
+  render: () => (
+    <Dropdown>
+      <DropdownTrigger>
+        <Button variant="secondary">Acciones</Button>
+      </DropdownTrigger>
+      <DropdownMenu>
+        <DropdownGroup label="Archivo">
+          <DropdownItem icon={<EyeIcon />}>Ver detalle</DropdownItem>
+          <DropdownItem icon={<EditIcon />}>Editar</DropdownItem>
+          <DropdownItem icon={<CopyIcon />}>Duplicar</DropdownItem>
+        </DropdownGroup>
+        <DropdownGroup label="Zona peligrosa">
+          <DropdownItem icon={<TrashIcon />} danger>
+            Eliminar
+          </DropdownItem>
+        </DropdownGroup>
+      </DropdownMenu>
+    </Dropdown>
+  ),
+};
+
+export const WithSearch: Story = {
+  args: { children: null },
+  render: () => {
+    const allItems = ['Ver detalle', 'Editar', 'Duplicar', 'Archivar', 'Exportar', 'Eliminar'];
+
+    const WithSearchStory = () => {
+      const [query, setQuery] = useState('');
+      const filtered = allItems.filter((item) =>
+        item.toLowerCase().includes(query.toLowerCase())
+      );
+      return (
+        <Dropdown>
+          <DropdownTrigger>
+            <Button variant="secondary">Acciones</Button>
+          </DropdownTrigger>
+          <DropdownMenu>
+            <DropdownSearch value={query} onChange={setQuery} placeholder="Buscar acción..." />
+            {filtered.length > 0 ? (
+              filtered.map((item) => (
+                <DropdownItem key={item} danger={item === 'Eliminar'}>
+                  {item}
+                </DropdownItem>
+              ))
+            ) : (
+              <div style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
+                Sin resultados
+              </div>
+            )}
+          </DropdownMenu>
+        </Dropdown>
+      );
+    };
+
+    return <WithSearchStory />;
+  },
+};
+
+export const WithCheckboxItems: Story = {
+  args: { children: null },
+  render: () => {
+    const WithCheckboxStory = () => {
+      const [selected, setSelected] = useState<Record<string, boolean>>({
+        activos: true,
+        inactivos: false,
+        archivados: false,
+      });
+
+      const toggle = (key: string) =>
+        setSelected((prev) => ({ ...prev, [key]: !prev[key] }));
+
+      return (
+        <Dropdown>
+          <DropdownTrigger>
+            <Button variant="secondary">Filtrar estado</Button>
+          </DropdownTrigger>
+          <DropdownMenu>
+            <DropdownItemCheckbox
+              checked={selected.activos}
+              onChange={() => toggle('activos')}
+            >
+              Activos
+            </DropdownItemCheckbox>
+            <DropdownItemCheckbox
+              checked={selected.inactivos}
+              onChange={() => toggle('inactivos')}
+            >
+              Inactivos
+            </DropdownItemCheckbox>
+            <DropdownItemCheckbox
+              checked={selected.archivados}
+              onChange={() => toggle('archivados')}
+            >
+              Archivados
+            </DropdownItemCheckbox>
+          </DropdownMenu>
+        </Dropdown>
+      );
+    };
+
+    return <WithCheckboxStory />;
+  },
+};
+
+export const WithSubmenu: Story = {
+  args: { children: null },
+  render: () => (
+    <Dropdown>
+      <DropdownTrigger>
+        <Button variant="secondary">Acciones</Button>
+      </DropdownTrigger>
+      <DropdownMenu>
+        <DropdownItem icon={<EyeIcon />}>Ver detalle</DropdownItem>
+        <DropdownItem icon={<EditIcon />}>Editar</DropdownItem>
+        <DropdownSubmenu label="Mover a" icon={<FolderIcon />}>
+          <DropdownItem>Carpeta principal</DropdownItem>
+          <DropdownItem>Proyectos activos</DropdownItem>
+          <DropdownItem>Archivo</DropdownItem>
+        </DropdownSubmenu>
+        <DropdownDivider />
+        <DropdownItem icon={<TrashIcon />} danger>
+          Eliminar
+        </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   ),

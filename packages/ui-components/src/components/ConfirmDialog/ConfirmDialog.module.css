@@ -1,0 +1,37 @@
+.description {
+  font-size: 0.875rem;
+  color: var(--color-txt-secondary);
+}
+
+/* Confirm button variant overrides */
+.confirmDanger {
+  background-color: var(--color-danger);
+}
+
+.confirmDanger:hover {
+  background-color: var(--color-danger-hover);
+}
+
+.confirmDanger:active {
+  background-color: var(--color-danger-press);
+}
+
+.confirmDanger:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+}
+
+.confirmWarning {
+  background-color: var(--color-warning);
+}
+
+.confirmWarning:hover {
+  opacity: 0.9;
+}
+
+.confirmWarning:active {
+  opacity: 0.8;
+}
+
+.confirmWarning:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-warning);
+}

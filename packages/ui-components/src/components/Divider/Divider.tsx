@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Divider.module.css';
 
 export interface DividerProps {
   orientation?: 'horizontal' | 'vertical';
@@ -19,11 +20,7 @@ export const Divider: React.FC<DividerProps> = ({
       <div
         role="separator"
         aria-orientation="vertical"
-        className={cn(
-          'self-stretch w-px border-l border-edge',
-          variant === 'dashed' && 'border-dashed',
-          className
-        )}
+        className={cn(styles.vertical, variant === 'dashed' && styles.dashed, className)}
       />
     );
   }
@@ -33,15 +30,11 @@ export const Divider: React.FC<DividerProps> = ({
       <div
         role="separator"
         aria-orientation="horizontal"
-        className={cn('flex items-center gap-3', className)}
+        className={cn(styles.withLabel, className)}
       >
-        <span
-          className={cn('flex-1 border-t border-edge', variant === 'dashed' && 'border-dashed')}
-        />
-        <span className="text-xs text-txt-secondary whitespace-nowrap">{label}</span>
-        <span
-          className={cn('flex-1 border-t border-edge', variant === 'dashed' && 'border-dashed')}
-        />
+        <span className={cn(styles.line, variant === 'dashed' && styles.dashed)} />
+        <span className={styles.labelText}>{label}</span>
+        <span className={cn(styles.line, variant === 'dashed' && styles.dashed)} />
       </div>
     );
   }
@@ -49,7 +42,7 @@ export const Divider: React.FC<DividerProps> = ({
   return (
     <hr
       aria-orientation="horizontal"
-      className={cn('border-t border-edge my-0', variant === 'dashed' && 'border-dashed', className)}
+      className={cn(styles.horizontal, variant === 'dashed' && styles.dashed, className)}
     />
   );
 };

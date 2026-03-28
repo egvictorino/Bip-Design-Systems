@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useContext, useId, useCallback, createContext } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
+import styles from './Modal.module.css';
 
 interface ModalContextValue {
   titleId: string;
@@ -24,11 +25,11 @@ export interface ModalProps {
   children: React.ReactNode;
 }
 
-const sizeStyles: Record<NonNullable<ModalProps['size']>, string> = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-xl',
+const sizeClass: Record<NonNullable<ModalProps['size']>, string> = {
+  sm: styles.sm,
+  md: styles.md,
+  lg: styles.lg,
+  xl: styles.xl,
 };
 
 const FOCUSABLE_SELECTORS =
@@ -121,7 +122,7 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Backdrop + centering container — presentational, Escape handled at document level */}
       <div
         role="presentation"
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+        className={styles.backdrop}
         onClick={handleBackdropClick}
       >
         {/* Dialog */}
@@ -131,11 +132,7 @@ export const Modal: React.FC<ModalProps> = ({
           aria-modal="true"
           aria-labelledby={titleId}
           tabIndex={-1}
-          className={cn(
-            'relative w-full rounded-lg bg-white shadow-xl focus:outline-none',
-            sizeStyles[size],
-            className
-          )}
+          className={cn(styles.dialog, sizeClass[size], className)}
         >
           {children}
         </div>
@@ -153,27 +150,22 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, .
   const { titleId, onClose } = useModalContext();
 
   return (
-    <div
-      className={cn(
-        'flex items-center justify-between border-b border-edge px-6 py-4',
-        className
-      )}
-      {...props}
-    >
-      <h2 id={titleId} className="text-lg font-semibold text-txt">
+    <div className={cn(styles.header, className)} {...props}>
+      <h2 id={titleId} className={styles.title}>
         {children}
       </h2>
       <button
         type="button"
         onClick={onClose}
         aria-label="Cerrar modal"
-        className={cn(
-          'shrink-0 rounded p-1 text-txt-secondary transition-colors',
-          'hover:bg-surface-3 hover:text-txt',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1'
-        )}
+        className={styles.closeBtn}
       >
-        <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5" aria-hidden="true">
+        <svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          className={styles.closeBtnIcon}
+          aria-hidden="true"
+        >
           <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
         </svg>
       </button>
@@ -186,7 +178,7 @@ export interface ModalBodyProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const ModalBody: React.FC<ModalBodyProps> = ({ className, children, ...props }) => (
-  <div className={cn('px-6 py-5', className)} {...props}>
+  <div className={cn(styles.body, className)} {...props}>
     {children}
   </div>
 );
@@ -196,14 +188,7 @@ export interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const ModalFooter: React.FC<ModalFooterProps> = ({ className, children, ...props }) => (
-  <div
-    className={cn(
-      'flex items-center justify-end gap-3',
-      'border-t border-edge px-6 py-4',
-      className
-    )}
-    {...props}
-  >
+  <div className={cn(styles.footer, className)} {...props}>
     {children}
   </div>
 );

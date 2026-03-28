@@ -37,41 +37,37 @@ describe('Button', () => {
 
   it('applies primary variant by default', () => {
     render(<Button>Primary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-primary', 'text-txt-white');
+    expect(screen.getByRole('button')).toHaveClass('primary');
   });
 
   it('applies secondary variant with dark text on light background', () => {
     render(<Button variant="secondary">Secondary</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('bg-secondary', 'text-txt-primary');
+    expect(btn).toHaveClass('secondary');
   });
 
   it('applies bare variant', () => {
     render(<Button variant="bare">Bare</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('border', 'border-primary', 'bg-transparent');
+    expect(btn).toHaveClass('bare');
   });
 
   it('applies soul variant', () => {
     render(<Button variant="soul">Soul</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('bg-transparent', 'text-primary');
+    expect(btn).toHaveClass('soul');
   });
 
   // ── Sizes ───────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'text-xs', 'px-[12px]', 'py-[6px]'],
-    ['md', 'text-sm', 'px-[20px]', 'py-[10px]'],
-    ['lg', 'text-lg', 'px-[24px]', 'py-[12px]'],
-  ] as const)('size %s applies correct text and padding classes', (size, text, px, py) => {
+  it.each(['sm', 'md', 'lg'] as const)('size %s applies correct size class', (size) => {
     render(<Button size={size}>Texto</Button>);
-    expect(screen.getByRole('button')).toHaveClass(text, px, py);
+    expect(screen.getByRole('button')).toHaveClass(size);
   });
 
   it('defaults to md size', () => {
     render(<Button>Texto</Button>);
-    expect(screen.getByRole('button')).toHaveClass('text-sm', 'px-[20px]');
+    expect(screen.getByRole('button')).toHaveClass('md');
   });
 
   // ── Disabled state ──────────────────────────────────────────────────────────
@@ -82,16 +78,6 @@ describe('Button', () => {
     render(<Button onClick={onClick} disabled>Disabled</Button>);
     await user.click(screen.getByRole('button'));
     expect(onClick).not.toHaveBeenCalled();
-  });
-
-  it('disabled button has cursor-not-allowed class', () => {
-    render(<Button disabled>Disabled</Button>);
-    expect(screen.getByRole('button')).toHaveClass('disabled:cursor-not-allowed');
-  });
-
-  it('disabled button has opacity-50 class for visual distinction', () => {
-    render(<Button disabled>Disabled</Button>);
-    expect(screen.getByRole('button')).toHaveClass('disabled:opacity-50');
   });
 
   // ── Keyboard interaction ─────────────────────────────────────────────────────
@@ -128,6 +114,67 @@ describe('Button', () => {
     render(<Button className="mt-4">Custom</Button>);
     const button = screen.getByRole('button');
     expect(button).toHaveClass('mt-4');
-    expect(button).toHaveClass('bg-primary');
+    expect(button).toHaveClass('primary');
+  });
+
+  // ── Danger variant ──────────────────────────────────────────────────────────
+
+  it('applies danger variant', () => {
+    render(<Button variant="danger">Eliminar</Button>);
+    const btn = screen.getByRole('button');
+    expect(btn).toHaveClass('danger');
+  });
+
+  // ── Loading state ───────────────────────────────────────────────────────────
+
+  it('loading=true renders a spinner SVG', () => {
+    render(<Button loading>Guardando</Button>);
+    const btn = screen.getByRole('button');
+    expect(btn.querySelector('svg')).toBeInTheDocument();
+  });
+
+  it('loading=true keeps children text visible', () => {
+    render(<Button loading>Guardando</Button>);
+    expect(screen.getByRole('button')).toHaveTextContent('Guardando');
+  });
+
+  it('loading=true disables the button', () => {
+    render(<Button loading>Guardando</Button>);
+    expect(screen.getByRole('button')).toBeDisabled();
+  });
+
+  it('loading=true does not call onClick', async () => {
+    const onClick = vi.fn();
+    const user = userEvent.setup();
+    render(<Button loading onClick={onClick}>Guardando</Button>);
+    await user.click(screen.getByRole('button'));
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('loading=true sets aria-busy="true"', () => {
+    render(<Button loading>Guardando</Button>);
+    expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('loading=false (default) does not set aria-busy', () => {
+    render(<Button>Normal</Button>);
+    expect(screen.getByRole('button')).not.toHaveAttribute('aria-busy');
+  });
+
+  it('loading=true does not render spinner when false', () => {
+    render(<Button>Normal</Button>);
+    expect(screen.getByRole('button').querySelector('svg')).not.toBeInTheDocument();
+  });
+
+  // ── fullWidth ────────────────────────────────────────────────────────────────
+
+  it('fullWidth=true applies fullWidth class', () => {
+    render(<Button fullWidth>Ancho completo</Button>);
+    expect(screen.getByRole('button')).toHaveClass('fullWidth');
+  });
+
+  it('fullWidth=false (default) does not apply fullWidth', () => {
+    render(<Button>Normal</Button>);
+    expect(screen.getByRole('button')).not.toHaveClass('fullWidth');
   });
 });

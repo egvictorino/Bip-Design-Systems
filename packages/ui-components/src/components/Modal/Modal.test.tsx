@@ -119,14 +119,9 @@ describe('Modal', () => {
 
   // ── Sizes ───────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'max-w-sm'],
-    ['md', 'max-w-md'],
-    ['lg', 'max-w-lg'],
-    ['xl', 'max-w-xl'],
-  ] as const)('size %s applies correct max-width class', (size, cls) => {
+  it.each(['sm', 'md', 'lg', 'xl'] as const)('size %s applies correct size class', (size) => {
     render(<DefaultModal size={size} />);
-    expect(screen.getByRole('dialog')).toHaveClass(cls);
+    expect(screen.getByRole('dialog')).toHaveClass(size);
   });
 
   // ── className ───────────────────────────────────────────────────────────────

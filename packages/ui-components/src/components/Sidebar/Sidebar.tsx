@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useId, useState } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Sidebar.module.css';
 import { Tooltip } from '../Tooltip/Tooltip';
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -67,7 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div
           role="presentation"
           data-testid="mobile-overlay"
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          className={styles.overlay}
           onClick={closeMobile}
           aria-hidden="true"
         />
@@ -78,14 +79,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         id={sidebarId}
         aria-label="Navegación lateral"
         className={cn(
-          'fixed left-0 top-0 z-50 flex h-screen flex-col',
-          'bg-white border-r border-edge',
-          'transition-[width,transform] duration-200 ease-in-out',
-          isCollapsed ? 'w-16' : 'w-60',
-          // Mobile: hidden by default, visible when isOpen
-          isOpen ? 'translate-x-0' : '-translate-x-full',
-          // Desktop: always visible regardless of mobile state
-          'md:translate-x-0',
+          styles.panel,
+          isCollapsed ? styles.panelCollapsed : styles.panelExpanded,
+          isOpen ? styles.panelMobileOpen : styles.panelMobileClosed,
           className
         )}
       >
@@ -96,7 +92,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 };
 
 // ─── SidebarHeader ───────────────────────────────────────────────────────────
-// When collapsed, switches to justify-center so SidebarTrigger stays centered.
 
 export interface SidebarHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -108,8 +103,8 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ className, childre
   return (
     <div
       className={cn(
-        'flex items-center shrink-0 border-b border-edge px-4 py-3',
-        isCollapsed ? 'justify-center' : 'justify-between',
+        styles.header,
+        isCollapsed ? styles.headerCollapsed : styles.headerExpanded,
         className
       )}
       {...props}
@@ -120,8 +115,6 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ className, childre
 };
 
 // ─── SidebarBrand ────────────────────────────────────────────────────────────
-// Shows brand name/logo when expanded; hides automatically when collapsed.
-// Place it before <SidebarTrigger> inside <SidebarHeader>.
 
 export interface SidebarBrandProps {
   href?: string;
@@ -134,21 +127,18 @@ export const SidebarBrand: React.FC<SidebarBrandProps> = ({ href, className, chi
 
   if (isCollapsed) return null;
 
-  const brandClasses = cn('flex items-center gap-2 font-semibold text-sm text-txt', className);
+  const brandClass = cn(styles.brand, className);
 
   return href ? (
-    <a href={href} className={brandClasses}>
+    <a href={href} className={brandClass}>
       {children}
     </a>
   ) : (
-    <span className={brandClasses}>{children}</span>
+    <span className={brandClass}>{children}</span>
   );
 };
 
 // ─── SidebarContent ──────────────────────────────────────────────────────────
-// Renders as <nav> for correct ARIA landmark semantics.
-// The <aside> provides the "complementary" landmark for the panel structure;
-// the <nav> inside provides the "navigation" landmark for the actual nav items.
 
 export interface SidebarContentProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
@@ -161,7 +151,7 @@ export const SidebarContent: React.FC<SidebarContentProps> = ({
 }) => (
   <nav
     aria-label="Navegación"
-    className={cn('flex-1 overflow-y-auto px-3 py-2', className)}
+    className={cn(styles.content, className)}
     {...props}
   >
     {children}
@@ -169,9 +159,6 @@ export const SidebarContent: React.FC<SidebarContentProps> = ({
 );
 
 // ─── SidebarGroup ────────────────────────────────────────────────────────────
-// Renders a labeled group of SidebarItems.
-// Use the `label` prop for the section heading — it is automatically hidden
-// when the sidebar is collapsed. Children are wrapped in a semantic <ul>.
 
 export interface SidebarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   label?: React.ReactNode;
@@ -187,20 +174,16 @@ export const SidebarGroup: React.FC<SidebarGroupProps> = ({
   const { isCollapsed } = useSidebar();
 
   return (
-    <div className={cn('mb-4', className)} {...props}>
+    <div className={cn(styles.group, className)} {...props}>
       {label && !isCollapsed && (
-        <p className="px-2 mb-1 text-xs font-semibold uppercase tracking-wide text-txt-disabled">
-          {label}
-        </p>
+        <p className={styles.groupLabel}>{label}</p>
       )}
-      <ul className="list-none m-0 p-0 flex flex-col gap-0.5">{children}</ul>
+      <ul className={styles.groupList}>{children}</ul>
     </div>
   );
 };
 
 // ─── SidebarGroupLabel ───────────────────────────────────────────────────────
-// Standalone label for advanced use cases. For the common case, prefer the
-// `label` prop on <SidebarGroup> instead.
 
 export interface SidebarGroupLabelProps extends React.HTMLAttributes<HTMLParagraphElement> {
   children: React.ReactNode;
@@ -216,13 +199,7 @@ export const SidebarGroupLabel: React.FC<SidebarGroupLabelProps> = ({
   if (isCollapsed) return null;
 
   return (
-    <p
-      className={cn(
-        'px-2 mb-1 text-xs font-semibold uppercase tracking-wide text-txt-disabled',
-        className
-      )}
-      {...props}
-    >
+    <p className={cn(styles.groupLabel, className)} {...props}>
       {children}
     </p>
   );
@@ -257,14 +234,11 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
     onClick?.(e);
   };
 
-  const baseClasses = cn(
-    'flex items-center w-full rounded-md text-sm font-medium transition-colors outline-none',
-    'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1',
-    isCollapsed ? 'justify-center px-2 py-2' : 'gap-3 px-3 py-2',
-    active
-      ? 'bg-surface-3 text-txt'
-      : 'text-txt-secondary hover:bg-surface-3 hover:text-txt',
-    disabled && 'text-txt-disabled cursor-not-allowed pointer-events-none',
+  const itemClass = cn(
+    styles.item,
+    isCollapsed ? styles.itemCollapsed : styles.itemExpanded,
+    active ? styles.itemActive : styles.itemDefault,
+    disabled && styles.itemDisabled,
     className
   );
 
@@ -287,7 +261,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
       aria-current={active ? 'page' : undefined}
       aria-disabled={disabled || undefined}
       tabIndex={disabled ? -1 : undefined}
-      className={baseClasses}
+      className={itemClass}
       onClick={handleClick}
     >
       {content}
@@ -298,7 +272,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
       aria-label={collapsedLabel}
       aria-current={active ? 'page' : undefined}
       disabled={disabled}
-      className={baseClasses}
+      className={itemClass}
       onClick={handleClick}
     >
       {content}
@@ -314,7 +288,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
       itemElement
     );
 
-  return <li className="contents">{wrappedItem}</li>;
+  return <li style={{ display: 'contents' }}>{wrappedItem}</li>;
 };
 
 // ─── SidebarFooter ───────────────────────────────────────────────────────────
@@ -324,13 +298,7 @@ export interface SidebarFooterProps extends React.HTMLAttributes<HTMLDivElement>
 }
 
 export const SidebarFooter: React.FC<SidebarFooterProps> = ({ className, children, ...props }) => (
-  <div
-    className={cn(
-      'shrink-0 border-t border-edge px-3 py-3',
-      className
-    )}
-    {...props}
-  >
+  <div className={cn(styles.footer, className)} {...props}>
     {children}
   </div>
 );
@@ -349,18 +317,12 @@ export const SidebarTrigger: React.FC<SidebarTriggerProps> = ({ className, ...pr
       aria-label={isCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
       aria-expanded={!isCollapsed}
       aria-controls={sidebarId}
-      className={cn(
-        'inline-flex items-center justify-center w-8 h-8 rounded shrink-0',
-        'text-txt-secondary hover:bg-surface-3 hover:text-txt',
-        'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
-        'focus-visible:ring-primary',
-        className
-      )}
+      className={cn(styles.trigger, className)}
       {...props}
     >
       {isCollapsed ? (
         // Chevron right (expand)
-        <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4" aria-hidden="true">
+        <svg viewBox="0 0 16 16" fill="none" className={styles.triggerIcon} aria-hidden="true">
           <path
             d="M6 4l4 4-4 4"
             stroke="currentColor"
@@ -371,7 +333,7 @@ export const SidebarTrigger: React.FC<SidebarTriggerProps> = ({ className, ...pr
         </svg>
       ) : (
         // Chevron left (collapse)
-        <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4" aria-hidden="true">
+        <svg viewBox="0 0 16 16" fill="none" className={styles.triggerIcon} aria-hidden="true">
           <path
             d="M10 12L6 8l4-4"
             stroke="currentColor"

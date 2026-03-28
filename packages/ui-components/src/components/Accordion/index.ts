@@ -4,4 +4,5 @@ export type {
   AccordionItemProps,
   AccordionTriggerProps,
   AccordionContentProps,
+  AccordionVariant,
 } from './Accordion';

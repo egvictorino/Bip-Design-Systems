@@ -6,6 +6,10 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownDivider,
+  DropdownGroup,
+  DropdownSearch,
+  DropdownItemCheckbox,
+  DropdownSubmenu,
 } from './Dropdown';
 
 // ─── Fixture ──────────────────────────────────────────────────────────────────
@@ -176,11 +180,11 @@ describe('Dropdown', () => {
 
   // ── danger variant ────────────────────────────────────────────────────────
 
-  it('danger item has error text color class', () => {
+  it('danger item has itemDanger class', () => {
     render(<DefaultDropdown />);
     open();
     expect(screen.getByRole('menuitem', { name: 'Eliminar' })).toHaveClass(
-      'text-danger'
+      'itemDanger'
     );
   });
 
@@ -243,5 +247,324 @@ describe('Dropdown', () => {
       )
     ).toThrow();
     consoleError.mockRestore();
+  });
+});
+
+// ─── DropdownGroup ────────────────────────────────────────────────────────────
+
+describe('DropdownGroup', () => {
+  const GroupDropdown = () => (
+    <Dropdown>
+      <DropdownTrigger>
+        <button type="button">Abrir</button>
+      </DropdownTrigger>
+      <DropdownMenu>
+        <DropdownGroup label="Acciones">
+          <DropdownItem>Editar</DropdownItem>
+          <DropdownItem>Duplicar</DropdownItem>
+        </DropdownGroup>
+        <DropdownGroup label="Zona peligrosa">
+          <DropdownItem danger>Eliminar</DropdownItem>
+        </DropdownGroup>
+      </DropdownMenu>
+    </Dropdown>
+  );
+
+  it('renders group containers with role="group"', () => {
+    render(<GroupDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    expect(screen.getAllByRole('group').length).toBe(2);
+  });
+
+  it('renders group label text', () => {
+    render(<GroupDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    expect(screen.getByText('Acciones')).toBeInTheDocument();
+    expect(screen.getByText('Zona peligrosa')).toBeInTheDocument();
+  });
+
+  it('group has aria-labelledby pointing to the label element', () => {
+    render(<GroupDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const groups = screen.getAllByRole('group');
+    const label = screen.getByText('Acciones');
+    expect(groups[0]).toHaveAttribute('aria-labelledby', label.id);
+  });
+
+  it('items inside groups are still navigable with arrows', () => {
+    render(<GroupDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const menu = screen.getByRole('menu');
+    // First item (Editar) has focus on open; ArrowDown → Duplicar
+    fireEvent.keyDown(menu, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(screen.getByRole('menuitem', { name: 'Duplicar' }));
+  });
+});
+
+// ─── DropdownSearch ───────────────────────────────────────────────────────────
+
+describe('DropdownSearch', () => {
+  const SearchDropdown = ({ onChange = vi.fn() }: { onChange?: (v: string) => void }) => (
+    <Dropdown>
+      <DropdownTrigger>
+        <button type="button">Abrir</button>
+      </DropdownTrigger>
+      <DropdownMenu>
+        <DropdownSearch placeholder="Buscar..." value="" onChange={onChange} />
+        <DropdownItem>Editar</DropdownItem>
+        <DropdownItem>Duplicar</DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  );
+
+  it('renders a searchbox input', () => {
+    render(<SearchDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    expect(screen.getByRole('searchbox')).toBeInTheDocument();
+  });
+
+  it('has the correct aria-label', () => {
+    render(<SearchDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    expect(screen.getByRole('searchbox')).toHaveAttribute('aria-label', 'Buscar opciones');
+  });
+
+  it('calls onChange when the user types', () => {
+    const onChange = vi.fn();
+    render(<SearchDropdown onChange={onChange} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'ed' } });
+    expect(onChange).toHaveBeenCalledWith('ed');
+  });
+
+  it('stops propagation of ArrowDown so menu navigation does not trigger while typing', () => {
+    render(<SearchDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const input = screen.getByRole('searchbox');
+    // Focus the input explicitly (menu open focuses the first item by default)
+    input.focus();
+    expect(document.activeElement).toBe(input);
+    // ArrowDown inside the input should not move menu focus away from the input
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(input);
+  });
+
+  it('allows Escape to propagate so the root Dropdown closes', () => {
+    render(<SearchDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    fireEvent.keyDown(screen.getByRole('searchbox'), { key: 'Escape' });
+    // Escape propagates to the document listener which closes the root dropdown
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+});
+
+// ─── DropdownItemCheckbox ─────────────────────────────────────────────────────
+
+describe('DropdownItemCheckbox', () => {
+  const CheckboxDropdown = ({
+    checked = false,
+    onChange = vi.fn(),
+  }: {
+    checked?: boolean;
+    onChange?: (v: boolean) => void;
+  }) => (
+    <Dropdown>
+      <DropdownTrigger>
+        <button type="button">Abrir</button>
+      </DropdownTrigger>
+      <DropdownMenu>
+        <DropdownItemCheckbox checked={checked} onChange={onChange}>
+          Activos
+        </DropdownItemCheckbox>
+        <DropdownItemCheckbox checked={false} onChange={vi.fn()}>
+          Inactivos
+        </DropdownItemCheckbox>
+      </DropdownMenu>
+    </Dropdown>
+  );
+
+  it('renders with role="menuitemcheckbox"', () => {
+    render(<CheckboxDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    expect(screen.getAllByRole('menuitemcheckbox').length).toBe(2);
+  });
+
+  it('reflects checked state via aria-checked', () => {
+    render(<CheckboxDropdown checked={true} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    expect(screen.getByRole('menuitemcheckbox', { name: /Activos/ })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    );
+  });
+
+  it('aria-checked is false when unchecked', () => {
+    render(<CheckboxDropdown checked={false} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    expect(screen.getByRole('menuitemcheckbox', { name: /Activos/ })).toHaveAttribute(
+      'aria-checked',
+      'false'
+    );
+  });
+
+  it('clicking calls onChange with toggled value', () => {
+    const onChange = vi.fn();
+    render(<CheckboxDropdown checked={false} onChange={onChange} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: /Activos/ }));
+    expect(onChange).toHaveBeenCalledWith(true);
+  });
+
+  it('clicking does NOT close the menu', () => {
+    render(<CheckboxDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: /Activos/ }));
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  it('disabled checkbox cannot be toggled', () => {
+    const onChange = vi.fn();
+    render(
+      <Dropdown>
+        <DropdownTrigger>
+          <button type="button">Abrir</button>
+        </DropdownTrigger>
+        <DropdownMenu>
+          <DropdownItemCheckbox checked={false} onChange={onChange} disabled>
+            Opción
+          </DropdownItemCheckbox>
+        </DropdownMenu>
+      </Dropdown>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const checkbox = screen.getByRole('menuitemcheckbox', { name: 'Opción' });
+    expect(checkbox).toBeDisabled();
+    fireEvent.click(checkbox);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('checkboxes are included in arrow-key navigation', () => {
+    render(<CheckboxDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const menu = screen.getByRole('menu');
+    // First checkbox (Activos) should be focused on open
+    expect(document.activeElement).toBe(
+      screen.getByRole('menuitemcheckbox', { name: /Activos/ })
+    );
+    // ArrowDown → second checkbox
+    fireEvent.keyDown(menu, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(
+      screen.getByRole('menuitemcheckbox', { name: /Inactivos/ })
+    );
+  });
+});
+
+// ─── DropdownSubmenu ──────────────────────────────────────────────────────────
+
+describe('DropdownSubmenu', () => {
+  const SubmenuDropdown = () => (
+    <Dropdown>
+      <DropdownTrigger>
+        <button type="button">Abrir</button>
+      </DropdownTrigger>
+      <DropdownMenu>
+        <DropdownItem>Editar</DropdownItem>
+        <DropdownSubmenu label="Mover a">
+          <DropdownItem>Carpeta A</DropdownItem>
+          <DropdownItem>Carpeta B</DropdownItem>
+        </DropdownSubmenu>
+        <DropdownItem danger>Eliminar</DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  );
+
+  it('submenu is not visible initially', () => {
+    render(<SubmenuDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    // Only the root menu is visible — submenu items are not rendered
+    expect(screen.queryByRole('menuitem', { name: 'Carpeta A' })).not.toBeInTheDocument();
+  });
+
+  it('hovering the submenu trigger opens the submenu', () => {
+    render(<SubmenuDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const trigger = screen.getByRole('menuitem', { name: /Mover a/ });
+    fireEvent.mouseEnter(trigger.parentElement!);
+    expect(screen.getByRole('menuitem', { name: 'Carpeta A' })).toBeInTheDocument();
+  });
+
+  it('mouse-leaving the submenu container closes the submenu', () => {
+    render(<SubmenuDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const trigger = screen.getByRole('menuitem', { name: /Mover a/ });
+    fireEvent.mouseEnter(trigger.parentElement!);
+    expect(screen.getByRole('menuitem', { name: 'Carpeta A' })).toBeInTheDocument();
+    fireEvent.mouseLeave(trigger.parentElement!);
+    expect(screen.queryByRole('menuitem', { name: 'Carpeta A' })).not.toBeInTheDocument();
+  });
+
+  it('submenu trigger has aria-haspopup="menu"', () => {
+    render(<SubmenuDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const trigger = screen.getByRole('menuitem', { name: /Mover a/ });
+    expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+  });
+
+  it('aria-expanded reflects submenu open state', () => {
+    render(<SubmenuDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const trigger = screen.getByRole('menuitem', { name: /Mover a/ });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.mouseEnter(trigger.parentElement!);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('submenu trigger is included in root menu arrow navigation', () => {
+    render(<SubmenuDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const menu = screen.getAllByRole('menu')[0];
+    // Focus starts on first root item (Editar); ArrowDown → Mover a trigger
+    fireEvent.keyDown(menu, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(screen.getByRole('menuitem', { name: /Mover a/ }));
+  });
+
+  it('ArrowLeft inside submenu closes it and returns focus to trigger', () => {
+    render(<SubmenuDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const trigger = screen.getByRole('menuitem', { name: /Mover a/ });
+    fireEvent.mouseEnter(trigger.parentElement!);
+    const submenus = screen.getAllByRole('menu');
+    const submenu = submenus[submenus.length - 1];
+    fireEvent.keyDown(submenu, { key: 'ArrowLeft' });
+    expect(screen.queryByRole('menuitem', { name: 'Carpeta A' })).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('clicking a submenu item closes the root dropdown', () => {
+    render(<SubmenuDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const trigger = screen.getByRole('menuitem', { name: /Mover a/ });
+    fireEvent.mouseEnter(trigger.parentElement!);
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Carpeta A' }));
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('disabled submenu trigger cannot open submenu', () => {
+    render(
+      <Dropdown>
+        <DropdownTrigger>
+          <button type="button">Abrir</button>
+        </DropdownTrigger>
+        <DropdownMenu>
+          <DropdownSubmenu label="Sin permiso" disabled>
+            <DropdownItem>Sub item</DropdownItem>
+          </DropdownSubmenu>
+        </DropdownMenu>
+      </Dropdown>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const trigger = screen.getByRole('menuitem', { name: /Sin permiso/ });
+    fireEvent.mouseEnter(trigger.parentElement!);
+    expect(screen.queryByRole('menuitem', { name: 'Sub item' })).not.toBeInTheDocument();
   });
 });

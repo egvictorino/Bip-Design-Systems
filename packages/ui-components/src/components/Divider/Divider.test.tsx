@@ -22,7 +22,7 @@ describe('Divider', () => {
 
   it('applies dashed class for dashed variant', () => {
     render(<Divider variant="dashed" />);
-    expect(screen.getByRole('separator')).toHaveClass('border-dashed');
+    expect(screen.getByRole('separator')).toHaveClass('dashed');
   });
 
   it('applies custom className', () => {

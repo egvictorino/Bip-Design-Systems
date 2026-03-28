@@ -1,5 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Table.module.css';
 
 interface TableContextValue {
   striped: boolean;
@@ -10,7 +11,10 @@ const TableContext = createContext<TableContextValue | null>(null);
 
 const useTableContext = (): TableContextValue => {
   const ctx = useContext(TableContext);
-  if (!ctx) throw new Error('TableHead, TableBody, TableRow, TableHeader, and TableCell must be used inside <Table>');
+  if (!ctx)
+    throw new Error(
+      'TableHead, TableBody, TableRow, TableHeader, and TableCell must be used inside <Table>'
+    );
   return ctx;
 };
 
@@ -30,14 +34,8 @@ export const Table: React.FC<TableProps> = ({
   ...props
 }) => (
   <TableContext.Provider value={{ striped, compact }}>
-    <div
-      className={cn(
-        'w-full overflow-x-auto rounded-lg border border-edge',
-        className
-      )}
-      {...props}
-    >
-      <table className="w-full border-collapse text-sm">{children}</table>
+    <div className={cn(styles.wrapper, className)} {...props}>
+      <table className={styles.table}>{children}</table>
     </div>
   </TableContext.Provider>
 );
@@ -49,7 +47,7 @@ export interface TableHeadProps extends React.HTMLAttributes<HTMLTableSectionEle
 }
 
 export const TableHead: React.FC<TableHeadProps> = ({ className, children, ...props }) => (
-  <thead className={cn('bg-surface-3', className)} {...props}>
+  <thead className={cn(styles.thead, className)} {...props}>
     {children}
   </thead>
 );
@@ -61,10 +59,7 @@ export interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionEle
 }
 
 export const TableBody: React.FC<TableBodyProps> = ({ className, children, ...props }) => (
-  <tbody
-    className={cn('border-t border-edge-hover', className)}
-    {...props}
-  >
+  <tbody className={cn(styles.tbody, className)} {...props}>
     {children}
   </tbody>
 );
@@ -76,16 +71,22 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
   children: React.ReactNode;
 }
 
-export const TableRow: React.FC<TableRowProps> = ({ selected = false, className, children, ...props }) => {
+export const TableRow: React.FC<TableRowProps> = ({
+  selected = false,
+  className,
+  children,
+  ...props
+}) => {
   const { striped } = useTableContext();
 
   return (
     <tr
       aria-selected={selected || undefined}
       className={cn(
-        'border-t border-edge transition-colors first:border-t-0',
-        selected ? 'bg-selected' : 'hover:bg-surface-3/50',
-        !selected && striped && 'even:bg-surface-3/30',
+        styles.row,
+        selected
+          ? styles.rowSelected
+          : cn(styles.rowHoverable, !selected && striped && styles.rowStriped),
         className
       )}
       {...props}
@@ -105,20 +106,17 @@ export interface TableHeaderProps extends React.ThHTMLAttributes<HTMLTableCellEl
   children: React.ReactNode;
 }
 
-const alignStyles: Record<'left' | 'center' | 'right', string> = {
-  left: 'text-left',
-  center: 'text-center',
-  right: 'text-right',
+const alignClass: Record<'left' | 'center' | 'right', string> = {
+  left: styles.alignLeft,
+  center: styles.alignCenter,
+  right: styles.alignRight,
 };
 
 const SortIcon: React.FC<{ direction?: 'asc' | 'desc' | null }> = ({ direction }) => (
   <svg
     viewBox="0 0 16 16"
     fill="none"
-    className={cn(
-      'w-3.5 h-3.5 shrink-0',
-      direction ? 'text-primary' : 'text-txt-secondary'
-    )}
+    className={cn(styles.sortIcon, direction && styles.sortIconActive)}
     aria-hidden="true"
   >
     {direction === 'asc' ? (
@@ -148,7 +146,6 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   ...props
 }) => {
   const { compact } = useTableContext();
-  const padding = compact ? 'px-3 py-2' : 'px-4 py-3';
 
   const ariaSort = sortable
     ? sortDirection === 'asc'
@@ -171,12 +168,10 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
       aria-sort={ariaSort}
       tabIndex={sortable ? 0 : undefined}
       className={cn(
-        padding,
-        'text-xs font-semibold uppercase tracking-wide whitespace-nowrap',
-        'text-txt-secondary',
-        alignStyles[align],
-        sortable &&
-          'cursor-pointer select-none hover:text-txt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset',
+        styles.th,
+        compact ? styles.thCompact : styles.thNormal,
+        alignClass[align],
+        sortable && styles.thSortable,
         className
       )}
       onClick={sortable ? onSort : undefined}
@@ -184,7 +179,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
       {...props}
     >
       {sortable ? (
-        <span className="inline-flex items-center gap-1">
+        <span className={styles.sortableInner}>
           {children}
           <SortIcon direction={sortDirection} />
         </span>
@@ -209,10 +204,17 @@ export const TableCell: React.FC<TableCellProps> = ({
   ...props
 }) => {
   const { compact } = useTableContext();
-  const padding = compact ? 'px-3 py-2' : 'px-4 py-3';
 
   return (
-    <td className={cn(padding, 'text-txt', alignStyles[align], className)} {...props}>
+    <td
+      className={cn(
+        styles.td,
+        compact ? styles.tdCompact : styles.tdNormal,
+        alignClass[align],
+        className
+      )}
+      {...props}
+    >
       {children}
     </td>
   );

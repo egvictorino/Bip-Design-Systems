@@ -284,37 +284,34 @@ describe('ToastProvider / useToast', () => {
 
   // ── Position prop ───────────────────────────────────────────────────────────
 
-  it('position prop — top-right is the default (container has top-4 right-4)', () => {
+  it('position prop — top-right is the default (container has topRight class)', () => {
     render(
       <ToastProvider>
         <span />
       </ToastProvider>
     );
     const region = screen.getByRole('region', { name: 'Notificaciones' });
-    expect(region.className).toContain('top-4');
-    expect(region.className).toContain('right-4');
+    expect(region).toHaveClass('topRight');
   });
 
-  it('position prop — bottom-right positions container with bottom-4 right-4', () => {
+  it('position prop — bottom-right positions container with bottomRight class', () => {
     render(
       <ToastProvider position="bottom-right">
         <span />
       </ToastProvider>
     );
     const region = screen.getByRole('region', { name: 'Notificaciones' });
-    expect(region.className).toContain('bottom-4');
-    expect(region.className).toContain('right-4');
+    expect(region).toHaveClass('bottomRight');
   });
 
-  it('position prop — bottom-center positions container with bottom-4 and translate-x', () => {
+  it('position prop — bottom-center positions container with bottomCenter class', () => {
     render(
       <ToastProvider position="bottom-center">
         <span />
       </ToastProvider>
     );
     const region = screen.getByRole('region', { name: 'Notificaciones' });
-    expect(region.className).toContain('bottom-4');
-    expect(region.className).toContain('left-1/2');
+    expect(region).toHaveClass('bottomCenter');
   });
 
   // ── Max limit ───────────────────────────────────────────────────────────────

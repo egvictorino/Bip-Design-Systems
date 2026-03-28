@@ -1,5 +1,6 @@
 import React, { useId, useState, useContext } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Tabs.module.css';
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -17,25 +18,6 @@ const useTabsContext = (): TabsContextValue => {
   if (!ctx) throw new Error('TabList, Tab, and TabPanel must be used inside <Tabs>');
   return ctx;
 };
-
-// ─── Style helpers ────────────────────────────────────────────────────────────
-
-const getTabClasses = (variant: 'line' | 'pill', isActive: boolean) =>
-  cn(
-    'text-sm font-medium whitespace-nowrap transition-colors',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1',
-    'disabled:opacity-40 disabled:cursor-not-allowed',
-    variant === 'line' && 'px-4 py-2 -mb-px border-b-2',
-    variant === 'line' && isActive && 'border-primary',
-    variant === 'line' && isActive && 'text-primary',
-    variant === 'line' && !isActive && 'border-transparent text-txt-secondary',
-    variant === 'line' && !isActive && 'hover:text-txt',
-    variant === 'line' && !isActive && 'hover:border-edge-hover',
-    variant === 'pill' && 'px-4 py-1.5 rounded-md',
-    variant === 'pill' && isActive && 'bg-white shadow-sm text-txt',
-    variant === 'pill' && !isActive && 'text-txt-secondary',
-    variant === 'pill' && !isActive && 'hover:text-txt hover:bg-white/50'
-  );
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
@@ -67,7 +49,7 @@ export const Tabs: React.FC<TabsProps> = ({
 
   return (
     <TabsContext.Provider value={{ activeTab, onChange: handleChange, instanceId, variant }}>
-      <div className={cn('w-full', className)}>{children}</div>
+      <div className={cn(styles.tabsRoot, className)}>{children}</div>
     </TabsContext.Provider>
   );
 };
@@ -85,8 +67,7 @@ export const TabList: React.FC<TabListProps> = ({ className, children, ...props 
     <div
       role="tablist"
       className={cn(
-        variant === 'line' && 'flex border-b border-edge',
-        variant === 'pill' && 'inline-flex gap-1 p-1 bg-surface-3/50 rounded-lg',
+        variant === 'line' ? styles.tabListLine : styles.tabListPill,
         className
       )}
       {...props}
@@ -137,6 +118,11 @@ export const Tab: React.FC<TabProps> = ({ value, className, children, ...props }
     }
   };
 
+  const tabClass =
+    variant === 'line'
+      ? cn(styles.tab, styles.tabLine, isActive ? styles.tabLineActive : styles.tabLineInactive)
+      : cn(styles.tab, styles.tabPill, isActive ? styles.tabPillActive : styles.tabPillInactive);
+
   return (
     <button
       role="tab"
@@ -147,7 +133,7 @@ export const Tab: React.FC<TabProps> = ({ value, className, children, ...props }
       type="button"
       onClick={() => onChange(value)}
       onKeyDown={handleKeyDown}
-      className={cn(getTabClasses(variant, isActive), className)}
+      className={cn(tabClass, className)}
       {...props}
     >
       {children}
@@ -174,7 +160,7 @@ export const TabPanel: React.FC<TabPanelProps> = ({ value, className, children, 
       aria-labelledby={tabId}
       tabIndex={0}
       hidden={activeTab !== value}
-      className={cn('focus:outline-none', className)}
+      className={cn(styles.tabPanel, className)}
       {...props}
     >
       {children}

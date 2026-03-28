@@ -14,6 +14,7 @@ const meta = {
   argTypes: {
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
     placement: { control: 'select', options: ['right', 'left'] },
+    closeOnBackdrop: { control: 'boolean' },
   },
 } satisfies Meta<typeof DrawerPanel>;
 
@@ -42,39 +43,69 @@ const DrawerStory = ({
         size={size}
         placement={placement}
       >
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-txt-white font-semibold">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div
+              style={{
+                width: '3rem',
+                height: '3rem',
+                borderRadius: '9999px',
+                backgroundColor: 'var(--color-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--color-txt-white)',
+                fontWeight: 600,
+              }}
+            >
               MG
             </div>
             <div>
-              <p className="font-semibold text-txt">María González</p>
-              <p className="text-sm text-txt-secondary">RFC: GOGM840512AB1</p>
+              <p style={{ fontWeight: 600, color: 'var(--color-txt)', margin: 0 }}>
+                María González
+              </p>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)', margin: 0 }}>
+                RFC: GOGM840512AB1
+              </p>
             </div>
           </div>
           <Divider />
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div>
-              <p className="text-xs text-txt-secondary">Fecha de nacimiento</p>
-              <p className="text-sm text-txt">12/05/1984</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)', margin: 0 }}>
+                Fecha de nacimiento
+              </p>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-txt)', margin: 0 }}>
+                12/05/1984
+              </p>
             </div>
             <div>
-              <p className="text-xs text-txt-secondary">Teléfono</p>
-              <p className="text-sm text-txt">+52 81 1234-5678</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)', margin: 0 }}>
+                Teléfono
+              </p>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-txt)', margin: 0 }}>
+                +52 81 1234-5678
+              </p>
             </div>
             <div>
-              <p className="text-xs text-txt-secondary">Estado</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)', margin: 0 }}>
+                Estado
+              </p>
               <Badge variant="success">Activo</Badge>
             </div>
             <div>
-              <p className="text-xs text-txt-secondary">Última visita</p>
-              <p className="text-sm text-txt">15/03/2024</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)', margin: 0 }}>
+                Última visita
+              </p>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-txt)', margin: 0 }}>
+                15/03/2024
+              </p>
             </div>
           </div>
           <Divider label="Notas clínicas" />
-          <p className="text-sm text-txt-secondary">
-            Paciente con historial de caries múltiple. Tratamiento en curso: ortodoncia fase 2.
-            Sin alergias a medicamentos conocidas.
+          <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)', margin: 0 }}>
+            Paciente con historial de caries múltiple. Tratamiento en curso: ortodoncia fase 2. Sin
+            alergias a medicamentos conocidas.
           </p>
         </div>
       </DrawerPanel>
@@ -94,9 +125,7 @@ export const Pequeno: Story = {
 
 export const Grande: Story = {
   args: { open: false, onClose: () => {}, children: null },
-  render: () => (
-    <DrawerStory title="Expediente completo" size="lg" />
-  ),
+  render: () => <DrawerStory title="Expediente completo" size="lg" />,
 };
 
 export const Izquierda: Story = {
@@ -115,20 +144,212 @@ export const ConFormulario: Story = {
             Nueva cita
           </Button>
           <DrawerPanel open={open} onClose={() => setOpen(false)} title="Agendar cita" size="md">
-            <div className="flex flex-col gap-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <Input label="Paciente" placeholder="Buscar paciente..." fullWidth />
               <Input label="Doctor" placeholder="Seleccionar doctor..." fullWidth />
               <Input label="Fecha" type="text" placeholder="DD/MM/AAAA" fullWidth />
               <Input label="Hora" type="text" placeholder="HH:MM" fullWidth />
               <Input label="Motivo de consulta" placeholder="Describe el motivo..." fullWidth />
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="bare" size="sm" onClick={() => setOpen(false)}>
+            </div>
+          </DrawerPanel>
+        </>
+      );
+    };
+    return <Story />;
+  },
+};
+
+export const ConFooter: Story = {
+  args: { open: false, onClose: () => {}, children: null },
+  render: () => {
+    const Story = () => {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <Button variant="primary" onClick={() => setOpen(true)}>
+            Abrir con footer
+          </Button>
+          <DrawerPanel
+            open={open}
+            onClose={() => setOpen(false)}
+            title="Confirmar cambios"
+            size="md"
+            footer={
+              <>
+                <Button variant="bare" onClick={() => setOpen(false)}>
                   Cancelar
                 </Button>
-                <Button variant="primary" size="sm" onClick={() => setOpen(false)}>
-                  Guardar cita
+                <Button variant="primary" onClick={() => setOpen(false)}>
+                  Guardar
                 </Button>
+              </>
+            }
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <Input label="Nombre" placeholder="Nombre completo" fullWidth />
+              <Input label="Correo" type="email" placeholder="correo@ejemplo.com" fullWidth />
+              <Input label="Teléfono" type="tel" placeholder="+52 81 0000-0000" fullWidth />
+            </div>
+          </DrawerPanel>
+        </>
+      );
+    };
+    return <Story />;
+  },
+};
+
+export const SinCierrePorBackdrop: Story = {
+  args: { open: false, onClose: () => {}, children: null },
+  render: () => {
+    const Story = () => {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <Button variant="primary" onClick={() => setOpen(true)}>
+            Abrir formulario protegido
+          </Button>
+          <DrawerPanel
+            open={open}
+            onClose={() => setOpen(false)}
+            title="Nuevo registro"
+            size="md"
+            closeOnBackdrop={false}
+            footer={
+              <>
+                <Button variant="bare" onClick={() => setOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button variant="primary" onClick={() => setOpen(false)}>
+                  Guardar
+                </Button>
+              </>
+            }
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--color-txt-secondary)',
+                  margin: 0,
+                }}
+              >
+                Clic fuera del panel no lo cierra. Usa el botón Cancelar o la tecla Escape.
+              </p>
+              <Input label="Nombre completo" placeholder="Escribe aquí..." fullWidth />
+              <Input label="RFC" placeholder="XAXX010101000" fullWidth />
+            </div>
+          </DrawerPanel>
+        </>
+      );
+    };
+    return <Story />;
+  },
+};
+
+export const ConAccionesEncabezado: Story = {
+  args: { open: false, onClose: () => {}, children: null },
+  render: () => {
+    const Story = () => {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <Button variant="primary" onClick={() => setOpen(true)}>
+            Ver detalle
+          </Button>
+          <DrawerPanel
+            open={open}
+            onClose={() => setOpen(false)}
+            title="Detalle del paciente"
+            size="md"
+            headerActions={
+              <Button variant="secondary" size="sm">
+                Editar
+              </Button>
+            }
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <p style={{ color: 'var(--color-txt)', margin: 0 }}>María González</p>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)', margin: 0 }}>
+                RFC: GOGM840512AB1
+              </p>
+              <Divider />
+              <Badge variant="success">Activo</Badge>
+            </div>
+          </DrawerPanel>
+        </>
+      );
+    };
+    return <Story />;
+  },
+};
+
+export const ConTodasLasMejoras: Story = {
+  args: { open: false, onClose: () => {}, children: null },
+  render: () => {
+    const Story = () => {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <Button variant="primary" onClick={() => setOpen(true)}>
+            Abrir panel completo
+          </Button>
+          <DrawerPanel
+            open={open}
+            onClose={() => setOpen(false)}
+            title="Expediente del paciente"
+            size="lg"
+            closeOnBackdrop={false}
+            headerActions={
+              <Button variant="secondary" size="sm">
+                Editar
+              </Button>
+            }
+            footer={
+              <>
+                <Button variant="bare" onClick={() => setOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button variant="primary" onClick={() => setOpen(false)}>
+                  Guardar cambios
+                </Button>
+              </>
+            }
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div
+                  style={{
+                    width: '3rem',
+                    height: '3rem',
+                    borderRadius: '9999px',
+                    backgroundColor: 'var(--color-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--color-txt-white)',
+                    fontWeight: 600,
+                  }}
+                >
+                  MG
+                </div>
+                <div>
+                  <p style={{ fontWeight: 600, color: 'var(--color-txt)', margin: 0 }}>
+                    María González
+                  </p>
+                  <p
+                    style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)', margin: 0 }}
+                  >
+                    RFC: GOGM840512AB1
+                  </p>
+                </div>
               </div>
+              <Divider />
+              <Input label="Teléfono" defaultValue="+52 81 1234-5678" fullWidth />
+              <Input label="Correo" type="email" defaultValue="maria@ejemplo.com" fullWidth />
+              <Divider label="Notas clínicas" />
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)', margin: 0 }}>
+                Paciente con historial de caries múltiple. Tratamiento en curso: ortodoncia fase 2.
+              </p>
             </div>
           </DrawerPanel>
         </>

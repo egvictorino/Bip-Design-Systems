@@ -60,6 +60,7 @@ const EVENTS: CalendarEvent[] = [
     doctorId: 'd2',
     patientName: 'Carlos Ruiz',
     treatmentType: 'Limpieza',
+    notes: 'Paciente con sensibilidad en cuadrante superior derecho. Usar pasta desensibilizante.',
   },
   {
     id: 'e3',
@@ -100,6 +101,7 @@ const EVENTS: CalendarEvent[] = [
     doctorId: 'd1',
     patientName: 'Roberto Silva',
     treatmentType: 'Endodoncia',
+    notes: 'Segunda sesión. Primera sesión completada sin complicaciones. Llevar radiografía previa.',
   },
   {
     id: 'e7',
@@ -257,6 +259,33 @@ export const AgendaViewStory: Story = {
   },
 };
 
+export const AgendaConNotas: Story = {
+  name: 'Agenda — notas, filtros y encabezados sticky',
+  args: { view: 'agenda', date: new Date(), events: [], resources: [] },
+  render: () => {
+    function Wrapper() {
+      const [view, setView] = useState<CalendarView>('agenda');
+      const [date, setDate] = useState(new Date());
+      return (
+        <div style={{ height: 700 }}>
+          <Calendar
+            events={EVENTS}
+            resources={DOCTORS}
+            view={view}
+            date={date}
+            onViewChange={setView}
+            onDateChange={setDate}
+            onEventClick={(ev) =>
+              alert(`Cita: ${ev.title}\nPaciente: ${ev.patientName ?? '—'}\nNotas: ${ev.notes ?? 'Sin notas'}`)
+            }
+          />
+        </div>
+      );
+    }
+    return <Wrapper />;
+  },
+};
+
 export const EmptyAgenda: Story = {
   name: 'Agenda vacía',
   args: { view: 'agenda', date: new Date(), events: [], resources: [] },
@@ -273,6 +302,53 @@ export const EmptyAgenda: Story = {
             onViewChange={setView}
             onDateChange={setDate}
             onEventClick={() => {}}
+          />
+        </div>
+      );
+    }
+    return <Wrapper />;
+  },
+};
+
+export const RangeSelectionStory: Story = {
+  name: 'Selección de rango (vista mes)',
+  args: { view: 'month', date: new Date(), events: [] },
+  render: () => {
+    function Wrapper() {
+      const [view, setView] = useState<CalendarView>('month');
+      const [date, setDate] = useState(new Date());
+      const [selectedRange, setSelectedRange] = useState<{ start: Date; end: Date } | null>(null);
+
+      const fmt = (d: Date) => d.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+      return (
+        <div style={{ height: 700 }}>
+          {selectedRange && (
+            <div
+              style={{
+                marginBottom: 8,
+                padding: '8px 12px',
+                background: '#EFF6FF',
+                border: '1px solid #BFDBFE',
+                borderRadius: 6,
+                fontSize: 13,
+                color: '#1D4ED8',
+              }}
+            >
+              Rango seleccionado: <strong>{fmt(selectedRange.start)}</strong> →{' '}
+              <strong>{fmt(new Date(selectedRange.end.getTime() - 86400000))}</strong>
+            </div>
+          )}
+          <Calendar
+            events={EVENTS}
+            resources={DOCTORS}
+            view={view}
+            date={date}
+            onViewChange={setView}
+            onDateChange={setDate}
+            onEventClick={(ev) => alert(`Cita: ${ev.title}`)}
+            onEventCreate={(info) => alert(`Nueva cita el ${info.start.toLocaleDateString('es-MX')}`)}
+            onRangeSelect={(start, end) => setSelectedRange({ start, end })}
           />
         </div>
       );
