@@ -72,17 +72,17 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       - name: Lint
-        run: pnpm --filter @bip/ui-components lint
+        run: pnpm --filter @bip-design-systems/ui-components lint
 
       - name: Test
         run: |
-          pnpm --filter @bip/shared-utils test
-          pnpm --filter @bip/ui-components test
+          pnpm --filter @bip-design-systems/shared-utils test
+          pnpm --filter @bip-design-systems/ui-components test
 
       - name: Build
         run: |
-          pnpm --filter @bip/shared-utils build
-          pnpm --filter @bip/ui-components build
+          pnpm --filter @bip-design-systems/shared-utils build
+          pnpm --filter @bip-design-systems/ui-components build
       
       - name: Comment on PR
         uses: actions/github-script@v7

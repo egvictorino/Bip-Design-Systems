@@ -1,11 +1,13 @@
 {
-  "name": "@bip/ui-components",
-  "version": "0.1.0",
+  "name": "@bip-design-systems/ui-components",
+  "version": "0.1.1",
   "description": "BipUI — React component library",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -16,6 +18,10 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

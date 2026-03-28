@@ -46,7 +46,7 @@ export const Default: Story = {
         <AccordionItem value="item-2">
           <AccordionTrigger>¿Cómo instalo la librería?</AccordionTrigger>
           <AccordionContent>
-            Instala el paquete con <code>pnpm add @bip/ui-components</code> y configura el preset
+            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> y configura el preset
             de Tailwind en tu proyecto consumidor.
           </AccordionContent>
         </AccordionItem>
@@ -162,7 +162,7 @@ export const Bordered: Story = {
         <AccordionItem value="item-2">
           <AccordionTrigger>¿Cómo instalo la librería?</AccordionTrigger>
           <AccordionContent>
-            Instala el paquete con <code>pnpm add @bip/ui-components</code> y configura el preset
+            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> y configura el preset
             de Tailwind en tu proyecto consumidor.
           </AccordionContent>
         </AccordionItem>
@@ -195,7 +195,7 @@ export const Ghost: Story = {
         <AccordionItem value="item-2">
           <AccordionTrigger>¿Cómo instalo la librería?</AccordionTrigger>
           <AccordionContent>
-            Instala el paquete con <code>pnpm add @bip/ui-components</code> y configura el preset
+            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> y configura el preset
             de Tailwind en tu proyecto consumidor.
           </AccordionContent>
         </AccordionItem>

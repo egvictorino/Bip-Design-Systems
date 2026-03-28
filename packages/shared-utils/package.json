@@ -1,5 +1,5 @@
 {
-  "name": "@bip/shared-utils",
+  "name": "@bip-design-systems/shared-utils",
   "version": "0.1.0",
   "private": true,
   "main": "./dist/index.js",

@@ -26,8 +26,8 @@ Monorepo basado en **pnpm workspaces** que centraliza la librería de componente
 ```
 bip-ui/
 └── packages/
-    ├── ui-components/      # Librería de componentes React  →  @bip/ui-components
-    └── shared-utils/       # Utilidades TypeScript puras    →  @bip/shared-utils
+    ├── ui-components/      # Librería de componentes React  →  @bip-design-systems/ui-components
+    └── shared-utils/       # Utilidades TypeScript puras    →  @bip-design-systems/shared-utils
 ```
 
 ---
@@ -56,11 +56,11 @@ bip-ui/
 pnpm install
 
 # 2. Construir paquetes en orden (shared-utils primero)
-pnpm --filter @bip/shared-utils build
-pnpm --filter @bip/ui-components build
+pnpm --filter @bip-design-systems/shared-utils build
+pnpm --filter @bip-design-systems/ui-components build
 
 # 3. Abrir Storybook  →  http://localhost:6006
-pnpm --filter @bip/ui-components storybook
+pnpm --filter @bip-design-systems/ui-components storybook
 ```
 
 ---
@@ -70,12 +70,12 @@ pnpm --filter @bip/ui-components storybook
 ### Por paquete
 
 ```bash
-pnpm --filter @bip/ui-components storybook        # Dev Storybook
-pnpm --filter @bip/ui-components build-storybook  # Build estático
-pnpm --filter @bip/ui-components build            # Build librería
-pnpm --filter @bip/ui-components lint             # Lint
-pnpm --filter @bip/shared-utils test              # Tests utilidades (vitest)
-pnpm --filter @bip/ui-components test             # Tests componentes (vitest + happy-dom)
+pnpm --filter @bip-design-systems/ui-components storybook        # Dev Storybook
+pnpm --filter @bip-design-systems/ui-components build-storybook  # Build estático
+pnpm --filter @bip-design-systems/ui-components build            # Build librería
+pnpm --filter @bip-design-systems/ui-components lint             # Lint
+pnpm --filter @bip-design-systems/shared-utils test              # Tests utilidades (vitest)
+pnpm --filter @bip-design-systems/ui-components test             # Tests componentes (vitest + happy-dom)
 ```
 
 ### Monorepo completo
@@ -172,7 +172,7 @@ pnpm dev     # Modo desarrollo paralelo
 
 ## Utilidades Compartidas
 
-`@bip/shared-utils` — utilidades TypeScript puras, sin dependencias de runtime.
+`@bip-design-systems/shared-utils` — utilidades TypeScript puras, sin dependencias de runtime.
 
 | Función | Firma | Descripción |
 |---------|-------|-------------|
@@ -181,7 +181,7 @@ pnpm dev     # Modo desarrollo paralelo
 | `validateRFC` | `(rfc: string) => boolean` | Valida formato RFC mexicano (solo mayúsculas, sin normalización) |
 
 ```ts
-import { formatCurrency, formatDate, validateRFC } from '@bip/shared-utils';
+import { formatCurrency, formatDate, validateRFC } from '@bip-design-systems/shared-utils';
 
 formatCurrency(1500);           // "$1,500.00"
 formatDate(new Date(2026, 5, 15)); // "15/6/2026"
@@ -353,14 +353,14 @@ Pasos para consumir BipUI desde un repositorio independiente.
 
 ```bash
 # Con pnpm
-pnpm add github:TU-ORG/bip-ui#main --filter @bip/ui-components
-pnpm add github:TU-ORG/bip-ui#main --filter @bip/shared-utils
+pnpm add github:TU-ORG/bip-ui#main --filter @bip-design-systems/ui-components
+pnpm add github:TU-ORG/bip-ui#main --filter @bip-design-systems/shared-utils
 ```
 
 **Desde npm / registro privado (cuando se publique):**
 
 ```bash
-pnpm add @bip/ui-components @bip/shared-utils
+pnpm add @bip-design-systems/ui-components @bip-design-systems/shared-utils
 ```
 
 ### 2. Instalar las peer dependencies
@@ -375,7 +375,7 @@ En el entry point de tu proyecto, importa el CSS compilado de la librería:
 
 ```ts
 // src/main.tsx (o index.tsx)
-import '@bip/ui-components/style.css';
+import '@bip-design-systems/ui-components/style.css';
 ```
 
 No se requiere configurar Tailwind ni ningún otro preprocesador CSS.
@@ -383,8 +383,8 @@ No se requiere configurar Tailwind ni ningún otro preprocesador CSS.
 ### 4. Usar los componentes
 
 ```tsx
-import { Button, Input, ToastProvider, useToast } from '@bip/ui-components';
-import { formatCurrency, validateRFC } from '@bip/shared-utils';
+import { Button, Input, ToastProvider, useToast } from '@bip-design-systems/ui-components';
+import { formatCurrency, validateRFC } from '@bip-design-systems/shared-utils';
 
 // Wrap the app root with ToastProvider
 export const App = () => (
