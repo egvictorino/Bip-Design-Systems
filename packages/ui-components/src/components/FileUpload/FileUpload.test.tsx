@@ -274,9 +274,9 @@ describe('FileUpload', () => {
 
   // ── fullWidth ──────────────────────────────────────────────────────────────
 
-  it('fullWidth applies w-full to wrapper and dropzone label', () => {
+  it('fullWidth applies wrapperFull to wrapper and dropzoneFull to dropzone label', () => {
     const { container } = render(<FileUpload fullWidth />);
-    expect(container.firstChild).toHaveClass('w-full');
-    expect(container.querySelector('label')).toHaveClass('w-full');
+    expect(container.firstChild).toHaveClass('wrapperFull');
+    expect(container.querySelector('label')).toHaveClass('dropzoneFull');
   });
 });

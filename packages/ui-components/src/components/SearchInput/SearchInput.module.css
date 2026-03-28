@@ -1,0 +1,283 @@
+/* ─── Wrapper ─────────────────────────────────────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wrapperFull {
+  width: 100%;
+}
+
+/* ─── Label ───────────────────────────────────────────────────────────────── */
+
+.label {
+  font-weight: 500;
+  transition: color 150ms;
+}
+
+.labelSm {
+  font-size: 0.75rem;
+}
+
+.labelMd {
+  font-size: 0.875rem;
+}
+
+.labelLg {
+  font-size: 1rem;
+}
+
+.labelNormal {
+  color: var(--color-txt-utility);
+}
+
+.labelFocused {
+  color: var(--color-txt);
+}
+
+.labelError {
+  color: var(--color-danger);
+}
+
+.labelDisabled {
+  opacity: 0.5;
+}
+
+/* ─── Input wrapper ───────────────────────────────────────────────────────── */
+
+.inputWrapper {
+  position: relative;
+}
+
+.inputWrapperFull {
+  width: 100%;
+}
+
+/* ─── Search icon ─────────────────────────────────────────────────────────── */
+
+.searchIcon {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.searchIconNormal {
+  color: var(--color-txt-secondary);
+}
+
+.searchIconError {
+  color: var(--color-danger);
+}
+
+.searchIconDisabled {
+  opacity: 0.5;
+}
+
+.searchIconOffsetSm {
+  left: 0.625rem;
+}
+
+.searchIconOffsetMd {
+  left: 0.75rem;
+}
+
+.searchIconOffsetLg {
+  left: 0.875rem;
+}
+
+/* ─── Icon sizes ──────────────────────────────────────────────────────────── */
+
+.iconSm {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.iconMd {
+  width: 1rem;
+  height: 1rem;
+}
+
+.iconLg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ─── Input ───────────────────────────────────────────────────────────────── */
+
+.input {
+  width: 100%;
+  border-radius: 1px;
+  transition: background-color 150ms, color 150ms, border-color 150ms;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.input:disabled {
+  background-color: var(--color-disabled);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input:read-only {
+  background-color: var(--color-field-readonly);
+}
+
+/* Size variants */
+
+.inputSm {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 0.75rem;
+}
+
+.inputMd {
+  padding-left: 2.25rem;
+  padding-right: 2.25rem;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 0.875rem;
+}
+
+.inputLg {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 1.125rem;
+}
+
+.inputCursorText {
+  cursor: text;
+}
+
+/* ─── Variant: outlined ───────────────────────────────────────────────────── */
+
+.outlined {
+  border: 1px solid var(--color-edge);
+  background-color: var(--color-field);
+}
+
+.outlined:hover {
+  border-color: var(--color-edge-hover);
+}
+
+.outlined:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.outlinedError {
+  border: 1px solid var(--color-danger);
+  background-color: var(--color-field);
+}
+
+.outlinedError:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+}
+
+/* ─── Variant: filled ─────────────────────────────────────────────────────── */
+
+.filled {
+  border: 1px solid var(--color-edge);
+  background-color: var(--color-secondary);
+}
+
+.filled:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+.filledError {
+  border: 1px solid var(--color-edge);
+  background-color: var(--color-danger-light);
+}
+
+.filledError:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+}
+
+/* ─── Variant: bare ───────────────────────────────────────────────────────── */
+
+.bare {
+  border: none;
+  border-bottom: 2px solid var(--color-primary);
+  background-color: transparent;
+  border-radius: 0;
+}
+
+.bare:hover {
+  border-bottom-color: var(--color-primary-hover);
+}
+
+.bareError {
+  border: none;
+  border-bottom: 2px solid var(--color-danger);
+  background-color: transparent;
+  border-radius: 0;
+}
+
+/* ─── Clear button ────────────────────────────────────────────────────────── */
+
+.clearBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-txt-secondary);
+  transition: color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.clearBtn:hover {
+  color: var(--color-txt);
+}
+
+.clearBtn:focus {
+  outline: none;
+}
+
+.clearBtn:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  border-radius: 0.25rem;
+}
+
+.clearBtnOffsetSm {
+  right: 0.625rem;
+}
+
+.clearBtnOffsetMd {
+  right: 0.75rem;
+}
+
+.clearBtnOffsetLg {
+  right: 0.875rem;
+}
+
+/* ─── Helper / error text ─────────────────────────────────────────────────── */
+
+.helperTextSm {
+  font-size: 0.75rem;
+}
+
+.helperTextMd {
+  font-size: 0.75rem;
+}
+
+.helperTextLg {
+  font-size: 0.875rem;
+}
+
+.helperText {
+  color: var(--color-txt-secondary);
+}
+
+.errorText {
+  color: var(--color-danger);
+}

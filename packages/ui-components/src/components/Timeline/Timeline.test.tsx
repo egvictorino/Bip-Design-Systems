@@ -61,25 +61,25 @@ describe('TimelineItem', () => {
   it('applies default variant dot', () => {
     const { container } = render(<TimelineItem title="Item" variant="default" />);
     const dot = container.querySelector('[aria-hidden="true"]');
-    expect(dot).toHaveClass('bg-primary');
+    expect(dot).toHaveClass('variantDefault');
   });
 
   it('applies success variant dot', () => {
     const { container } = render(<TimelineItem title="Item" variant="success" />);
     const dot = container.querySelector('[aria-hidden="true"]');
-    expect(dot).toHaveClass('bg-success');
+    expect(dot).toHaveClass('variantSuccess');
   });
 
   it('applies error variant dot', () => {
     const { container } = render(<TimelineItem title="Item" variant="error" />);
     const dot = container.querySelector('[aria-hidden="true"]');
-    expect(dot).toHaveClass('bg-danger');
+    expect(dot).toHaveClass('variantError');
   });
 
   it('applies warning variant dot', () => {
     const { container } = render(<TimelineItem title="Item" variant="warning" />);
     const dot = container.querySelector('[aria-hidden="true"]');
-    expect(dot).toHaveClass('bg-warning');
+    expect(dot).toHaveClass('variantWarning');
   });
 
   it('hides last timeline line', () => {
@@ -89,7 +89,7 @@ describe('TimelineItem', () => {
         <TimelineItem title="Último" />
       </Timeline>
     );
-    const lines = container.querySelectorAll('.timeline-line');
+    const lines = container.querySelectorAll('.timelineLine');
     expect(lines).toHaveLength(2);
   });
 });

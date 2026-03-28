@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../Modal';
 import { Button } from '../Button';
 import { cn } from '../../lib/cn';
+import styles from './ConfirmDialog.module.css';
 
 export interface ConfirmDialogProps {
   isOpen: boolean;
@@ -16,8 +17,8 @@ export interface ConfirmDialogProps {
 
 const confirmBtnStyles: Record<NonNullable<ConfirmDialogProps['variant']>, string> = {
   info: '',
-  danger: 'bg-danger hover:bg-danger-hover active:bg-danger-press focus-visible:ring-danger',
-  warning: 'bg-warning hover:opacity-90 active:opacity-80 focus-visible:ring-warning',
+  danger: styles.confirmDanger,
+  warning: styles.confirmWarning,
 };
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -33,7 +34,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   <Modal isOpen={isOpen} onClose={onClose} size="sm" closeOnBackdrop={false}>
     <ModalHeader>{title}</ModalHeader>
     <ModalBody>
-      {description && <p className="text-sm text-txt-secondary">{description}</p>}
+      {description && <p className={styles.description}>{description}</p>}
     </ModalBody>
     <ModalFooter>
       <Button variant="bare" size="sm" onClick={onClose}>

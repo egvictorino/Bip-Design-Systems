@@ -128,20 +128,16 @@ describe('Select', () => {
 
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['sm', 'text-xs'],
-    ['md', 'text-sm'],
-    ['lg', 'text-lg'],
-  ] as const)('size %s applies the correct text class', (size, textClass) => {
+  it.each(['sm', 'md', 'lg'] as const)('size %s applies the correct size class', (size) => {
     render(<Select options={options} size={size} />);
-    expect(screen.getByRole('combobox')).toHaveClass(textClass);
+    expect(screen.getByRole('combobox')).toHaveClass(size);
   });
 
   // ── fullWidth ───────────────────────────────────────────────────────────────
 
-  it('fullWidth applies w-full to the select element', () => {
-    render(<Select options={options} fullWidth />);
-    expect(screen.getByRole('combobox')).toHaveClass('w-full');
+  it('fullWidth applies fullWidth class to the container', () => {
+    const { container } = render(<Select options={options} fullWidth />);
+    expect(container.firstChild).toHaveClass('fullWidth');
   });
 
   // ── Focus / Blur callbacks ──────────────────────────────────────────────────

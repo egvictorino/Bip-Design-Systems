@@ -269,6 +269,48 @@ describe('Accordion — className', () => {
   });
 });
 
+// ─── Variantes ────────────────────────────────────────────────────────────────
+
+describe('Accordion — variantes', () => {
+  it('variant="default" aplica rootDefault al root', () => {
+    const { container } = render(<DefaultAccordion />);
+    expect(container.firstChild).toHaveClass('rootDefault');
+  });
+
+  it('variant="bordered" aplica itemBordered a cada AccordionItem', () => {
+    const { container } = render(
+      <Accordion variant="bordered">
+        <AccordionItem value="a">
+          <AccordionTrigger>A</AccordionTrigger>
+          <AccordionContent>Content A</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="b">
+          <AccordionTrigger>B</AccordionTrigger>
+          <AccordionContent>Content B</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    const items = container.firstChild?.childNodes;
+    expect(items).toHaveLength(2);
+    items?.forEach((item) => {
+      expect(item).toHaveClass('itemBordered');
+    });
+  });
+
+  it('variant="ghost" no tiene rootDefault ni itemBordered en ningún elemento', () => {
+    const { container } = render(
+      <Accordion variant="ghost">
+        <AccordionItem value="a">
+          <AccordionTrigger>A</AccordionTrigger>
+          <AccordionContent>Content A</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    expect(container.firstChild).not.toHaveClass('rootDefault');
+    expect(container.querySelector('.itemBordered')).toBeNull();
+  });
+});
+
 // ─── Error guard ──────────────────────────────────────────────────────────────
 
 describe('Accordion — error guard', () => {

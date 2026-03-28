@@ -1,0 +1,98 @@
+/* ─── Wrapper ────────────────────────────────────────────────────────────────── */
+
+.wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-edge);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+/* ─── Head ───────────────────────────────────────────────────────────────────── */
+
+.thead { background-color: var(--color-surface-3); }
+
+/* ─── Body ───────────────────────────────────────────────────────────────────── */
+
+.tbody { border-top: 1px solid var(--color-edge-hover); }
+
+/* ─── Row ────────────────────────────────────────────────────────────────────── */
+
+.row {
+  border-top: 1px solid var(--color-edge);
+  transition: background-color 150ms;
+}
+
+.row:first-child { border-top: none; }
+
+.rowHoverable:hover {
+  background-color: color-mix(in srgb, var(--color-surface-3) 50%, transparent);
+}
+
+.rowSelected { background-color: var(--color-selected); }
+
+.rowStriped:nth-child(even) {
+  background-color: color-mix(in srgb, var(--color-surface-3) 30%, transparent);
+}
+
+/* ─── Header (th) ────────────────────────────────────────────────────────────── */
+
+.th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  color: var(--color-txt-secondary);
+}
+
+.thNormal    { padding: 0.75rem 1rem; }
+.thCompact   { padding: 0.5rem 0.75rem; }
+
+.thSortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.thSortable:hover { color: var(--color-txt); }
+
+.thSortable:focus { outline: none; }
+
+.thSortable:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.sortableInner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ─── Sort icon ──────────────────────────────────────────────────────────────── */
+
+.sortIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+  color: var(--color-txt-secondary);
+}
+
+.sortIconActive { color: var(--color-primary); }
+
+/* ─── Cell (td) ──────────────────────────────────────────────────────────────── */
+
+.td { color: var(--color-txt); }
+
+.tdNormal  { padding: 0.75rem 1rem; }
+.tdCompact { padding: 0.5rem 0.75rem; }
+
+/* ─── Alignment ──────────────────────────────────────────────────────────────── */
+
+.alignLeft   { text-align: left; }
+.alignCenter { text-align: center; }
+.alignRight  { text-align: right; }

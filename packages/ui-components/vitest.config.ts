@@ -13,5 +13,12 @@ export default defineConfig({
     environment: 'happy-dom',
     globals: true,
     setupFiles: ['./src/test-setup.ts'],
+    css: {
+      modules: {
+        // Use plain local names in tests (e.g. styles.primary → "primary")
+        // so test assertions can reference CSS module class keys instead of hashed names.
+        classNameStrategy: 'non-scoped',
+      },
+    },
   },
 });

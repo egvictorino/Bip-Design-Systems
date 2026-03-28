@@ -1,5 +1,6 @@
-import { forwardRef, useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './DatePicker.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -8,6 +9,8 @@ export interface DatePickerProps {
   onChange?: (date: Date | null) => void;
   min?: Date;
   max?: Date;
+  /** Fechas individuales a deshabilitar (adicional al rango min/max) */
+  disabledDates?: Date[];
   placeholder?: string;
   label?: string;
   helperText?: string;
@@ -22,22 +25,22 @@ export interface DatePickerProps {
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
 
-const sizes: Record<NonNullable<DatePickerProps['size']>, string> = {
-  sm: 'px-[12px] py-[6px] text-xs',
-  md: 'px-[20px] py-[10px] text-sm',
-  lg: 'px-[24px] py-[12px] text-lg',
+const triggerSizeClass: Record<NonNullable<DatePickerProps['size']>, string> = {
+  sm: styles.triggerSm,
+  md: styles.triggerMd,
+  lg: styles.triggerLg,
 };
 
-const labelSizeStyles: Record<NonNullable<DatePickerProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-base',
+const labelSizeClass: Record<NonNullable<DatePickerProps['size']>, string> = {
+  sm: styles.labelSm,
+  md: styles.labelMd,
+  lg: styles.labelLg,
 };
 
-const helperSizeStyles: Record<NonNullable<DatePickerProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-xs',
-  lg: 'text-sm',
+const helperSizeClass: Record<NonNullable<DatePickerProps['size']>, string> = {
+  sm: styles.helperSm,
+  md: styles.helperMd,
+  lg: styles.helperLg,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -47,6 +50,11 @@ const DAY_LABELS = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'];
 const MONTH_NAMES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+];
+
+const MONTH_NAMES_SHORT = [
+  'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+  'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
 ];
 
 // Module-level formatters — created once, reused across all instances
@@ -81,6 +89,15 @@ const isSameDay = (a: Date, b: Date): boolean =>
 /** Comparable month index for min/max navigation */
 const monthIndex = (d: Date): number => d.getFullYear() * 12 + d.getMonth();
 
+/** String key for a date — used for Set membership and data-date attribute */
+const dateKey = (d: Date): string => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+
+const addDays = (d: Date, delta: number): Date => {
+  const result = new Date(d);
+  result.setDate(result.getDate() + delta);
+  return result;
+};
+
 // ─── CalendarGrid (internal) ──────────────────────────────────────────────────
 
 interface CalendarGridProps {
@@ -89,9 +106,13 @@ interface CalendarGridProps {
   today: Date;
   min?: Date;
   max?: Date;
+  disabledDates?: Date[];
+  focusedDate: Date | null;
   onSelectDay: (date: Date) => void;
   onPrevMonth: () => void;
   onNextMonth: () => void;
+  onFocusDay: (date: Date) => void;
+  onViewDateChange: (date: Date) => void;
   headingId: string;
 }
 
@@ -101,17 +122,51 @@ const CalendarGrid = ({
   today,
   min,
   max,
+  disabledDates,
+  focusedDate,
   onSelectDay,
   onPrevMonth,
   onNextMonth,
+  onFocusDay,
+  onViewDateChange,
   headingId,
 }: CalendarGridProps) => {
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
 
+  const [calendarView, setCalendarView] = useState<'days' | 'months'>('days');
+  const [pickerYear, setPickerYear] = useState(year);
+  const gridRef = useRef<HTMLDivElement>(null);
+
   const viewIdx = monthIndex(viewDate);
   const canGoPrev = !min || viewIdx > monthIndex(min);
   const canGoNext = !max || viewIdx < monthIndex(max);
+
+  const minDay = useMemo(
+    () => (min ? new Date(min.getFullYear(), min.getMonth(), min.getDate()) : null),
+    [min]
+  );
+  const maxDay = useMemo(
+    () => (max ? new Date(max.getFullYear(), max.getMonth(), max.getDate()) : null),
+    [max]
+  );
+
+  const disabledSet = useMemo(
+    () => new Set((disabledDates ?? []).map((d) => dateKey(d))),
+    [disabledDates]
+  );
+
+  const isDisabledDate = useCallback(
+    (d: Date): boolean => {
+      if (minDay && d < minDay) return true;
+      if (maxDay && d > maxDay) return true;
+      if (disabledSet.has(dateKey(d))) return true;
+      return false;
+    },
+    [minDay, maxDay, disabledSet]
+  );
+
+  const isTodayDisabled = useMemo(() => isDisabledDate(today), [isDisabledDate, today]);
 
   // Memoized grid cells: leading nulls (offset) + day numbers 1..daysInMonth
   const cells = useMemo(() => {
@@ -125,29 +180,119 @@ const CalendarGrid = ({
     return arr;
   }, [year, month]);
 
-  // Min/max day boundaries (time-stripped) — cheap derivation
-  const minDay = min ? new Date(min.getFullYear(), min.getMonth(), min.getDate()) : null;
-  const maxDay = max ? new Date(max.getFullYear(), max.getMonth(), max.getDate()) : null;
+  // Auto-focus the focused day button when focusedDate changes (keyboard nav or open)
+  useEffect(() => {
+    if (!focusedDate || calendarView !== 'days') return;
+    const key = dateKey(focusedDate);
+    const btn = gridRef.current?.querySelector<HTMLButtonElement>(`[data-date="${key}"]`);
+    btn?.focus({ preventScroll: true });
+  }, [focusedDate, calendarView]);
 
-  const isTodayDisabled = (!!minDay && today < minDay) || (!!maxDay && today > maxDay);
+  const handleShowMonthPicker = () => {
+    setPickerYear(viewDate.getFullYear());
+    setCalendarView('months');
+  };
+
+  const handleSelectMonth = (mIdx: number) => {
+    onViewDateChange(new Date(pickerYear, mIdx, 1));
+    setCalendarView('days');
+  };
+
+  // ── Month picker year nav ─────────────────────────────────────────────────
+
+  const canGoPrevYear = !min || pickerYear > min.getFullYear();
+  const canGoNextYear = !max || pickerYear < max.getFullYear();
+
+  const isMonthDisabled = (mIdx: number): boolean => {
+    if (!minDay && !maxDay) return false;
+    const lastDay = new Date(pickerYear, mIdx + 1, 0);
+    const firstDay = new Date(pickerYear, mIdx, 1);
+    if (minDay && lastDay < minDay) return true;
+    if (maxDay && firstDay > maxDay) return true;
+    return false;
+  };
+
+  // ── Month picker view ─────────────────────────────────────────────────────
+
+  if (calendarView === 'months') {
+    return (
+      <div className={styles.calendarGrid}>
+        {/* Year navigation */}
+        <div className={styles.monthNav}>
+          <button
+            type="button"
+            onClick={() => setPickerYear((y) => y - 1)}
+            disabled={!canGoPrevYear}
+            aria-label="Año anterior"
+            className={styles.monthNavBtn}
+          >
+            <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
+              <path
+                fillRule="evenodd"
+                d="M10.78 3.22a.75.75 0 0 1 0 1.06L7.06 8l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <span className={styles.monthHeading}>{pickerYear}</span>
+
+          <button
+            type="button"
+            onClick={() => setPickerYear((y) => y + 1)}
+            disabled={!canGoNextYear}
+            aria-label="Año siguiente"
+            className={styles.monthNavBtn}
+          >
+            <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
+              <path
+                fillRule="evenodd"
+                d="M5.22 3.22a.75.75 0 0 0 0 1.06L8.94 8 5.22 11.72a.75.75 0 1 0 1.06 1.06l4.25-4.25a.75.75 0 0 0 0-1.06L6.28 3.22a.75.75 0 0 0-1.06 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* 4×3 month grid */}
+        <div role="grid" aria-label="Seleccionar mes" className={styles.monthPickerGrid}>
+          {MONTH_NAMES_SHORT.map((name, idx) => {
+            const isCurrent = pickerYear === year && idx === month;
+            const disabled = isMonthDisabled(idx);
+            return (
+              <div key={name} role="gridcell">
+                <button
+                  type="button"
+                  onClick={() => handleSelectMonth(idx)}
+                  disabled={disabled}
+                  aria-label={`${MONTH_NAMES[idx]} ${pickerYear}`}
+                  aria-pressed={isCurrent}
+                  className={cn(styles.monthPickerBtn, isCurrent && styles.monthPickerBtnCurrent)}
+                >
+                  {name}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Days view ─────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col gap-3 p-3 w-[280px]">
+    <div className={styles.calendarGrid}>
       {/* Month navigation */}
-      <div className="flex items-center justify-between">
+      <div className={styles.monthNav}>
         <button
           type="button"
           onClick={onPrevMonth}
           disabled={!canGoPrev}
           aria-label="Mes anterior"
-          className={cn(
-            'p-1 rounded text-text-secondary transition-colors',
-            canGoPrev
-              ? 'hover:bg-interaction-tertiary-default hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default'
-              : 'opacity-30 cursor-not-allowed'
-          )}
+          className={styles.monthNavBtn}
         >
-          <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
             <path
               fillRule="evenodd"
               d="M10.78 3.22a.75.75 0 0 1 0 1.06L7.06 8l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0z"
@@ -156,23 +301,25 @@ const CalendarGrid = ({
           </svg>
         </button>
 
-        <span id={headingId} className="text-sm font-semibold text-text-primary">
+        {/* Heading is now a button to open month/year picker */}
+        <button
+          type="button"
+          id={headingId}
+          onClick={handleShowMonthPicker}
+          aria-label={`${MONTH_NAMES[month]} ${year} — Seleccionar mes y año`}
+          className={styles.monthHeadingBtn}
+        >
           {MONTH_NAMES[month]} {year}
-        </span>
+        </button>
 
         <button
           type="button"
           onClick={onNextMonth}
           disabled={!canGoNext}
           aria-label="Mes siguiente"
-          className={cn(
-            'p-1 rounded text-text-secondary transition-colors',
-            canGoNext
-              ? 'hover:bg-interaction-tertiary-default hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default'
-              : 'opacity-30 cursor-not-allowed'
-          )}
+          className={styles.monthNavBtn}
         >
-          <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
             <path
               fillRule="evenodd"
               d="M5.22 3.22a.75.75 0 0 0 0 1.06L8.94 8 5.22 11.72a.75.75 0 1 0 1.06 1.06l4.25-4.25a.75.75 0 0 0 0-1.06L6.28 3.22a.75.75 0 0 0-1.06 0z"
@@ -182,15 +329,84 @@ const CalendarGrid = ({
         </button>
       </div>
 
-      {/* Day grid */}
-      <div role="grid" aria-labelledby={headingId} className="grid grid-cols-7 gap-0.5">
+      {/* Day grid — roving tabindex + keyboard navigation */}
+      <div
+        ref={gridRef}
+        role="grid"
+        tabIndex={-1}
+        aria-labelledby={headingId}
+        className={styles.dayGrid}
+        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+          if (!focusedDate) return;
+
+          const moveToDay = (delta: number) => {
+            const next = addDays(focusedDate, delta);
+            const changedMonth =
+              next.getMonth() !== focusedDate.getMonth() ||
+              next.getFullYear() !== focusedDate.getFullYear();
+            onFocusDay(next);
+            if (changedMonth) {
+              if (delta < 0) onPrevMonth();
+              else onNextMonth();
+            }
+          };
+
+          switch (e.key) {
+            case 'ArrowLeft':
+              e.preventDefault();
+              moveToDay(-1);
+              break;
+            case 'ArrowRight':
+              e.preventDefault();
+              moveToDay(1);
+              break;
+            case 'ArrowUp':
+              e.preventDefault();
+              moveToDay(-7);
+              break;
+            case 'ArrowDown':
+              e.preventDefault();
+              moveToDay(7);
+              break;
+            case 'Home':
+              e.preventDefault();
+              onFocusDay(new Date(focusedDate.getFullYear(), focusedDate.getMonth(), 1));
+              break;
+            case 'End':
+              e.preventDefault();
+              onFocusDay(new Date(focusedDate.getFullYear(), focusedDate.getMonth() + 1, 0));
+              break;
+            case 'PageUp': {
+              e.preventDefault();
+              const prevM = focusedDate.getMonth() - 1;
+              const prevY = focusedDate.getFullYear();
+              const dayPU = Math.min(focusedDate.getDate(), getDaysInMonth(prevY, prevM));
+              onFocusDay(new Date(prevY, prevM, dayPU));
+              onPrevMonth();
+              break;
+            }
+            case 'PageDown': {
+              e.preventDefault();
+              const nextM = focusedDate.getMonth() + 1;
+              const nextY = focusedDate.getFullYear();
+              const dayPD = Math.min(focusedDate.getDate(), getDaysInMonth(nextY, nextM));
+              onFocusDay(new Date(nextY, nextM, dayPD));
+              onNextMonth();
+              break;
+            }
+            case 'Enter':
+            case ' ':
+              e.preventDefault();
+              if (!isDisabledDate(focusedDate)) {
+                onSelectDay(focusedDate);
+              }
+              break;
+          }
+        }}
+      >
         {/* Column headers */}
         {DAY_LABELS.map((d) => (
-          <div
-            key={d}
-            role="columnheader"
-            className="text-center text-[10px] font-semibold text-text-secondary py-1"
-          >
+          <div key={d} role="columnheader" className={styles.columnHeader}>
             {d}
           </div>
         ))}
@@ -204,26 +420,26 @@ const CalendarGrid = ({
           const cellDate = new Date(year, month, day);
           const isSelected = selectedDate ? isSameDay(cellDate, selectedDate) : false;
           const isToday = isSameDay(cellDate, today);
-          const isDisabled =
-            (!!minDay && cellDate < minDay) || (!!maxDay && cellDate > maxDay);
+          const isDisabled = isDisabledDate(cellDate);
+          const isFocused = focusedDate ? isSameDay(cellDate, focusedDate) : false;
 
           return (
             // aria-selected belongs on the gridcell per WAI-ARIA grid pattern
-            <div key={day} role="gridcell" aria-selected={isSelected || undefined}>
+            <div key={day} role="gridcell" aria-selected={isSelected || undefined} className={styles.dayCell}>
               <button
                 type="button"
                 disabled={isDisabled}
+                tabIndex={isFocused ? 0 : -1}
+                data-date={dateKey(cellDate)}
                 onClick={() => onSelectDay(cellDate)}
                 aria-label={DAY_ARIA_LABEL_FORMATTER.format(cellDate)}
                 className={cn(
-                  'w-full aspect-square flex items-center justify-center rounded text-sm transition-colors',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default',
-                  isDisabled && 'opacity-30 cursor-not-allowed',
+                  styles.dayBtn,
                   isSelected
-                    ? 'bg-interaction-primary-default text-text-white font-semibold'
+                    ? styles.dayBtnSelected
                     : isToday
-                      ? 'border border-interaction-primary-default text-interaction-primary-default hover:bg-interaction-tertiary-default'
-                      : !isDisabled && 'hover:bg-interaction-tertiary-default text-text-primary'
+                      ? styles.dayBtnToday
+                      : undefined
                 )}
               >
                 {day}
@@ -234,18 +450,12 @@ const CalendarGrid = ({
       </div>
 
       {/* Today shortcut */}
-      <div className="border-t border-interaction-tertiary-default pt-2">
+      <div className={styles.todaySection}>
         <button
           type="button"
           onClick={() => onSelectDay(today)}
           disabled={isTodayDisabled}
-          className={cn(
-            'w-full text-xs font-medium py-1.5 rounded transition-colors',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default',
-            isTodayDisabled
-              ? 'text-text-disabled cursor-not-allowed'
-              : 'text-interaction-primary-default hover:bg-interaction-tertiary-default'
-          )}
+          className={styles.todayBtn}
         >
           Hoy
         </button>
@@ -265,6 +475,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
       onChange,
       min,
       max,
+      disabledDates,
       placeholder = 'DD/MM/AAAA',
       label,
       helperText,
@@ -279,6 +490,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     ref
   ) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [focusedDate, setFocusedDate] = useState<Date | null>(null);
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const headingId = `${inputId}-heading`;
@@ -324,9 +536,21 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
       return () => document.removeEventListener('keydown', onKeyDown);
     }, [isOpen]);
 
+    const handleToggle = () => {
+      if (!isOpen) {
+        // Initialize focused date when opening
+        setFocusedDate(value ?? today);
+      }
+      setIsOpen((v) => !v);
+    };
+
     const handleSelectDay = (date: Date) => {
       onChange?.(date);
       setIsOpen(false);
+    };
+
+    const handleClear = () => {
+      onChange?.(null);
     };
 
     const handlePrevMonth = () => {
@@ -338,22 +562,25 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     };
 
     return (
-      <div ref={containerRef} className={cn('flex flex-col gap-1', fullWidth && 'w-full')}>
+      <div
+        ref={containerRef}
+        className={cn(styles.container, fullWidth && styles.containerFullWidth)}
+      >
         {label && (
           <label
             htmlFor={inputId}
             className={cn(
-              'font-medium transition-colors',
-              labelSizeStyles[size],
-              error ? 'text-feedback-error-default' : 'text-text-primary',
-              disabled && 'opacity-50'
+              styles.label,
+              labelSizeClass[size],
+              error ? styles.labelError : styles.labelNormal,
+              disabled && styles.labelDisabled
             )}
           >
             {label}
           </label>
         )}
 
-        <div className={cn('relative', fullWidth && 'w-full')}>
+        <div className={cn(styles.triggerWrapper, fullWidth && styles.triggerWrapperFullWidth)}>
           <button
             ref={ref}
             id={inputId}
@@ -362,41 +589,50 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             aria-haspopup="dialog"
             aria-expanded={isOpen}
             aria-describedby={messageId}
-            onClick={() => setIsOpen((v) => !v)}
+            onClick={handleToggle}
             className={cn(
-              'w-full text-left rounded-[1px] transition-colors border bg-interaction-field',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-              sizes[size],
-              'pr-9',
-              error
-                ? 'border-feedback-error-default focus-visible:ring-feedback-error-default'
-                : 'border-interaction-primary-default focus-visible:ring-interaction-primary-default hover:border-interaction-primary-hover',
-              disabled ? 'opacity-50 cursor-not-allowed bg-interaction-disabled' : 'cursor-pointer',
+              styles.trigger,
+              triggerSizeClass[size],
+              error && styles.triggerError,
+              disabled && styles.triggerDisabled,
               className
             )}
           >
-            <span className={displayValue ? 'text-text-primary' : 'text-text-secondary'}>
+            <span className={displayValue ? styles.triggerValue : styles.triggerPlaceholder}>
               {displayValue || placeholder}
             </span>
           </button>
 
-          {/* Calendar icon */}
-          <span
-            className={cn(
-              'pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2',
-              error ? 'text-feedback-error-default' : 'text-text-secondary',
-              disabled && 'opacity-50'
-            )}
-            aria-hidden="true"
-          >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-              <path
-                fillRule="evenodd"
-                d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </span>
+          {/* Trailing icon: clear button when value is set, calendar icon otherwise */}
+          {value && !disabled ? (
+            <button
+              type="button"
+              onClick={handleClear}
+              aria-label="Limpiar fecha"
+              className={cn(styles.clearBtn, error && styles.clearBtnError)}
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className={styles.iconMd} aria-hidden="true">
+                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22z" />
+              </svg>
+            </button>
+          ) : (
+            <span
+              className={cn(
+                styles.calendarIcon,
+                error && styles.calendarIconError,
+                disabled && styles.calendarIconDisabled
+              )}
+              aria-hidden="true"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className={styles.iconMd}>
+                <path
+                  fillRule="evenodd"
+                  d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </span>
+          )}
 
           {/* Calendar popover */}
           {isOpen && (
@@ -404,7 +640,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
               role="dialog"
               aria-modal="true"
               aria-label="Calendario"
-              className="absolute z-50 mt-1 top-full left-0 rounded-lg border border-interaction-tertiary-default bg-white shadow-lg"
+              className={styles.popover}
             >
               <CalendarGrid
                 viewDate={viewDate}
@@ -412,9 +648,13 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
                 today={today}
                 min={min}
                 max={max}
+                disabledDates={disabledDates}
+                focusedDate={focusedDate}
                 onSelectDay={handleSelectDay}
                 onPrevMonth={handlePrevMonth}
                 onNextMonth={handleNextMonth}
+                onFocusDay={setFocusedDate}
+                onViewDateChange={setViewDate}
                 headingId={headingId}
               />
             </div>
@@ -424,13 +664,13 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(helperSizeStyles[size], 'text-feedback-error-default')}
+            className={cn(helperSizeClass[size], styles.errorText)}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span id={messageId} className={cn(helperSizeStyles[size], 'text-text-secondary')}>
+          <span id={messageId} className={cn(helperSizeClass[size], styles.helperText)}>
             {helperText}
           </span>
         ) : null}

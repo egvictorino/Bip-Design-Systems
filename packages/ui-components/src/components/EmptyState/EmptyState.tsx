@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/cn';
+import styles from './EmptyState.module.css';
 
 export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Icono o ilustración personalizada. Si se omite, se muestra un icono genérico. */
@@ -14,30 +15,32 @@ export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const sizeStyles: Record<
-  NonNullable<EmptyStateProps['size']>,
+type SizeKey = NonNullable<EmptyStateProps['size']>;
+
+const sizeClasses: Record<
+  SizeKey,
   { wrapper: string; iconBox: string; title: string; description: string; action: string }
 > = {
   sm: {
-    wrapper: 'gap-2 py-8 px-4',
-    iconBox: 'w-10 h-10',
-    title: 'text-sm font-semibold',
-    description: 'text-xs',
-    action: 'mt-2',
+    wrapper:     styles.sm,
+    iconBox:     styles.iconBoxSm,
+    title:       styles.titleSm,
+    description: styles.descriptionSm,
+    action:      styles.actionSm,
   },
   md: {
-    wrapper: 'gap-3 py-12 px-6',
-    iconBox: 'w-14 h-14',
-    title: 'text-base font-semibold',
-    description: 'text-sm',
-    action: 'mt-3',
+    wrapper:     styles.md,
+    iconBox:     styles.iconBoxMd,
+    title:       styles.titleMd,
+    description: styles.descriptionMd,
+    action:      styles.actionMd,
   },
   lg: {
-    wrapper: 'gap-4 py-16 px-8',
-    iconBox: 'w-20 h-20',
-    title: 'text-lg font-semibold',
-    description: 'text-base',
-    action: 'mt-4',
+    wrapper:     styles.lg,
+    iconBox:     styles.iconBoxLg,
+    title:       styles.titleLg,
+    description: styles.descriptionLg,
+    action:      styles.actionLg,
   },
 };
 
@@ -50,18 +53,8 @@ const DefaultIcon: React.FC<{ className?: string }> = ({ className }) => (
     aria-hidden="true"
   >
     <rect x="6" y="10" width="36" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" />
-    <path
-      d="M6 22h36"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    />
-    <path
-      d="M17 22v16M31 22v16"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    />
+    <path d="M6 22h36" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M17 22v16M31 22v16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
     <path
       d="M16 10V8a2 2 0 012-2h12a2 2 0 012 2v2"
       stroke="currentColor"
@@ -80,31 +73,24 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   className,
   ...props
 }) => {
-  const styles = sizeStyles[size];
+  const sz = sizeClasses[size];
 
   return (
     <div
-      className={cn('flex flex-col items-center justify-center text-center', styles.wrapper, className)}
+      className={cn(styles.emptyState, sz.wrapper, className)}
       {...props}
     >
-      {/* Icon */}
-      <div
-        className={cn('text-text-secondary', styles.iconBox)}
-        aria-hidden="true"
-      >
-        {icon ?? <DefaultIcon className="w-full h-full" />}
+      <div className={cn(styles.iconBox, sz.iconBox)} aria-hidden="true">
+        {icon ?? <DefaultIcon className={styles.iconFull} />}
       </div>
 
-      {/* Title */}
-      <p className={cn('text-text-primary', styles.title)}>{title}</p>
+      <p className={cn(styles.title, sz.title)}>{title}</p>
 
-      {/* Description */}
       {description && (
-        <p className={cn('text-text-secondary max-w-xs', styles.description)}>{description}</p>
+        <p className={cn(styles.description, sz.description)}>{description}</p>
       )}
 
-      {/* Action */}
-      {action && <div className={styles.action}>{action}</div>}
+      {action && <div className={sz.action}>{action}</div>}
     </div>
   );
 };

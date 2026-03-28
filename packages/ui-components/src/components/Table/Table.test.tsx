@@ -192,7 +192,7 @@ describe('Table', () => {
     consoleError.mockRestore();
   });
 
-  it('compact mode applies smaller padding to header and cell', () => {
+  it('compact mode applies thCompact/tdCompact classes', () => {
     const { container } = render(
       <Table compact>
         <TableHead>
@@ -207,15 +207,11 @@ describe('Table', () => {
         </TableBody>
       </Table>
     );
-    const th = container.querySelector('th')!;
-    const td = container.querySelector('td')!;
-    expect(th.className).toMatch(/px-3/);
-    expect(th.className).toMatch(/py-2/);
-    expect(td.className).toMatch(/px-3/);
-    expect(td.className).toMatch(/py-2/);
+    expect(container.querySelector('th')).toHaveClass('thCompact');
+    expect(container.querySelector('td')).toHaveClass('tdCompact');
   });
 
-  it('non-compact mode applies larger padding to header and cell', () => {
+  it('non-compact mode applies thNormal/tdNormal classes', () => {
     const { container } = render(
       <Table>
         <TableHead>
@@ -230,15 +226,11 @@ describe('Table', () => {
         </TableBody>
       </Table>
     );
-    const th = container.querySelector('th')!;
-    const td = container.querySelector('td')!;
-    expect(th.className).toMatch(/px-4/);
-    expect(th.className).toMatch(/py-3/);
-    expect(td.className).toMatch(/px-4/);
-    expect(td.className).toMatch(/py-3/);
+    expect(container.querySelector('th')).toHaveClass('thNormal');
+    expect(container.querySelector('td')).toHaveClass('tdNormal');
   });
 
-  it('striped mode applies even-row background class', () => {
+  it('striped mode applies rowStriped class to each row', () => {
     const { container } = render(
       <Table striped>
         <TableBody>
@@ -252,13 +244,12 @@ describe('Table', () => {
       </Table>
     );
     const rows = container.querySelectorAll('tbody tr');
-    // Both rows should carry the even: stripe class
     rows.forEach((row) => {
-      expect(row.className).toMatch(/even:/);
+      expect(row).toHaveClass('rowStriped');
     });
   });
 
-  it('TableHeader align="center" applies text-center class', () => {
+  it('TableHeader align="center" applies alignCenter class', () => {
     const { container } = render(
       <Table>
         <TableHead>
@@ -269,10 +260,10 @@ describe('Table', () => {
         <TableBody />
       </Table>
     );
-    expect(container.querySelector('th')).toHaveClass('text-center');
+    expect(container.querySelector('th')).toHaveClass('alignCenter');
   });
 
-  it('TableHeader align="right" applies text-right class', () => {
+  it('TableHeader align="right" applies alignRight class', () => {
     const { container } = render(
       <Table>
         <TableHead>
@@ -283,10 +274,10 @@ describe('Table', () => {
         <TableBody />
       </Table>
     );
-    expect(container.querySelector('th')).toHaveClass('text-right');
+    expect(container.querySelector('th')).toHaveClass('alignRight');
   });
 
-  it('TableCell align="center" applies text-center class', () => {
+  it('TableCell align="center" applies alignCenter class', () => {
     const { container } = render(
       <Table>
         <TableBody>
@@ -296,7 +287,7 @@ describe('Table', () => {
         </TableBody>
       </Table>
     );
-    expect(container.querySelector('td')).toHaveClass('text-center');
+    expect(container.querySelector('td')).toHaveClass('alignCenter');
   });
 
   it('Table forwards className to the wrapper div', () => {

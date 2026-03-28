@@ -1,6 +1,8 @@
-import { forwardRef, useId } from 'react';
-import type { InputHTMLAttributes } from 'react';
+import { forwardRef, useId, useRef, useEffect, useCallback, useContext } from 'react';
+import type { InputHTMLAttributes, MutableRefObject } from 'react';
 import { cn } from '../../lib/cn';
+import { CheckboxGroupContext } from './CheckboxGroupContext';
+import styles from './Checkbox.module.css';
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   size?: 'sm' | 'md' | 'lg';
@@ -8,94 +10,119 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
   helperText?: string;
   error?: boolean;
   errorMessage?: string;
+  indeterminate?: boolean;
 }
 
-type SizeTokens = { box: string; check: string; label: string; helper: string; indent: string };
+type SizeTokens = { box: string; icon: string; label: string; helper: string; indent: string };
 
-const sizes: Record<NonNullable<CheckboxProps['size']>, SizeTokens> = {
+const sizeClasses: Record<NonNullable<CheckboxProps['size']>, SizeTokens> = {
   sm: {
-    box: 'w-3.5 h-3.5',
-    check: 'w-2 h-2',
-    label: 'text-xs',
-    helper: 'text-xs',
-    indent: 'ml-[22px]',
+    box:    styles.boxSm,
+    icon:   styles.iconSm,
+    label:  styles.labelSm,
+    helper: styles.helperSm,
+    indent: styles.indentSm,
   },
   md: {
-    box: 'w-4 h-4',
-    check: 'w-2.5 h-2.5',
-    label: 'text-sm',
-    helper: 'text-xs',
-    indent: 'ml-6',
+    box:    styles.boxMd,
+    icon:   styles.iconMd,
+    label:  styles.labelMd,
+    helper: styles.helperSm,
+    indent: styles.indentMd,
   },
   lg: {
-    box: 'w-5 h-5',
-    check: 'w-3 h-3',
-    label: 'text-base',
-    helper: 'text-sm',
-    indent: 'ml-7',
+    box:    styles.boxLg,
+    icon:   styles.iconLg,
+    label:  styles.labelLg,
+    helper: styles.helperLg,
+    indent: styles.indentLg,
   },
 };
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
     {
-      size = 'md',
+      size: sizeProp,
       label,
       helperText,
-      error = false,
+      error: errorProp,
       errorMessage,
       className,
-      disabled = false,
+      disabled: disabledProp,
       id,
+      required,
+      indeterminate,
       ...props
     },
     ref
   ) => {
+    const groupCtx = useContext(CheckboxGroupContext);
+    const error = errorProp ?? groupCtx?.error ?? false;
+    const disabled = disabledProp ?? groupCtx?.disabled ?? false;
+    const size = sizeProp ?? groupCtx?.size ?? 'md';
+
     const generatedId = useId();
-    // Always fall back to generatedId so aria-describedby linkage works
-    // even when no label or explicit id is provided
     const checkboxId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage ? `${checkboxId}-message` : undefined;
+    const sz = sizeClasses[size];
+
+    const internalRef = useRef<HTMLInputElement>(null);
+    const mergedRef = useCallback(
+      (node: HTMLInputElement | null) => {
+        (internalRef as MutableRefObject<HTMLInputElement | null>).current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) (ref as MutableRefObject<HTMLInputElement | null>).current = node;
+      },
+      [ref]
+    );
+
+    useEffect(() => {
+      if (internalRef.current) {
+        internalRef.current.indeterminate = indeterminate ?? false;
+      }
+    }, [indeterminate]);
 
     return (
-      <div className={cn('flex flex-col gap-1', className)}>
-        <div className="group flex items-center gap-2">
+      <div className={cn(styles.wrapper, className)}>
+        <div className={styles.row}>
           {/* Visual checkbox box */}
           <div
             className={cn(
-              'relative flex shrink-0 items-center justify-center rounded-sm border-2 transition-colors',
-              'group-has-[:focus-visible]:ring-2 group-has-[:focus-visible]:ring-offset-2',
-              sizes[size].box,
-              error
-                ? 'border-danger group-has-[:checked]:bg-danger group-has-[:checked]:border-danger group-has-[:focus-visible]:ring-danger'
-                : 'border-primary group-has-[:checked]:bg-primary group-has-[:checked]:border-primary group-has-[:focus-visible]:ring-primary hover:border-primary-hover',
-              disabled && 'opacity-50 cursor-not-allowed'
+              styles.box,
+              sz.box,
+              error && styles.boxError,
+              disabled && styles.boxDisabled
             )}
           >
-            {/* Native input overlaying the visual box */}
             <input
-              ref={ref}
+              ref={mergedRef}
               id={checkboxId}
               type="checkbox"
               disabled={disabled}
+              required={required}
               aria-invalid={error || undefined}
               aria-describedby={messageId}
-              className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+              className={styles.nativeInput}
               {...props}
             />
-            {/* Checkmark icon — visible only when checked (colored background) */}
+            {/* Checkmark icon — visible when checked, hidden when indeterminate */}
             <svg
-              className={cn(
-                'pointer-events-none text-white transition-opacity',
-                'opacity-0 group-has-[:checked]:opacity-100',
-                sizes[size].check
-              )}
+              className={cn(styles.checkIcon, sz.icon)}
               viewBox="0 0 16 16"
               fill="currentColor"
               aria-hidden="true"
             >
               <path d="M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z" />
+            </svg>
+            {/* Dash icon — visible only when indeterminate */}
+            <svg
+              className={cn(styles.dashIcon, sz.icon)}
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M3 8a1 1 0 011-1h8a1 1 0 110 2H4a1 1 0 01-1-1z" />
             </svg>
           </div>
 
@@ -104,13 +131,18 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             <label
               htmlFor={checkboxId}
               className={cn(
-                'select-none font-medium transition-colors cursor-pointer',
-                sizes[size].label,
-                error ? 'text-danger' : 'text-txt',
-                disabled && 'opacity-50 cursor-not-allowed'
+                styles.label,
+                sz.label,
+                error ? styles.labelError : styles.labelNormal,
+                disabled && styles.labelDisabled
               )}
             >
               {label}
+              {required && (
+                <span aria-hidden="true" className={styles.required}>
+                  *
+                </span>
+              )}
             </label>
           )}
         </div>
@@ -119,16 +151,13 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(sizes[size].helper, 'text-danger', sizes[size].indent)}
+            className={cn(sz.helper, styles.errorText, sz.indent)}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span
-            id={messageId}
-            className={cn(sizes[size].helper, 'text-txt-secondary', sizes[size].indent)}
-          >
+          <span id={messageId} className={cn(sz.helper, styles.helperText, sz.indent)}>
             {helperText}
           </span>
         ) : null}

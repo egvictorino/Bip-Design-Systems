@@ -68,23 +68,23 @@ describe('Stepper', () => {
         <StepperStep value={2} label="Revisión" />
       </Stepper>
     );
-    // The error step's indicator has bg-danger class
-    const errorIndicator = container.querySelector('.bg-danger');
+    // The error step's indicator has circleError class
+    const errorIndicator = container.querySelector('.circleError');
     expect(errorIndicator).toBeInTheDocument();
   });
 
-  it('active step indicator has bg-primary class', () => {
+  it('active step indicator has circleActive class', () => {
     const { container } = renderStepper(1);
-    // Active step is index 1 — its indicator has bg-primary
-    const indicators = container.querySelectorAll('.bg-primary');
+    // Active step is index 1 — its indicator has circleActive
+    const indicators = container.querySelectorAll('.circleActive');
     expect(indicators.length).toBeGreaterThan(0);
   });
 
-  it('pending step indicator has bg-disabled class', () => {
+  it('pending step indicator has circleIdle class', () => {
     const { container } = renderStepper(1);
     // Steps 2 and 3 are pending
-    const disabledIndicators = container.querySelectorAll('.bg-disabled');
-    expect(disabledIndicators.length).toBeGreaterThan(0);
+    const idleIndicators = container.querySelectorAll('.circleIdle');
+    expect(idleIndicators.length).toBeGreaterThan(0);
   });
 
   // ── Circle variant ─────────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ describe('Stepper', () => {
 
   it('dot variant renders small dot indicators', () => {
     const { container } = renderStepper(1, vi.fn(), { variant: 'dot' });
-    const dots = container.querySelectorAll('.w-3.h-3.rounded-full');
+    const dots = container.querySelectorAll('.dot');
     expect(dots.length).toBeGreaterThan(0);
   });
 
@@ -123,15 +123,14 @@ describe('Stepper', () => {
   it('last step does not render a connector', () => {
     const { container } = renderStepper(1);
     const lastLi = container.querySelector('li:last-child');
-    // Connector is a div with h-px — last step should have only 1 child (the step block)
-    const hPxDivs = lastLi?.querySelectorAll('.h-px');
-    expect(hPxDivs?.length).toBe(0);
+    const connectors = lastLi?.querySelectorAll('.connector');
+    expect(connectors?.length).toBe(0);
   });
 
   it('non-last steps render a connector', () => {
     const { container } = renderStepper(1);
     const firstLi = container.querySelector('li:first-child');
-    const connector = firstLi?.querySelector('.h-px');
+    const connector = firstLi?.querySelector('.connector');
     expect(connector).toBeInTheDocument();
   });
 

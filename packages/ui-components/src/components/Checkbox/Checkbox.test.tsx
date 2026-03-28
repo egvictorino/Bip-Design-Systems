@@ -135,13 +135,66 @@ describe('Checkbox', () => {
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
   it.each([
-    ['sm', 'text-xs', 'w-3.5', 'h-3.5'],
-    ['md', 'text-sm', 'w-4', 'h-4'],
-    ['lg', 'text-base', 'w-5', 'h-5'],
-  ] as const)('size %s applies correct label and box classes', (size, labelClass, w, h) => {
+    ['sm', 'labelSm', 'boxSm'],
+    ['md', 'labelMd', 'boxMd'],
+    ['lg', 'labelLg', 'boxLg'],
+  ] as const)('size %s applies correct label and box classes', (size, labelClass, boxClass) => {
     const { container } = render(<Checkbox size={size} label="Opción" />);
     expect(screen.getByText('Opción')).toHaveClass(labelClass);
-    const box = container.querySelector('div.relative') as HTMLElement;
-    expect(box).toHaveClass(w, h);
+    const box = container.querySelector('.box') as HTMLElement;
+    expect(box).toHaveClass(boxClass);
+  });
+
+  // ── Indeterminate state ────────────────────────────────────────────────────
+
+  it('sets input.indeterminate to true when indeterminate={true}', async () => {
+    render(<Checkbox indeterminate />);
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    // Wait for useEffect to run
+    await new Promise((r) => setTimeout(r, 0));
+    expect(checkbox.indeterminate).toBe(true);
+  });
+
+  it('sets input.indeterminate to false when indeterminate={false}', async () => {
+    render(<Checkbox indeterminate={false} />);
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    await new Promise((r) => setTimeout(r, 0));
+    expect(checkbox.indeterminate).toBe(false);
+  });
+
+  it('updates indeterminate when prop changes', async () => {
+    const { rerender } = render(<Checkbox indeterminate={false} />);
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    await new Promise((r) => setTimeout(r, 0));
+    expect(checkbox.indeterminate).toBe(false);
+    rerender(<Checkbox indeterminate={true} />);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(checkbox.indeterminate).toBe(true);
+  });
+
+  // ── Required state ─────────────────────────────────────────────────────────
+
+  it('renders an asterisk when required=true and label is provided', () => {
+    render(<Checkbox required label="Campo obligatorio" />);
+    // The asterisk span is aria-hidden but still in the DOM
+    const label = screen.getByText('Campo obligatorio').closest('label') as HTMLElement;
+    expect(label.querySelector('span[aria-hidden="true"]')).toBeInTheDocument();
+  });
+
+  it('passes required attribute to the underlying input', () => {
+    render(<Checkbox required label="Campo" />);
+    expect(screen.getByRole('checkbox')).toBeRequired();
+  });
+
+  it('does not crash when required=true and no label is provided', () => {
+    expect(() => render(<Checkbox required />)).not.toThrow();
+  });
+
+  // ── Hover class on error state ─────────────────────────────────────────────
+
+  it('error state box has boxError class', () => {
+    const { container } = render(<Checkbox error />);
+    const box = container.querySelector('.box') as HTMLElement;
+    expect(box).toHaveClass('boxError');
   });
 });

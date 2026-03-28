@@ -1,5 +1,6 @@
 import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './MultiSelect.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -29,52 +30,39 @@ export interface MultiSelectProps {
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
 
-const triggerSizes: Record<NonNullable<MultiSelectProps['size']>, string> = {
-  sm: 'min-h-[32px] px-3 py-1 text-xs gap-1',
-  md: 'min-h-[42px] px-4 py-2 text-sm gap-1.5',
-  lg: 'min-h-[50px] px-5 py-2.5 text-base gap-2',
+const triggerSizeClass: Record<NonNullable<MultiSelectProps['size']>, string> = {
+  sm: styles.triggerSm,
+  md: styles.triggerMd,
+  lg: styles.triggerLg,
 };
 
-const chipSizes: Record<NonNullable<MultiSelectProps['size']>, string> = {
-  sm: 'text-xs px-1.5 py-0.5 gap-0.5',
-  md: 'text-xs px-2 py-0.5 gap-0.5',
-  lg: 'text-sm px-2.5 py-1 gap-1',
+const chipSizeClass: Record<NonNullable<MultiSelectProps['size']>, string> = {
+  sm: styles.chipSm,
+  md: styles.chipMd,
+  lg: styles.chipLg,
 };
 
-const labelSizeStyles: Record<NonNullable<MultiSelectProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-base',
+const labelSizeClass: Record<NonNullable<MultiSelectProps['size']>, string> = {
+  sm: styles.labelSm,
+  md: styles.labelMd,
+  lg: styles.labelLg,
 };
 
-const helperSizeStyles: Record<NonNullable<MultiSelectProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-xs',
-  lg: 'text-sm',
+const helperSizeClass: Record<NonNullable<MultiSelectProps['size']>, string> = {
+  sm: styles.helperSm,
+  md: styles.helperMd,
+  lg: styles.helperLg,
 };
 
-const getTriggerVariantStyles = (
+const getTriggerVariantClass = (
+  variant: NonNullable<MultiSelectProps['variant']>,
   error: boolean
-): Record<NonNullable<MultiSelectProps['variant']>, string> => ({
-  outlined: cn(
-    'border bg-interaction-field',
-    error
-      ? 'border-feedback-error-default focus-visible:ring-feedback-error-default'
-      : 'border-interaction-primary-default focus-visible:ring-interaction-primary-default hover:border-interaction-primary-hover'
-  ),
-  filled: cn(
-    'border-0',
-    error
-      ? 'bg-feedback-error-light focus-visible:ring-feedback-error-default'
-      : 'bg-interaction-secondary-default focus-visible:ring-interaction-primary-default hover:bg-interaction-secondary-hover'
-  ),
-  bare: cn(
-    'border-0 border-b-2 bg-transparent rounded-none',
-    error
-      ? 'border-b-feedback-error-default focus-visible:ring-0'
-      : 'border-b-interaction-primary-default focus-visible:ring-0 focus-visible:border-b-interaction-primary-hover hover:border-b-interaction-primary-hover'
-  ),
-});
+): string => {
+  if (variant === 'outlined') return error ? styles.variantOutlinedError : styles.variantOutlined;
+  if (variant === 'filled') return error ? styles.variantFilledError : styles.variantFilled;
+  // bare
+  return error ? styles.variantBareError : styles.variantBare;
+};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -268,24 +256,23 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       [ref]
     );
 
-    // ─── Styles ──────────────────────────────────────────────────────────────
-
-    const variantStyles = useMemo(() => getTriggerVariantStyles(error), [error]);
-
     return (
-      <div ref={containerRef} className={cn('flex flex-col gap-1', fullWidth && 'w-full')}>
+      <div
+        ref={containerRef}
+        className={cn(styles.container, fullWidth && styles.containerFullWidth)}
+      >
         {label && (
           <label
             htmlFor={triggerId}
             className={cn(
-              'font-medium transition-colors cursor-default',
-              labelSizeStyles[size],
+              styles.label,
+              labelSizeClass[size],
               error
-                ? 'text-feedback-error-default'
+                ? styles.labelError
                 : focused
-                  ? 'text-interaction-primary-default'
-                  : 'text-text-primary',
-              disabled && 'opacity-50'
+                  ? styles.labelFocused
+                  : undefined,
+              disabled && styles.labelDisabled
             )}
           >
             {label}
@@ -309,24 +296,20 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className={cn(
-            'flex flex-wrap items-center rounded-[1px] transition-colors',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-            variantStyles[variant],
-            triggerSizes[size],
-            disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+            styles.trigger,
+            getTriggerVariantClass(variant, error),
+            triggerSizeClass[size],
+            disabled ? styles.triggerDisabled : styles.triggerEnabled,
             className
           )}
         >
           {/* Selected chips */}
           {selectedOptions.length > 0 ? (
-            <span className="flex flex-wrap gap-1 flex-1 min-w-0">
+            <span className={styles.chipsWrapper}>
               {selectedOptions.map((opt) => (
                 <span
                   key={opt.value}
-                  className={cn(
-                    'inline-flex items-center rounded bg-interaction-tertiary-default text-text-primary font-medium',
-                    chipSizes[size]
-                  )}
+                  className={cn(styles.chip, chipSizeClass[size])}
                 >
                   {opt.label}
                   {!disabled && (
@@ -334,12 +317,12 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                       type="button"
                       aria-label={`Eliminar ${opt.label}`}
                       onClick={(e) => removeOne(opt.value, e)}
-                      className="rounded-sm hover:bg-interaction-tertiary-hover p-0.5 leading-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-interaction-primary-default"
+                      className={styles.chipRemove}
                     >
                       <svg
                         viewBox="0 0 12 12"
                         fill="currentColor"
-                        className="w-2.5 h-2.5"
+                        className={styles.iconXs}
                         aria-hidden="true"
                       >
                         <path d="M2.22 2.22a.75.75 0 011.06 0L6 4.94l2.72-2.72a.75.75 0 111.06 1.06L7.06 6l2.72 2.72a.75.75 0 11-1.06 1.06L6 7.06 3.28 9.78a.75.75 0 01-1.06-1.06L4.94 6 2.22 3.28a.75.75 0 010-1.06z" />
@@ -350,27 +333,22 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
               ))}
             </span>
           ) : (
-            <span className="flex-1 text-text-disabled select-none">{placeholder}</span>
+            <span className={styles.placeholder}>{placeholder}</span>
           )}
 
           {/* Right side: clear all + chevron */}
-          <span className="ml-auto flex items-center gap-1 shrink-0 pl-1">
+          <span className={styles.triggerRight}>
             {selectedOptions.length > 0 && !disabled && (
               <button
                 type="button"
                 aria-label="Eliminar todas las selecciones"
                 onClick={clearAll}
-                className={cn(
-                  'rounded-sm p-0.5 transition-colors',
-                  'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-interaction-primary-default',
-                  'hover:bg-interaction-tertiary-default',
-                  error ? 'text-feedback-error-default' : 'text-text-secondary hover:text-text-primary'
-                )}
+                className={cn(styles.clearAll, error && styles.clearAllError)}
               >
                 <svg
                   viewBox="0 0 16 16"
                   fill="currentColor"
-                  className="w-3.5 h-3.5"
+                  className={styles.iconSm}
                   aria-hidden="true"
                 >
                   <path d="M3.22 3.22a.75.75 0 011.06 0L8 6.94l3.72-3.72a.75.75 0 111.06 1.06L9.06 8l3.72 3.72a.75.75 0 11-1.06 1.06L8 9.06l-3.72 3.72a.75.75 0 01-1.06-1.06L6.94 8 3.22 4.28a.75.75 0 010-1.06z" />
@@ -380,16 +358,16 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
             <span
               aria-hidden="true"
               className={cn(
-                'transition-transform duration-200 pointer-events-none',
-                isOpen && 'rotate-180',
+                styles.chevron,
+                isOpen && styles.chevronOpen,
                 error
-                  ? 'text-feedback-error-default'
+                  ? styles.chevronError
                   : focused
-                    ? 'text-interaction-primary-default'
-                    : 'text-text-secondary'
+                    ? styles.chevronFocused
+                    : undefined
               )}
             >
-              <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
+              <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd}>
                 <path
                   fillRule="evenodd"
                   d="M4.22 6.22a.75.75 0 011.06 0L8 8.94l2.72-2.72a.75.75 0 111.06 1.06l-3.25 3.25a.75.75 0 01-1.06 0L4.22 7.28a.75.75 0 010-1.06z"
@@ -402,21 +380,18 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
 
         {/* Dropdown */}
         {isOpen && (
-          <div className="relative">
-            <div className="absolute z-50 top-1 left-0 right-0 bg-white border border-interaction-tertiary-default rounded shadow-md overflow-hidden">
+          <div className={styles.dropdownWrapper}>
+            <div className={styles.dropdown}>
               {/* Search */}
-              <div className="p-2 border-b border-interaction-tertiary-default">
-                <div className="relative">
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-text-disabled"
-                  >
+              <div className={styles.searchWrapper}>
+                <div className={styles.searchInputWrapper}>
+                  <span aria-hidden="true" className={styles.searchIcon}>
                     <svg
                       viewBox="0 0 16 16"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="1.5"
-                      className="w-3.5 h-3.5"
+                      className={styles.iconSm}
                     >
                       <circle cx="6.5" cy="6.5" r="4" />
                       <path d="M11 11l2.5 2.5" strokeLinecap="round" />
@@ -432,7 +407,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                     aria-controls={listboxId}
                     aria-autocomplete="list"
                     placeholder={searchPlaceholder}
-                    className="w-full pl-8 pr-3 py-1.5 text-sm border border-interaction-tertiary-default rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-interaction-primary-default"
+                    className={styles.searchInput}
                   />
                 </div>
               </div>
@@ -444,12 +419,10 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                 aria-multiselectable="true"
                 aria-label="Opciones"
                 onKeyDown={handleListboxKeyDown}
-                className="max-h-48 overflow-y-auto py-1"
+                className={styles.listbox}
               >
                 {filtered.length === 0 ? (
-                  <li className="px-3 py-2 text-sm text-text-disabled text-center select-none">
-                    Sin resultados
-                  </li>
+                  <li className={styles.noResults}>Sin resultados</li>
                 ) : (
                   filtered.map((opt) => {
                     const isSelected = valueSet.has(opt.value);
@@ -463,23 +436,20 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                         onClick={() => !opt.disabled && toggle(opt.value)}
                         onKeyDown={(e) => !opt.disabled && handleOptionKeyDown(e, opt.value)}
                         className={cn(
-                          'flex items-center gap-2.5 px-3 py-2 text-sm select-none outline-none',
-                          'focus-visible:bg-interaction-tertiary-default',
-                          opt.disabled
-                            ? 'text-text-disabled cursor-not-allowed'
-                            : 'cursor-pointer text-text-primary hover:bg-interaction-tertiary-default'
+                          styles.option,
+                          opt.disabled && styles.optionDisabled
                         )}
                       >
                         {/* Checkbox visual */}
                         <span
                           aria-hidden="true"
                           className={cn(
-                            'w-4 h-4 shrink-0 rounded border flex items-center justify-center transition-colors',
+                            styles.optionCheckbox,
                             isSelected && !opt.disabled
-                              ? 'bg-interaction-primary-default border-interaction-primary-default'
+                              ? styles.optionCheckboxSelected
                               : opt.disabled
-                                ? 'border-text-disabled bg-interaction-disabled'
-                                : 'border-interaction-primary-default bg-white'
+                                ? styles.optionCheckboxDisabled
+                                : undefined
                           )}
                         >
                           {isSelected && (
@@ -488,7 +458,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                               fill="none"
                               stroke="white"
                               strokeWidth="2"
-                              className="w-2.5 h-2.5"
+                              className={styles.iconCheckmark}
                             >
                               <path
                                 d="M2 6l3 3 5-5"
@@ -512,13 +482,13 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(helperSizeStyles[size], 'text-feedback-error-default')}
+            className={cn(helperSizeClass[size], styles.errorText)}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span id={messageId} className={cn(helperSizeStyles[size], 'text-text-secondary')}>
+          <span id={messageId} className={cn(helperSizeClass[size], styles.helperText)}>
             {helperText}
           </span>
         ) : null}

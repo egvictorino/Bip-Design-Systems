@@ -22,11 +22,11 @@ describe('Skeleton', () => {
     expect(wrapper.children).toHaveLength(3);
   });
 
-  it('last line is narrower (w-3/4) in multi-line text mode', () => {
+  it('last line is narrower in multi-line text mode', () => {
     const { container } = render(<Skeleton variant="text" lines={2} />);
     const lines = (container.firstChild as HTMLElement).children;
-    expect(lines[1]).toHaveClass('w-3/4');
-    expect(lines[0]).toHaveClass('w-full');
+    expect(lines[1]).toHaveClass('lineShort');
+    expect(lines[0]).toHaveClass('lineFull');
   });
 
   it.each(['text', 'circle', 'rect'] as const)('renders variant %s', (variant) => {
@@ -39,18 +39,18 @@ describe('Skeleton', () => {
     expect(container.firstChild).toHaveClass('custom');
   });
 
-  it('circle variant has rounded-full class', () => {
+  it('circle variant has circle class', () => {
     const { container } = render(<Skeleton variant="circle" />);
-    expect(container.firstChild).toHaveClass('rounded-full');
+    expect(container.firstChild).toHaveClass('circle');
   });
 
-  it('rect variant has rounded-md class', () => {
+  it('rect variant has rect class', () => {
     const { container } = render(<Skeleton variant="rect" />);
-    expect(container.firstChild).toHaveClass('rounded-md');
+    expect(container.firstChild).toHaveClass('rect');
   });
 
-  it('has animate-pulse class (loading animation)', () => {
+  it('has base class (loading animation)', () => {
     const { container } = render(<Skeleton />);
-    expect(container.firstChild).toHaveClass('animate-pulse');
+    expect(container.firstChild).toHaveClass('base');
   });
 });

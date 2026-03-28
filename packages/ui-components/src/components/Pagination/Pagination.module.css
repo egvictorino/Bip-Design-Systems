@@ -1,0 +1,68 @@
+/* ─── Nav wrapper ───────────────────────────────────────────────────────────── */
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ─── Base button ───────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  transition: background-color 150ms, color 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:focus { outline: none; }
+.btn:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 3px var(--color-primary); }
+
+/* ─── States ────────────────────────────────────────────────────────────────── */
+
+.btnActive {
+  background-color: var(--color-primary);
+  color: var(--color-txt-white);
+}
+
+.btnDefault {
+  color: var(--color-txt-secondary);
+}
+
+.btnDefault:hover {
+  color: var(--color-txt);
+  background-color: var(--color-surface-3);
+}
+
+.btnDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: var(--color-txt-secondary);
+}
+
+/* ─── Ellipsis ──────────────────────────────────────────────────────────────── */
+
+.ellipsis {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-txt-secondary);
+}
+
+/* ─── Arrow icons ───────────────────────────────────────────────────────────── */
+
+.arrowIcon {
+  width: 1rem;
+  height: 1rem;
+}

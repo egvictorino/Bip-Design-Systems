@@ -1,0 +1,84 @@
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+/* ─── Variants ──────────────────────────────────────────────────────────────── */
+
+.primary {
+  background-color: var(--color-info-subtle);
+  color: var(--color-primary);
+}
+
+.success {
+  background-color: var(--color-success-subtle);
+  color: var(--color-success-text);
+}
+
+.warning {
+  background-color: var(--color-warning-subtle);
+  color: var(--color-warning-text);
+}
+
+.error {
+  background-color: var(--color-danger-subtle);
+  color: var(--color-danger-text);
+}
+
+.neutral {
+  background-color: var(--color-surface-3);
+  color: var(--color-txt-secondary);
+}
+
+/* ─── Sizes ─────────────────────────────────────────────────────────────────── */
+
+.sm {
+  padding: 0.125rem 0.375rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.md {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.lg {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* ─── Dot ───────────────────────────────────────────────────────────────────── */
+
+.dot {
+  flex-shrink: 0;
+  border-radius: 9999px;
+}
+
+.dotSm {
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
+.dotMd {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.dotLg {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+.dotPrimary   { background-color: var(--color-primary); }
+.dotSuccess   { background-color: var(--color-success); }
+.dotWarning   { background-color: var(--color-warning); }
+.dotError     { background-color: var(--color-danger); }
+.dotNeutral   { background-color: var(--color-txt-secondary); }

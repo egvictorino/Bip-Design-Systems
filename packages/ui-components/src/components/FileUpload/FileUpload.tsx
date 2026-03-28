@@ -1,5 +1,6 @@
 import { forwardRef, useId, useState } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './FileUpload.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -27,16 +28,16 @@ export interface FileUploadProps {
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
 
-const labelSizeStyles: Record<NonNullable<FileUploadProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-base',
+const outerLabelSizeClass: Record<NonNullable<FileUploadProps['size']>, string> = {
+  sm: styles.outerLabelSm,
+  md: styles.outerLabelMd,
+  lg: styles.outerLabelLg,
 };
 
-const helperSizeStyles: Record<NonNullable<FileUploadProps['size']>, string> = {
-  sm: 'text-xs',
-  md: 'text-xs',
-  lg: 'text-sm',
+const helperSizeClass: Record<NonNullable<FileUploadProps['size']>, string> = {
+  sm: styles.helperTextSm,
+  md: styles.helperTextMd,
+  lg: styles.helperTextLg,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -110,16 +111,27 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       e.currentTarget.value = '';
     };
 
+    // Dropzone state class
+    const dropzoneStateClass = disabled
+      ? styles.dropzoneDisabled
+      : error
+        ? isDragging
+          ? styles.dropzoneErrorDragging
+          : styles.dropzoneError
+        : isDragging
+          ? styles.dropzoneDragging
+          : styles.dropzoneDefault;
+
     return (
-      <div className={cn('flex flex-col gap-1', fullWidth && 'w-full')}>
+      <div className={cn(styles.wrapper, fullWidth && styles.wrapperFull)}>
         {/* Outer label text */}
         {label && (
           <span
             className={cn(
-              'font-medium transition-colors',
-              labelSizeStyles[size],
-              error ? 'text-feedback-error-default' : 'text-text-primary',
-              disabled && 'opacity-50'
+              styles.outerLabel,
+              outerLabelSizeClass[size],
+              error ? styles.outerLabelError : styles.outerLabelNormal,
+              disabled && styles.outerLabelDisabled
             )}
           >
             {label}
@@ -134,17 +146,9 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            'flex flex-col items-center justify-center gap-2 py-10 px-4',
-            'border-2 border-dashed rounded-lg transition-colors',
-            fullWidth && 'w-full',
-            disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
-            error
-              ? isDragging
-                ? 'border-feedback-error-default bg-feedback-error-light'
-                : 'border-feedback-error-default bg-interaction-field hover:bg-feedback-error-light'
-              : isDragging
-                ? 'border-interaction-primary-hover bg-interaction-tertiary-default'
-                : 'border-interaction-primary-default bg-interaction-field hover:border-interaction-primary-hover hover:bg-interaction-tertiary-default',
+            styles.dropzone,
+            fullWidth && styles.dropzoneFull,
+            dropzoneStateClass,
             className
           )}
         >
@@ -169,8 +173,8 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             stroke="currentColor"
             strokeWidth={1.5}
             className={cn(
-              'w-8 h-8',
-              error ? 'text-feedback-error-default' : 'text-text-secondary'
+              styles.uploadIcon,
+              error ? styles.uploadIconError : styles.uploadIconNormal
             )}
             aria-hidden="true"
           >
@@ -181,39 +185,36 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             />
           </svg>
 
-          <div className="text-center">
-            <p className={cn('text-sm font-medium', error ? 'text-feedback-error-default' : 'text-text-primary')}>
+          <div className={styles.dropzoneText}>
+            <p
+              className={cn(
+                styles.dropzoneTitle,
+                error ? styles.dropzoneTitleError : styles.dropzoneTitleNormal
+              )}
+            >
               {isDragging ? 'Suelta aquí el archivo' : 'Arrastra tu archivo aquí'}
             </p>
-            <p className="text-xs text-text-secondary mt-0.5">
-              o haz click para seleccionar
-            </p>
-            {accept && (
-              <p className="text-xs text-text-secondary mt-1 opacity-70">
-                Formatos: {accept}
-              </p>
-            )}
+            <p className={styles.dropzoneSubtitle}>o haz click para seleccionar</p>
+            {accept && <p className={styles.dropzoneHint}>Formatos: {accept}</p>}
             {maxSize !== undefined && (
-              <p className="text-xs text-text-secondary opacity-70">
-                Máx. {formatFileSize(maxSize)}
-              </p>
+              <p className={styles.dropzoneHint}>Máx. {formatFileSize(maxSize)}</p>
             )}
           </div>
         </label>
 
         {/* File list */}
         {value.length > 0 && (
-          <ul className="flex flex-col gap-1 mt-1">
+          <ul className={styles.fileList}>
             {value.map((file) => (
               <li
                 key={`${file.name}-${file.size}-${file.lastModified}`}
-                className="flex items-center gap-2 py-1.5 px-3 rounded-md bg-interaction-tertiary-default text-sm"
+                className={styles.fileItem}
               >
                 {/* File icon */}
                 <svg
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="w-4 h-4 shrink-0 text-text-secondary"
+                  className={styles.fileIcon}
                   aria-hidden="true"
                 >
                   <path
@@ -223,24 +224,22 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                   />
                 </svg>
 
-                <span className="truncate text-text-primary flex-1">{file.name}</span>
+                <span className={styles.fileName}>{file.name}</span>
 
-                <span className="text-xs text-text-secondary shrink-0 tabular-nums">
-                  {formatFileSize(file.size)}
-                </span>
+                <span className={styles.fileSize}>{formatFileSize(file.size)}</span>
 
                 <button
                   type="button"
                   onClick={() => removeFile(file)}
                   aria-label={`Eliminar ${file.name}`}
-                  className={cn(
-                    'shrink-0 p-0.5 rounded transition-colors',
-                    'text-text-secondary hover:text-feedback-error-default',
-                    'hover:bg-interaction-tertiary-hover',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-primary-default'
-                  )}
+                  className={styles.removeBtn}
                 >
-                  <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    className={styles.removeBtnIcon}
+                    aria-hidden="true"
+                  >
                     <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
                   </svg>
                 </button>
@@ -253,13 +252,13 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
         {error && errorMessage ? (
           <span
             id={messageId}
-            className={cn(helperSizeStyles[size], 'text-feedback-error-default')}
+            className={cn(helperSizeClass[size], styles.errorText)}
             role="alert"
           >
             {errorMessage}
           </span>
         ) : helperText ? (
-          <span id={messageId} className={cn(helperSizeStyles[size], 'text-text-secondary')}>
+          <span id={messageId} className={cn(helperSizeClass[size], styles.helperText)}>
             {helperText}
           </span>
         ) : null}

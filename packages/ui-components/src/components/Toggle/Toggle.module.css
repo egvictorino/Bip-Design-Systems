@@ -1,0 +1,118 @@
+/* ─── Outer wrapper ─────────────────────────────────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* ─── Row (group) ───────────────────────────────────────────────────────────── */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─── Track ─────────────────────────────────────────────────────────────────── */
+
+.track {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background-color: var(--color-surface-4);
+  transition: background-color 150ms;
+}
+
+/* Track: checked state */
+.row:has(:checked) .track       { background-color: var(--color-primary); }
+.row:has(:checked) .trackError  { background-color: var(--color-danger); }
+
+/* Track: focus ring */
+.row:has(:focus-visible) .track {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+.row:has(:focus-visible) .trackError {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+}
+
+.trackError {
+  background-color: var(--color-danger-muted);
+}
+
+.trackDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Track sizes ───────────────────────────────────────────────────────────── */
+
+.trackSm { width: 2rem;   height: 1rem; }
+.trackMd { width: 2.5rem; height: 1.25rem; }
+.trackLg { width: 3rem;   height: 1.5rem; }
+
+/* ─── Native input (hidden, overlays track) ─────────────────────────────────── */
+
+.nativeInput {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.nativeInput:disabled { cursor: not-allowed; }
+
+/* ─── Thumb ─────────────────────────────────────────────────────────────────── */
+
+.thumb {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  transform: translateY(-50%);
+  border-radius: 9999px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: transform 150ms;
+}
+
+/* Thumb sizes */
+.thumbSm { width: 0.75rem; height: 0.75rem; }
+.thumbMd { width: 1rem;    height: 1rem; }
+.thumbLg { width: 1.25rem; height: 1.25rem; }
+
+/* Thumb: checked translation */
+.row:has(:checked) .thumbSm { transform: translateY(-50%) translateX(1rem); }
+.row:has(:checked) .thumbMd { transform: translateY(-50%) translateX(1.25rem); }
+.row:has(:checked) .thumbLg { transform: translateY(-50%) translateX(1.5rem); }
+
+/* ─── Label ─────────────────────────────────────────────────────────────────── */
+
+.label {
+  user-select: none;
+  font-weight: 500;
+  transition: color 150ms;
+  cursor: pointer;
+}
+
+.labelSm { font-size: 0.75rem;  line-height: 1rem; }
+.labelMd { font-size: 0.875rem; line-height: 1.25rem; }
+.labelLg { font-size: 1rem;     line-height: 1.5rem; }
+
+.labelNormal   { color: var(--color-txt); }
+.labelError    { color: var(--color-danger); }
+.labelDisabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ─── Helper / Error message ────────────────────────────────────────────────── */
+
+.helperSm { font-size: 0.75rem;  line-height: 1rem; }
+.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+
+.helperText { color: var(--color-txt-secondary); }
+.errorText  { color: var(--color-danger); }
+
+/* Indent to align with label (accounts for track width + gap) */
+.indentSm { margin-left: 2.5rem; }  /* 2rem track + 0.5rem gap */
+.indentMd { margin-left: 3rem; }    /* 2.5rem track + 0.5rem gap */
+.indentLg { margin-left: 3.5rem; }  /* 3rem track + 0.5rem gap */

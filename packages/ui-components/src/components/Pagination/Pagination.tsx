@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Pagination.module.css';
 
 export interface PaginationProps {
   currentPage: number;
@@ -46,17 +47,6 @@ function getPageRange(
   return [1, '...', ...middleRange, '...', totalPages];
 }
 
-const BASE_BTN = cn(
-  'inline-flex h-8 w-8 items-center justify-center rounded text-sm font-medium transition-colors',
-  'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1'
-);
-const BTN_ACTIVE = 'bg-primary text-txt-white';
-const BTN_DEFAULT = cn(
-  'text-txt-secondary hover:text-txt',
-  'hover:bg-surface-3'
-);
-const BTN_DISABLED = 'opacity-40 cursor-not-allowed text-txt-secondary';
-
 export const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
@@ -69,21 +59,16 @@ export const Pagination: React.FC<PaginationProps> = ({
   const pageRange = getPageRange(currentPage, totalPages, siblingCount);
 
   return (
-    <nav aria-label="Paginación" className={cn('flex items-center gap-1', className)}>
+    <nav aria-label="Paginación" className={cn(styles.nav, className)}>
       {/* Previous */}
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="Página anterior"
-        className={cn(BASE_BTN, currentPage === 1 ? BTN_DISABLED : BTN_DEFAULT)}
+        className={cn(styles.btn, currentPage === 1 ? styles.btnDisabled : styles.btnDefault)}
       >
-        <svg
-          viewBox="0 0 16 16"
-          fill="none"
-          className="w-4 h-4"
-          aria-hidden="true"
-        >
+        <svg viewBox="0 0 16 16" fill="none" className={styles.arrowIcon} aria-hidden="true">
           <path
             d="M10 12L6 8l4-4"
             stroke="currentColor"
@@ -97,11 +82,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       {/* Pages */}
       {pageRange.map((page, index) =>
         page === '...' ? (
-          <span
-            key={`ellipsis-${index}`}
-            className="inline-flex h-8 w-8 items-center justify-center text-txt-secondary"
-            aria-hidden="true"
-          >
+          <span key={`ellipsis-${index}`} className={styles.ellipsis} aria-hidden="true">
             &hellip;
           </span>
         ) : (
@@ -111,7 +92,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             onClick={() => onPageChange(page as number)}
             aria-label={`Página ${page}`}
             aria-current={currentPage === page ? 'page' : undefined}
-            className={cn(BASE_BTN, currentPage === page ? BTN_ACTIVE : BTN_DEFAULT)}
+            className={cn(styles.btn, currentPage === page ? styles.btnActive : styles.btnDefault)}
           >
             {page}
           </button>
@@ -124,14 +105,12 @@ export const Pagination: React.FC<PaginationProps> = ({
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="Página siguiente"
-        className={cn(BASE_BTN, currentPage === totalPages ? BTN_DISABLED : BTN_DEFAULT)}
+        className={cn(
+          styles.btn,
+          currentPage === totalPages ? styles.btnDisabled : styles.btnDefault
+        )}
       >
-        <svg
-          viewBox="0 0 16 16"
-          fill="none"
-          className="w-4 h-4"
-          aria-hidden="true"
-        >
+        <svg viewBox="0 0 16 16" fill="none" className={styles.arrowIcon} aria-hidden="true">
           <path
             d="M6 4l4 4-4 4"
             stroke="currentColor"

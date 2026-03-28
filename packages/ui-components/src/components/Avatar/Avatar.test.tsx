@@ -110,28 +110,21 @@ describe('Avatar', () => {
 
   // ── Sizes ───────────────────────────────────────────────────────────────────
 
-  it.each([
-    ['xs', 'w-6', 'h-6'],
-    ['sm', 'w-8', 'h-8'],
-    ['md', 'w-10', 'h-10'],
-    ['lg', 'w-12', 'h-12'],
-    ['xl', 'w-16', 'h-16'],
-  ] as const)('size "%s" aplica dimensiones correctas al wrapper', (size, w, h) => {
+  it.each(['xs', 'sm', 'md', 'lg', 'xl'] as const)('size "%s" aplica clase de tamaño al wrapper', (size) => {
     const { container } = render(<Avatar size={size} />);
-    expect(container.firstChild).toHaveClass(w);
-    expect(container.firstChild).toHaveClass(h);
+    expect(container.firstChild).toHaveClass(size);
   });
 
   // ── Shapes ──────────────────────────────────────────────────────────────────
 
-  it('shape="circle" aplica rounded-full al inner div', () => {
+  it('shape="circle" aplica clase circle al inner div', () => {
     render(<Avatar shape="circle" />);
-    expect(screen.getByRole('img', { name: 'Avatar' })).toHaveClass('rounded-full');
+    expect(screen.getByRole('img', { name: 'Avatar' })).toHaveClass('circle');
   });
 
-  it('shape="square" aplica rounded-lg al inner div', () => {
+  it('shape="square" aplica clase square al inner div', () => {
     render(<Avatar shape="square" />);
-    expect(screen.getByRole('img', { name: 'Avatar' })).toHaveClass('rounded-lg');
+    expect(screen.getByRole('img', { name: 'Avatar' })).toHaveClass('square');
   });
 
   // ── Status indicator ────────────────────────────────────────────────────────
@@ -149,14 +142,14 @@ describe('Avatar', () => {
     expect(container.querySelector('span[aria-hidden="true"]')).not.toBeInTheDocument();
   });
 
-  it('status="online" tiene clase bg-success', () => {
+  it('status="online" tiene clase online', () => {
     const { container } = render(<Avatar status="online" />);
-    expect(container.querySelector('span[aria-hidden="true"]')).toHaveClass('bg-success');
+    expect(container.querySelector('span[aria-hidden="true"]')).toHaveClass('online');
   });
 
-  it('status="busy" tiene clase bg-danger', () => {
+  it('status="busy" tiene clase busy', () => {
     const { container } = render(<Avatar status="busy" />);
-    expect(container.querySelector('span[aria-hidden="true"]')).toHaveClass('bg-danger');
+    expect(container.querySelector('span[aria-hidden="true"]')).toHaveClass('busy');
   });
 
   // ── forwardRef ──────────────────────────────────────────────────────────────
@@ -172,7 +165,7 @@ describe('Avatar', () => {
   it('acepta className personalizado sin perder clases base', () => {
     const { container } = render(<Avatar className="custom-class" />);
     expect(container.firstChild).toHaveClass('custom-class');
-    expect(container.firstChild).toHaveClass('inline-flex');
+    expect(container.firstChild).toHaveClass('avatar');
   });
 });
 
@@ -232,8 +225,8 @@ describe('AvatarGroup', () => {
         <Avatar name="Ana" />
       </AvatarGroup>
     );
-    // w-12 es la clase de size lg
-    expect(container.querySelector('.w-12')).toBeInTheDocument();
+    // lg es la clase de size lg
+    expect(container.querySelector('.lg')).toBeInTheDocument();
   });
 
   it('renderiza con role="group"', () => {

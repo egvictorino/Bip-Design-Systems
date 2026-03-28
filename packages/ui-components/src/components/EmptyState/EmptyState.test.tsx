@@ -51,24 +51,24 @@ describe('EmptyState', () => {
 
   it('applies sm size classes', () => {
     const { container } = render(<EmptyState title="Sin datos" size="sm" />);
-    expect(container.firstChild).toHaveClass('py-8');
+    expect(container.firstChild).toHaveClass('sm');
   });
 
   it('applies md size classes (default)', () => {
     const { container } = render(<EmptyState title="Sin datos" />);
-    expect(container.firstChild).toHaveClass('py-12');
+    expect(container.firstChild).toHaveClass('md');
   });
 
   it('applies lg size classes', () => {
     const { container } = render(<EmptyState title="Sin datos" size="lg" />);
-    expect(container.firstChild).toHaveClass('py-16');
+    expect(container.firstChild).toHaveClass('lg');
   });
 
   // ── Layout ────────────────────────────────────────────────────────────────
 
   it('renders as a centered flex column', () => {
     const { container } = render(<EmptyState title="Sin datos" />);
-    expect(container.firstChild).toHaveClass('flex', 'flex-col', 'items-center', 'text-center');
+    expect(container.firstChild).toHaveClass('emptyState');
   });
 
   // ── Customization ─────────────────────────────────────────────────────────

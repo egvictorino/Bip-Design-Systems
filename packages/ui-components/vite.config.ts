@@ -22,7 +22,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime', 'clsx', 'tailwind-merge'],
+      external: ['react', 'react-dom', 'react/jsx-runtime', 'clsx'],
       output: {
         preserveModules: true,
         preserveModulesRoot: 'src',

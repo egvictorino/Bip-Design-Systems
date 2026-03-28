@@ -72,17 +72,17 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       - name: Lint
-        run: pnpm --filter @bip/ui-components lint
+        run: pnpm --filter @bip-design-systems/ui-components lint
 
       - name: Test
         run: |
-          pnpm --filter @bip/shared-utils test
-          pnpm --filter @bip/ui-components test
+          pnpm --filter @bip-design-systems/shared-utils test
+          pnpm --filter @bip-design-systems/ui-components test
 
       - name: Build
         run: |
-          pnpm --filter @bip/shared-utils build
-          pnpm --filter @bip/ui-components build
+          pnpm --filter @bip-design-systems/shared-utils build
+          pnpm --filter @bip-design-systems/ui-components build
       
       - name: Comment on PR
         uses: actions/github-script@v7
@@ -94,3 +94,26 @@ jobs:
               repo: context.repo.repo,
               body: '✅ Build exitoso! Los cambios están listos para review.'
             })
+
+  security-audit:
+    name: Security Audit (PR → QA)
+    runs-on: ubuntu-latest
+    if: github.base_ref == 'qa'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run security audit
+        run: pnpm audit --audit-level=moderate
+        continue-on-error: true

@@ -17,6 +17,11 @@ const meta = {
       control: 'boolean',
       description: 'Permite cerrar el item activo (solo aplica en type="single")',
     },
+    variant: {
+      control: 'radio',
+      options: ['default', 'bordered', 'ghost'],
+      description: 'Variante visual del accordion',
+    },
   },
   args: { children: null },
 } satisfies Meta<typeof Accordion>;
@@ -41,7 +46,7 @@ export const Default: Story = {
         <AccordionItem value="item-2">
           <AccordionTrigger>¿Cómo instalo la librería?</AccordionTrigger>
           <AccordionContent>
-            Instala el paquete con <code>pnpm add @bip/ui-components</code> y configura el preset
+            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> y configura el preset
             de Tailwind en tu proyecto consumidor.
           </AccordionContent>
         </AccordionItem>
@@ -134,6 +139,72 @@ export const NonCollapsible: Story = {
         <AccordionItem value="item-2">
           <AccordionTrigger>Sección 2</AccordionTrigger>
           <AccordionContent>Abrir esta sección cierra la anterior.</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  ),
+};
+
+// ─── Bordered ─────────────────────────────────────────────────────────────────
+
+export const Bordered: Story = {
+  args: { children: null },
+  render: () => (
+    <div className="w-full max-w-lg">
+      <Accordion type="single" collapsible variant="bordered" defaultValue="item-1">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>¿Qué es BipUI?</AccordionTrigger>
+          <AccordionContent>
+            BipUI es una librería de componentes React diseñada para aplicaciones SaaS de alto
+            rendimiento. Incluye componentes accesibles, tematizables y listos para producción.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>¿Cómo instalo la librería?</AccordionTrigger>
+          <AccordionContent>
+            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> y configura el preset
+            de Tailwind en tu proyecto consumidor.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>¿Puedo personalizar los tokens de diseño?</AccordionTrigger>
+          <AccordionContent>
+            Sí. Todos los colores y espaciados se definen en <code>tailwind.tokens.js</code>. Edita
+            ese archivo y los cambios se propagan automáticamente a todos los componentes.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  ),
+};
+
+// ─── Ghost ────────────────────────────────────────────────────────────────────
+
+export const Ghost: Story = {
+  args: { children: null },
+  render: () => (
+    <div className="w-full max-w-lg">
+      <Accordion type="single" collapsible variant="ghost" defaultValue="item-1">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>¿Qué es BipUI?</AccordionTrigger>
+          <AccordionContent>
+            BipUI es una librería de componentes React diseñada para aplicaciones SaaS de alto
+            rendimiento. Incluye componentes accesibles, tematizables y listos para producción.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>¿Cómo instalo la librería?</AccordionTrigger>
+          <AccordionContent>
+            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> y configura el preset
+            de Tailwind en tu proyecto consumidor.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>¿Puedo personalizar los tokens de diseño?</AccordionTrigger>
+          <AccordionContent>
+            Sí. Todos los colores y espaciados se definen en <code>tailwind.tokens.js</code>. Edita
+            ese archivo y los cambios se propagan automáticamente a todos los componentes.
+          </AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>

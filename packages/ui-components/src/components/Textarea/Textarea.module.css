@@ -1,0 +1,106 @@
+/* ─── Wrapper ───────────────────────────────────────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fullWidth { width: 100%; }
+
+/* ─── Label ─────────────────────────────────────────────────────────────────── */
+
+.label {
+  font-weight: 500;
+  transition: color 150ms;
+}
+
+.labelSm   { font-size: 0.75rem;  line-height: 1rem; }
+.labelMd   { font-size: 0.875rem; line-height: 1.25rem; }
+.labelLg   { font-size: 1rem;     line-height: 1.5rem; }
+
+.labelNormal  { color: var(--color-txt); }
+.labelFocused { color: var(--color-primary); }
+.labelError   { color: var(--color-danger); }
+.labelDisabled { opacity: 0.5; }
+
+/* ─── Textarea base ─────────────────────────────────────────────────────────── */
+
+.textarea {
+  border-radius: 1px;
+  transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+}
+
+.textarea:focus {
+  outline: none;
+}
+
+.textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-disabled);
+}
+
+.textarea:read-only {
+  background-color: var(--color-field-readonly);
+}
+
+.cursorText    { cursor: text; }
+.cursorDisabled { cursor: not-allowed; }
+
+/* ─── Sizes ─────────────────────────────────────────────────────────────────── */
+
+.sm { padding: 6px 12px;  font-size: 0.75rem;  line-height: 1rem; }
+.md { padding: 10px 20px; font-size: 0.875rem; line-height: 1.25rem; }
+.lg { padding: 12px 24px; font-size: 1.125rem; line-height: 1.75rem; }
+
+/* ─── Resize ────────────────────────────────────────────────────────────────── */
+
+.resizeNone       { resize: none; }
+.resizeVertical   { resize: vertical; }
+.resizeHorizontal { resize: horizontal; }
+.resizeBoth       { resize: both; }
+
+/* ─── Variant: outlined ─────────────────────────────────────────────────────── */
+
+.outlined {
+  border: 1px solid var(--color-primary);
+  background-color: var(--color-field);
+}
+.outlined:hover:not(:disabled) { border-color: var(--color-primary-hover); }
+.outlined:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.outlined.error { border-color: var(--color-danger); }
+.outlined.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+
+/* ─── Variant: filled ───────────────────────────────────────────────────────── */
+
+.filled {
+  border: none;
+  background-color: var(--color-secondary);
+}
+.filled:hover:not(:disabled) { background-color: var(--color-secondary-hover); }
+.filled:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.filled.error { background-color: var(--color-danger-light); }
+.filled.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+
+/* ─── Variant: bare ─────────────────────────────────────────────────────────── */
+
+.bare {
+  border: none;
+  border-bottom: 2px solid var(--color-primary);
+  background-color: transparent;
+  border-radius: 0;
+}
+.bare:hover:not(:disabled) { border-bottom-color: var(--color-primary-hover); }
+.bare:focus-visible { box-shadow: none; border-bottom-color: var(--color-primary-hover); }
+.bare.error { border-bottom-color: var(--color-danger); }
+.bare.error:focus-visible { box-shadow: none; }
+
+/* ─── Helper / Error message ────────────────────────────────────────────────── */
+
+.helperSm { font-size: 0.75rem;  line-height: 1rem; }
+.helperMd { font-size: 0.75rem;  line-height: 1rem; }
+.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+
+.helperText { color: var(--color-txt-secondary); }
+.errorText  { color: var(--color-danger); }

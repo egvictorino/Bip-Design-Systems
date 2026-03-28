@@ -5,11 +5,11 @@
   "private": true,
   "description": "BipUI — React component library and design system",
   "scripts": {
-    "dev": "pnpm --filter @bip/ui-components storybook",
-    "build": "pnpm --filter @bip/shared-utils build && pnpm --filter @bip/ui-components build",
+    "dev": "pnpm --filter @bip-design-systems/ui-components storybook",
+    "build": "pnpm --filter @bip-design-systems/shared-utils build && pnpm --filter @bip-design-systems/ui-components build",
     "sync:tokens": "node sync-figma-tokens.js",
-    "test": "pnpm --filter @bip/shared-utils test && pnpm --filter @bip/ui-components test",
-    "lint": "pnpm --filter @bip/ui-components lint",
+    "test": "pnpm --filter @bip-design-systems/shared-utils test && pnpm --filter @bip-design-systems/ui-components test",
+    "lint": "pnpm --filter @bip-design-systems/ui-components lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
   },
@@ -45,7 +45,11 @@
       "ajv@<6.14.0": "6.14.0",
       "rollup": "^4.59.0",
       "flatted": "^3.4.2",
-      "undici": "^7.24.0"
+      "undici": "^7.24.0",
+      "picomatch@<2.3.2": "2.3.2",
+      "picomatch@>=4.0.0 <4.0.4": "4.0.4",
+      "brace-expansion@<1.1.13": "1.1.13",
+      "brace-expansion@>=4.0.0 <5.0.5": "5.0.5"
     }
   }
 }

@@ -1,7 +1,11 @@
-import React, { forwardRef, useCallback, useId, useRef } from 'react';
+import React, { forwardRef, useCallback, useEffect, useId, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
+import styles from './Odontogram.module.css';
 
 export type ToothSurface = 'occlusal' | 'mesial' | 'distal' | 'buccal' | 'lingual';
+
+export type DentitionMode = 'permanent' | 'primary';
 
 export type ToothCondition =
   | 'healthy'
@@ -16,10 +20,19 @@ export type ToothCondition =
 
 export type SurfaceCondition = Partial<Record<ToothSurface, ToothCondition>>;
 
+export type ToothImageType = 'radiograph' | 'photo' | 'other';
+
+export interface ToothImage {
+  type: ToothImageType;
+  /** base64 data URL or external URL */
+  url: string;
+}
+
 export interface ToothData {
   condition?: ToothCondition;
   surfaces?: SurfaceCondition;
   notes?: string;
+  images?: ToothImage[];
 }
 
 export type OdontogramValue = Record<number, ToothData>;
@@ -30,6 +43,8 @@ export interface OdontogramProps {
   readOnly?: boolean;
   /** Condition applied when clicking a surface (interactive mode) */
   activeTool?: ToothCondition;
+  /** Dentition mode: permanent (default, 32 teeth FDI 11-48) or primary (20 teeth FDI 51-85) */
+  dentition?: DentitionMode;
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -37,16 +52,16 @@ export interface OdontogramProps {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const CONDITION_FILL: Record<ToothCondition, string> = {
-  healthy: 'fill-white',
-  caries: 'fill-red-400',
-  restoration: 'fill-blue-400',
-  crown: 'fill-yellow-400',
-  missing: 'fill-gray-300',
-  implant: 'fill-purple-400',
-  fracture: 'fill-orange-400',
-  root_canal: 'fill-teal-400',
-  extraction_planned: 'fill-red-200',
+const CONDITION_FILL_CLASS: Record<ToothCondition, string> = {
+  healthy: styles.fillHealthy,
+  caries: styles.fillCaries,
+  restoration: styles.fillRestoration,
+  crown: styles.fillCrown,
+  missing: styles.fillMissing,
+  implant: styles.fillImplant,
+  fracture: styles.fillFracture,
+  root_canal: styles.fillRootCanal,
+  extraction_planned: styles.fillExtractionPlanned,
 };
 
 export const CONDITION_LABELS: Record<ToothCondition, string> = {
@@ -67,10 +82,10 @@ const TOOTH_SIZE: Record<'sm' | 'md' | 'lg', number> = {
   lg: 40,
 };
 
-const NUMBER_TEXT_SIZE: Record<'sm' | 'md' | 'lg', string> = {
-  sm: 'text-[7px]',
-  md: 'text-[9px]',
-  lg: 'text-[10px]',
+const NUMBER_TEXT_SIZE_CLASS: Record<'sm' | 'md' | 'lg', string> = {
+  sm: styles.numberSm,
+  md: styles.numberMd,
+  lg: styles.numberLg,
 };
 
 /** Conditions that apply to the whole tooth, not per surface */
@@ -109,6 +124,30 @@ const TOOTH_NAMES: Record<number, string> = {
   46: 'Primer molar inferior derecho',
   47: 'Segundo molar inferior derecho',
   48: 'Tercer molar inferior derecho',
+  // Cuadrante 5 — Superior derecho primario
+  55: 'Segundo molar temporal superior derecho',
+  54: 'Primer molar temporal superior derecho',
+  53: 'Canino temporal superior derecho',
+  52: 'Incisivo lateral temporal superior derecho',
+  51: 'Incisivo central temporal superior derecho',
+  // Cuadrante 6 — Superior izquierdo primario
+  61: 'Incisivo central temporal superior izquierdo',
+  62: 'Incisivo lateral temporal superior izquierdo',
+  63: 'Canino temporal superior izquierdo',
+  64: 'Primer molar temporal superior izquierdo',
+  65: 'Segundo molar temporal superior izquierdo',
+  // Cuadrante 7 — Inferior izquierdo primario
+  71: 'Incisivo central temporal inferior izquierdo',
+  72: 'Incisivo lateral temporal inferior izquierdo',
+  73: 'Canino temporal inferior izquierdo',
+  74: 'Primer molar temporal inferior izquierdo',
+  75: 'Segundo molar temporal inferior izquierdo',
+  // Cuadrante 8 — Inferior derecho primario
+  81: 'Incisivo central temporal inferior derecho',
+  82: 'Incisivo lateral temporal inferior derecho',
+  83: 'Canino temporal inferior derecho',
+  84: 'Primer molar temporal inferior derecho',
+  85: 'Segundo molar temporal inferior derecho',
 };
 
 const SURFACE_LABELS: Record<ToothSurface, string> = {
@@ -153,6 +192,371 @@ const UPPER_LEFT = [21, 22, 23, 24, 25, 26, 27, 28];
 const LOWER_RIGHT = [48, 47, 46, 45, 44, 43, 42, 41];
 const LOWER_LEFT = [31, 32, 33, 34, 35, 36, 37, 38];
 
+/** FDI primary tooth numbers per arch section, ordered left-to-right on screen */
+const PRIMARY_UPPER_RIGHT = [55, 54, 53, 52, 51];
+const PRIMARY_UPPER_LEFT = [61, 62, 63, 64, 65];
+const PRIMARY_LOWER_RIGHT = [85, 84, 83, 82, 81];
+const PRIMARY_LOWER_LEFT = [71, 72, 73, 74, 75];
+
+const IMAGE_TYPE_LABELS: Record<ToothImageType, string> = {
+  radiograph: 'Radiografía',
+  photo: 'Fotografía',
+  other: 'Otra',
+};
+
+const IMAGE_TYPES: ToothImageType[] = ['radiograph', 'photo', 'other'];
+
+// ─── NotePopover ─────────────────────────────────────────────────────────────
+
+interface NotePopoverProps {
+  toothNumber: number;
+  initialNote: string;
+  editable: boolean;
+  position: { top: number; left: number };
+  onClose: () => void;
+  onSave: (note: string) => void;
+}
+
+const NotePopover = React.memo<NotePopoverProps>(({
+  toothNumber,
+  initialNote,
+  editable,
+  position,
+  onClose,
+  onSave,
+}) => {
+  const [draft, setDraft] = useState(initialNote);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  return ReactDOM.createPortal(
+    <>
+      <div className={styles.popoverBackdrop} aria-hidden="true" onClick={onClose} />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Nota del diente ${toothNumber}`}
+        style={{ top: position.top, left: position.left }}
+        className={styles.notePopover}
+      >
+        <div className={styles.popoverHeader}>
+          <span className={styles.popoverTitle}>Diente {toothNumber}</span>
+          <button
+            onClick={onClose}
+            aria-label="Cerrar nota"
+            className={styles.popoverClose}
+          >
+            ✕
+          </button>
+        </div>
+        <textarea
+          ref={textareaRef}
+          value={draft}
+          onChange={editable ? (e) => setDraft(e.target.value) : undefined}
+          readOnly={!editable}
+          rows={4}
+          placeholder={editable ? 'Escribe una nota...' : undefined}
+          className={cn(
+            styles.noteTextarea,
+            !editable && styles.noteTextareaReadOnly
+          )}
+        />
+        {editable && (
+          <div className={styles.popoverActions}>
+            <button
+              onClick={() => onSave(draft)}
+              className={styles.saveButton}
+            >
+              Guardar
+            </button>
+          </div>
+        )}
+      </div>
+    </>,
+    document.body
+  );
+});
+NotePopover.displayName = 'NotePopover';
+
+// ─── ImagePopover ─────────────────────────────────────────────────────────────
+
+interface ImagePopoverProps {
+  toothNumber: number;
+  initialImages: ToothImage[];
+  editable: boolean;
+  position: { top: number; left: number };
+  onClose: () => void;
+  onSave: (images: ToothImage[]) => void;
+}
+
+const ImagePopover = React.memo<ImagePopoverProps>(({
+  toothNumber,
+  initialImages,
+  editable,
+  position,
+  onClose,
+  onSave,
+}) => {
+  const [images, setImages] = useState<ToothImage[]>(initialImages);
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(
+    initialImages.length > 0 ? 0 : null
+  );
+  const [adding, setAdding] = useState(initialImages.length === 0 && editable);
+  const [addType, setAddType] = useState<ToothImageType>('radiograph');
+  const [addUrl, setAddUrl] = useState('');
+  const addTypeId = useId();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const addSelectRef = useRef<HTMLSelectElement>(null);
+
+  useEffect(() => {
+    if (adding) {
+      addSelectRef.current?.focus();
+    } else {
+      closeButtonRef.current?.focus();
+    }
+  }, [adding]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const result = ev.target?.result;
+      if (typeof result === 'string') setAddUrl(result);
+    };
+    reader.readAsDataURL(file);
+    // Reset input so same file can be re-selected
+    e.target.value = '';
+  };
+
+  const handleAddConfirm = () => {
+    if (!addUrl) return;
+    const newImage: ToothImage = { type: addType, url: addUrl };
+    const updated = [...images, newImage];
+    setImages(updated);
+    setSelectedIdx(updated.length - 1);
+    onSave(updated);
+    setAdding(false);
+    setAddUrl('');
+    setAddType('radiograph');
+  };
+
+  const handleAddCancel = () => {
+    setAdding(false);
+    setAddUrl('');
+    setAddType('radiograph');
+  };
+
+  const handleDelete = (idx: number) => {
+    const updated = images.filter((_, i) => i !== idx);
+    setImages(updated);
+    setSelectedIdx(updated.length > 0 ? Math.min(idx, updated.length - 1) : null);
+    onSave(updated);
+    if (updated.length === 0 && editable) setAdding(true);
+  };
+
+  const selectedImage = selectedIdx !== null ? images[selectedIdx] : null;
+
+  return ReactDOM.createPortal(
+    <>
+      <div className={styles.popoverBackdrop} aria-hidden="true" onClick={onClose} />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Imágenes del diente ${toothNumber}`}
+        style={{ top: position.top, left: position.left }}
+        className={styles.imagePopover}
+      >
+        {/* Header */}
+        <div className={styles.popoverHeader}>
+          <span className={styles.popoverTitle}>
+            Imágenes — Diente {toothNumber}
+            {images.length > 0 && (
+              <span className={styles.thumbnailCount}>
+                ({images.length})
+              </span>
+            )}
+          </span>
+          <button
+            ref={closeButtonRef}
+            onClick={onClose}
+            aria-label="Cerrar imágenes"
+            className={styles.popoverClose}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Thumbnail gallery */}
+        {images.length > 0 && (
+          <div className={styles.thumbnailGallery}>
+            <div className={styles.thumbnailList} role="list" aria-label="Imágenes adjuntas">
+              {images.map((img, idx) => (
+                <div
+                  key={idx}
+                  role="listitem"
+                  className={cn(styles.thumbnailItem, styles.thumbnailItemGroup)}
+                >
+                  <button
+                    onClick={() => setSelectedIdx(idx === selectedIdx ? null : idx)}
+                    aria-label={`Ver imagen ${idx + 1}: ${IMAGE_TYPE_LABELS[img.type]}`}
+                    aria-pressed={selectedIdx === idx}
+                    className={cn(
+                      styles.thumbnailButton,
+                      selectedIdx === idx && styles.thumbnailButtonSelected
+                    )}
+                  >
+                    <img
+                      src={img.url}
+                      alt={IMAGE_TYPE_LABELS[img.type]}
+                      className={styles.thumbnailImg}
+                    />
+                  </button>
+                  {editable && (
+                    <button
+                      onClick={() => handleDelete(idx)}
+                      aria-label={`Eliminar imagen ${idx + 1}`}
+                      className={styles.thumbnailDeleteButton}
+                    >
+                      ✕
+                    </button>
+                  )}
+                  <p className={styles.thumbnailLabel}>
+                    {IMAGE_TYPE_LABELS[img.type]}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Selected image preview */}
+            {selectedImage && (
+              <div className={styles.previewPane}>
+                <img
+                  src={selectedImage.url}
+                  alt={`${IMAGE_TYPE_LABELS[selectedImage.type]} — diente ${toothNumber}`}
+                  className={styles.previewImg}
+                />
+                <p className={styles.previewLabel}>
+                  {IMAGE_TYPE_LABELS[selectedImage.type]}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {images.length === 0 && !adding && (
+          <p className={styles.emptyImages}>Sin imágenes adjuntas</p>
+        )}
+
+        {/* Add image form */}
+        {editable && adding && (
+          <div className={styles.addForm}>
+            <p className={styles.addFormTitle}>Nueva imagen</p>
+            <div className={styles.addFormField}>
+              <label htmlFor={addTypeId} className={styles.addFormLabel}>Tipo</label>
+              <select
+                id={addTypeId}
+                ref={addSelectRef}
+                value={addType}
+                onChange={(e) => setAddType(e.target.value as ToothImageType)}
+                className={styles.addFormSelect}
+              >
+                {IMAGE_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {IMAGE_TYPE_LABELS[t]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              aria-label="Seleccionar archivo de imagen"
+              className="sr-only"
+              onChange={handleFileChange}
+            />
+            {addUrl ? (
+              <img
+                src={addUrl}
+                alt="Vista previa"
+                className={styles.addFormPreviewImg}
+              />
+            ) : null}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className={styles.fileButton}
+            >
+              {addUrl ? 'Cambiar archivo' : 'Seleccionar archivo'}
+            </button>
+            <div className={styles.addFormActions}>
+              {images.length > 0 && (
+                <button
+                  onClick={handleAddCancel}
+                  className={styles.cancelButton}
+                >
+                  Cancelar
+                </button>
+              )}
+              <button
+                onClick={handleAddConfirm}
+                disabled={!addUrl}
+                className={styles.confirmButton}
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Add button (when not in adding mode) */}
+        {editable && !adding && (
+          <button
+            onClick={() => setAdding(true)}
+            className={styles.addImageButton}
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              className={styles.iconPlus}
+            >
+              <line x1="8" y1="2" x2="8" y2="14" />
+              <line x1="2" y1="8" x2="14" y2="8" />
+            </svg>
+            Agregar imagen
+          </button>
+        )}
+      </div>
+    </>,
+    document.body
+  );
+});
+ImagePopover.displayName = 'ImagePopover';
+
 // ─── ToothSVG ────────────────────────────────────────────────────────────────
 
 interface ToothSVGProps {
@@ -178,9 +582,9 @@ const ToothSVG = React.memo<ToothSVGProps>(({
   // Any tooth-level condition (not just missing/crown/implant) overrides all surfaces
   const hasToothCondition = data.condition != null;
 
-  const getSurfaceFill = (surface: ToothSurface): string => {
-    if (hasToothCondition) return CONDITION_FILL[data.condition!];
-    return CONDITION_FILL[data.surfaces?.[surface] ?? 'healthy'];
+  const getSurfaceFillClass = (surface: ToothSurface): string => {
+    if (hasToothCondition) return CONDITION_FILL_CLASS[data.condition!];
+    return CONDITION_FILL_CLASS[data.surfaces?.[surface] ?? 'healthy'];
   };
 
   const toothLabel = `Diente ${toothNumber}${isMissing ? ' - Ausente' : ''}: ${TOOTH_NAMES[toothNumber] ?? ''}`;
@@ -192,7 +596,7 @@ const ToothSVG = React.memo<ToothSVGProps>(({
       height={toothSize}
       role="img"
       aria-label={toothLabel}
-      className="block flex-shrink-0"
+      className={styles.toothSvg}
     >
       {SURFACES.map((surface) => {
         const condition = hasToothCondition
@@ -206,9 +610,9 @@ const ToothSVG = React.memo<ToothSVGProps>(({
             key={surface}
             points={points[surface]}
             className={cn(
-              getSurfaceFill(surface),
-              'stroke-gray-400 outline-none',
-              canClick && 'cursor-pointer hover:opacity-70 focus-visible:opacity-70'
+              getSurfaceFillClass(surface),
+              styles.surfaceStroke,
+              canClick && styles.surfaceInteractive
             )}
             strokeWidth="2"
             aria-label={SURFACE_LABELS[surface]}
@@ -246,7 +650,7 @@ ToothSVG.displayName = 'ToothSVG';
 
 export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
   (
-    { value = {}, onChange, readOnly = false, activeTool = 'caries', label, size = 'md', className },
+    { value = {}, onChange, readOnly = false, activeTool = 'caries', dentition = 'permanent', label, size = 'md', className },
     ref
   ) => {
     const generatedId = useId();
@@ -260,6 +664,18 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
     valueRef.current = value;
     const activeToolRef = useRef(activeTool);
     activeToolRef.current = activeTool;
+
+    // Note popover state
+    const [openNoteTooth, setOpenNoteTooth] = useState<number | null>(null);
+    const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null);
+    const popoverTriggerRef = useRef<HTMLButtonElement | null>(null);
+
+    // Image popover state
+    const [imageState, setImageState] = useState<{
+      toothNumber: number;
+      position: { top: number; left: number };
+    } | null>(null);
+    const imageTriggerRef = useRef<HTMLButtonElement | null>(null);
 
     const handleSurfaceClick = useCallback((toothNumber: number, surface: ToothSurface) => {
       const currentOnChange = onChangeRef.current;
@@ -297,53 +713,188 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
       }
     }, []); // empty deps — reads latest values via refs
 
-    const renderTooth = (toothNumber: number, arch: 'upper' | 'lower') => (
-      <div key={toothNumber} className="flex flex-col items-center">
-        {arch === 'lower' && (
-          <span
-            className={cn('font-mono leading-none mb-0.5 text-text-secondary', NUMBER_TEXT_SIZE[size])}
+    const handleNoteOpen = (toothNumber: number, el: HTMLButtonElement) => {
+      const rect = el.getBoundingClientRect();
+      popoverTriggerRef.current = el;
+      setOpenNoteTooth(toothNumber);
+      setPopoverPos({ top: rect.bottom + 4, left: rect.left });
+    };
+
+    const handleNoteClose = () => {
+      setOpenNoteTooth(null);
+      setPopoverPos(null);
+      popoverTriggerRef.current?.focus();
+    };
+
+    const handleNoteSave = (note: string) => {
+      const currentOnChange = onChangeRef.current;
+      if (currentOnChange && openNoteTooth !== null) {
+        const trimmed = note.trim();
+        const current = valueRef.current[openNoteTooth] ?? {};
+        const { notes: _omitted, ...rest } = current;
+        const updated: ToothData = trimmed ? { ...rest, notes: trimmed } : rest;
+        currentOnChange({ ...valueRef.current, [openNoteTooth]: updated });
+      }
+      handleNoteClose();
+    };
+
+    const handleImageOpen = (toothNumber: number, el: HTMLButtonElement) => {
+      const rect = el.getBoundingClientRect();
+      imageTriggerRef.current = el;
+      setImageState({ toothNumber, position: { top: rect.bottom + 4, left: rect.left } });
+    };
+
+    const handleImageClose = () => {
+      setImageState(null);
+      imageTriggerRef.current?.focus();
+    };
+
+    const handleImageSave = (toothNumber: number, images: ToothImage[]) => {
+      const currentOnChange = onChangeRef.current;
+      if (currentOnChange) {
+        const current = { ...(valueRef.current[toothNumber] ?? {}) };
+        if (images.length > 0) {
+          current.images = images;
+        } else {
+          delete current.images;
+        }
+        if (Object.keys(current).length === 0) {
+          const next = { ...valueRef.current };
+          delete next[toothNumber];
+          currentOnChange(next);
+        } else {
+          currentOnChange({ ...valueRef.current, [toothNumber]: current });
+        }
+      }
+    };
+
+    const isPrimary = dentition === 'primary';
+    const upperRight = isPrimary ? PRIMARY_UPPER_RIGHT : UPPER_RIGHT;
+    const upperLeft = isPrimary ? PRIMARY_UPPER_LEFT : UPPER_LEFT;
+    const lowerRight = isPrimary ? PRIMARY_LOWER_RIGHT : LOWER_RIGHT;
+    const lowerLeft = isPrimary ? PRIMARY_LOWER_LEFT : LOWER_LEFT;
+
+    const renderTooth = (toothNumber: number, arch: 'upper' | 'lower') => {
+      const hasNote = Boolean(value[toothNumber]?.notes);
+      const imageCount = value[toothNumber]?.images?.length ?? 0;
+      const hasImages = imageCount > 0;
+      // Show note button if interactive (can edit) or if there's a note to view
+      const showNoteButton = interactive || hasNote;
+      // Show image button if interactive (can upload) or if there are images to view
+      const showImageButton = interactive || hasImages;
+
+      const noteButton = showNoteButton ? (
+        <button
+          onClick={(e) => handleNoteOpen(toothNumber, e.currentTarget)}
+          aria-label={`Nota del diente ${toothNumber}${hasNote ? ' — tiene nota' : ''}`}
+          className={cn(styles.numberButton, NUMBER_TEXT_SIZE_CLASS[size])}
+        >
+          {toothNumber}
+          {hasNote && (
+            <span
+              aria-hidden="true"
+              className={styles.noteDot}
+            />
+          )}
+        </button>
+      ) : (
+        <span className={cn(styles.numberSpan, NUMBER_TEXT_SIZE_CLASS[size])}>
+          {toothNumber}
+        </span>
+      );
+
+      const imageButton = showImageButton ? (
+        <button
+          onClick={(e) => handleImageOpen(toothNumber, e.currentTarget)}
+          aria-label={`Imágenes del diente ${toothNumber}${hasImages ? ` — ${imageCount} imagen${imageCount > 1 ? 'es' : ''}` : ''}`}
+          className={styles.imageButton}
+        >
+          {/* Camera icon */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={styles.iconCamera}
           >
-            {toothNumber}
-          </span>
-        )}
-        <ToothSVG
-          toothNumber={toothNumber}
-          arch={arch}
-          data={value[toothNumber] ?? EMPTY_TOOTH}
-          size={size}
-          interactive={interactive}
-          onSurfaceClick={handleSurfaceClick}
-        />
-        {arch === 'upper' && (
-          <span
-            className={cn('font-mono leading-none mt-0.5 text-text-secondary', NUMBER_TEXT_SIZE[size])}
-          >
-            {toothNumber}
-          </span>
-        )}
-      </div>
-    );
+            <path d="M1 5.5A1.5 1.5 0 0 1 2.5 4h.535l.707-1.414A1 1 0 0 1 4.638 2h6.724a1 1 0 0 1 .896.553L13 4h.5A1.5 1.5 0 0 1 15 5.5v7A1.5 1.5 0 0 1 13.5 14h-11A1.5 1.5 0 0 1 1 12.5v-7Z" />
+            <circle cx="8" cy="9" r="2.5" />
+          </svg>
+          {hasImages && (
+            <span
+              aria-hidden="true"
+              className={styles.imageDot}
+            />
+          )}
+        </button>
+      ) : null;
+
+      const numberRow = (
+        <div className={arch === 'upper' ? styles.numberRowUpper : styles.numberRowLower}>
+          {noteButton}
+          {imageButton}
+        </div>
+      );
+
+      return (
+        <div key={toothNumber} className={styles.toothCell}>
+          {arch === 'lower' && numberRow}
+          <ToothSVG
+            toothNumber={toothNumber}
+            arch={arch}
+            data={value[toothNumber] ?? EMPTY_TOOTH}
+            size={size}
+            interactive={interactive}
+            onSurfaceClick={handleSurfaceClick}
+          />
+          {arch === 'upper' && numberRow}
+        </div>
+      );
+    };
 
     const renderArch = (left: number[], right: number[], arch: 'upper' | 'lower') => (
-      <div className="flex flex-row items-center">
-        <div className="flex flex-row gap-0.5">{left.map((n) => renderTooth(n, arch))}</div>
-        <div className="w-px self-stretch bg-gray-300 mx-1.5" aria-hidden="true" />
-        <div className="flex flex-row gap-0.5">{right.map((n) => renderTooth(n, arch))}</div>
+      <div className={styles.arch}>
+        <div className={styles.archSection}>{left.map((n) => renderTooth(n, arch))}</div>
+        <div className={styles.archDivider} aria-hidden="true" />
+        <div className={styles.archSection}>{right.map((n) => renderTooth(n, arch))}</div>
       </div>
     );
 
     return (
-      <div ref={ref} role="group" aria-labelledby={labelId} className={cn('inline-flex flex-col gap-1.5', className)}>
+      <div ref={ref} role="group" aria-labelledby={labelId} className={cn(styles.root, className)}>
         {label && (
-          <span id={labelId} className="text-sm font-medium text-text-primary">
+          <span id={labelId} className={styles.label}>
             {label}
           </span>
         )}
-        <div className="flex flex-col border border-gray-200 rounded-md p-2 bg-white overflow-x-auto">
-          {renderArch(UPPER_RIGHT, UPPER_LEFT, 'upper')}
-          <div className="h-3 border-b border-gray-300 mb-1" aria-hidden="true" />
-          {renderArch(LOWER_RIGHT, LOWER_LEFT, 'lower')}
+        <div className={styles.chart}>
+          {renderArch(upperRight, upperLeft, 'upper')}
+          <div className={styles.midline} aria-hidden="true" />
+          {renderArch(lowerRight, lowerLeft, 'lower')}
         </div>
+        {openNoteTooth !== null && popoverPos !== null && (
+          <NotePopover
+            toothNumber={openNoteTooth}
+            initialNote={value[openNoteTooth]?.notes ?? ''}
+            editable={interactive}
+            position={popoverPos}
+            onClose={handleNoteClose}
+            onSave={handleNoteSave}
+          />
+        )}
+        {imageState !== null && (
+          <ImagePopover
+            toothNumber={imageState.toothNumber}
+            initialImages={value[imageState.toothNumber]?.images ?? []}
+            editable={interactive}
+            position={imageState.position}
+            onClose={handleImageClose}
+            onSave={(imgs) => handleImageSave(imageState.toothNumber, imgs)}
+          />
+        )}
       </div>
     );
   }

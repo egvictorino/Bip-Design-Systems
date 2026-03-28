@@ -1,0 +1,68 @@
+/* ─── List ──────────────────────────────────────────────────────────────────── */
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ─── Item ──────────────────────────────────────────────────────────────────── */
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+/* ─── Chevron icon ──────────────────────────────────────────────────────────── */
+
+.chevron {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+  color: var(--color-txt-disabled);
+}
+
+/* ─── Current page ──────────────────────────────────────────────────────────── */
+
+.current {
+  font-weight: 500;
+  color: var(--color-txt);
+  max-width: 15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Link ──────────────────────────────────────────────────────────────────── */
+
+.link {
+  max-width: 12.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-txt-secondary);
+  text-decoration: none;
+  transition: color 150ms;
+  border-radius: 0.25rem;
+}
+
+.link:hover { color: var(--color-txt); }
+.link:focus { outline: none; }
+.link:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+
+/* ─── Non-link intermediate item ────────────────────────────────────────────── */
+
+.nonLink {
+  max-width: 12.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-txt-secondary);
+}

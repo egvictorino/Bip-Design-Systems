@@ -1,0 +1,101 @@
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+
+.alert {
+  display: flex;
+  gap: 0.75rem;
+  border-radius: 1px;
+  border-left: 4px solid;
+  padding: 1rem;
+}
+
+/* ─── Variants ──────────────────────────────────────────────────────────────── */
+
+.info {
+  background-color: var(--color-info-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.success {
+  background-color: var(--color-success-light);
+  border-color: var(--color-success);
+  color: var(--color-success-text);
+}
+
+.warning {
+  background-color: var(--color-warning-light);
+  border-color: var(--color-warning);
+  color: var(--color-warning-text);
+}
+
+.error {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger);
+  color: var(--color-danger-text);
+}
+
+/* ─── Icon ──────────────────────────────────────────────────────────────────── */
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* ─── Content ───────────────────────────────────────────────────────────────── */
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+}
+
+.body {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.bodyWithTitle { margin-top: 0.25rem; }
+
+/* Title and body colors per variant */
+.info .title, .info .body     { color: var(--color-info-text); }
+.success .title, .success .body { color: var(--color-success-text); }
+.warning .title, .warning .body { color: var(--color-warning-text); }
+.error .title, .error .body   { color: var(--color-danger-text); }
+
+/* ─── Close button ──────────────────────────────────────────────────────────── */
+
+.closeBtn {
+  flex-shrink: 0;
+  align-self: flex-start;
+  border-radius: 0.25rem;
+  padding: 0.125rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms;
+  line-height: 0;
+}
+
+.closeBtn:focus { outline: none; }
+.closeBtn:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor; }
+
+.closeBtnInfo:hover    { background-color: var(--color-info-subtle); color: var(--color-primary); }
+.closeBtnSuccess:hover { background-color: var(--color-success-subtle); color: var(--color-success); }
+.closeBtnWarning:hover { background-color: var(--color-warning-subtle); color: var(--color-warning); }
+.closeBtnError:hover   { background-color: var(--color-danger-subtle); color: var(--color-danger); }
+
+.closeBtnInfo    { color: var(--color-primary); }
+.closeBtnSuccess { color: var(--color-success); }
+.closeBtnWarning { color: var(--color-warning); }
+.closeBtnError   { color: var(--color-danger); }
+
+.closeIcon {
+  width: 1rem;
+  height: 1rem;
+}

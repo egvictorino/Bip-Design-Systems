@@ -1,5 +1,6 @@
 import React, { forwardRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Avatar.module.css';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -26,40 +27,39 @@ export interface AvatarGroupProps {
 
 // ─── Style maps ──────────────────────────────────────────────────────────────
 
-type SizeTokens = { container: string; text: string; status: string; statusPos: string };
+type SizeTokens = { container: string; text: string; status: string };
 
 const sizeStyles: Record<AvatarSize, SizeTokens> = {
-  xs: { container: 'w-6 h-6',   text: 'text-[10px]', status: 'w-2 h-2',     statusPos: '-bottom-0.5 -right-0.5' },
-  sm: { container: 'w-8 h-8',   text: 'text-xs',     status: 'w-2.5 h-2.5', statusPos: '-bottom-0.5 -right-0.5' },
-  md: { container: 'w-10 h-10', text: 'text-sm',     status: 'w-3 h-3',     statusPos: 'bottom-0 right-0' },
-  lg: { container: 'w-12 h-12', text: 'text-base',   status: 'w-3.5 h-3.5', statusPos: 'bottom-0 right-0' },
-  xl: { container: 'w-16 h-16', text: 'text-xl',     status: 'w-4 h-4',     statusPos: 'bottom-0.5 right-0.5' },
+  xs: { container: styles.xs, text: styles.textXs, status: styles.statusXs },
+  sm: { container: styles.sm, text: styles.textSm, status: styles.statusSm },
+  md: { container: styles.md, text: styles.textMd, status: styles.statusMd },
+  lg: { container: styles.lg, text: styles.textLg, status: styles.statusLg },
+  xl: { container: styles.xl, text: styles.textXl, status: styles.statusXl },
 };
 
 const shapeStyles: Record<AvatarShape, string> = {
-  circle: 'rounded-full',
-  square: 'rounded-lg',
+  circle: styles.circle,
+  square: styles.square,
 };
 
 const statusStyles: Record<AvatarStatus, string> = {
-  online:  'bg-success',
-  offline: 'bg-txt-disabled',
-  away:    'bg-warning',
-  busy:    'bg-danger',
+  online:  styles.online,
+  offline: styles.offline,
+  away:    styles.away,
+  busy:    styles.busy,
 };
 
 // ─── Initials helpers ─────────────────────────────────────────────────────────
 
-// 8 dark background colors that provide sufficient contrast for white text
 const INITIALS_BG_COLORS = [
-  'bg-primary',
-  'bg-secondary',
-  'bg-danger',
-  'bg-success-text',
-  'bg-warning-text',
-  'bg-info-text',
-  'bg-slate-500',
-  'bg-violet-600',
+  styles.bgPrimary,
+  styles.bgSecondary,
+  styles.bgDanger,
+  styles.bgSuccessText,
+  styles.bgWarningText,
+  styles.bgInfoText,
+  styles.bgSlate,
+  styles.bgViolet,
 ] as const;
 
 function hashName(name: string): number {
@@ -113,7 +113,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
     const displayMode: DisplayMode =
       src && !imgError ? 'image' : name?.trim() ? 'initials' : 'icon';
 
-    const { container, text, status: statusSize, statusPos } = sizeStyles[size];
+    const { container, text, status: statusSize } = sizeStyles[size];
     const shapeClass = shapeStyles[shape];
 
     const initials = name ? getInitials(name) : '';
@@ -123,16 +123,16 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
     return (
       <div
         ref={ref}
-        className={cn('relative inline-flex shrink-0', container, className)}
+        className={cn(styles.avatar, container, className)}
         {...props}
       >
         {/* Inner display */}
         <div
           className={cn(
-            'flex h-full w-full items-center justify-center overflow-hidden',
+            styles.inner,
             shapeClass,
-            displayMode === 'initials' && cn(bgClass, 'text-txt-white'),
-            displayMode === 'icon' && 'bg-surface-3 text-txt-secondary'
+            displayMode === 'initials' && cn(bgClass, styles.initials),
+            displayMode === 'icon' && styles.icon
           )}
           {...(displayMode !== 'image'
             ? { role: 'img', 'aria-label': effectiveAlt }
@@ -142,32 +142,27 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
             <img
               src={src}
               alt={effectiveAlt}
-              className="h-full w-full object-cover"
+              className={styles.img}
               onError={() => setImgError(true)}
             />
           )}
 
           {displayMode === 'initials' && (
             <span
-              className={cn('select-none font-semibold leading-none', text)}
+              className={cn(styles.initialsText, text)}
               aria-hidden="true"
             >
               {initials}
             </span>
           )}
 
-          {displayMode === 'icon' && <PersonIcon className="h-[60%] w-[60%]" />}
+          {displayMode === 'icon' && <PersonIcon className={styles.personIcon} />}
         </div>
 
         {/* Status badge */}
         {status && (
           <span
-            className={cn(
-              'absolute rounded-full ring-2 ring-white',
-              statusSize,
-              statusPos,
-              statusStyles[status]
-            )}
+            className={cn(styles.status, statusSize, statusStyles[status])}
             aria-hidden="true"
           />
         )}
@@ -191,11 +186,11 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
   const overflow = childArray.length - max;
 
   return (
-    <div role="group" className={cn('flex items-center', className)}>
+    <div role="group" className={cn(styles.group, className)}>
       {visible.map((child, index) => (
         <div
           key={index}
-          className={cn('ring-2 ring-white rounded-full', index > 0 && '-ml-2')}
+          className={cn(styles.groupItem, index > 0 && styles.groupItemOffset)}
         >
           {React.isValidElement(child)
             ? React.cloneElement(child as React.ReactElement<AvatarProps>, { size })
@@ -205,17 +200,10 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
 
       {overflow > 0 && (
         <div
-          className={cn(
-            'relative inline-flex shrink-0 -ml-2',
-            sizeStyles[size].container
-          )}
+          className={cn(styles.overflow, sizeStyles[size].container)}
         >
           <div
-            className={cn(
-              'flex h-full w-full items-center justify-center rounded-full',
-              'bg-surface-3 text-txt-secondary ring-2 ring-white font-semibold',
-              sizeStyles[size].text
-            )}
+            className={cn(styles.overflowInner, sizeStyles[size].text)}
             role="img"
             aria-label={`${overflow} más`}
           >

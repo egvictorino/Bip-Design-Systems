@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { cn } from '../../lib/cn';
+import styles from './Stepper.module.css';
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -73,7 +74,7 @@ export const Stepper: React.FC<StepperProps> = ({
 
   return (
     <StepperContext.Provider value={{ activeValue: value, onChange, variant, totalSteps }}>
-      <ol aria-label="Pasos del proceso" className={cn('flex items-start w-full', className)}>
+      <ol aria-label="Pasos del proceso" className={cn(styles.stepper, className)}>
         {children}
       </ol>
     </StepperContext.Provider>
@@ -113,49 +114,49 @@ export const StepperStep: React.FC<StepperStepProps> = ({
 
   // ── Indicator ──────────────────────────────────────────────────────────────
 
-  const circleClasses = cn(
-    'flex items-center justify-center rounded-full w-8 h-8 text-sm font-medium transition-colors',
-    hasError && 'bg-danger text-txt-white',
-    isCompleted && 'bg-primary text-txt-white',
-    isActive && 'bg-primary text-txt-white ring-4 ring-primary/20',
-    !hasError && !isCompleted && !isActive && 'bg-disabled text-txt-secondary',
-    disabled && !hasError && 'opacity-50',
+  const circleClass = cn(
+    styles.circle,
+    hasError && styles.circleError,
+    isCompleted && styles.circleCompleted,
+    isActive && styles.circleActive,
+    !hasError && !isCompleted && !isActive && styles.circleIdle,
+    disabled && !hasError && styles.circleDisabled,
   );
 
-  const dotClasses = cn(
-    'rounded-full w-3 h-3 transition-colors',
-    hasError && 'bg-danger',
-    isCompleted && 'bg-primary',
-    isActive && 'bg-primary ring-4 ring-primary/20',
-    !hasError && !isCompleted && !isActive && 'bg-disabled',
-    disabled && !hasError && 'opacity-50',
+  const dotClass = cn(
+    styles.dot,
+    hasError && styles.dotError,
+    isCompleted && styles.dotCompleted,
+    isActive && styles.dotActive,
+    !hasError && !isCompleted && !isActive && styles.dotIdle,
+    disabled && !hasError && styles.dotDisabled,
   );
 
   const indicator =
     variant === 'circle' ? (
-      <div className={circleClasses}>
+      <div className={circleClass}>
         {hasError ? <XIcon /> : isCompleted ? <CheckIcon /> : <span>{stepValue + 1}</span>}
       </div>
     ) : (
-      <div aria-hidden="true" className={cn(dotClasses, 'mt-[11px]')} />
+      <div aria-hidden="true" className={dotClass} />
     );
 
   // ── Label ──────────────────────────────────────────────────────────────────
 
   const labelClass = cn(
-    'text-xs mt-1.5 text-center font-medium transition-colors whitespace-nowrap',
-    hasError && 'text-danger',
-    !hasError && (isActive || isCompleted) && 'text-txt',
-    !hasError && !isActive && !isCompleted && 'text-txt-secondary',
-    disabled && !hasError && 'text-txt-disabled',
+    styles.label,
+    hasError && styles.labelError,
+    !hasError && (isActive || isCompleted) && styles.labelActive,
+    !hasError && !isActive && !isCompleted && styles.labelIdle,
+    disabled && !hasError && styles.labelDisabled,
   );
 
   // ── Connector ─────────────────────────────────────────────────────────────
 
   const connectorClass = cn(
-    'flex-1 h-px mx-2 transition-colors',
-    variant === 'circle' ? 'mt-4' : 'mt-[5px]',
-    connectorCompleted ? 'bg-primary' : 'bg-disabled',
+    styles.connector,
+    variant === 'circle' ? styles.connectorCircle : styles.connectorDot,
+    connectorCompleted ? styles.connectorCompleted : styles.connectorIncomplete,
   );
 
   // ── Step inner content ────────────────────────────────────────────────────
@@ -165,7 +166,7 @@ export const StepperStep: React.FC<StepperStepProps> = ({
       {indicator}
       <span className={labelClass}>{label}</span>
       {description && (
-        <span id={descId} className="text-xs text-txt-secondary text-center">
+        <span id={descId} className={styles.description}>
           {description}
         </span>
       )}
@@ -175,12 +176,12 @@ export const StepperStep: React.FC<StepperStepProps> = ({
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <li className={cn('flex items-start', !isLast && 'flex-1', className)}>
+    <li className={cn(styles.stepItem, !isLast && styles.stepItemFlex, className)}>
       {isActive ? (
         <div
           aria-current="step"
           aria-describedby={descId}
-          className="flex flex-col items-center"
+          className={styles.stepInner}
         >
           {innerContent}
         </div>
@@ -191,10 +192,9 @@ export const StepperStep: React.FC<StepperStepProps> = ({
           onClick={() => !disabled && onChange(stepValue)}
           aria-describedby={descId}
           className={cn(
-            'flex flex-col items-center focus:outline-none',
-            'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded',
-            !disabled && 'cursor-pointer',
-            disabled && 'cursor-not-allowed',
+            styles.stepButton,
+            !disabled && styles.stepButtonPointer,
+            disabled && styles.stepButtonDisabled,
           )}
         >
           {innerContent}

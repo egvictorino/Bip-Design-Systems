@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/cn';
+import styles from './StatsCard.module.css';
 
 export interface StatsCardProps {
   title: string;
@@ -23,28 +24,26 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   const isNegative = hasTrend && trend < 0;
 
   return (
-    <div className={cn('bg-white rounded-lg border border-edge p-5 flex flex-col gap-3', className)}>
-      {/* Header: title + icon */}
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-txt-secondary">{title}</span>
+    <div className={cn(styles.card, className)}>
+      <div className={styles.header}>
+        <span className={styles.title}>{title}</span>
         {icon && (
-          <span className="text-txt-secondary" aria-hidden="true">
+          <span className={styles.iconSlot} aria-hidden="true">
             {icon}
           </span>
         )}
       </div>
 
-      {/* Value + trend */}
-      <div className="flex items-end gap-2">
-        <span className="text-2xl font-bold text-txt leading-none">{value}</span>
+      <div className={styles.valueRow}>
+        <span className={styles.value}>{value}</span>
 
         {hasTrend && (
           <span
             className={cn(
-              'inline-flex items-center gap-0.5 text-xs font-medium mb-0.5',
-              isPositive && 'text-success',
-              isNegative && 'text-danger',
-              !isPositive && !isNegative && 'text-txt-secondary'
+              styles.trend,
+              isPositive && styles.trendPositive,
+              isNegative && styles.trendNegative,
+              !isPositive && !isNegative && styles.trendNeutral
             )}
             aria-label={`Tendencia: ${trend > 0 ? '+' : ''}${trend}%`}
           >
@@ -52,7 +51,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
               <svg
                 viewBox="0 0 16 16"
                 fill="currentColor"
-                className="w-3.5 h-3.5"
+                className={styles.trendIcon}
                 aria-hidden="true"
               >
                 <path
@@ -66,7 +65,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
               <svg
                 viewBox="0 0 16 16"
                 fill="currentColor"
-                className="w-3.5 h-3.5"
+                className={styles.trendIcon}
                 aria-hidden="true"
               >
                 <path
@@ -82,8 +81,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
         )}
       </div>
 
-      {/* Description */}
-      {description && <p className="text-xs text-txt-secondary">{description}</p>}
+      {description && <p className={styles.description}>{description}</p>}
     </div>
   );
 };
