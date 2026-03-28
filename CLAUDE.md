@@ -9,17 +9,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm install
 
 # Build order matters — shared-utils must build before ui-components
-pnpm --filter @bip/shared-utils build
-pnpm --filter @bip/ui-components build
+pnpm --filter @bip-design-systems/shared-utils build
+pnpm --filter @bip-design-systems/ui-components build
 
 # Component development
-pnpm --filter @bip/ui-components storybook        # http://localhost:6006
-pnpm --filter @bip/ui-components build-storybook
+pnpm --filter @bip-design-systems/ui-components storybook        # http://localhost:6006
+pnpm --filter @bip-design-systems/ui-components build-storybook
 
 # Lint & test (scoped)
-pnpm --filter @bip/ui-components lint
-pnpm --filter @bip/shared-utils test
-pnpm --filter @bip/ui-components test   # component tests (vitest + happy-dom)
+pnpm --filter @bip-design-systems/ui-components lint
+pnpm --filter @bip-design-systems/shared-utils test
+pnpm --filter @bip-design-systems/ui-components test   # component tests (vitest + happy-dom)
 
 # All packages at once
 pnpm build
@@ -45,11 +45,11 @@ PRs always go: `feature/xxx → dev → qa → main`. Hotfixes branch from `main
 
 ## Consumer setup
 
-`ui-components` ships a single compiled CSS file at `@bip/ui-components/style.css` that includes all component styles and design tokens. No Tailwind configuration is required.
+`ui-components` ships a single compiled CSS file at `@bip-design-systems/ui-components/style.css` that includes all component styles and design tokens. No Tailwind configuration is required.
 
 ```ts
 // src/main.tsx (o index.tsx) del proyecto consumidor
-import '@bip/ui-components/style.css';
+import '@bip-design-systems/ui-components/style.css';
 ```
 
 Peer dependencies required: `react` and `react-dom`. No additional CSS tooling needed.
@@ -64,7 +64,7 @@ Pure TypeScript utilities — no runtime dependencies.
 - `validateRFC(rfc: string): boolean` — validates Mexican RFC format (uppercase only, no normalization)
   - Regex: `/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/`
 
-**Testing:** vitest is configured. Run with `pnpm --filter @bip/shared-utils test` (21 tests).
+**Testing:** vitest is configured. Run with `pnpm --filter @bip-design-systems/shared-utils test` (21 tests).
 
 **Build note:** `tsconfig.json` excludes `**/*.test.ts` from compilation so test files never appear in `dist/`. Do not remove this exclude.
 
@@ -91,7 +91,7 @@ Four workflows, one per environment:
 
 **Rules:**
 - All workflows use `pnpm install --frozen-lockfile` — never use `--no-frozen-lockfile` in CI.
-- Tests for **both** packages always run **before** build (fail-fast): `pnpm --filter @bip/shared-utils test` then `pnpm --filter @bip/ui-components test`.
+- Tests for **both** packages always run **before** build (fail-fast): `pnpm --filter @bip-design-systems/shared-utils test` then `pnpm --filter @bip-design-systems/ui-components test`.
 - Build order in every pipeline: `shared-utils → ui-components`.
 
 ## Component Patterns (`packages/ui-components`)

@@ -90,7 +90,7 @@ pnpm dev     # Modo desarrollo paralelo
 
 ## Componentes UI
 
-> Storybook: <https://TU-USUARIO.github.io/bip-ui/>
+> Storybook: <https://egvictorino.github.io/bip-ui/>
 
 ### Entrada de datos
 
@@ -353,8 +353,8 @@ Pasos para consumir BipUI desde un repositorio independiente.
 
 ```bash
 # Con pnpm
-pnpm add github:TU-ORG/bip-ui#main --filter @bip-design-systems/ui-components
-pnpm add github:TU-ORG/bip-ui#main --filter @bip-design-systems/shared-utils
+pnpm add github:egvictorino/bip-ui#main --filter @bip-design-systems/ui-components
+pnpm add github:egvictorino/bip-ui#main --filter @bip-design-systems/shared-utils
 ```
 
 **Desde npm / registro privado (cuando se publique):**
