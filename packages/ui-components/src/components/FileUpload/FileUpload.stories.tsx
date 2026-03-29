@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { FileUpload } from './FileUpload';
+import type { RejectedFile } from './FileUpload';
 
 const meta = {
   title: 'Components/FileUpload',
@@ -9,7 +10,9 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     onChange: { control: false },
+    onReject: { control: false },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
+    variant: { control: 'select', options: ['default', 'compact'] },
   },
 } satisfies Meta<typeof FileUpload>;
 
@@ -18,7 +21,9 @@ type Story = StoryObj<typeof meta>;
 
 // ─── Interactive wrapper ──────────────────────────────────────────────────────
 
-const ControlledFileUpload = (props: Omit<React.ComponentProps<typeof FileUpload>, 'onChange' | 'value'>) => {
+const ControlledFileUpload = (
+  props: Omit<React.ComponentProps<typeof FileUpload>, 'onChange' | 'value'>
+) => {
   const [files, setFiles] = useState<File[]>([]);
   return (
     <div className="max-w-md">
@@ -103,6 +108,101 @@ export const FullWidth: Story = {
     </div>
   ),
 };
+
+// ─── Compact variant ──────────────────────────────────────────────────────────
+
+export const Compact: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4 max-w-md">
+      <ControlledFileUpload
+        label="Adjuntar comprobante"
+        variant="compact"
+        accept=".pdf,.jpg,.png"
+        helperText="PDF o imagen"
+      />
+      <ControlledFileUpload
+        label="Adjuntar múltiples archivos (compact)"
+        variant="compact"
+        multiple
+        maxFiles={3}
+        helperText="Máximo 3 archivos"
+      />
+    </div>
+  ),
+};
+
+// ─── maxFiles ─────────────────────────────────────────────────────────────────
+
+const WithMaxFilesStory = () => {
+  const [files, setFiles] = useState<File[]>([]);
+  const [rejected, setRejected] = useState<RejectedFile[]>([]);
+  return (
+    <div className="flex flex-col gap-2 max-w-md">
+      <FileUpload
+        label="Adjuntar archivos (máx. 3)"
+        value={files}
+        onChange={setFiles}
+        onReject={setRejected}
+        multiple
+        maxFiles={3}
+        accept=".pdf,.jpg,.png"
+        helperText={`${files.length}/3 archivos seleccionados`}
+        fullWidth
+      />
+      {rejected.length > 0 && (
+        <div className="text-xs text-danger mt-1">
+          {rejected.map((r, i) => (
+            <p key={i}>
+              {r.file.name} — rechazado ({r.reason === 'count' ? 'límite alcanzado' : 'tamaño'})
+            </p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const WithMaxFiles: Story = {
+  render: () => <WithMaxFilesStory />,
+};
+
+// ─── onReject callback ────────────────────────────────────────────────────────
+
+const WithRejectionStory = () => {
+  const [files, setFiles] = useState<File[]>([]);
+  const [rejected, setRejected] = useState<RejectedFile[]>([]);
+  return (
+    <div className="flex flex-col gap-2 max-w-md">
+      <FileUpload
+        label="Subir documentos"
+        value={files}
+        onChange={setFiles}
+        onReject={(r) => setRejected((prev) => [...prev, ...r])}
+        multiple
+        maxSize={2 * 1024 * 1024}
+        accept=".pdf,.jpg,.png"
+        helperText="PDF o imagen, máx. 2 MB por archivo"
+        fullWidth
+      />
+      {rejected.length > 0 && (
+        <div className="mt-1">
+          <p className="text-xs font-medium text-danger">Archivos rechazados:</p>
+          {rejected.map((r, i) => (
+            <p key={i} className="text-xs text-danger">
+              {r.file.name} ({r.reason === 'size' ? 'supera el tamaño máximo' : 'límite de archivos alcanzado'})
+            </p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const WithRejection: Story = {
+  render: () => <WithRejectionStory />,
+};
+
+// ─── Clinical record form ─────────────────────────────────────────────────────
 
 const ClinicalRecordFormStory = () => {
   const [lab, setLab] = useState<File[]>([]);

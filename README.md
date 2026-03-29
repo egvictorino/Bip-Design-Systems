@@ -1,4 +1,4 @@
-# BipUI — Monorepo
+# Bip Design Systems — Monorepo
 
 Design system y librería de componentes React.
 Monorepo basado en **pnpm workspaces** que centraliza la librería de componentes y utilidades compartidas.
