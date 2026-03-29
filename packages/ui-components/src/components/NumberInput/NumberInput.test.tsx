@@ -279,4 +279,127 @@ describe('NumberInput', () => {
     fireEvent.blur(input);
     expect(onBlur).toHaveBeenCalledTimes(1);
   });
+
+  // ── required ────────────────────────────────────────────────────────────────
+
+  it('renders required asterisk in label when required=true', () => {
+    render(<NumberInput label="Cantidad" required />);
+    expect(screen.getByText('*')).toBeInTheDocument();
+  });
+
+  it('does not render required asterisk when required is not set', () => {
+    render(<NumberInput label="Cantidad" />);
+    expect(screen.queryByText('*')).not.toBeInTheDocument();
+  });
+
+  it('sets required attribute on the input when required=true', () => {
+    render(<NumberInput label="Cantidad" required />);
+    expect(screen.getByRole('spinbutton')).toBeRequired();
+  });
+
+  it('does not set required attribute when required is not set', () => {
+    render(<NumberInput label="Cantidad" />);
+    expect(screen.getByRole('spinbutton')).not.toBeRequired();
+  });
+
+  // ── readOnly ────────────────────────────────────────────────────────────────
+
+  it('sets readOnly attribute on the input when readOnly=true', () => {
+    render(<NumberInput readOnly value={5} />);
+    expect(screen.getByRole('spinbutton')).toHaveAttribute('readonly');
+  });
+
+  it('disables increment button when readOnly=true', () => {
+    render(<NumberInput readOnly value={5} />);
+    expect(screen.getByLabelText('Incrementar')).toBeDisabled();
+  });
+
+  it('disables decrement button when readOnly=true', () => {
+    render(<NumberInput readOnly value={5} />);
+    expect(screen.getByLabelText('Decrementar')).toBeDisabled();
+  });
+
+  it('does not call onChange when increment is clicked and readOnly=true', async () => {
+    const onChange = vi.fn();
+    render(<NumberInput readOnly value={5} onChange={onChange} />);
+    await userEvent.click(screen.getByLabelText('Incrementar'));
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  // ── prefix / suffix ─────────────────────────────────────────────────────────
+
+  it('renders prefix text', () => {
+    render(<NumberInput prefix="$" />);
+    expect(screen.getByText('$')).toBeInTheDocument();
+  });
+
+  it('renders suffix text', () => {
+    render(<NumberInput suffix="kg" />);
+    expect(screen.getByText('kg')).toBeInTheDocument();
+  });
+
+  it('prefix span is aria-hidden', () => {
+    render(<NumberInput prefix="$" />);
+    const prefixEl = screen.getByText('$');
+    expect(prefixEl).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('applies prefix size class to input when prefix is present', () => {
+    render(<NumberInput prefix="$" size="md" />);
+    expect(screen.getByRole('spinbutton')).toHaveClass('inputMdPrefix');
+  });
+
+  it('applies suffix size class to input when suffix is present', () => {
+    render(<NumberInput suffix="%" size="md" />);
+    expect(screen.getByRole('spinbutton')).toHaveClass('inputMdSuffix');
+  });
+
+  it('applies both prefix and suffix classes when both are present', () => {
+    render(<NumberInput prefix="$" suffix="MXN" size="sm" />);
+    const input = screen.getByRole('spinbutton');
+    expect(input).toHaveClass('inputSmPrefix');
+    expect(input).toHaveClass('inputSmSuffix');
+  });
+
+  // ── decimals ────────────────────────────────────────────────────────────────
+
+  it('formats value to N decimals on blur', () => {
+    render(<NumberInput value={5} decimals={2} />);
+    const input = screen.getByRole('spinbutton');
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+    expect(input).toHaveValue('5.00');
+  });
+
+  it('rounds to 0 decimals on blur when decimals=0', () => {
+    render(<NumberInput value={5.7} decimals={0} />);
+    const input = screen.getByRole('spinbutton');
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+    expect(input).toHaveValue('6');
+  });
+
+  it('calls onChange with formatted value on blur when decimals is set', () => {
+    const onChange = vi.fn();
+    render(<NumberInput value={3} decimals={2} onChange={onChange} />);
+    const input = screen.getByRole('spinbutton');
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+    expect(onChange).toHaveBeenCalledWith(3, expect.anything());
+  });
+
+  it('prevents typing more decimals than allowed', async () => {
+    render(<NumberInput decimals={2} />);
+    const input = screen.getByRole('spinbutton');
+    await userEvent.type(input, '1.123');
+    // Only "1.12" should be accepted (the "3" is rejected)
+    expect(input).toHaveValue('1.12');
+  });
+
+  it('prevents typing a decimal point when decimals=0', async () => {
+    render(<NumberInput decimals={0} />);
+    const input = screen.getByRole('spinbutton');
+    await userEvent.type(input, '5.');
+    expect(input).toHaveValue('5');
+  });
 });

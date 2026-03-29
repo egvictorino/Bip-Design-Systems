@@ -1,5 +1,5 @@
 import { forwardRef, useId, useState, useEffect, useCallback } from 'react';
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 import React from 'react';
 import { cn } from '../../lib/cn';
 import styles from './NumberInput.module.css';
@@ -7,7 +7,7 @@ import styles from './NumberInput.module.css';
 type Size = 'sm' | 'md' | 'lg';
 
 export interface NumberInputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type' | 'onChange'> {
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type' | 'onChange' | 'prefix'> {
   variant?: 'outlined' | 'filled' | 'bare';
   size?: Size;
   label?: string;
@@ -21,6 +21,13 @@ export interface NumberInputProps
   value?: number | string;
   defaultValue?: number | string;
   onChange?: (value: number | null, event?: React.ChangeEvent<HTMLInputElement>) => void;
+  /** Etiqueta no editable al inicio del input (ej: "$", "MXN") */
+  prefix?: string | ReactNode;
+  /** Etiqueta no editable al final del input (ej: "kg", "%") */
+  suffix?: string | ReactNode;
+  /** Número máximo de decimales permitidos. En blur, formatea al número exacto de decimales. */
+  decimals?: number;
+  readOnly?: boolean;
 }
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
@@ -47,6 +54,30 @@ const stepBtnSizeClass: Record<Size, string> = {
   sm: styles.stepBtnSm,
   md: styles.stepBtnMd,
   lg: styles.stepBtnLg,
+};
+
+const prefixSizeClass: Record<Size, string> = {
+  sm: styles.prefixSm,
+  md: styles.prefixMd,
+  lg: styles.prefixLg,
+};
+
+const suffixSizeClass: Record<Size, string> = {
+  sm: styles.suffixSm,
+  md: styles.suffixMd,
+  lg: styles.suffixLg,
+};
+
+const inputPrefixSizeClass: Record<Size, string> = {
+  sm: styles.inputSmPrefix,
+  md: styles.inputMdPrefix,
+  lg: styles.inputLgPrefix,
+};
+
+const inputSuffixSizeClass: Record<Size, string> = {
+  sm: styles.inputSmSuffix,
+  md: styles.inputMdSuffix,
+  lg: styles.inputLgSuffix,
 };
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -76,6 +107,8 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       fullWidth = false,
       className,
       disabled = false,
+      readOnly = false,
+      required,
       id,
       min,
       max,
@@ -86,6 +119,9 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       onFocus,
       onBlur,
       onKeyDown,
+      prefix,
+      suffix,
+      decimals,
       ...props
     },
     ref
@@ -133,24 +169,37 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value;
+        // Rechazar si excede el número de decimales permitidos
+        if (decimals !== undefined) {
+          const dotIndex = raw.indexOf('.');
+          if (dotIndex !== -1 && raw.length - dotIndex - 1 > decimals) return;
+          if (decimals === 0 && dotIndex !== -1) return;
+        }
         setInternalValue(raw);
         const parsed = parseValue(raw);
         onChange?.(parsed, e);
       },
-      [onChange]
+      [onChange, decimals]
     );
 
     const handleBlur = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
         setFocused(false);
-        // On blur, clamp and normalize if we have a valid number
         if (parsedValue !== null) {
           const clamped = clamp(parsedValue);
-          setInternalValue(String(clamped));
+          // Formatear a N decimales si se especificó
+          if (decimals !== undefined) {
+            const formatted =
+              decimals === 0 ? String(Math.round(clamped)) : clamped.toFixed(decimals);
+            setInternalValue(formatted);
+            onChange?.(parseFloat(formatted), e);
+          } else {
+            setInternalValue(String(clamped));
+          }
         }
         onBlur?.(e);
       },
-      [parsedValue, clamp, onBlur]
+      [parsedValue, clamp, onBlur, decimals, onChange]
     );
 
     const handleKeyDown = useCallback(
@@ -167,8 +216,10 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       [handleIncrement, handleDecrement, onKeyDown]
     );
 
-    const isIncrementDisabled = disabled || (max !== undefined && parsedValue !== null && parsedValue >= max);
-    const isDecrementDisabled = disabled || (min !== undefined && parsedValue !== null && parsedValue <= min);
+    const isIncrementDisabled =
+      disabled || readOnly || (max !== undefined && parsedValue !== null && parsedValue >= max);
+    const isDecrementDisabled =
+      disabled || readOnly || (min !== undefined && parsedValue !== null && parsedValue <= min);
 
     // Variant class
     const variantClass =
@@ -197,6 +248,12 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             )}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className={styles.requiredMark}>
+                {' '}
+                *
+              </span>
+            )}
           </label>
         )}
 
@@ -219,6 +276,15 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             </svg>
           </button>
 
+          {prefix && (
+            <span
+              className={cn(styles.adornment, styles.adornmentLeft, prefixSizeClass[size])}
+              aria-hidden="true"
+            >
+              {prefix}
+            </span>
+          )}
+
           <input
             ref={ref}
             id={inputId}
@@ -226,6 +292,8 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             inputMode="numeric"
             role="spinbutton"
             disabled={disabled}
+            readOnly={readOnly}
+            required={required}
             aria-invalid={error || undefined}
             aria-describedby={messageId}
             aria-valuenow={parsedValue !== null ? parsedValue : undefined}
@@ -236,6 +304,8 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
               styles.input,
               variantClass,
               inputSizeClass[size],
+              prefix && inputPrefixSizeClass[size],
+              suffix && inputSuffixSizeClass[size],
               !disabled && styles.inputCursorText,
               className
             )}
@@ -248,6 +318,15 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
           />
+
+          {suffix && (
+            <span
+              className={cn(styles.adornment, styles.adornmentRight, suffixSizeClass[size])}
+              aria-hidden="true"
+            >
+              {suffix}
+            </span>
+          )}
 
           {/* Increment button */}
           <button

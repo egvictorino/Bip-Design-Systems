@@ -24,6 +24,8 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
+.requiredMark { color: var(--color-danger); margin-left: 2px; }
+
 /* ─── Input wrapper ─────────────────────────────────────────────────────────── */
 
 .inputWrapper {
@@ -163,6 +165,44 @@
   height: 1rem;
   flex-shrink: 0;
 }
+
+/* ─── Prefix / Suffix adornments ───────────────────────────────────────────── */
+
+.adornment {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-txt-secondary);
+  pointer-events: none;
+  font-size: 0.875em;
+  white-space: nowrap;
+}
+
+.adornmentLeft  { padding-right: 0.25rem; }
+.adornmentRight { padding-left: 0.25rem; }
+
+/* Stepper button effective widths by size:
+   sm = 0.5rem + 1rem icon + 0.5rem = 2rem
+   md = 0.625rem + 1rem icon + 0.625rem = 2.25rem
+   lg = 0.75rem + 1rem icon + 0.75rem = 2.5rem  */
+
+.prefixSm { left: 2rem; }
+.prefixMd { left: 2.25rem; }
+.prefixLg { left: 2.5rem; }
+
+.suffixSm { right: 2rem; }
+.suffixMd { right: 2.25rem; }
+.suffixLg { right: 2.5rem; }
+
+/* Input extra padding when prefix/suffix present */
+
+.inputSmPrefix { padding-left: 4rem; }
+.inputMdPrefix { padding-left: 4.5rem; }
+.inputLgPrefix { padding-left: 5.5rem; }
+
+.inputSmSuffix { padding-right: 4rem; }
+.inputMdSuffix { padding-right: 4.5rem; }
+.inputLgSuffix { padding-right: 5.5rem; }
 
 /* ─── Helper / Error message ────────────────────────────────────────────────── */
 

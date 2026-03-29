@@ -117,3 +117,67 @@ export const Controlled: Story = {
     return <Story />;
   },
 };
+
+export const WithRequired: Story = {
+  args: {
+    label: 'Cantidad requerida',
+    required: true,
+    placeholder: '0',
+  },
+};
+
+export const WithPrefix: Story = {
+  args: {
+    label: 'Precio',
+    prefix: '$',
+    placeholder: '0.00',
+    helperText: 'Precio en pesos mexicanos',
+  },
+};
+
+export const WithSuffix: Story = {
+  args: {
+    label: 'Peso',
+    suffix: 'kg',
+    placeholder: '0',
+  },
+};
+
+export const WithPrefixAndSuffix: Story = {
+  args: {
+    label: 'Conversión',
+    prefix: 'USD',
+    suffix: 'MXN',
+    value: 100,
+    helperText: 'Monto en dólares',
+  },
+};
+
+export const WithDecimals: Story = {
+  args: {
+    label: 'Precio unitario',
+    prefix: '$',
+    decimals: 2,
+    placeholder: '0.00',
+    helperText: 'Máximo 2 decimales. Se formatea al salir del campo.',
+  },
+};
+
+export const OnlyIntegers: Story = {
+  args: {
+    label: 'Número de unidades',
+    decimals: 0,
+    min: 0,
+    placeholder: '0',
+    helperText: 'Solo números enteros',
+  },
+};
+
+export const ReadOnly: Story = {
+  args: {
+    label: 'Total calculado',
+    readOnly: true,
+    value: 1250,
+    helperText: 'Este valor es de solo lectura',
+  },
+};
