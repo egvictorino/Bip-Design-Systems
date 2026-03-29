@@ -192,3 +192,129 @@ export const AllSizes: Story = {
     </div>
   ),
 };
+
+// ─── Feature: Grupos de opciones ─────────────────────────────────────────────
+
+const frutasConGrupo: MultiSelectOption[] = [
+  { value: 'manzana', label: 'Manzana', group: 'Frutas rojas' },
+  { value: 'cereza', label: 'Cereza', group: 'Frutas rojas' },
+  { value: 'frambuesa', label: 'Frambuesa', group: 'Frutas rojas' },
+  { value: 'banana', label: 'Banana', group: 'Frutas tropicales' },
+  { value: 'mango', label: 'Mango', group: 'Frutas tropicales' },
+  { value: 'papaya', label: 'Papaya', group: 'Frutas tropicales' },
+  { value: 'limon', label: 'Limón', group: 'Cítricos' },
+  { value: 'naranja', label: 'Naranja', group: 'Cítricos' },
+  { value: 'toronja', label: 'Toronja', group: 'Cítricos', disabled: true },
+];
+
+export const WithGroups: Story = {
+  args: { options: frutasConGrupo, label: 'Frutas por categoría' },
+  render: (args) => <Controlled {...args} />,
+};
+
+// ─── Feature: Seleccionar todo ────────────────────────────────────────────────
+
+export const WithSelectAll: Story = {
+  args: {
+    options: frutas,
+    label: 'Frutas',
+    showSelectAll: true,
+    placeholder: 'Seleccionar frutas...',
+  },
+  render: (args) => <Controlled {...args} />,
+};
+
+export const WithSelectAllAndGroups: Story = {
+  args: {
+    options: frutasConGrupo,
+    label: 'Frutas por categoría',
+    showSelectAll: true,
+  },
+  render: (args) => <Controlled {...args} />,
+};
+
+// ─── Feature: Chips colapsables ───────────────────────────────────────────────
+
+export const CollapsedChips: Story = {
+  args: {
+    options: frutas,
+    label: 'Frutas (máx. 2 chips visibles)',
+    maxVisibleChips: 2,
+  },
+  render: (args) => (
+    <ControlledWithInit
+      {...args}
+      initialValue={['manzana', 'banana', 'cereza', 'mango', 'pera']}
+    />
+  ),
+};
+
+// ─── Feature: Carga asíncrona ─────────────────────────────────────────────────
+
+const todosLosPaises: MultiSelectOption[] = [
+  { value: 'mx', label: 'México' },
+  { value: 'us', label: 'Estados Unidos' },
+  { value: 'ca', label: 'Canadá' },
+  { value: 'br', label: 'Brasil' },
+  { value: 'ar', label: 'Argentina' },
+  { value: 'co', label: 'Colombia' },
+  { value: 'cl', label: 'Chile' },
+  { value: 'pe', label: 'Perú' },
+  { value: 'uy', label: 'Uruguay' },
+  { value: 'ec', label: 'Ecuador' },
+];
+
+const AsyncSearchWrapper = (props: Omit<React.ComponentProps<typeof MultiSelect>, 'value' | 'onChange'>) => {
+  const [value, setValue] = useState<string[]>([]);
+  const [options, setOptions] = useState<MultiSelectOption[]>(todosLosPaises);
+  const [loading, setLoading] = useState(false);
+
+  const handleSearch = (query: string) => {
+    setLoading(true);
+    // Simula latencia de red (500 ms)
+    setTimeout(() => {
+      const q = query.toLowerCase();
+      setOptions(
+        q
+          ? todosLosPaises.filter((p) => p.label.toLowerCase().includes(q))
+          : todosLosPaises
+      );
+      setLoading(false);
+    }, 500);
+  };
+
+  return (
+    <MultiSelect
+      {...props}
+      options={options}
+      value={value}
+      onChange={setValue}
+      loading={loading}
+      onSearch={handleSearch}
+    />
+  );
+};
+
+export const AsyncSearch: Story = {
+  args: {
+    options: [],
+    label: 'Países (búsqueda asíncrona)',
+    searchPlaceholder: 'Escribir para buscar...',
+  },
+  render: (args) => <AsyncSearchWrapper {...args} />,
+};
+
+export const LoadingState: Story = {
+  args: {
+    options: [],
+    label: 'Cargando opciones...',
+    loading: true,
+  },
+  render: (args) => (
+    <MultiSelect
+      {...args}
+      value={[]}
+      onChange={() => {}}
+    />
+  ),
+};
