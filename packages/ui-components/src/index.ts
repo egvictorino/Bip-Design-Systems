@@ -115,6 +115,7 @@ export type { SkeletonProps } from './components/Skeleton';
 export { Navbar, NavbarBrand, NavbarNav, NavbarItem, NavbarActions } from './components/Navbar';
 export type {
   NavbarProps,
+  NavbarVariant,
   NavbarBrandProps,
   NavbarNavProps,
   NavbarItemProps,
