@@ -24,6 +24,24 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
+.requiredMark { color: var(--color-danger); margin-left: 2px; }
+
+/* ─── Input container (wraps input + icons) ──────────────────────────────────── */
+
+.inputContainer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.inputContainerFullWidth {
+  width: 100%;
+}
+
+.inputContainer > .input {
+  width: 100%;
+}
+
 /* ─── Input base ────────────────────────────────────────────────────────────── */
 
 .input {
@@ -53,6 +71,60 @@
 .sm { padding: 6px 12px;  font-size: 0.75rem;  line-height: 1rem; }
 .md { padding: 10px 20px; font-size: 0.875rem; line-height: 1.25rem; }
 .lg { padding: 12px 24px; font-size: 1.125rem; line-height: 1.75rem; }
+
+/* ─── Icon padding adjustments ───────────────────────────────────────────────── */
+
+.hasStartIcon   { padding-left: 2.5rem; }
+.hasEndAdornment { padding-right: 2.5rem; }
+
+/* ─── Icon containers ────────────────────────────────────────────────────────── */
+
+.iconStart {
+  position: absolute;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  color: var(--color-txt-utility);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.rightAdornments {
+  position: absolute;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  z-index: 1;
+}
+
+/* ─── Action buttons inside input ───────────────────────────────────────────── */
+
+.clearButton,
+.passwordToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-txt-utility);
+  border-radius: 2px;
+  transition: color 150ms;
+  line-height: 0;
+}
+
+.clearButton:hover,
+.passwordToggle:hover {
+  color: var(--color-txt);
+}
+
+.clearButton:focus-visible,
+.passwordToggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
 
 /* ─── Variant: outlined ─────────────────────────────────────────────────────── */
 

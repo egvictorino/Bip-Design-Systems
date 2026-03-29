@@ -37,9 +37,9 @@ export const Default: Story = {
     <div className="w-full max-w-lg">
       <Accordion type="single" collapsible defaultValue="item-1">
         <AccordionItem value="item-1">
-          <AccordionTrigger>¿Qué es BipUI?</AccordionTrigger>
+          <AccordionTrigger>¿Qué es Bip Design Systems?</AccordionTrigger>
           <AccordionContent>
-            BipUI es una librería de componentes React diseñada para aplicaciones SaaS de alto
+            Bip Design Systems es una librería de componentes React diseñada para aplicaciones SaaS de alto
             rendimiento. Incluye componentes accesibles, tematizables y listos para producción.
           </AccordionContent>
         </AccordionItem>
@@ -153,9 +153,9 @@ export const Bordered: Story = {
     <div className="w-full max-w-lg">
       <Accordion type="single" collapsible variant="bordered" defaultValue="item-1">
         <AccordionItem value="item-1">
-          <AccordionTrigger>¿Qué es BipUI?</AccordionTrigger>
+          <AccordionTrigger>¿Qué es Bip Design Systems?</AccordionTrigger>
           <AccordionContent>
-            BipUI es una librería de componentes React diseñada para aplicaciones SaaS de alto
+            Bip Design Systems es una librería de componentes React diseñada para aplicaciones SaaS de alto
             rendimiento. Incluye componentes accesibles, tematizables y listos para producción.
           </AccordionContent>
         </AccordionItem>
@@ -186,9 +186,9 @@ export const Ghost: Story = {
     <div className="w-full max-w-lg">
       <Accordion type="single" collapsible variant="ghost" defaultValue="item-1">
         <AccordionItem value="item-1">
-          <AccordionTrigger>¿Qué es BipUI?</AccordionTrigger>
+          <AccordionTrigger>¿Qué es Bip Design Systems?</AccordionTrigger>
           <AccordionContent>
-            BipUI es una librería de componentes React diseñada para aplicaciones SaaS de alto
+            Bip Design Systems es una librería de componentes React diseñada para aplicaciones SaaS de alto
             rendimiento. Incluye componentes accesibles, tematizables y listos para producción.
           </AccordionContent>
         </AccordionItem>

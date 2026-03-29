@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { createRef } from 'react';
+import { createRef, useState } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { Input } from './Input';
 
@@ -52,6 +52,11 @@ describe('Input', () => {
   it('renders as email input when type="email"', () => {
     render(<Input type="email" label="Email" />);
     expect(screen.getByRole('textbox', { name: 'Email' })).toHaveAttribute('type', 'email');
+  });
+
+  it('renders as url input when type="url"', () => {
+    render(<Input type="url" label="Sitio web" />);
+    expect(screen.getByRole('textbox', { name: 'Sitio web' })).toHaveAttribute('type', 'url');
   });
 
   // ── Disabled state ──────────────────────────────────────────────────────────
@@ -148,10 +153,10 @@ describe('Input', () => {
 
   // ── fullWidth ───────────────────────────────────────────────────────────────
 
-  it('fullWidth applies fullWidth class to container and input', () => {
+  it('fullWidth applies fullWidth class to container and input container', () => {
     const { container } = render(<Input fullWidth />);
     expect(container.firstChild).toHaveClass('fullWidth');
-    expect(screen.getByRole('textbox')).toHaveClass('fullWidth');
+    expect(container.querySelector('.inputContainerFullWidth')).toBeInTheDocument();
   });
 
   // ── Focus / Blur callbacks ──────────────────────────────────────────────────
@@ -170,5 +175,140 @@ describe('Input', () => {
     fireEvent.focus(input);
     fireEvent.blur(input);
     expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+
+  // ── onChange callback ───────────────────────────────────────────────────────
+
+  it('calls consumer onChange when input value changes', () => {
+    const onChange = vi.fn();
+    render(<Input onChange={onChange} />);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'nuevo valor' } });
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  // ── ReadOnly ────────────────────────────────────────────────────────────────
+
+  it('applies readOnly attribute when readOnly=true', () => {
+    render(<Input readOnly value="RFC123" />);
+    expect(screen.getByRole('textbox')).toHaveAttribute('readonly');
+  });
+
+  // ── Required indicator ──────────────────────────────────────────────────────
+
+  it('shows asterisk in label when required=true', () => {
+    render(<Input label="Campo" required />);
+    expect(screen.getByText('*')).toBeInTheDocument();
+  });
+
+  it('does not show asterisk when required=false', () => {
+    render(<Input label="Campo" />);
+    expect(screen.queryByText('*')).not.toBeInTheDocument();
+  });
+
+  it('applies aria-required to the input when required=true', () => {
+    render(<Input label="Campo" required />);
+    expect(screen.getByRole('textbox', { name: /Campo/ })).toHaveAttribute('required');
+  });
+
+  // ── startIcon ───────────────────────────────────────────────────────────────
+
+  it('renders startIcon when provided', () => {
+    render(<Input startIcon={<span data-testid="start-icon">🔍</span>} />);
+    expect(screen.getByTestId('start-icon')).toBeInTheDocument();
+  });
+
+  it('applies hasStartIcon class to input when startIcon is provided', () => {
+    render(<Input startIcon={<span>icon</span>} />);
+    expect(screen.getByRole('textbox')).toHaveClass('hasStartIcon');
+  });
+
+  // ── endIcon ─────────────────────────────────────────────────────────────────
+
+  it('renders endIcon when provided', () => {
+    render(<Input endIcon={<span data-testid="end-icon">@</span>} />);
+    expect(screen.getByTestId('end-icon')).toBeInTheDocument();
+  });
+
+  it('applies hasEndAdornment class to input when endIcon is provided', () => {
+    render(<Input endIcon={<span>icon</span>} />);
+    expect(screen.getByRole('textbox')).toHaveClass('hasEndAdornment');
+  });
+
+  // ── clearable ───────────────────────────────────────────────────────────────
+
+  it('shows clear button when clearable=true and value is non-empty', () => {
+    render(<Input clearable value="algo" onChange={vi.fn()} />);
+    expect(screen.getByRole('button', { name: 'Limpiar campo' })).toBeInTheDocument();
+  });
+
+  it('does not show clear button when value is empty', () => {
+    render(<Input clearable value="" onChange={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: 'Limpiar campo' })).not.toBeInTheDocument();
+  });
+
+  it('does not show clear button when clearable=true but no onChange', () => {
+    render(<Input clearable value="algo" />);
+    expect(screen.queryByRole('button', { name: 'Limpiar campo' })).not.toBeInTheDocument();
+  });
+
+  it('clear button has correct aria-label', () => {
+    render(<Input clearable value="algo" onChange={vi.fn()} />);
+    expect(screen.getByRole('button', { name: 'Limpiar campo' })).toBeInTheDocument();
+  });
+
+  it('calls onChange with empty value when clear button is clicked', () => {
+    const onChange = vi.fn();
+    const ref = createRef<HTMLInputElement>();
+
+    const Wrapper = () => {
+      const [val, setVal] = useState('texto');
+      return (
+        <Input
+          ref={ref}
+          clearable
+          value={val}
+          onChange={(e) => {
+            setVal(e.target.value);
+            onChange(e);
+          }}
+        />
+      );
+    };
+
+    render(<Wrapper />);
+    fireEvent.click(screen.getByRole('button', { name: 'Limpiar campo' }));
+    expect(onChange).toHaveBeenCalled();
+  });
+
+  // ── Password toggle ─────────────────────────────────────────────────────────
+
+  it('renders password toggle button when type="password"', () => {
+    render(<Input type="password" />);
+    expect(screen.getByRole('button', { name: 'Mostrar contraseña' })).toBeInTheDocument();
+  });
+
+  it('does not render password toggle for non-password types', () => {
+    render(<Input type="text" />);
+    expect(screen.queryByRole('button', { name: 'Mostrar contraseña' })).not.toBeInTheDocument();
+  });
+
+  it('toggles password visibility on button click', () => {
+    const { container } = render(<Input type="password" />);
+    const toggle = screen.getByRole('button', { name: 'Mostrar contraseña' });
+    const input = container.querySelector('input')!;
+
+    expect(input).toHaveAttribute('type', 'password');
+
+    fireEvent.click(toggle);
+    expect(input).toHaveAttribute('type', 'text');
+    expect(screen.getByRole('button', { name: 'Ocultar contraseña' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ocultar contraseña' }));
+    expect(input).toHaveAttribute('type', 'password');
+  });
+
+  it('password toggle has hasEndAdornment class on input', () => {
+    const { container } = render(<Input type="password" />);
+    expect(container.querySelector('input')).toHaveClass('hasEndAdornment');
   });
 });
