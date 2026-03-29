@@ -9,7 +9,7 @@ const meta = {
   argTypes: {
     variant: { control: 'select', options: ['outlined', 'filled', 'bare'] },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
-    type: { control: 'select', options: ['text', 'email', 'password', 'number'] },
+    type: { control: 'select', options: ['text', 'email', 'password'] },
     error: { control: 'boolean' },
     disabled: { control: 'boolean' },
     fullWidth: { control: 'boolean' },
@@ -84,15 +84,6 @@ export const ReadOnly: Story = {
     value: 'ABC123456789',
     readOnly: true,
     helperText: 'Este campo no puede editarse',
-  },
-};
-
-export const NumberInput: Story = {
-  args: {
-    variant: 'outlined',
-    label: 'Cantidad',
-    type: 'number',
-    placeholder: '0',
   },
 };
 

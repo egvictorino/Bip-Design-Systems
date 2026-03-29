@@ -54,11 +54,6 @@ describe('Input', () => {
     expect(screen.getByRole('textbox', { name: 'Email' })).toHaveAttribute('type', 'email');
   });
 
-  it('renders as number input when type="number"', () => {
-    const { container } = render(<Input type="number" />);
-    expect(container.querySelector('input[type="number"]')).toBeInTheDocument();
-  });
-
   // ── Disabled state ──────────────────────────────────────────────────────────
 
   it('is disabled when disabled=true', () => {

@@ -178,6 +178,9 @@ export type { StatsCardProps } from './components/StatsCard';
 export { SearchInput } from './components/SearchInput';
 export type { SearchInputProps } from './components/SearchInput';
 
+export { NumberInput } from './components/NumberInput';
+export type { NumberInputProps } from './components/NumberInput';
+
 export { DateRangePicker } from './components/DateRangePicker';
 export type { DateRangePickerProps, DateRange } from './components/DateRangePicker';
 
