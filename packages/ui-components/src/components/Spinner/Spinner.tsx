@@ -3,14 +3,16 @@ import { cn } from '../../lib/cn';
 import styles from './Spinner.module.css';
 
 export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
-  size?: 'sm' | 'md' | 'lg';
-  variant?: 'primary' | 'secondary' | 'white';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'primary' | 'secondary' | 'white' | 'danger' | 'success' | 'info';
+  speed?: 'slow' | 'normal' | 'fast';
   label?: string;
 }
 
 export const Spinner: React.FC<SpinnerProps> = ({
   size = 'md',
   variant = 'primary',
+  speed,
   label = 'Cargando...',
   className,
   ...props
@@ -23,7 +25,7 @@ export const Spinner: React.FC<SpinnerProps> = ({
       {...props}
     >
       <svg
-        className={cn(styles.svg, styles[size], styles[variant])}
+        className={cn(styles.svg, styles[size], styles[variant], speed && styles[speed])}
         viewBox="0 0 24 24"
         fill="none"
         aria-hidden="true"
