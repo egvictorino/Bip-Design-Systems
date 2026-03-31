@@ -26,6 +26,8 @@ export type { CheckboxGroupProps } from './components/Checkbox';
 
 export { Radio } from './components/Radio';
 export type { RadioProps } from './components/Radio';
+export { RadioGroup } from './components/Radio';
+export type { RadioGroupProps } from './components/Radio';
 
 export { Textarea } from './components/Textarea';
 export type { TextareaProps } from './components/Textarea';
