@@ -104,7 +104,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         localRef.current = node;
         if (typeof ref === 'function') ref(node);
         else if (ref != null)
-          (ref as React.MutableRefObject<HTMLInputElement | null>).current = node;
+          (ref as { current: HTMLInputElement | null }).current = node;
       },
       [ref]
     );
