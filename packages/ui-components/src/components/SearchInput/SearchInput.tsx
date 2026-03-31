@@ -1,4 +1,4 @@
-import { forwardRef, useId, useState, useRef, useCallback } from 'react';
+import { forwardRef, useId, useState, useRef, useCallback, useEffect } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './SearchInput.module.css';
@@ -16,6 +16,10 @@ export interface SearchInputProps
   /** Delay in ms before firing `onSearch` after the user stops typing. Default: 0 (no debounce). */
   debounceMs?: number;
   onSearch?: (value: string) => void;
+  /** When true, `onSearch` only fires on Enter key press instead of on every keystroke. */
+  searchOnEnter?: boolean;
+  /** Shows a loading spinner in place of the search icon. Also hides the clear button. */
+  loading?: boolean;
 }
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
@@ -77,8 +81,11 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       onClear,
       debounceMs = 0,
       onSearch,
+      searchOnEnter = false,
+      loading = false,
       value,
       defaultValue,
+      onKeyDown: externalOnKeyDown,
       ...props
     },
     ref
@@ -90,25 +97,77 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     const messageId = hasMessage ? `${inputId}-message` : undefined;
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Determine if the input is "controlled" to show the clear button
+    // Internal ref for focus management (merged with the forwarded ref)
+    const localRef = useRef<HTMLInputElement>(null);
+    const mergedRef = useCallback(
+      (node: HTMLInputElement | null) => {
+        localRef.current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref != null)
+          (ref as React.MutableRefObject<HTMLInputElement | null>).current = node;
+      },
+      [ref]
+    );
+
+    // Cleanup debounce timeout on unmount
+    useEffect(() => {
+      return () => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+      };
+    }, []);
+
+    // Determine if the input is "controlled"
     const isControlled = value !== undefined;
-    const hasValue = isControlled ? Boolean(value) : undefined;
+
+    // Track whether an uncontrolled input has a value (to show the clear button)
+    const [uncontrolledHasValue, setUncontrolledHasValue] = useState(
+      defaultValue !== undefined && defaultValue !== ''
+    );
+
+    const showClear =
+      !loading && !disabled && (isControlled ? Boolean(value) : uncontrolledHasValue);
 
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange?.(e);
 
-        if (onSearch && debounceMs > 0) {
-          if (debounceRef.current) clearTimeout(debounceRef.current);
-          debounceRef.current = setTimeout(() => {
+        if (!isControlled) {
+          setUncontrolledHasValue(Boolean(e.target.value));
+        }
+
+        if (onSearch && !searchOnEnter) {
+          if (debounceMs > 0) {
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+            debounceRef.current = setTimeout(() => {
+              onSearch(e.target.value);
+            }, debounceMs);
+          } else {
             onSearch(e.target.value);
-          }, debounceMs);
-        } else if (onSearch) {
-          onSearch(e.target.value);
+          }
         }
       },
-      [onChange, onSearch, debounceMs]
+      [onChange, onSearch, debounceMs, searchOnEnter, isControlled]
     );
+
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (searchOnEnter && e.key === 'Enter' && onSearch) {
+          if (debounceRef.current) clearTimeout(debounceRef.current);
+          onSearch(e.currentTarget.value);
+        }
+        externalOnKeyDown?.(e);
+      },
+      [searchOnEnter, onSearch, externalOnKeyDown]
+    );
+
+    const handleClear = useCallback(() => {
+      if (!isControlled) {
+        setUncontrolledHasValue(false);
+        if (localRef.current) localRef.current.value = '';
+      }
+      onClear?.();
+      localRef.current?.focus();
+    }, [isControlled, onClear]);
 
     // Variant class selection
     const variantClass =
@@ -125,7 +184,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             : styles.bare;
 
     return (
-      <div className={cn(styles.wrapper, fullWidth && styles.wrapperFull)}>
+      <div role="search" className={cn(styles.wrapper, fullWidth && styles.wrapperFull)}>
         {label && (
           <label
             htmlFor={inputId}
@@ -141,32 +200,52 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         )}
 
         <div className={cn(styles.inputWrapper, fullWidth && styles.inputWrapperFull)}>
-          {/* Search icon */}
+          {/* Search icon / loading spinner */}
           <span
             className={cn(
               styles.searchIcon,
               searchIconOffsetClass[size],
               error ? styles.searchIconError : styles.searchIconNormal,
-              disabled && styles.searchIconDisabled
+              disabled && styles.searchIconDisabled,
+              loading && styles.searchIconSpinning
             )}
             aria-hidden="true"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor" className={iconSizeClass[size]}>
-              <path
-                fillRule="evenodd"
-                d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11zM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9z"
-                clipRule="evenodd"
-              />
-            </svg>
+            {loading ? (
+              <svg viewBox="0 0 24 24" fill="none" className={iconSizeClass[size]}>
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  className={styles.spinnerTrack}
+                />
+                <path
+                  fill="currentColor"
+                  d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z"
+                  className={styles.spinnerFill}
+                />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 20 20" fill="currentColor" className={iconSizeClass[size]}>
+                <path
+                  fillRule="evenodd"
+                  d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11zM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            )}
           </span>
 
           <input
-            ref={ref}
+            ref={mergedRef}
             id={inputId}
             type="search"
             disabled={disabled}
             aria-invalid={error || undefined}
             aria-describedby={messageId}
+            aria-busy={loading || undefined}
             value={value}
             defaultValue={defaultValue}
             className={cn(
@@ -178,6 +257,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             )}
             {...props}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             onFocus={(e) => {
               setFocused(true);
               onFocus?.(e);
@@ -188,12 +268,12 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             }}
           />
 
-          {/* Clear button — only when controlled and has value */}
-          {isControlled && hasValue && !disabled && (
+          {/* Clear button */}
+          {showClear && (
             <button
               type="button"
               aria-label="Limpiar búsqueda"
-              onClick={onClear}
+              onClick={handleClear}
               className={cn(styles.clearBtn, clearBtnOffsetClass[size])}
             >
               <svg

@@ -178,17 +178,20 @@ export const Password: Story = {
 
 export const Clearable: Story = {
   render: () => {
-    const [value, setValue] = useState('Texto de ejemplo');
-    return (
-      <Input
-        variant="outlined"
-        label="Campo con limpiar"
-        placeholder="Escribe algo..."
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        clearable
-      />
-    );
+    const ClearableStory = () => {
+      const [value, setValue] = useState('Texto de ejemplo');
+      return (
+        <Input
+          variant="outlined"
+          label="Campo con limpiar"
+          placeholder="Escribe algo..."
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          clearable
+        />
+      );
+    };
+    return <ClearableStory />;
   },
 };
 
