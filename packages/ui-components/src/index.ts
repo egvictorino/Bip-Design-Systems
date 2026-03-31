@@ -152,6 +152,7 @@ export {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarItem,
+  SidebarSubMenu,
   SidebarFooter,
   SidebarTrigger,
 } from './components/Sidebar';
@@ -163,6 +164,7 @@ export type {
   SidebarGroupProps,
   SidebarGroupLabelProps,
   SidebarItemProps,
+  SidebarSubMenuProps,
   SidebarFooterProps,
   SidebarTriggerProps,
 } from './components/Sidebar';

@@ -8,11 +8,13 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarItem,
+  SidebarSubMenu,
   SidebarFooter,
   SidebarTrigger,
 } from './Sidebar';
 
 const HomeIcon = () => <svg data-testid="home-icon" aria-hidden="true" />;
+const FolderIcon = () => <svg data-testid="folder-icon" aria-hidden="true" />;
 
 const DefaultSidebar = ({
   isOpen = false,
@@ -258,5 +260,410 @@ describe('Sidebar', () => {
     const asides = screen.getAllByRole('complementary', { name: 'Navegación lateral' });
     // The second aside (last rendered) has the className
     expect(asides[asides.length - 1].className).toMatch(/my-sidebar/);
+  });
+});
+
+// ─── Variant tests ────────────────────────────────────────────────────────────
+
+describe('Sidebar — variant', () => {
+  it('applies variantLight class by default', () => {
+    render(
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem>Item</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    const aside = screen.getByRole('complementary', { name: 'Navegación lateral' });
+    expect(aside).toHaveClass('variantLight');
+  });
+
+  it('applies variantDark class when variant="dark"', () => {
+    render(
+      <Sidebar variant="dark">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem>Item</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    const aside = screen.getByRole('complementary', { name: 'Navegación lateral' });
+    expect(aside).toHaveClass('variantDark');
+  });
+
+  it('applies variantPrimary class when variant="primary"', () => {
+    render(
+      <Sidebar variant="primary">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem>Item</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    const aside = screen.getByRole('complementary', { name: 'Navegación lateral' });
+    expect(aside).toHaveClass('variantPrimary');
+  });
+});
+
+// ─── Badge tests ──────────────────────────────────────────────────────────────
+
+describe('SidebarItem — badge', () => {
+  it('shows numeric badge when expanded', () => {
+    render(
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem icon={<HomeIcon />} badge={5}>Notificaciones</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    expect(screen.getByText('5')).toBeInTheDocument();
+  });
+
+  it('shows string badge when expanded', () => {
+    render(
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem icon={<HomeIcon />} badge="nuevo">Mensajes</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    expect(screen.getByText('nuevo')).toBeInTheDocument();
+  });
+
+  it('truncates badge to "99+" when value exceeds 99', () => {
+    render(
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem icon={<HomeIcon />} badge={150}>Mensajes</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    expect(screen.getByText('99+')).toBeInTheDocument();
+    expect(screen.queryByText('150')).not.toBeInTheDocument();
+  });
+
+  it('hides badge when sidebar is collapsed', () => {
+    render(
+      <Sidebar defaultCollapsed>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem icon={<HomeIcon />} badge={5}>Notificaciones</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    expect(screen.queryByText('5')).not.toBeInTheDocument();
+  });
+
+  it('includes badge count in aria-label when collapsed', () => {
+    render(
+      <Sidebar defaultCollapsed>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem icon={<HomeIcon />} badge={5}>Notificaciones</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    const item = screen.getByRole('button', { name: /notificaciones/i });
+    expect(item).toHaveAttribute('aria-label', expect.stringContaining('5 notificaciones'));
+  });
+});
+
+// ─── SidebarSubMenu tests ─────────────────────────────────────────────────────
+
+describe('SidebarSubMenu', () => {
+  const SubMenuSidebar = ({
+    defaultOpen = false,
+    defaultCollapsed = false,
+  }: {
+    defaultOpen?: boolean;
+    defaultCollapsed?: boolean;
+  }) => (
+    <Sidebar defaultCollapsed={defaultCollapsed}>
+      <SidebarHeader>
+        <SidebarTrigger />
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarSubMenu label="Archivos" icon={<FolderIcon />} defaultOpen={defaultOpen}>
+            <SidebarItem href="#">Documentos</SidebarItem>
+            <SidebarItem href="#">Imágenes</SidebarItem>
+          </SidebarSubMenu>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+
+  it('renders the trigger button with label', () => {
+    render(<SubMenuSidebar />);
+    expect(screen.getByRole('button', { name: /archivos/i })).toBeInTheDocument();
+  });
+
+  it('sub-items are hidden when defaultOpen=false', () => {
+    render(<SubMenuSidebar defaultOpen={false} />);
+    const trigger = screen.getByRole('button', { name: /archivos/i });
+    const controlsId = trigger.getAttribute('aria-controls')!;
+    const subMenuList = document.getElementById(controlsId)!;
+    // When closed, the list does NOT have the open class (max-height stays 0)
+    expect(subMenuList).not.toHaveClass('subMenuListOpen');
+  });
+
+  it('sub-items are visible when defaultOpen=true', () => {
+    render(<SubMenuSidebar defaultOpen />);
+    expect(screen.getByText('Documentos')).toBeVisible();
+  });
+
+  it('clicking the trigger toggles the sub-menu open', () => {
+    render(<SubMenuSidebar defaultOpen={false} />);
+    const trigger = screen.getByRole('button', { name: /archivos/i });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('clicking the trigger again closes the sub-menu', () => {
+    render(<SubMenuSidebar defaultOpen />);
+    const trigger = screen.getByRole('button', { name: /archivos/i });
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('trigger has aria-controls pointing to the sub-menu list', () => {
+    render(<SubMenuSidebar defaultOpen />);
+    const trigger = screen.getByRole('button', { name: /archivos/i });
+    const controlsId = trigger.getAttribute('aria-controls');
+    expect(controlsId).toBeTruthy();
+    const list = document.getElementById(controlsId!);
+    expect(list).toBeInTheDocument();
+  });
+
+  it('shows icon only when sidebar is collapsed', () => {
+    render(<SubMenuSidebar defaultCollapsed />);
+    // Icon is present
+    expect(screen.getByTestId('folder-icon')).toBeInTheDocument();
+    // No expand/collapse trigger button for sub-menu (collapsed mode shows plain icon button)
+    // The sub-menu children are not rendered in the collapsed state
+    expect(screen.queryByText('Documentos')).not.toBeInTheDocument();
+    // Label text is inside a Tooltip (role="tooltip"), not as visible button text
+    const tooltips = screen.queryAllByRole('tooltip');
+    const labelInTooltip = tooltips.some((t) => t.textContent?.includes('Archivos'));
+    expect(labelInTooltip).toBe(true);
+  });
+
+  it('Escape key closes an open sub-menu', () => {
+    render(<SubMenuSidebar defaultOpen />);
+    const trigger = screen.getByRole('button', { name: /archivos/i });
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('shows badge on trigger when expanded', () => {
+    render(
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarSubMenu label="Archivos" icon={<FolderIcon />} badge={3}>
+              <SidebarItem href="#">Documentos</SidebarItem>
+            </SidebarSubMenu>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    expect(screen.getByText('3')).toBeInTheDocument();
+  });
+
+  it('hides badge when sidebar is collapsed', () => {
+    render(
+      <Sidebar defaultCollapsed>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarSubMenu label="Archivos" icon={<FolderIcon />} badge={3}>
+              <SidebarItem href="#">Documentos</SidebarItem>
+            </SidebarSubMenu>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    expect(screen.queryByText('3')).not.toBeInTheDocument();
+  });
+
+  it('collapses automatically when sidebar collapses', () => {
+    render(<SubMenuSidebar defaultOpen />);
+    // Initially the sub-menu trigger has aria-expanded="true"
+    expect(screen.getByRole('button', { name: /archivos/i })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    );
+
+    // Collapse the sidebar (SidebarTrigger is included in SubMenuSidebar)
+    fireEvent.click(screen.getByRole('button', { name: /colapsar sidebar/i }));
+
+    // Expand the sidebar again
+    fireEvent.click(screen.getByRole('button', { name: /expandir sidebar/i }));
+
+    // After re-expanding, the sub-menu should be closed (auto-reset on collapse)
+    expect(screen.getByRole('button', { name: /archivos/i })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+  });
+});
+
+// ─── Arrow key navigation tests ───────────────────────────────────────────────
+
+describe('Sidebar — arrow key navigation', () => {
+  it('ArrowDown moves focus to the next item', () => {
+    render(
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 1</SidebarItem>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 2</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    const item1 = screen.getByRole('link', { name: /item 1/i });
+    const item2 = screen.getByRole('link', { name: /item 2/i });
+
+    item1.focus();
+    fireEvent.keyDown(item1, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(item2);
+  });
+
+  it('ArrowUp moves focus to the previous item', () => {
+    render(
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 1</SidebarItem>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 2</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    const item1 = screen.getByRole('link', { name: /item 1/i });
+    const item2 = screen.getByRole('link', { name: /item 2/i });
+
+    item2.focus();
+    fireEvent.keyDown(item2, { key: 'ArrowUp' });
+    expect(document.activeElement).toBe(item1);
+  });
+
+  it('Home moves focus to the first item', () => {
+    render(
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 1</SidebarItem>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 2</SidebarItem>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 3</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    const item1 = screen.getByRole('link', { name: /item 1/i });
+    const item3 = screen.getByRole('link', { name: /item 3/i });
+
+    item3.focus();
+    fireEvent.keyDown(item3, { key: 'Home' });
+    expect(document.activeElement).toBe(item1);
+  });
+
+  it('End moves focus to the last item', () => {
+    render(
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 1</SidebarItem>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 2</SidebarItem>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 3</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+    const item1 = screen.getByRole('link', { name: /item 1/i });
+    const item3 = screen.getByRole('link', { name: /item 3/i });
+
+    item1.focus();
+    fireEvent.keyDown(item1, { key: 'End' });
+    expect(document.activeElement).toBe(item3);
+  });
+});
+
+// ─── Focus trap tests ─────────────────────────────────────────────────────────
+
+describe('Sidebar — focus trap (mobile)', () => {
+  it('Tab key wraps from last to first focusable element when mobile is open', () => {
+    render(
+      <Sidebar isOpen onClose={vi.fn()}>
+        <SidebarHeader>
+          <SidebarTrigger />
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 1</SidebarItem>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 2</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+
+    const aside = screen.getByRole('complementary', { name: 'Navegación lateral' });
+    const focusable = aside.querySelectorAll<HTMLElement>(
+      'a:not([tabindex="-1"]), button:not([disabled])'
+    );
+    const lastEl = focusable[focusable.length - 1];
+    const firstEl = focusable[0];
+
+    // Simulate Tab from last element
+    lastEl.focus();
+    expect(document.activeElement).toBe(lastEl);
+
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: false });
+    expect(document.activeElement).toBe(firstEl);
+  });
+
+  it('Shift+Tab key wraps from first to last focusable element when mobile is open', () => {
+    render(
+      <Sidebar isOpen onClose={vi.fn()}>
+        <SidebarHeader>
+          <SidebarTrigger />
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 1</SidebarItem>
+            <SidebarItem href="#" icon={<HomeIcon />}>Item 2</SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+
+    const aside = screen.getByRole('complementary', { name: 'Navegación lateral' });
+    const focusable = aside.querySelectorAll<HTMLElement>(
+      'a:not([tabindex="-1"]), button:not([disabled])'
+    );
+    const firstEl = focusable[0];
+    const lastEl = focusable[focusable.length - 1];
+
+    firstEl.focus();
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(document.activeElement).toBe(lastEl);
   });
 });
