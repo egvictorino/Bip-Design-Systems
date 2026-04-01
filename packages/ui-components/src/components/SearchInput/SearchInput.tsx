@@ -98,7 +98,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Internal ref for focus management (merged with the forwarded ref)
-    const localRef = useRef<HTMLInputElement>(null);
+    const localRef = useRef<HTMLInputElement | null>(null);
     const mergedRef = useCallback(
       (node: HTMLInputElement | null) => {
         localRef.current = node;
