@@ -9,6 +9,10 @@ const meta = {
   argTypes: {
     variant: { control: 'select', options: ['text', 'circle', 'rect'] },
     lines: { control: 'number' },
+    size: { control: 'select', options: ['sm', 'md', 'lg'] },
+    animation: { control: 'select', options: ['pulse', 'wave', 'none'] },
+    width: { control: 'text' },
+    height: { control: 'text' },
   },
 } satisfies Meta<typeof Skeleton>;
 
@@ -33,23 +37,89 @@ export const Rect: Story = {
   args: { variant: 'rect' },
 };
 
+// ─── Tamaños ──────────────────────────────────────────────────────────────────
+
+export const AllSizes: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '400px' }}>
+      {(['sm', 'md', 'lg'] as const).map((size) => (
+        <div key={size} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)' }}>{size}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Skeleton variant="circle" size={size} />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <Skeleton variant="text" size={size} />
+              <Skeleton variant="text" size={size} width="60%" />
+            </div>
+          </div>
+          <Skeleton variant="rect" size={size} />
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+// ─── Animaciones ──────────────────────────────────────────────────────────────
+
+export const AllAnimations: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '400px' }}>
+      {(['pulse', 'wave', 'none'] as const).map((animation) => (
+        <div key={animation} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)' }}>
+            {animation}
+          </span>
+          <Skeleton variant="rect" animation={animation} />
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+export const AnimationWave: Story = {
+  args: { variant: 'rect', animation: 'wave' },
+};
+
+export const AnimationNone: Story = {
+  args: { variant: 'rect', animation: 'none' },
+};
+
+// ─── Dimensiones personalizadas ───────────────────────────────────────────────
+
+export const CustomDimensions: Story = {
+  args: { variant: 'circle', width: '80px', height: '80px' },
+};
+
+export const CustomWidth: Story = {
+  args: { variant: 'text', width: '60%' },
+};
+
 // ─── Composiciones realistas ──────────────────────────────────────────────────
 
 export const ProfileCard: Story = {
   args: { variant: 'text' },
   render: () => (
-    <div className="w-72 rounded-lg border border-edge p-4 flex flex-col gap-4">
+    <div
+      style={{
+        width: '18rem',
+        borderRadius: '0.5rem',
+        border: '1px solid var(--color-edge)',
+        padding: '1rem',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+      }}
+    >
       {/* Header: avatar + nombre */}
-      <div className="flex items-center gap-3">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
         <Skeleton variant="circle" />
-        <div className="flex-1 flex flex-col gap-2">
-          {/* Wrapper div controla el ancho en lugar de className */}
-          <div className="w-2/3"><Skeleton /></div>
-          <div className="w-1/3"><Skeleton /></div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <Skeleton width="66%" />
+          <Skeleton width="33%" />
         </div>
       </div>
-      {/* Imagen — h-40 > h-32 (default rect), override funciona correctamente */}
-      <Skeleton variant="rect" className="h-40" />
+      {/* Imagen */}
+      <Skeleton variant="rect" height="10rem" />
       {/* Descripción */}
       <Skeleton lines={3} />
     </div>
@@ -59,18 +129,31 @@ export const ProfileCard: Story = {
 export const DataRows: Story = {
   args: { variant: 'text' },
   render: () => (
-    <div className="w-[480px] flex flex-col divide-y divide-edge">
+    <div
+      style={{
+        width: '30rem',
+        display: 'flex',
+        flexDirection: 'column',
+        borderTop: '1px solid var(--color-edge)',
+      }}
+    >
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="flex items-center gap-3 py-3">
+        <div
+          key={i}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            padding: '0.75rem 0',
+            borderBottom: '1px solid var(--color-edge)',
+          }}
+        >
           <Skeleton variant="circle" />
-          <div className="flex-1 flex flex-col gap-1.5">
-            <div className="w-2/3"><Skeleton /></div>
-            <div className="w-1/2"><Skeleton /></div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+            <Skeleton width="66%" />
+            <Skeleton width="50%" />
           </div>
-          {/* h-6 > h-4 funciona; w-16 controlado por el wrapper */}
-          <div className="w-16">
-            <Skeleton className="h-6 rounded-full" />
-          </div>
+          <Skeleton width="4rem" height="1.5rem" />
         </div>
       ))}
     </div>
@@ -80,28 +163,24 @@ export const DataRows: Story = {
 export const FormLoading: Story = {
   args: { variant: 'text' },
   render: () => (
-    <div className="w-96 flex flex-col gap-5">
+    <div style={{ width: '24rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Campo 1 */}
-      <div className="flex flex-col gap-1.5">
-        <div className="w-24"><Skeleton /></div>
-        {/* h-9 > h-4 funciona correctamente */}
-        <Skeleton className="h-9 rounded-sm" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+        <Skeleton width="6rem" />
+        <Skeleton height="2.25rem" />
       </div>
       {/* Campo 2 */}
-      <div className="flex flex-col gap-1.5">
-        <div className="w-32"><Skeleton /></div>
-        <Skeleton className="h-9 rounded-sm" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+        <Skeleton width="8rem" />
+        <Skeleton height="2.25rem" />
       </div>
       {/* Campo 3 - textarea */}
-      <div className="flex flex-col gap-1.5">
-        <div className="w-20"><Skeleton /></div>
-        {/* h-24 > h-4 funciona correctamente */}
-        <Skeleton className="h-24 rounded-sm" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+        <Skeleton width="5rem" />
+        <Skeleton height="6rem" />
       </div>
-      {/* Botón — w-28 controlado por wrapper */}
-      <div className="w-28">
-        <Skeleton className="h-9 rounded-sm" />
-      </div>
+      {/* Botón */}
+      <Skeleton width="7rem" height="2.25rem" />
     </div>
   ),
 };

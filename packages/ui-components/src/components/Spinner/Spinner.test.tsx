@@ -18,13 +18,21 @@ describe('Spinner', () => {
     expect(screen.getByRole('status')).toHaveAttribute('aria-label', 'Procesando solicitud...');
   });
 
-  it.each(['sm', 'md', 'lg'] as const)('renders with size %s', (size) => {
+  it.each(['xs', 'sm', 'md', 'lg', 'xl'] as const)('renders with size %s', (size) => {
     render(<Spinner size={size} />);
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it.each(['primary', 'secondary', 'white'] as const)('renders with variant %s', (variant) => {
-    render(<Spinner variant={variant} />);
+  it.each(['primary', 'secondary', 'white', 'danger', 'success', 'info'] as const)(
+    'renders with variant %s',
+    (variant) => {
+      render(<Spinner variant={variant} />);
+      expect(screen.getByRole('status')).toBeInTheDocument();
+    }
+  );
+
+  it.each(['slow', 'normal', 'fast'] as const)('renders with speed %s', (speed) => {
+    render(<Spinner speed={speed} />);
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
@@ -34,7 +42,7 @@ describe('Spinner', () => {
     expect(svg).toHaveAttribute('aria-hidden', 'true');
   });
 
-  it.each(['sm', 'md', 'lg'] as const)('size %s applies correct size class to svg', (size) => {
+  it.each(['xs', 'sm', 'md', 'lg', 'xl'] as const)('size %s applies correct size class to svg', (size) => {
     const { container } = render(<Spinner size={size} />);
     const svg = container.querySelector('svg')!;
     expect(svg).toHaveClass(size);
@@ -43,5 +51,25 @@ describe('Spinner', () => {
   it('forwards className to the wrapper span', () => {
     render(<Spinner className="custom-class" />);
     expect(screen.getByRole('status')).toHaveClass('custom-class');
+  });
+
+  it('speed slow applies class slow to svg', () => {
+    const { container } = render(<Spinner speed="slow" />);
+    const svg = container.querySelector('svg')!;
+    expect(svg).toHaveClass('slow');
+  });
+
+  it('speed fast applies class fast to svg', () => {
+    const { container } = render(<Spinner speed="fast" />);
+    const svg = container.querySelector('svg')!;
+    expect(svg).toHaveClass('fast');
+  });
+
+  it('does not apply speed class when speed prop is omitted', () => {
+    const { container } = render(<Spinner />);
+    const svg = container.querySelector('svg')!;
+    expect(svg).not.toHaveClass('slow');
+    expect(svg).not.toHaveClass('normal');
+    expect(svg).not.toHaveClass('fast');
   });
 });

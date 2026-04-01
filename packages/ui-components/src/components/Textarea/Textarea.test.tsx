@@ -141,4 +141,91 @@ describe('Textarea', () => {
     fireEvent.blur(textarea);
     expect(onBlur).toHaveBeenCalledTimes(1);
   });
+
+  // ── required ────────────────────────────────────────────────────────────────
+
+  it('renders asterisk mark when required=true', () => {
+    render(<Textarea label="Motivo" required />);
+    expect(screen.getByText('*')).toBeInTheDocument();
+  });
+
+  it('asterisk mark has aria-hidden="true"', () => {
+    render(<Textarea label="Motivo" required />);
+    const mark = screen.getByText('*');
+    expect(mark).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('passes required attribute to the underlying textarea', () => {
+    render(<Textarea label="Motivo" required />);
+    expect(screen.getByRole('textbox')).toBeRequired();
+  });
+
+  it('does not render asterisk when required is not set', () => {
+    render(<Textarea label="Motivo" />);
+    expect(screen.queryByText('*')).not.toBeInTheDocument();
+  });
+
+  // ── character counter ───────────────────────────────────────────────────────
+
+  it('does not render counter when maxLength is not set', () => {
+    render(<Textarea label="Campo" />);
+    expect(screen.queryByText(/\//)).not.toBeInTheDocument();
+  });
+
+  it('renders "0 / N" counter when maxLength is set and no initial value', () => {
+    render(<Textarea label="Campo" maxLength={200} />);
+    expect(screen.getByText('0 / 200')).toBeInTheDocument();
+  });
+
+  it('initializes counter with controlled value length', () => {
+    render(<Textarea label="Campo" maxLength={100} value="Hola" onChange={() => {}} />);
+    expect(screen.getByText('4 / 100')).toBeInTheDocument();
+  });
+
+  it('initializes counter with defaultValue length', () => {
+    render(<Textarea label="Campo" maxLength={50} defaultValue="Texto inicial" />);
+    expect(screen.getByText('13 / 50')).toBeInTheDocument();
+  });
+
+  it('updates counter on change', () => {
+    render(<Textarea label="Campo" maxLength={100} />);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Nuevo texto' } });
+    expect(screen.getByText('11 / 100')).toBeInTheDocument();
+  });
+
+  it('calls consumer onChange when typing', () => {
+    const onChange = vi.fn();
+    render(<Textarea label="Campo" maxLength={100} onChange={onChange} />);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'abc' } });
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('counter renders alongside helperText in the same footer row', () => {
+    render(<Textarea label="Campo" maxLength={100} helperText="Ayuda" />);
+    expect(screen.getByText('Ayuda')).toBeInTheDocument();
+    expect(screen.getByText('0 / 100')).toBeInTheDocument();
+  });
+
+  it('counter renders alongside errorMessage when error=true', () => {
+    render(<Textarea label="Campo" maxLength={100} error errorMessage="Error" />);
+    expect(screen.getByRole('alert')).toHaveTextContent('Error');
+    expect(screen.getByText('0 / 100')).toBeInTheDocument();
+  });
+
+  // ── autoGrow ────────────────────────────────────────────────────────────────
+
+  it('renders without errors when autoGrow=true', () => {
+    render(<Textarea label="Campo" autoGrow />);
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+  });
+
+  it('applies autoGrow class when autoGrow=true', () => {
+    render(<Textarea label="Campo" autoGrow />);
+    expect(screen.getByRole('textbox')).toHaveClass('autoGrow');
+  });
+
+  it('does not apply autoGrow class when autoGrow=false', () => {
+    render(<Textarea label="Campo" />);
+    expect(screen.getByRole('textbox')).not.toHaveClass('autoGrow');
+  });
 });

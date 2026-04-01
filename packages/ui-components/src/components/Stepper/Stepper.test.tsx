@@ -68,14 +68,12 @@ describe('Stepper', () => {
         <StepperStep value={2} label="Revisión" />
       </Stepper>
     );
-    // The error step's indicator has circleError class
     const errorIndicator = container.querySelector('.circleError');
     expect(errorIndicator).toBeInTheDocument();
   });
 
   it('active step indicator has circleActive class', () => {
     const { container } = renderStepper(1);
-    // Active step is index 1 — its indicator has circleActive
     const indicators = container.querySelectorAll('.circleActive');
     expect(indicators.length).toBeGreaterThan(0);
   });
@@ -85,6 +83,139 @@ describe('Stepper', () => {
     // Steps 2 and 3 are pending
     const idleIndicators = container.querySelectorAll('.circleIdle');
     expect(idleIndicators.length).toBeGreaterThan(0);
+  });
+
+  // ── Status: success ────────────────────────────────────────────────────────
+
+  it('success step shows check icon', () => {
+    const { container } = render(
+      <Stepper value={1} onChange={vi.fn()}>
+        <StepperStep value={0} label="Datos" status="success" />
+        <StepperStep value={1} label="Información" />
+      </Stepper>
+    );
+    const svgs = container.querySelectorAll('li:first-child svg');
+    expect(svgs.length).toBeGreaterThan(0);
+  });
+
+  it('success step indicator has circleSuccess class', () => {
+    const { container } = render(
+      <Stepper value={1} onChange={vi.fn()}>
+        <StepperStep value={0} label="Datos" status="success" />
+        <StepperStep value={1} label="Información" />
+      </Stepper>
+    );
+    expect(container.querySelector('.circleSuccess')).toBeInTheDocument();
+  });
+
+  it('success step label has labelSuccess class', () => {
+    const { container } = render(
+      <Stepper value={1} onChange={vi.fn()}>
+        <StepperStep value={0} label="Datos" status="success" />
+        <StepperStep value={1} label="Información" />
+      </Stepper>
+    );
+    expect(container.querySelector('.labelSuccess')).toBeInTheDocument();
+  });
+
+  // ── Status: warning ────────────────────────────────────────────────────────
+
+  it('warning step shows warning icon (svg)', () => {
+    const { container } = render(
+      <Stepper value={1} onChange={vi.fn()}>
+        <StepperStep value={0} label="Datos" />
+        <StepperStep value={1} label="Información" status="warning" />
+        <StepperStep value={2} label="Revisión" />
+      </Stepper>
+    );
+    const warningLi = container.querySelectorAll('li')[1];
+    const svgs = warningLi.querySelectorAll('svg');
+    expect(svgs.length).toBeGreaterThan(0);
+  });
+
+  it('warning step indicator has circleWarning class', () => {
+    const { container } = render(
+      <Stepper value={1} onChange={vi.fn()}>
+        <StepperStep value={0} label="Datos" />
+        <StepperStep value={1} label="Información" status="warning" />
+        <StepperStep value={2} label="Revisión" />
+      </Stepper>
+    );
+    expect(container.querySelector('.circleWarning')).toBeInTheDocument();
+  });
+
+  it('warning step label has labelWarning class', () => {
+    const { container } = render(
+      <Stepper value={1} onChange={vi.fn()}>
+        <StepperStep value={0} label="Datos" />
+        <StepperStep value={1} label="Información" status="warning" />
+        <StepperStep value={2} label="Revisión" />
+      </Stepper>
+    );
+    expect(container.querySelector('.labelWarning')).toBeInTheDocument();
+  });
+
+  // ── Status: loading ────────────────────────────────────────────────────────
+
+  it('loading step indicator has circleLoading class', () => {
+    const { container } = render(
+      <Stepper value={1} onChange={vi.fn()}>
+        <StepperStep value={0} label="Datos" />
+        <StepperStep value={1} label="Procesando" status="loading" />
+        <StepperStep value={2} label="Revisión" />
+      </Stepper>
+    );
+    expect(container.querySelector('.circleLoading')).toBeInTheDocument();
+  });
+
+  it('loading step shows spinner element', () => {
+    const { container } = render(
+      <Stepper value={1} onChange={vi.fn()}>
+        <StepperStep value={0} label="Datos" />
+        <StepperStep value={1} label="Procesando" status="loading" />
+        <StepperStep value={2} label="Revisión" />
+      </Stepper>
+    );
+    expect(container.querySelector('.spinner')).toBeInTheDocument();
+  });
+
+  it('loading step does not show a number', () => {
+    render(
+      <Stepper value={2} onChange={vi.fn()}>
+        <StepperStep value={0} label="Datos" />
+        <StepperStep value={1} label="Procesando" status="loading" />
+        <StepperStep value={2} label="Revisión" />
+      </Stepper>
+    );
+    // step 1 with loading should not show "2"
+    expect(screen.queryByText('2')).not.toBeInTheDocument();
+  });
+
+  // ── Size prop ──────────────────────────────────────────────────────────────
+
+  it('size="sm" applies circleSm class to indicators', () => {
+    const { container } = renderStepper(1, vi.fn(), { size: 'sm' });
+    expect(container.querySelector('.circleSm')).toBeInTheDocument();
+  });
+
+  it('size="md" applies circleMd class to indicators (default)', () => {
+    const { container } = renderStepper(1);
+    expect(container.querySelector('.circleMd')).toBeInTheDocument();
+  });
+
+  it('size="lg" applies circleLg class to indicators', () => {
+    const { container } = renderStepper(1, vi.fn(), { size: 'lg' });
+    expect(container.querySelector('.circleLg')).toBeInTheDocument();
+  });
+
+  it('size="sm" applies dotSm class in dot variant', () => {
+    const { container } = renderStepper(1, vi.fn(), { variant: 'dot', size: 'sm' });
+    expect(container.querySelector('.dotSm')).toBeInTheDocument();
+  });
+
+  it('size="lg" applies dotLg class in dot variant', () => {
+    const { container } = renderStepper(1, vi.fn(), { variant: 'dot', size: 'lg' });
+    expect(container.querySelector('.dotLg')).toBeInTheDocument();
   });
 
   // ── Circle variant ─────────────────────────────────────────────────────────
@@ -158,7 +289,6 @@ describe('Stepper', () => {
     // "Información" is the active step — it should not be a button
     const buttons = screen.getAllByRole('button');
     const buttonLabels = buttons.map((b) => b.textContent);
-    // none of the buttons should contain just "Información"
     expect(buttonLabels.some((t) => t?.includes('Información') && !t?.includes('Datos'))).toBe(
       false
     );
@@ -180,6 +310,108 @@ describe('Stepper', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  // ── Keyboard navigation — horizontal ──────────────────────────────────────
+
+  it('ArrowRight on a step calls onChange with next step value', async () => {
+    const onChange = vi.fn();
+    renderStepper(1, onChange);
+    // "Datos" (value=0) is a button — press ArrowRight
+    const btn = screen.getByRole('button', { name: /Datos/i });
+    btn.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(onChange).toHaveBeenCalledWith(1);
+  });
+
+  it('ArrowLeft on a step calls onChange with previous step value', async () => {
+    const onChange = vi.fn();
+    renderStepper(1, onChange);
+    // "Revisión" (value=2) is a button — press ArrowLeft
+    const btn = screen.getByRole('button', { name: /Revisión/i });
+    btn.focus();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(onChange).toHaveBeenCalledWith(1);
+  });
+
+  it('ArrowRight on last step does not call onChange', async () => {
+    const onChange = vi.fn();
+    renderStepper(1, onChange);
+    // "Confirmación" (value=3) is last
+    const btn = screen.getByRole('button', { name: /Confirmación/i });
+    btn.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('ArrowLeft on first step does not call onChange', async () => {
+    const onChange = vi.fn();
+    renderStepper(1, onChange);
+    // "Datos" (value=0) is first
+    const btn = screen.getByRole('button', { name: /Datos/i });
+    btn.focus();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  // ── Keyboard navigation — vertical ────────────────────────────────────────
+  // In vertical mode the button wraps only the indicator (not the label),
+  // so we find buttons by index within the list items.
+
+  it('ArrowDown on a vertical step calls onChange with next step value', async () => {
+    const onChange = vi.fn();
+    const { container } = renderStepper(1, onChange, { orientation: 'vertical' });
+    // li[0] = step 0 (completed) — its button is the first button
+    const buttons = container.querySelectorAll('button');
+    buttons[0].focus();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(onChange).toHaveBeenCalledWith(1);
+  });
+
+  it('ArrowUp on a vertical step calls onChange with previous step value', async () => {
+    const onChange = vi.fn();
+    const { container } = renderStepper(1, onChange, { orientation: 'vertical' });
+    // li[2] = step 2 (pending) — second button (after step 0)
+    const buttons = container.querySelectorAll('button');
+    buttons[1].focus();
+    await userEvent.keyboard('{ArrowUp}');
+    expect(onChange).toHaveBeenCalledWith(1);
+  });
+
+  it('ArrowRight does not navigate in vertical orientation', async () => {
+    const onChange = vi.fn();
+    const { container } = renderStepper(1, onChange, { orientation: 'vertical' });
+    const buttons = container.querySelectorAll('button');
+    buttons[0].focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  // ── Orientation: vertical ──────────────────────────────────────────────────
+
+  it('vertical orientation adds stepperVertical class to ol', () => {
+    const { container } = renderStepper(1, vi.fn(), { orientation: 'vertical' });
+    expect(container.querySelector('ol')).toHaveClass('stepperVertical');
+  });
+
+  it('vertical orientation adds stepItemVertical class to li elements', () => {
+    const { container } = renderStepper(1, vi.fn(), { orientation: 'vertical' });
+    const listItems = container.querySelectorAll('li');
+    listItems.forEach((li) => {
+      expect(li).toHaveClass('stepItemVertical');
+    });
+  });
+
+  it('vertical orientation places aria-current="step" on the li element', () => {
+    const { container } = renderStepper(1, vi.fn(), { orientation: 'vertical' });
+    const activeLi = container.querySelector('li[aria-current="step"]');
+    expect(activeLi).toBeInTheDocument();
+    expect(activeLi?.tagName).toBe('LI');
+  });
+
+  it('vertical orientation renders connector with connectorVertical class', () => {
+    const { container } = renderStepper(1, vi.fn(), { orientation: 'vertical' });
+    expect(container.querySelector('.connectorVertical')).toBeInTheDocument();
+  });
+
   // ── Description ────────────────────────────────────────────────────────────
 
   it('renders description text when provided', () => {
@@ -192,16 +424,36 @@ describe('Stepper', () => {
     expect(screen.getByText('Nombre y RFC')).toBeInTheDocument();
   });
 
-  it('description element has an id linked to the step', () => {
+  it('description element has a unique id linked to aria-describedby', () => {
     const { container } = render(
       <Stepper value={0} onChange={vi.fn()}>
         <StepperStep value={0} label="Datos" description="Subtexto" />
         <StepperStep value={1} label="Info" />
       </Stepper>
     );
-    const descEl = container.querySelector('#stepper-step-0-desc');
-    expect(descEl).toBeInTheDocument();
-    expect(descEl?.textContent).toBe('Subtexto');
+    const descEl = screen.getByText('Subtexto');
+    expect(descEl.id).toBeTruthy();
+    // The active step div should reference the description id
+    const activeStep = container.querySelector('[aria-current="step"]');
+    expect(activeStep).toHaveAttribute('aria-describedby', descEl.id);
+  });
+
+  it('two instances with descriptions have different ids (useId fix)', () => {
+    const { container } = render(
+      <div>
+        <Stepper value={0} onChange={vi.fn()}>
+          <StepperStep value={0} label="Datos" description="Primer stepper" />
+          <StepperStep value={1} label="Info" />
+        </Stepper>
+        <Stepper value={0} onChange={vi.fn()}>
+          <StepperStep value={0} label="Datos" description="Segundo stepper" />
+          <StepperStep value={1} label="Info" />
+        </Stepper>
+      </div>
+    );
+    const descs = container.querySelectorAll('[class*="description"]');
+    const ids = Array.from(descs).map((el) => el.id);
+    expect(ids[0]).not.toBe(ids[1]);
   });
 
   it('step without description does not set aria-describedby', () => {

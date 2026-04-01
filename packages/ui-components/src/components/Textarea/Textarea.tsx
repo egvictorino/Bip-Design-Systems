@@ -1,4 +1,4 @@
-import { forwardRef, useId, useState } from 'react';
+import React, { forwardRef, useId, useState, useRef, useEffect, useCallback } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './Textarea.module.css';
@@ -12,6 +12,7 @@ export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
   errorMessage?: string;
   fullWidth?: boolean;
   resize?: 'none' | 'vertical' | 'horizontal' | 'both';
+  autoGrow?: boolean;
 }
 
 const labelSizeClass: Record<NonNullable<TextareaProps['size']>, string> = {
@@ -46,9 +47,15 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       errorMessage,
       fullWidth = false,
       resize = 'vertical',
+      autoGrow = false,
       className,
       disabled = false,
       id,
+      required,
+      value,
+      defaultValue,
+      maxLength,
+      onChange,
       onFocus,
       onBlur,
       ...props
@@ -56,10 +63,47 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     ref
   ) => {
     const [focused, setFocused] = useState(false);
+    const [charCount, setCharCount] = useState<number>(() => {
+      if (typeof value === 'string') return value.length;
+      if (typeof defaultValue === 'string') return defaultValue.length;
+      return 0;
+    });
+
     const generatedId = useId();
     const textareaId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage ? `${textareaId}-message` : undefined;
+    const showCounter = maxLength !== undefined;
+
+    // ── autoGrow ────────────────────────────────────────────────────────────
+    const innerRef = useRef<HTMLTextAreaElement>(null);
+
+    const combinedRef = useCallback(
+      (node: HTMLTextAreaElement | null) => {
+        (innerRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+      },
+      [ref]
+    );
+
+    const adjustHeight = useCallback(() => {
+      const el = innerRef.current;
+      if (!autoGrow || !el) return;
+      el.style.height = 'auto';
+      el.style.height = `${el.scrollHeight}px`;
+    }, [autoGrow]);
+
+    useEffect(() => {
+      adjustHeight();
+    }, [adjustHeight, value]);
+
+    // ── handlers ────────────────────────────────────────────────────────────
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      if (showCounter) setCharCount(e.target.value.length);
+      if (autoGrow) adjustHeight();
+      onChange?.(e);
+    };
 
     return (
       <div className={cn(styles.wrapper, fullWidth && styles.fullWidth)}>
@@ -74,25 +118,36 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             )}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className={styles.requiredMark}>
+                {' '}
+                *
+              </span>
+            )}
           </label>
         )}
         <textarea
-          ref={ref}
+          ref={combinedRef}
           id={textareaId}
           disabled={disabled}
+          required={required}
+          value={value}
+          defaultValue={defaultValue}
+          maxLength={maxLength}
           aria-invalid={error || undefined}
           aria-describedby={messageId}
           className={cn(
             styles.textarea,
             styles[variant],
             styles[size],
-            resizeClass[resize],
+            autoGrow ? styles.autoGrow : resizeClass[resize],
             error && styles.error,
             disabled ? styles.cursorDisabled : styles.cursorText,
             fullWidth && styles.fullWidth,
             className
           )}
           {...props}
+          onChange={handleChange}
           onFocus={(e) => {
             setFocused(true);
             onFocus?.(e);
@@ -102,15 +157,36 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             onBlur?.(e);
           }}
         />
-        {error && errorMessage ? (
-          <span id={messageId} className={cn(helperSizeClass[size], styles.errorText)} role="alert">
-            {errorMessage}
-          </span>
-        ) : helperText ? (
-          <span id={messageId} className={cn(helperSizeClass[size], styles.helperText)}>
-            {helperText}
-          </span>
-        ) : null}
+        {(hasMessage || showCounter) && (
+          <div className={styles.footer}>
+            {error && errorMessage ? (
+              <span
+                id={messageId}
+                className={cn(helperSizeClass[size], styles.errorText)}
+                role="alert"
+              >
+                {errorMessage}
+              </span>
+            ) : helperText ? (
+              <span id={messageId} className={cn(helperSizeClass[size], styles.helperText)}>
+                {helperText}
+              </span>
+            ) : (
+              <span />
+            )}
+            {showCounter && (
+              <span
+                className={cn(
+                  helperSizeClass[size],
+                  styles.counterText,
+                  charCount >= maxLength && styles.counterLimit
+                )}
+              >
+                {charCount} / {maxLength}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     );
   }

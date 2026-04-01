@@ -45,11 +45,61 @@ const SAMPLE_VALUE: OdontogramValue = {
 };
 
 const SAMPLE_VALUE_WITH_NOTES: OdontogramValue = {
-  11: { surfaces: { occlusal: 'caries', mesial: 'caries' }, notes: 'Caries interproximal activa. Revisar en 3 meses.' },
+  11: {
+    surfaces: { occlusal: 'caries', mesial: 'caries' },
+    notes: 'Caries interproximal activa. Revisar en 3 meses.',
+  },
   16: { condition: 'crown', notes: 'Corona provisional desde enero. Programar definitiva.' },
   18: { condition: 'missing' },
-  36: { condition: 'implant', notes: 'Implante Nobel Biocare colocado 2024-06. Oseointegración completada.' },
-  46: { surfaces: { occlusal: 'root_canal', buccal: 'restoration' }, notes: 'Endodoncia completada. Restauración con composite.' },
+  36: {
+    condition: 'implant',
+    notes: 'Implante Nobel Biocare colocado 2024-06. Oseointegración completada.',
+  },
+  46: {
+    surfaces: { occlusal: 'root_canal', buccal: 'restoration' },
+    notes: 'Endodoncia completada. Restauración con composite.',
+  },
+};
+
+// ─── Estilos para wrappers de stories interactivas ────────────────────────────
+
+const wrapperStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1rem',
+};
+
+const toolbarStyle: React.CSSProperties = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '0.5rem',
+};
+
+const getToolButtonStyle = (active: boolean): React.CSSProperties => ({
+  padding: '0.25rem 0.75rem',
+  borderRadius: '0.25rem',
+  fontSize: '0.75rem',
+  fontWeight: 500,
+  border: '1px solid',
+  cursor: 'pointer',
+  borderColor: active ? 'var(--color-primary)' : 'var(--color-edge)',
+  backgroundColor: active ? 'var(--color-primary)' : 'transparent',
+  color: active ? 'var(--color-txt-white)' : 'var(--color-txt-secondary)',
+});
+
+const hintStyle: React.CSSProperties = {
+  fontSize: '0.75rem',
+  color: 'var(--color-txt-secondary)',
+};
+
+const jsonPreStyle: React.CSSProperties = {
+  fontSize: '0.75rem',
+  color: 'var(--color-txt-secondary)',
+  fontFamily: 'ui-monospace, monospace',
+  backgroundColor: 'var(--color-surface-2)',
+  borderRadius: '0.25rem',
+  padding: '0.5rem',
+  maxWidth: '32rem',
 };
 
 // ─── Wrapper interactivo ──────────────────────────────────────────────────────
@@ -61,18 +111,13 @@ const InteractiveOdontogram = () => {
   const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Toolbar */}
-      <div className="flex flex-wrap gap-2">
+    <div style={wrapperStyle}>
+      <div style={toolbarStyle}>
         {conditions.map(([condition, label]) => (
           <button
             key={condition}
             onClick={() => setActiveTool(condition)}
-            className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
-              activeTool === condition
-                ? 'border-interaction-primary-default bg-interaction-primary-default text-text-white'
-                : 'border-gray-300 bg-white text-text-secondary hover:border-interaction-primary-default'
-            }`}
+            style={getToolButtonStyle(activeTool === condition)}
           >
             {label}
           </button>
@@ -88,9 +133,7 @@ const InteractiveOdontogram = () => {
       />
 
       {Object.keys(value).length > 0 && (
-        <div className="text-xs text-text-secondary font-mono bg-gray-50 rounded p-2 max-w-lg">
-          <pre>{JSON.stringify(value, null, 2)}</pre>
-        </div>
+        <pre style={jsonPreStyle}>{JSON.stringify(value, null, 2)}</pre>
       )}
     </div>
   );
@@ -121,6 +164,15 @@ export const ReadOnly: Story = {
     <Odontogram
       label="Vista de solo lectura"
       value={SAMPLE_VALUE}
+      readOnly
+    />
+  ),
+};
+
+export const EmptyReadOnly: Story = {
+  render: () => (
+    <Odontogram
+      label="Odontograma vacío (solo lectura)"
       readOnly
     />
   ),
@@ -172,25 +224,21 @@ const WithNotesInteractiveDemo = () => {
   const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
   const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
+    <div style={wrapperStyle}>
+      <div style={toolbarStyle}>
         {conditions.map(([condition, label]) => (
           <button
             key={condition}
             onClick={() => setActiveTool(condition)}
-            className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
-              activeTool === condition
-                ? 'border-interaction-primary-default bg-interaction-primary-default text-text-white'
-                : 'border-gray-300 bg-white text-text-secondary hover:border-interaction-primary-default'
-            }`}
+            style={getToolButtonStyle(activeTool === condition)}
           >
             {label}
           </button>
         ))}
       </div>
-      <p className="text-xs text-text-secondary">
-        Haz clic en las superficies para marcar condiciones. Haz clic en el número del diente para agregar notas.
-        Los dientes con nota muestran un punto azul.
+      <p style={hintStyle}>
+        Haz clic en las superficies para marcar condiciones. Haz clic en el número del diente para
+        agregar notas. Los dientes con nota muestran un punto azul.
       </p>
       <Odontogram
         value={value}
@@ -200,9 +248,7 @@ const WithNotesInteractiveDemo = () => {
         size="md"
       />
       {Object.keys(value).length > 0 && (
-        <div className="text-xs text-text-secondary font-mono bg-gray-50 rounded p-2 max-w-lg">
-          <pre>{JSON.stringify(value, null, 2)}</pre>
-        </div>
+        <pre style={jsonPreStyle}>{JSON.stringify(value, null, 2)}</pre>
       )}
     </div>
   );
@@ -233,7 +279,10 @@ export const WithImages: Story = {
             { type: 'other', url: PLACEHOLDER_IMG },
           ],
         },
-        46: { surfaces: { occlusal: 'root_canal' }, images: [{ type: 'other', url: PLACEHOLDER_IMG }] },
+        46: {
+          surfaces: { occlusal: 'root_canal' },
+          images: [{ type: 'other', url: PLACEHOLDER_IMG }],
+        },
       }}
       readOnly
     />
@@ -245,25 +294,21 @@ const WithImagesInteractiveDemo = () => {
   const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
   const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
+    <div style={wrapperStyle}>
+      <div style={toolbarStyle}>
         {conditions.map(([condition, label]) => (
           <button
             key={condition}
             onClick={() => setActiveTool(condition)}
-            className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
-              activeTool === condition
-                ? 'border-interaction-primary-default bg-interaction-primary-default text-text-white'
-                : 'border-gray-300 bg-white text-text-secondary hover:border-interaction-primary-default'
-            }`}
+            style={getToolButtonStyle(activeTool === condition)}
           >
             {label}
           </button>
         ))}
       </div>
-      <p className="text-xs text-text-secondary">
-        Haz clic en el ícono de cámara junto al número del diente para adjuntar una imagen.
-        Los dientes con imagen muestran un punto azul claro.
+      <p style={hintStyle}>
+        Haz clic en el ícono de cámara junto al número del diente para adjuntar una imagen. Los
+        dientes con imagen muestran un punto azul claro.
       </p>
       <Odontogram
         value={value}
@@ -273,9 +318,7 @@ const WithImagesInteractiveDemo = () => {
         size="md"
       />
       {Object.keys(value).length > 0 && (
-        <div className="text-xs text-text-secondary font-mono bg-gray-50 rounded p-2 max-w-lg">
-          <pre>{JSON.stringify(value, null, 2)}</pre>
-        </div>
+        <pre style={jsonPreStyle}>{JSON.stringify(value, null, 2)}</pre>
       )}
     </div>
   );
@@ -283,6 +326,56 @@ const WithImagesInteractiveDemo = () => {
 
 export const WithImagesInteractive: Story = {
   render: () => <WithImagesInteractiveDemo />,
+};
+
+export const WithNotesAndImages: Story = {
+  render: () => (
+    <Odontogram
+      label="Odontograma con notas e imágenes combinadas"
+      value={{
+        11: {
+          surfaces: { occlusal: 'caries', mesial: 'caries' },
+          notes: 'Caries interproximal activa. Revisar en 3 meses.',
+          images: [
+            { type: 'radiograph', url: PLACEHOLDER_IMG },
+            { type: 'photo', url: PLACEHOLDER_IMG },
+          ],
+        },
+        16: {
+          condition: 'crown',
+          notes: 'Corona provisional desde enero. Programar definitiva.',
+          images: [{ type: 'photo', url: PLACEHOLDER_IMG }],
+        },
+        36: {
+          condition: 'implant',
+          notes: 'Implante Nobel Biocare colocado 2024-06.',
+          images: [{ type: 'radiograph', url: PLACEHOLDER_IMG }],
+        },
+      }}
+      readOnly
+    />
+  ),
+};
+
+export const AllConditions: Story = {
+  render: () => (
+    <Odontogram
+      label="Referencia: todas las condiciones disponibles"
+      value={{
+        11: { condition: 'missing' },
+        12: { surfaces: { occlusal: 'caries' } },
+        13: { surfaces: { occlusal: 'restoration' } },
+        14: { condition: 'crown' },
+        15: { condition: 'implant' },
+        16: { surfaces: { occlusal: 'fracture' } },
+        17: { surfaces: { occlusal: 'root_canal' } },
+        18: { condition: 'extraction_planned' },
+        21: {},
+      }}
+      readOnly
+      size="lg"
+    />
+  ),
 };
 
 export const PrimaryDentitionWithData: Story = {

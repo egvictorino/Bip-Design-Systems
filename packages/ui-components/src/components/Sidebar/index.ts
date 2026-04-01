@@ -6,6 +6,7 @@ export {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarItem,
+  SidebarSubMenu,
   SidebarFooter,
   SidebarTrigger,
 } from './Sidebar';
@@ -17,6 +18,7 @@ export type {
   SidebarGroupProps,
   SidebarGroupLabelProps,
   SidebarItemProps,
+  SidebarSubMenuProps,
   SidebarFooterProps,
   SidebarTriggerProps,
 } from './Sidebar';

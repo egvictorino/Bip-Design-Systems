@@ -127,6 +127,23 @@ describe('Radio', () => {
     expect(screen.queryByText('Ayuda')).not.toBeInTheDocument();
   });
 
+  // ── Required ────────────────────────────────────────────────────────────────
+
+  it('renders required attribute on input when required=true', () => {
+    render(<Radio label="Opción" required />);
+    expect(screen.getByRole('radio')).toBeRequired();
+  });
+
+  it('renders asterisk when required=true and label is provided', () => {
+    render(<Radio label="Opción" required />);
+    expect(screen.getByText('*')).toBeInTheDocument();
+  });
+
+  it('does not render asterisk when required=false', () => {
+    render(<Radio label="Opción" />);
+    expect(screen.queryByText('*')).not.toBeInTheDocument();
+  });
+
   // ── Sizes ──────────────────────────────────────────────────────────────────
 
   it.each([

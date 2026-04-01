@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Odontogram } from './Odontogram';
@@ -717,5 +718,134 @@ describe('Odontogram — imágenes', () => {
     await user.click(screen.getByRole('button', { name: 'Cerrar imágenes' }));
 
     expect(imageBtn).toHaveFocus();
+  });
+
+  it('click en backdrop cierra el popover sin llamar onChange', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Odontogram onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+
+    // The backdrop is the previous sibling of the dialog in the portal
+    const backdrop = dialog.previousElementSibling as HTMLElement;
+    await user.click(backdrop);
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('abrir popover sin imágenes muestra el formulario de agregar directamente', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+
+    // When there are no images and in editable mode, the add form is shown directly
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Agregar imagen/ })).not.toBeInTheDocument();
+  });
+});
+
+// ─── Ref y className ──────────────────────────────────────────────────────────
+
+describe('Odontogram — ref y className', () => {
+  it('reenvía ref al elemento div raíz', () => {
+    const ref = createRef<HTMLDivElement>();
+    render(<Odontogram ref={ref} />);
+    expect(ref.current).toBeInTheDocument();
+    expect(ref.current?.tagName).toBe('DIV');
+  });
+
+  it('className adicional se aplica al wrapper', () => {
+    render(<Odontogram className="mi-clase-custom" />);
+    expect(screen.getByRole('group')).toHaveClass('mi-clase-custom');
+  });
+});
+
+// ─── Teclado ──────────────────────────────────────────────────────────────────
+
+describe('Odontogram — teclado', () => {
+  it('superficies tienen tabIndex=0 en modo interactivo', () => {
+    render(<Odontogram onChange={() => {}} />);
+    const surfaces = getToothSVG(11).querySelectorAll('[role="button"]');
+    surfaces.forEach((s) => expect(s).toHaveAttribute('tabindex', '0'));
+  });
+
+  it('superficies NO tienen tabIndex en modo readOnly', () => {
+    render(<Odontogram readOnly />);
+    const polygons = getToothSVG(11).querySelectorAll('polygon');
+    polygons.forEach((p) => expect(p).not.toHaveAttribute('tabindex'));
+  });
+
+  it('Enter en una superficie activa la condición', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Odontogram onChange={handleChange} activeTool="caries" />);
+
+    const occlusal = getToothSVG(11).querySelector('[aria-label="Oclusal"]') as HTMLElement;
+    occlusal.focus();
+    await user.keyboard('{Enter}');
+
+    expect(handleChange).toHaveBeenCalledOnce();
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    expect(updated[11]?.surfaces?.occlusal).toBe('caries');
+  });
+
+  it('Space en una superficie activa la condición', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Odontogram onChange={handleChange} activeTool="restoration" />);
+
+    const mesial = getToothSVG(21).querySelector('[aria-label="Mesial"]') as HTMLElement;
+    mesial.focus();
+    await user.keyboard(' ');
+
+    expect(handleChange).toHaveBeenCalledOnce();
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    expect(updated[21]?.surfaces?.mesial).toBe('restoration');
+  });
+});
+
+// ─── Notas — foco y backdrop ──────────────────────────────────────────────────
+
+describe('Odontogram — notas: foco y backdrop', () => {
+  it('popover de nota recibe foco en el textarea al abrirse', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+
+    expect(screen.getByRole('textbox')).toHaveFocus();
+  });
+
+  it('cerrar nota con ✕ restaura el foco al botón de número', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const noteBtn = screen.getByRole('button', { name: /Nota del diente 11/ });
+    await user.click(noteBtn);
+    await user.click(screen.getByRole('button', { name: 'Cerrar nota' }));
+
+    expect(noteBtn).toHaveFocus();
+  });
+
+  it('click en backdrop de nota cierra el popover sin guardar', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Odontogram onChange={handleChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+
+    // The backdrop is the previous sibling of the dialog in the portal
+    const backdrop = dialog.previousElementSibling as HTMLElement;
+    await user.click(backdrop);
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(handleChange).not.toHaveBeenCalled();
   });
 });

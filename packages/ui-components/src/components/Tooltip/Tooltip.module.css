@@ -12,25 +12,32 @@
   position: absolute;
   z-index: 50;
   max-width: 20rem;
-  border-radius: 0.25rem;
-  background-color: var(--color-txt);
+  border-radius: 0.375rem;
+  --tooltip-bg: var(--color-txt);
+  --tooltip-color: var(--color-txt-white);
+  --tooltip-border: transparent;
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-color);
+  border: 1px solid var(--tooltip-border);
   padding: 0.375rem 0.625rem;
   font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 500;
-  color: var(--color-txt-white);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   visibility: hidden;
   opacity: 0;
-  transition: opacity 150ms;
+  /* Salida: 100ms ease-in; visibility espera a que opacity termine */
+  transition: opacity 100ms ease-in, transform 100ms ease-in,
+              visibility 0s linear 100ms;
   white-space: normal;
 }
 
-/* Show on hover or focus-within */
-.wrapper:hover .tooltip,
-.wrapper:focus-within .tooltip {
+/* Show when data-open="true" — React-controlled */
+.tooltip[data-open='true'] {
   visibility: visible;
   opacity: 1;
+  /* Entrada: 150ms ease-out; visibility cambia inmediatamente */
+  transition: opacity 150ms ease-out, transform 150ms ease-out, visibility 0s;
 }
 
 /* ─── Arrow ─────────────────────────────────────────────────────────────────── */
@@ -40,17 +47,21 @@
   width: 0.5rem;
   height: 0.5rem;
   transform: rotate(45deg);
-  background-color: var(--color-txt);
+  background-color: var(--tooltip-bg);
 }
 
-/* ─── Positions ─────────────────────────────────────────────────────────────── */
+/* ─── Positions (base — align="center" by default) ───────────────────────────── */
 
-/* Top */
+/* Top — state cerrado: desplazado hacia abajo */
 .top {
   bottom: 100%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(8px);
   margin-bottom: 0.5rem;
+}
+
+.top[data-open='true'] {
+  transform: translateX(-50%) translateY(0);
 }
 
 .top .arrow {
@@ -60,12 +71,16 @@
   margin-top: -0.25rem;
 }
 
-/* Bottom */
+/* Bottom — state cerrado: desplazado hacia arriba */
 .bottom {
   top: 100%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(-8px);
   margin-top: 0.5rem;
+}
+
+.bottom[data-open='true'] {
+  transform: translateX(-50%) translateY(0);
 }
 
 .bottom .arrow {
@@ -75,12 +90,16 @@
   margin-bottom: -0.25rem;
 }
 
-/* Left */
+/* Left — state cerrado: desplazado hacia la derecha */
 .left {
   right: 100%;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateX(8px) translateY(-50%);
   margin-right: 0.5rem;
+}
+
+.left[data-open='true'] {
+  transform: translateX(0) translateY(-50%);
 }
 
 .left .arrow {
@@ -90,12 +109,16 @@
   margin-left: -0.25rem;
 }
 
-/* Right */
+/* Right — state cerrado: desplazado hacia la izquierda */
 .right {
   left: 100%;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateX(-8px) translateY(-50%);
   margin-left: 0.5rem;
+}
+
+.right[data-open='true'] {
+  transform: translateX(0) translateY(-50%);
 }
 
 .right .arrow {
@@ -103,4 +126,198 @@
   transform: translateY(-50%) rotate(45deg);
   right: 100%;
   margin-right: -0.25rem;
+}
+
+/* ─── Align overrides ─────────────────────────────────────────────────────────── */
+
+/* top + alignStart */
+.top.alignStart {
+  left: 0;
+  transform: translateY(8px);
+}
+.top.alignStart[data-open='true'] {
+  transform: translateY(0);
+}
+.top.alignStart .arrow {
+  left: 0.75rem;
+  transform: rotate(45deg);
+}
+
+/* top + alignCenter (explicit — same as base .top) */
+.top.alignCenter {
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+}
+.top.alignCenter[data-open='true'] {
+  transform: translateX(-50%) translateY(0);
+}
+.top.alignCenter .arrow {
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* top + alignEnd */
+.top.alignEnd {
+  left: auto;
+  right: 0;
+  transform: translateY(8px);
+}
+.top.alignEnd[data-open='true'] {
+  transform: translateY(0);
+}
+.top.alignEnd .arrow {
+  left: auto;
+  right: 0.75rem;
+  transform: rotate(45deg);
+}
+
+/* bottom + alignStart */
+.bottom.alignStart {
+  left: 0;
+  transform: translateY(-8px);
+}
+.bottom.alignStart[data-open='true'] {
+  transform: translateY(0);
+}
+.bottom.alignStart .arrow {
+  left: 0.75rem;
+  transform: rotate(45deg);
+}
+
+/* bottom + alignCenter */
+.bottom.alignCenter {
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+}
+.bottom.alignCenter[data-open='true'] {
+  transform: translateX(-50%) translateY(0);
+}
+.bottom.alignCenter .arrow {
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* bottom + alignEnd */
+.bottom.alignEnd {
+  left: auto;
+  right: 0;
+  transform: translateY(-8px);
+}
+.bottom.alignEnd[data-open='true'] {
+  transform: translateY(0);
+}
+.bottom.alignEnd .arrow {
+  left: auto;
+  right: 0.75rem;
+  transform: rotate(45deg);
+}
+
+/* left + alignStart */
+.left.alignStart {
+  top: 0;
+  transform: translateX(8px);
+}
+.left.alignStart[data-open='true'] {
+  transform: translateX(0);
+}
+.left.alignStart .arrow {
+  top: 0.75rem;
+  transform: rotate(45deg);
+}
+
+/* left + alignCenter */
+.left.alignCenter {
+  top: 50%;
+  transform: translateX(8px) translateY(-50%);
+}
+.left.alignCenter[data-open='true'] {
+  transform: translateX(0) translateY(-50%);
+}
+.left.alignCenter .arrow {
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* left + alignEnd */
+.left.alignEnd {
+  top: auto;
+  bottom: 0;
+  transform: translateX(8px);
+}
+.left.alignEnd[data-open='true'] {
+  transform: translateX(0);
+}
+.left.alignEnd .arrow {
+  top: auto;
+  bottom: 0.75rem;
+  transform: rotate(45deg);
+}
+
+/* right + alignStart */
+.right.alignStart {
+  top: 0;
+  transform: translateX(-8px);
+}
+.right.alignStart[data-open='true'] {
+  transform: translateX(0);
+}
+.right.alignStart .arrow {
+  top: 0.75rem;
+  transform: rotate(45deg);
+}
+
+/* right + alignCenter */
+.right.alignCenter {
+  top: 50%;
+  transform: translateX(-8px) translateY(-50%);
+}
+.right.alignCenter[data-open='true'] {
+  transform: translateX(0) translateY(-50%);
+}
+.right.alignCenter .arrow {
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* right + alignEnd */
+.right.alignEnd {
+  top: auto;
+  bottom: 0;
+  transform: translateX(-8px);
+}
+.right.alignEnd[data-open='true'] {
+  transform: translateX(0);
+}
+.right.alignEnd .arrow {
+  top: auto;
+  bottom: 0.75rem;
+  transform: rotate(45deg);
+}
+
+/* ─── Variants ──────────────────────────────────────────────────────────────── */
+
+.variantLight {
+  --tooltip-bg: var(--color-surface-1);
+  --tooltip-color: var(--color-txt);
+  --tooltip-border: var(--color-edge);
+}
+
+.variantInfo {
+  --tooltip-bg: var(--color-info-light);
+  --tooltip-color: var(--color-info-text);
+}
+
+.variantSuccess {
+  --tooltip-bg: var(--color-success-light);
+  --tooltip-color: var(--color-success-text);
+}
+
+.variantWarning {
+  --tooltip-bg: var(--color-warning-light);
+  --tooltip-color: var(--color-warning-text);
+}
+
+.variantError {
+  --tooltip-bg: var(--color-danger-light);
+  --tooltip-color: var(--color-danger-text);
 }

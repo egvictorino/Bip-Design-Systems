@@ -1,6 +1,14 @@
 import { useMemo, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from './Table';
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableHeader,
+  TableCell,
+  TableEmpty,
+} from './Table';
 import { Badge } from '../Badge';
 import { Button } from '../Button';
 
@@ -12,6 +20,8 @@ const meta = {
   argTypes: {
     striped: { control: 'boolean' },
     compact: { control: 'boolean' },
+    stickyHeader: { control: 'boolean' },
+    caption: { control: 'text' },
   },
 } satisfies Meta<typeof Table>;
 
@@ -60,23 +70,81 @@ const ClientesTable = ({ striped = false, compact = false }: { striped?: boolean
 );
 
 export const Default: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => <ClientesTable />,
 };
 
 export const Striped: Story = {
-  args: { striped: true, children: '' },
+  args: { striped: true, children: null },
   render: () => <ClientesTable striped />,
 };
 
 export const Compact: Story = {
-  args: { compact: true, children: '' },
+  args: { compact: true, children: null },
   render: () => <ClientesTable compact />,
 };
 
 export const StripedCompact: Story = {
-  args: { striped: true, compact: true, children: '' },
+  args: { striped: true, compact: true, children: null },
   render: () => <ClientesTable striped compact />,
+};
+
+export const WithCaption: Story = {
+  args: { children: null },
+  render: () => (
+    <Table caption="Clientes registrados">
+      <TableHead>
+        <TableRow>
+          <TableHeader>Nombre</TableHeader>
+          <TableHeader>Correo electrónico</TableHeader>
+          <TableHeader>Estado</TableHeader>
+          <TableHeader align="right">Monto</TableHeader>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {clientes.map((c) => (
+          <TableRow key={c.id}>
+            <TableCell>{c.nombre}</TableCell>
+            <TableCell>{c.email}</TableCell>
+            <TableCell>
+              <Badge variant={estadoVariant[c.estado as Estado]}>{c.estado}</Badge>
+            </TableCell>
+            <TableCell align="right">{c.monto}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+};
+
+export const WithStickyHeader: Story = {
+  args: { children: null },
+  render: () => (
+    <div style={{ height: 300, overflow: 'auto', border: '1px solid #ddd', borderRadius: '0.5rem' }}>
+      <Table stickyHeader>
+        <TableHead>
+          <TableRow>
+            <TableHeader>Nombre</TableHeader>
+            <TableHeader>Correo electrónico</TableHeader>
+            <TableHeader>Estado</TableHeader>
+            <TableHeader align="right">Monto</TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {[...clientes, ...clientes, ...clientes].map((c, i) => (
+            <TableRow key={i}>
+              <TableCell>{c.nombre}</TableCell>
+              <TableCell>{c.email}</TableCell>
+              <TableCell>
+                <Badge variant={estadoVariant[c.estado as Estado]}>{c.estado}</Badge>
+              </TableCell>
+              <TableCell align="right">{c.monto}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  ),
 };
 
 const montoNumerico = (monto: string) => Number(monto.replace(/[$,]/g, ''));
@@ -91,7 +159,7 @@ const WithSortingTableStory = () => {
     setSort((prev) => {
       if (prev.col !== col) return { col, dir: 'asc' };
       if (prev.dir === 'asc') return { col, dir: 'desc' };
-      return { col: null, dir: 'asc' }; // tercer clic → sin orden
+      return { col: null, dir: 'asc' };
     });
   };
 
@@ -149,12 +217,12 @@ const WithSortingTableStory = () => {
 };
 
 export const WithSorting: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => <WithSortingTableStory />,
 };
 
 export const WithActions: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => (
     <Table>
       <TableHead>
@@ -194,7 +262,7 @@ export const WithActions: Story = {
 };
 
 export const Empty: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => (
     <Table>
       <TableHead>
@@ -205,11 +273,27 @@ export const Empty: Story = {
         </TableRow>
       </TableHead>
       <TableBody>
+        <TableEmpty colSpan={3} />
+      </TableBody>
+    </Table>
+  ),
+};
+
+export const EmptyCustomMessage: Story = {
+  args: { children: null },
+  render: () => (
+    <Table>
+      <TableHead>
         <TableRow>
-          <TableCell colSpan={3}>
-            <p className="py-8 text-center text-txt-secondary">No hay registros que mostrar.</p>
-          </TableCell>
+          <TableHeader>Nombre</TableHeader>
+          <TableHeader>Correo electrónico</TableHeader>
+          <TableHeader>Estado</TableHeader>
         </TableRow>
+      </TableHead>
+      <TableBody>
+        <TableEmpty colSpan={3}>
+          <p style={{ padding: '2rem 0' }}>No se encontraron resultados para tu búsqueda.</p>
+        </TableEmpty>
       </TableBody>
     </Table>
   ),
@@ -233,8 +317,8 @@ const WithSelectionStory = () => {
           <TableRow
             key={c.id}
             selected={selectedId === c.id}
+            clickable
             onClick={() => setSelectedId(c.id)}
-            className="cursor-pointer"
           >
             <TableCell>{c.nombre}</TableCell>
             <TableCell>{c.email}</TableCell>
@@ -250,6 +334,6 @@ const WithSelectionStory = () => {
 };
 
 export const WithSelection: Story = {
-  args: { children: '' },
+  args: { children: null },
   render: () => <WithSelectionStory />,
 };

@@ -11,6 +11,8 @@ const meta = {
     onChange: { control: false },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
     step: { control: 'select', options: [5, 10, 15, 30] },
+    hourCycle: { control: 'select', options: ['24', '12'] },
+    inputMode: { control: 'select', options: ['picker', 'text'] },
   },
 } satisfies Meta<typeof TimePicker>;
 
@@ -31,7 +33,7 @@ const ControlledTimePicker = (props: Omit<React.ComponentProps<typeof TimePicker
   );
 };
 
-// ─── Stories ──────────────────────────────────────────────────────────────────
+// ─── Stories básicas ──────────────────────────────────────────────────────────
 
 export const Default: Story = {
   render: () => <ControlledTimePicker placeholder="HH:MM" />,
@@ -103,6 +105,78 @@ export const FullWidth: Story = {
   ),
 };
 
+// ─── Rango min/max ────────────────────────────────────────────────────────────
+
+export const WithMinMaxRange: Story = {
+  render: () => (
+    <ControlledTimePicker
+      label="Horario de atención"
+      helperText="Solo entre 09:00 y 18:00"
+      minTime="09:00"
+      maxTime="18:00"
+      step={15}
+    />
+  ),
+};
+
+export const WithMinTime: Story = {
+  render: () => (
+    <ControlledTimePicker
+      label="Hora de inicio"
+      helperText="Desde las 08:00"
+      minTime="08:00"
+      step={30}
+    />
+  ),
+};
+
+// ─── Input de texto ───────────────────────────────────────────────────────────
+
+export const WithTextInput: Story = {
+  render: () => (
+    <ControlledTimePicker
+      label="Hora de llegada"
+      inputMode="text"
+      helperText='Escribe la hora (HH:MM) o usa el ícono'
+      placeholder="HH:MM"
+    />
+  ),
+};
+
+export const TextInputWithValue: Story = {
+  render: () => (
+    <ControlledTimePicker
+      label="Hora"
+      inputMode="text"
+      value="14:30"
+    />
+  ),
+};
+
+// ─── Formato 12h (AM/PM) ──────────────────────────────────────────────────────
+
+export const With12HourCycle: Story = {
+  render: () => (
+    <ControlledTimePicker
+      label="Hora de cita"
+      hourCycle="12"
+      placeholder="HH:MM AM/PM"
+    />
+  ),
+};
+
+export const With12HourCycleAndValue: Story = {
+  render: () => (
+    <ControlledTimePicker
+      label="Inicio de turno"
+      hourCycle="12"
+      value="14:30"
+    />
+  ),
+};
+
+// ─── Formulario avanzado ──────────────────────────────────────────────────────
+
 const AppointmentFormStory = () => {
   const [start, setStart] = useState<string | undefined>('09:00');
   const [end, setEnd] = useState<string | undefined>('09:30');
@@ -120,13 +194,52 @@ const AppointmentFormStory = () => {
         value={end}
         onChange={setEnd}
         step={15}
-          fullWidth
-        />
-      </div>
+        fullWidth
+      />
+    </div>
   );
 };
 
 export const AppointmentForm: Story = {
   parameters: { layout: 'padded' },
   render: () => <AppointmentFormStory />,
+};
+
+const AppointmentFormAdvancedStory = () => {
+  const [start, setStart] = useState<string | undefined>('09:00');
+  const [end, setEnd] = useState<string | undefined>('09:30');
+  return (
+    <div className="flex flex-col gap-4 w-72">
+      <TimePicker
+        label="Hora de inicio"
+        value={start}
+        onChange={setStart}
+        step={15}
+        minTime="08:00"
+        maxTime="20:00"
+        hourCycle="12"
+        fullWidth
+      />
+      <TimePicker
+        label="Hora de fin"
+        value={end}
+        onChange={setEnd}
+        step={15}
+        minTime="08:00"
+        maxTime="20:00"
+        hourCycle="12"
+        fullWidth
+      />
+      {start && end && (
+        <p className="text-xs text-text-secondary">
+          Duración: {start} – {end}
+        </p>
+      )}
+    </div>
+  );
+};
+
+export const AppointmentFormAdvanced: Story = {
+  parameters: { layout: 'padded' },
+  render: () => <AppointmentFormAdvancedStory />,
 };

@@ -301,4 +301,194 @@ describe('MultiSelect', () => {
     await userEvent.click(trigger);
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
   });
+
+  // ─── Feature: Grupos de opciones ───────────────────────────────────────────
+
+  const groupedOptions: MultiSelectOption[] = [
+    { value: 'a', label: 'Opción A', group: 'Grupo 1' },
+    { value: 'b', label: 'Opción B', group: 'Grupo 1' },
+    { value: 'c', label: 'Opción C', group: 'Grupo 2' },
+    { value: 'd', label: 'Opción D', group: 'Grupo 2' },
+    { value: 'e', label: 'Opción E' }, // sin grupo
+  ];
+
+  // 31. Renders group headers in listbox
+  it('renders group headers for grouped options', async () => {
+    render(<Controlled options={groupedOptions} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByText('Grupo 1')).toBeInTheDocument();
+    expect(screen.getByText('Grupo 2')).toBeInTheDocument();
+  });
+
+  // 32. Group headers have role="presentation" (non-interactive)
+  it('group headers have role="presentation"', async () => {
+    render(<Controlled options={groupedOptions} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    const groupHeader = screen.getByText('Grupo 1').closest('li');
+    expect(groupHeader).toHaveAttribute('role', 'presentation');
+  });
+
+  // 33. Options without group render without a preceding header
+  it('renders ungrouped options without a header', async () => {
+    render(<Controlled options={groupedOptions} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    // "Opción E" should appear as an option
+    expect(screen.getByRole('option', { name: /Opción E/i })).toBeInTheDocument();
+  });
+
+  // 34. Grouped options can still be selected
+  it('selects a grouped option when clicked', async () => {
+    const onChange = vi.fn();
+    render(<MultiSelect options={groupedOptions} value={[]} onChange={onChange} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('option', { name: /Opción A/i }));
+    expect(onChange).toHaveBeenCalledWith(['a']);
+  });
+
+  // 35. No group headers rendered when no options have group property
+  it('does not render group headers when no group is defined', async () => {
+    render(<Controlled options={options} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    const presentations = screen
+      .getAllByRole('option')
+      .filter((el) => el.getAttribute('role') === 'presentation');
+    expect(presentations).toHaveLength(0);
+  });
+
+  // ─── Feature: Seleccionar todo ──────────────────────────────────────────────
+
+  // 36. "Seleccionar todo" option appears when showSelectAll=true
+  it('renders "Seleccionar todo" option when showSelectAll is true', async () => {
+    render(<Controlled options={options} showSelectAll />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('option', { name: 'Seleccionar todo' })).toBeInTheDocument();
+  });
+
+  // 37. "Seleccionar todo" is not shown when showSelectAll=false
+  it('does not render "Seleccionar todo" when showSelectAll is false', async () => {
+    render(<Controlled options={options} showSelectAll={false} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.queryByRole('option', { name: 'Seleccionar todo' })).not.toBeInTheDocument();
+  });
+
+  // 38. Clicking "Seleccionar todo" selects all non-disabled options
+  it('selects all non-disabled options when "Seleccionar todo" is clicked', async () => {
+    const onChange = vi.fn();
+    render(<MultiSelect options={options} value={[]} onChange={onChange} showSelectAll />);
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('option', { name: 'Seleccionar todo' }));
+    // options 'a', 'b', 'd' are non-disabled; 'c' is disabled
+    expect(onChange).toHaveBeenCalledWith(['a', 'b', 'd']);
+  });
+
+  // 39. Clicking "Seleccionar todo" when all selected deselects all visible
+  it('deselects all visible non-disabled options when all are already selected', async () => {
+    const onChange = vi.fn();
+    render(
+      <MultiSelect options={options} value={['a', 'b', 'd']} onChange={onChange} showSelectAll />
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    const selectAllOpt = screen.getByRole('option', { name: 'Seleccionar todo' });
+    expect(selectAllOpt).toHaveAttribute('aria-selected', 'true');
+    await userEvent.click(selectAllOpt);
+    expect(onChange).toHaveBeenCalledWith([]);
+  });
+
+  // 40. "Seleccionar todo" label changes to "Seleccionar visibles (N)" when query is active
+  it('shows "Seleccionar visibles" label when search query is active', async () => {
+    render(<Controlled options={options} showSelectAll />);
+    await userEvent.click(screen.getByRole('combobox'));
+    const search = screen.getByRole('textbox', { name: /buscar/i });
+    await userEvent.type(search, 'Opción A');
+    expect(screen.getByRole('option', { name: /Seleccionar visibles/i })).toBeInTheDocument();
+  });
+
+  // ─── Feature: Chips colapsables ────────────────────────────────────────────
+
+  // 41. Shows "+N más" badge when selections exceed maxVisibleChips
+  it('shows "+N más" overflow badge when maxVisibleChips is exceeded', () => {
+    render(
+      <Controlled options={options} initialValue={['a', 'b', 'd']} maxVisibleChips={2} />
+    );
+    expect(screen.getByLabelText('1 selecciones más')).toBeInTheDocument();
+    expect(screen.getByText('+1 más')).toBeInTheDocument();
+  });
+
+  // 42. Shows only maxVisibleChips chips
+  it('renders only maxVisibleChips chips when selections exceed the limit', () => {
+    render(
+      <Controlled options={options} initialValue={['a', 'b', 'd']} maxVisibleChips={2} />
+    );
+    // Should show remove buttons only for visible chips (2)
+    const removeButtons = screen.getAllByRole('button', { name: /Eliminar Opción/i });
+    expect(removeButtons).toHaveLength(2);
+  });
+
+  // 43. No overflow badge when selections are within limit
+  it('does not show overflow badge when selections are within maxVisibleChips', () => {
+    render(
+      <Controlled options={options} initialValue={['a', 'b']} maxVisibleChips={3} />
+    );
+    expect(screen.queryByText(/\+ \d+ más/)).not.toBeInTheDocument();
+  });
+
+  // 44. Without maxVisibleChips all chips are shown
+  it('shows all chips when maxVisibleChips is not set', () => {
+    render(<Controlled options={options} initialValue={['a', 'b', 'd']} />);
+    const removeButtons = screen.getAllByRole('button', { name: /Eliminar Opción/i });
+    expect(removeButtons).toHaveLength(3);
+  });
+
+  // ─── Feature: Carga asíncrona ───────────────────────────────────────────────
+
+  // 45. Shows loading spinner when loading=true
+  it('renders loading state when loading is true', async () => {
+    render(<Controlled options={[]} loading />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByLabelText('Cargando opciones')).toBeInTheDocument();
+    expect(screen.getByText('Cargando...')).toBeInTheDocument();
+  });
+
+  // 46. Does not render listbox when loading=true
+  it('does not render listbox when loading is true', async () => {
+    render(<Controlled options={[]} loading />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  // 47. Renders listbox when loading=false
+  it('renders listbox when loading is false', async () => {
+    render(<Controlled options={options} loading={false} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+  });
+
+  // 48. onSearch is called when query changes
+  it('calls onSearch with the current query value when typing', async () => {
+    const onSearch = vi.fn();
+    render(<Controlled options={options} onSearch={onSearch} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    const search = screen.getByRole('textbox', { name: /buscar/i });
+    await userEvent.type(search, 'abc');
+    expect(onSearch).toHaveBeenCalledWith('abc');
+  });
+
+  // 49. When onSearch is provided, internal filtering is bypassed
+  it('does not filter options internally when onSearch is provided', async () => {
+    const onSearch = vi.fn();
+    render(<Controlled options={options} onSearch={onSearch} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    const search = screen.getByRole('textbox', { name: /buscar/i });
+    await userEvent.type(search, 'A');
+    // All options should still be visible since internal filtering is disabled
+    expect(screen.getByRole('option', { name: /Opción B/i })).toBeInTheDocument();
+  });
+
+  // 50. onSearch is called with empty string when dropdown opens
+  it('calls onSearch with empty string on initial open', async () => {
+    const onSearch = vi.fn();
+    render(<Controlled options={options} onSearch={onSearch} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(onSearch).toHaveBeenCalledWith('');
+  });
 });

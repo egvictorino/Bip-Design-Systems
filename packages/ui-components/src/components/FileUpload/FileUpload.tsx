@@ -1,27 +1,40 @@
-import { forwardRef, useId, useState } from 'react';
+import { forwardRef, useId, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './FileUpload.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface RejectedFile {
+  file: File;
+  reason: 'size' | 'count';
+}
 
 export interface FileUploadProps {
   /** Controlled list of selected files */
   value?: File[];
   /** Called with the complete updated file array */
   onChange?: (files: File[]) => void;
+  /** Called with files that were rejected (oversized or over maxFiles limit) */
+  onReject?: (rejectedFiles: RejectedFile[]) => void;
   /** Allow selecting multiple files (default: false) */
   multiple?: boolean;
   /** Accepted file types, e.g. "image/*,.pdf" */
   accept?: string;
-  /** Maximum file size in bytes — oversized files are silently ignored */
+  /** Maximum file size in bytes — oversized files are rejected */
   maxSize?: number;
+  /** Maximum total number of files allowed (only applies when multiple=true) */
+  maxFiles?: number;
   label?: string;
   helperText?: string;
   error?: boolean;
   errorMessage?: string;
   disabled?: boolean;
   size?: 'sm' | 'md' | 'lg';
+  /** Visual layout variant */
+  variant?: 'default' | 'compact';
   id?: string;
+  name?: string;
+  required?: boolean;
   fullWidth?: boolean;
   className?: string;
 }
@@ -55,22 +68,29 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     {
       value = [],
       onChange,
+      onReject,
       multiple = false,
       accept,
       maxSize,
+      maxFiles,
       label,
       helperText,
       error = false,
       errorMessage,
       disabled = false,
       size = 'md',
+      variant = 'default',
       id,
+      name,
+      required,
       fullWidth = false,
       className,
     },
     ref
   ) => {
     const [isDragging, setIsDragging] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
+    const dragCounter = useRef(0);
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
@@ -78,9 +98,32 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
 
     const processFiles = (incoming: FileList | null) => {
       if (!incoming || incoming.length === 0) return;
+      const rejected: RejectedFile[] = [];
       let newFiles = Array.from(incoming);
-      if (maxSize !== undefined) newFiles = newFiles.filter((f) => f.size <= maxSize);
+
+      // Filter by maxSize
+      if (maxSize !== undefined) {
+        newFiles
+          .filter((f) => f.size > maxSize)
+          .forEach((f) => rejected.push({ file: f, reason: 'size' }));
+        newFiles = newFiles.filter((f) => f.size <= maxSize);
+      }
+
+      // Filter by maxFiles (only in multiple mode)
+      if (multiple && maxFiles !== undefined) {
+        const available = maxFiles - value.length;
+        if (available <= 0) {
+          newFiles.forEach((f) => rejected.push({ file: f, reason: 'count' }));
+          newFiles = [];
+        } else if (newFiles.length > available) {
+          newFiles.slice(available).forEach((f) => rejected.push({ file: f, reason: 'count' }));
+          newFiles = newFiles.slice(0, available);
+        }
+      }
+
+      if (rejected.length > 0) onReject?.(rejected);
       if (newFiles.length === 0) return;
+
       const merged = multiple ? [...value, ...newFiles] : [newFiles[0]];
       onChange?.(merged);
     };
@@ -89,18 +132,26 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       onChange?.(value.filter((f) => f !== file));
     };
 
+    const handleDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
+      e.preventDefault();
+      if (disabled) return;
+      dragCounter.current += 1;
+      if (dragCounter.current === 1) setIsDragging(true);
+    };
+
     const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
       e.preventDefault();
-      if (!disabled) setIsDragging(true);
     };
 
     const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
       e.preventDefault();
-      setIsDragging(false);
+      dragCounter.current -= 1;
+      if (dragCounter.current === 0) setIsDragging(false);
     };
 
     const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
       e.preventDefault();
+      dragCounter.current = 0;
       setIsDragging(false);
       if (!disabled) processFiles(e.dataTransfer.files);
     };
@@ -141,12 +192,14 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
         {/* Dropzone — the label IS the drop area and file-picker trigger */}
         <label
           htmlFor={inputId}
+          onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
-          onDragEnter={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
             styles.dropzone,
+            variant === 'compact' && styles.dropzoneCompact,
+            isFocused && styles.dropzoneFocused,
             fullWidth && styles.dropzoneFull,
             dropzoneStateClass,
             className
@@ -157,12 +210,16 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             ref={ref}
             id={inputId}
             type="file"
+            name={name}
             multiple={multiple}
             accept={accept}
             disabled={disabled}
+            required={required}
             aria-invalid={error || undefined}
             aria-describedby={messageId}
             onChange={handleInputChange}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             className="sr-only"
           />
 
@@ -174,6 +231,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             strokeWidth={1.5}
             className={cn(
               styles.uploadIcon,
+              variant === 'compact' && styles.uploadIconCompact,
               error ? styles.uploadIconError : styles.uploadIconNormal
             )}
             aria-hidden="true"
@@ -185,7 +243,12 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             />
           </svg>
 
-          <div className={styles.dropzoneText}>
+          <div
+            className={cn(
+              styles.dropzoneText,
+              variant === 'compact' && styles.dropzoneTextCompact
+            )}
+          >
             <p
               className={cn(
                 styles.dropzoneTitle,
@@ -232,6 +295,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                   type="button"
                   onClick={() => removeFile(file)}
                   aria-label={`Eliminar ${file.name}`}
+                  disabled={disabled}
                   className={styles.removeBtn}
                 >
                   <svg

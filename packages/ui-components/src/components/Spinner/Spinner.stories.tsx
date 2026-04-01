@@ -7,8 +7,9 @@ const meta = {
   parameters: { layout: 'centered' },
   tags: ['autodocs'],
   argTypes: {
-    size: { control: 'select', options: ['sm', 'md', 'lg'] },
-    variant: { control: 'select', options: ['primary', 'secondary', 'white'] },
+    size: { control: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'] },
+    variant: { control: 'select', options: ['primary', 'secondary', 'white', 'danger', 'success', 'info'] },
+    speed: { control: 'select', options: ['slow', 'normal', 'fast'] },
   },
 } satisfies Meta<typeof Spinner>;
 
@@ -22,12 +23,20 @@ export const Default: Story = {
   },
 };
 
+export const ExtraSmall: Story = {
+  args: { size: 'xs', variant: 'primary' },
+};
+
 export const Small: Story = {
   args: { size: 'sm', variant: 'primary' },
 };
 
 export const Large: Story = {
   args: { size: 'lg', variant: 'primary' },
+};
+
+export const ExtraLarge: Story = {
+  args: { size: 'xl', variant: 'primary' },
 };
 
 export const Secondary: Story = {
@@ -41,13 +50,35 @@ export const White: Story = {
   },
 };
 
+export const Danger: Story = {
+  args: { size: 'md', variant: 'danger' },
+};
+
+export const Success: Story = {
+  args: { size: 'md', variant: 'success' },
+};
+
+export const Info: Story = {
+  args: { size: 'md', variant: 'info' },
+};
+
+export const SlowSpeed: Story = {
+  args: { size: 'md', variant: 'primary', speed: 'slow' },
+};
+
+export const FastSpeed: Story = {
+  args: { size: 'md', variant: 'primary', speed: 'fast' },
+};
+
 export const AllSizes: Story = {
   args: { variant: 'primary' },
   render: () => (
-    <div className="flex items-center gap-6">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+      <Spinner size="xs" variant="primary" />
       <Spinner size="sm" variant="primary" />
       <Spinner size="md" variant="primary" />
       <Spinner size="lg" variant="primary" />
+      <Spinner size="xl" variant="primary" />
     </div>
   ),
 };
@@ -55,12 +86,35 @@ export const AllSizes: Story = {
 export const AllVariants: Story = {
   args: { size: 'md' },
   render: () => (
-    <div className="flex items-center gap-6">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
       <Spinner size="md" variant="primary" />
       <Spinner size="md" variant="secondary" />
-      <div className="flex items-center justify-center rounded bg-primary p-4">
+      <Spinner size="md" variant="danger" />
+      <Spinner size="md" variant="success" />
+      <Spinner size="md" variant="info" />
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '0.25rem',
+          backgroundColor: 'var(--color-primary)',
+          padding: '1rem',
+        }}
+      >
         <Spinner size="md" variant="white" />
       </div>
+    </div>
+  ),
+};
+
+export const AllSpeeds: Story = {
+  args: { size: 'md', variant: 'primary' },
+  render: () => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+      <Spinner size="md" variant="primary" speed="slow" />
+      <Spinner size="md" variant="primary" />
+      <Spinner size="md" variant="primary" speed="fast" />
     </div>
   ),
 };

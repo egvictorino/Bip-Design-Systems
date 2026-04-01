@@ -34,27 +34,31 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: { children: null },
   render: () => (
-    <div className="w-full max-w-lg">
+    <div style={{ width: '100%', maxWidth: '32rem' }}>
       <Accordion type="single" collapsible defaultValue="item-1">
         <AccordionItem value="item-1">
-          <AccordionTrigger>¿Qué es BipUI?</AccordionTrigger>
+          <AccordionTrigger>¿Qué es Bip Design Systems?</AccordionTrigger>
           <AccordionContent>
-            BipUI es una librería de componentes React diseñada para aplicaciones SaaS de alto
-            rendimiento. Incluye componentes accesibles, tematizables y listos para producción.
+            Bip Design Systems es una librería de componentes React diseñada para aplicaciones de pymes.
+            Incluye componentes accesibles, tematizables y listos para producción, estilizados con CSS
+            Modules y tokens de diseño como CSS Custom Properties.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
           <AccordionTrigger>¿Cómo instalo la librería?</AccordionTrigger>
           <AccordionContent>
-            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> y configura el preset
-            de Tailwind en tu proyecto consumidor.
+            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> e importa{' '}
+            <code>@bip-design-systems/ui-components/style.css</code> en el entry point de tu app. No se
+            requiere ninguna configuración adicional de CSS.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-3">
           <AccordionTrigger>¿Puedo personalizar los tokens de diseño?</AccordionTrigger>
           <AccordionContent>
-            Sí. Todos los colores y espaciados se definen en <code>tailwind.tokens.js</code>. Edita
-            ese archivo y los cambios se propagan automáticamente a todos los componentes.
+            Sí. Todos los tokens de diseño se definen como CSS Custom Properties en{' '}
+            <code>tokens.css</code> (bajo <code>:root</code>). Edítalos directamente o ejecuta{' '}
+            <code>pnpm sync:tokens</code> para regenerarlos desde Figma. Los cambios se propagan
+            automáticamente a todos los componentes.
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -67,7 +71,7 @@ export const Default: Story = {
 export const Multiple: Story = {
   args: { children: null },
   render: () => (
-    <div className="w-full max-w-lg">
+    <div style={{ width: '100%', maxWidth: '32rem' }}>
       <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
         <AccordionItem value="item-1">
           <AccordionTrigger>Sección 1 — abierta por defecto</AccordionTrigger>
@@ -98,7 +102,7 @@ export const Multiple: Story = {
 export const WithDisabledItem: Story = {
   args: { children: null },
   render: () => (
-    <div className="w-full max-w-lg">
+    <div style={{ width: '100%', maxWidth: '32rem' }}>
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
           <AccordionTrigger>Sección disponible</AccordionTrigger>
@@ -124,8 +128,8 @@ export const WithDisabledItem: Story = {
 export const NonCollapsible: Story = {
   args: { children: null },
   render: () => (
-    <div className="w-full max-w-lg">
-      <p className="mb-3 text-sm text-text-secondary">
+    <div style={{ width: '100%', maxWidth: '32rem' }}>
+      <p style={{ marginBottom: '0.75rem', fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
         <code>collapsible=false</code>: siempre hay al menos un item abierto.
       </p>
       <Accordion type="single" defaultValue="item-1">
@@ -150,27 +154,31 @@ export const NonCollapsible: Story = {
 export const Bordered: Story = {
   args: { children: null },
   render: () => (
-    <div className="w-full max-w-lg">
+    <div style={{ width: '100%', maxWidth: '32rem' }}>
       <Accordion type="single" collapsible variant="bordered" defaultValue="item-1">
         <AccordionItem value="item-1">
-          <AccordionTrigger>¿Qué es BipUI?</AccordionTrigger>
+          <AccordionTrigger>¿Qué es Bip Design Systems?</AccordionTrigger>
           <AccordionContent>
-            BipUI es una librería de componentes React diseñada para aplicaciones SaaS de alto
-            rendimiento. Incluye componentes accesibles, tematizables y listos para producción.
+            Bip Design Systems es una librería de componentes React diseñada para aplicaciones de pymes.
+            Incluye componentes accesibles, tematizables y listos para producción, estilizados con CSS
+            Modules y tokens de diseño como CSS Custom Properties.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
           <AccordionTrigger>¿Cómo instalo la librería?</AccordionTrigger>
           <AccordionContent>
-            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> y configura el preset
-            de Tailwind en tu proyecto consumidor.
+            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> e importa{' '}
+            <code>@bip-design-systems/ui-components/style.css</code> en el entry point de tu app. No se
+            requiere ninguna configuración adicional de CSS.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-3">
           <AccordionTrigger>¿Puedo personalizar los tokens de diseño?</AccordionTrigger>
           <AccordionContent>
-            Sí. Todos los colores y espaciados se definen en <code>tailwind.tokens.js</code>. Edita
-            ese archivo y los cambios se propagan automáticamente a todos los componentes.
+            Sí. Todos los tokens de diseño se definen como CSS Custom Properties en{' '}
+            <code>tokens.css</code> (bajo <code>:root</code>). Edítalos directamente o ejecuta{' '}
+            <code>pnpm sync:tokens</code> para regenerarlos desde Figma. Los cambios se propagan
+            automáticamente a todos los componentes.
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -183,27 +191,31 @@ export const Bordered: Story = {
 export const Ghost: Story = {
   args: { children: null },
   render: () => (
-    <div className="w-full max-w-lg">
+    <div style={{ width: '100%', maxWidth: '32rem' }}>
       <Accordion type="single" collapsible variant="ghost" defaultValue="item-1">
         <AccordionItem value="item-1">
-          <AccordionTrigger>¿Qué es BipUI?</AccordionTrigger>
+          <AccordionTrigger>¿Qué es Bip Design Systems?</AccordionTrigger>
           <AccordionContent>
-            BipUI es una librería de componentes React diseñada para aplicaciones SaaS de alto
-            rendimiento. Incluye componentes accesibles, tematizables y listos para producción.
+            Bip Design Systems es una librería de componentes React diseñada para aplicaciones de pymes.
+            Incluye componentes accesibles, tematizables y listos para producción, estilizados con CSS
+            Modules y tokens de diseño como CSS Custom Properties.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
           <AccordionTrigger>¿Cómo instalo la librería?</AccordionTrigger>
           <AccordionContent>
-            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> y configura el preset
-            de Tailwind en tu proyecto consumidor.
+            Instala el paquete con <code>pnpm add @bip-design-systems/ui-components</code> e importa{' '}
+            <code>@bip-design-systems/ui-components/style.css</code> en el entry point de tu app. No se
+            requiere ninguna configuración adicional de CSS.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-3">
           <AccordionTrigger>¿Puedo personalizar los tokens de diseño?</AccordionTrigger>
           <AccordionContent>
-            Sí. Todos los colores y espaciados se definen en <code>tailwind.tokens.js</code>. Edita
-            ese archivo y los cambios se propagan automáticamente a todos los componentes.
+            Sí. Todos los tokens de diseño se definen como CSS Custom Properties en{' '}
+            <code>tokens.css</code> (bajo <code>:root</code>). Edítalos directamente o ejecuta{' '}
+            <code>pnpm sync:tokens</code> para regenerarlos desde Figma. Los cambios se propagan
+            automáticamente a todos los componentes.
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -220,14 +232,22 @@ export const Controlled: Story = {
     const [open, setOpen] = React.useState<string>('item-1');
 
     return (
-      <div className="w-full max-w-lg space-y-4">
-        <div className="flex gap-2">
+      <div style={{ width: '100%', maxWidth: '32rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
           {['item-1', 'item-2', 'item-3'].map((v) => (
             <button
               key={v}
               type="button"
               onClick={() => setOpen(v)}
-              className="rounded border border-interaction-primary-default px-3 py-1 text-xs text-interaction-primary-default"
+              style={{
+                borderRadius: '0.25rem',
+                border: '1px solid var(--color-primary)',
+                padding: '0.25rem 0.75rem',
+                fontSize: '0.75rem',
+                color: 'var(--color-primary)',
+                background: 'transparent',
+                cursor: 'pointer',
+              }}
             >
               Abrir {v}
             </button>

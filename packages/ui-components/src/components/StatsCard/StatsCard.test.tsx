@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import { StatsCard } from './StatsCard';
 
 describe('StatsCard', () => {
+  // ─── Content ──────────────────────────────────────────────────────────────
+
   it('renders title and value', () => {
     render(<StatsCard title="Citas hoy" value={12} />);
     expect(screen.getByText('Citas hoy')).toBeInTheDocument();
@@ -22,6 +24,20 @@ describe('StatsCard', () => {
     render(<StatsCard title="Citas" value={5} />);
     expect(screen.queryByText('vs. ayer')).not.toBeInTheDocument();
   });
+
+  it('renders icon when provided', () => {
+    render(
+      <StatsCard title="Citas" value={10} icon={<span data-testid="icon">📅</span>} />
+    );
+    expect(screen.getByTestId('icon')).toBeInTheDocument();
+  });
+
+  it('applies custom className', () => {
+    const { container } = render(<StatsCard title="X" value={0} className="custom-class" />);
+    expect(container.firstChild).toHaveClass('custom-class');
+  });
+
+  // ─── Trend ────────────────────────────────────────────────────────────────
 
   it('renders positive trend with + sign', () => {
     render(<StatsCard title="Citas" value={10} trend={8} />);
@@ -48,15 +64,72 @@ describe('StatsCard', () => {
     expect(screen.queryByLabelText(/Tendencia/)).not.toBeInTheDocument();
   });
 
-  it('renders icon when provided', () => {
-    render(
-      <StatsCard title="Citas" value={10} icon={<span data-testid="icon">📅</span>} />
-    );
-    expect(screen.getByTestId('icon')).toBeInTheDocument();
+  // ─── Variant ──────────────────────────────────────────────────────────────
+
+  it('applies outlined variant class by default', () => {
+    const { container } = render(<StatsCard title="X" value={0} />);
+    expect(container.firstChild).toHaveClass('outlined');
   });
 
-  it('applies custom className', () => {
-    const { container } = render(<StatsCard title="X" value={0} className="custom-class" />);
-    expect(container.firstChild).toHaveClass('custom-class');
+  it('applies filled variant class', () => {
+    const { container } = render(<StatsCard title="X" value={0} variant="filled" />);
+    expect(container.firstChild).toHaveClass('filled');
+  });
+
+  it('applies elevated variant class', () => {
+    const { container } = render(<StatsCard title="X" value={0} variant="elevated" />);
+    expect(container.firstChild).toHaveClass('elevated');
+  });
+
+  // ─── Size ─────────────────────────────────────────────────────────────────
+
+  it('applies md size class by default', () => {
+    const { container } = render(<StatsCard title="X" value={0} />);
+    expect(container.firstChild).toHaveClass('md');
+  });
+
+  it('applies sm size class', () => {
+    const { container } = render(<StatsCard title="X" value={0} size="sm" />);
+    expect(container.firstChild).toHaveClass('sm');
+  });
+
+  it('applies lg size class', () => {
+    const { container } = render(<StatsCard title="X" value={0} size="lg" />);
+    expect(container.firstChild).toHaveClass('lg');
+  });
+
+  // ─── Loading ──────────────────────────────────────────────────────────────
+
+  it('renders loading state when loading=true', () => {
+    render(<StatsCard title="Citas" value={0} loading />);
+    expect(screen.getByRole('region', { name: 'Cargando estadística' })).toBeInTheDocument();
+  });
+
+  it('hides content when loading', () => {
+    render(<StatsCard title="Citas hoy" value={12} loading />);
+    expect(screen.queryByText('Citas hoy')).not.toBeInTheDocument();
+    expect(screen.queryByText('12')).not.toBeInTheDocument();
+  });
+
+  it('marks container as aria-busy when loading', () => {
+    render(<StatsCard title="Citas" value={0} loading />);
+    expect(screen.getByRole('region')).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('does not render description when loading', () => {
+    render(<StatsCard title="Citas" value={0} description="vs. ayer" loading />);
+    expect(screen.queryByText('vs. ayer')).not.toBeInTheDocument();
+  });
+
+  // ─── Accessibility ────────────────────────────────────────────────────────
+
+  it('has role=region with aria-label from title', () => {
+    render(<StatsCard title="Citas hoy" value={12} />);
+    expect(screen.getByRole('region', { name: 'Citas hoy' })).toBeInTheDocument();
+  });
+
+  it('does not set aria-busy when not loading', () => {
+    render(<StatsCard title="Citas" value={0} />);
+    expect(screen.getByRole('region')).not.toHaveAttribute('aria-busy');
   });
 });
