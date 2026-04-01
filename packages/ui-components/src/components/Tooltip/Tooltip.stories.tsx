@@ -166,25 +166,27 @@ export const WithCloseDelay: Story = {
 
 // ─── Modo controlado ──────────────────────────────────────────────────────────
 
+const ControlledDemo = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <Tooltip
+        content="Tooltip controlado externamente"
+        open={open}
+        onOpenChange={setOpen}
+      >
+        <Button variant="secondary">Trigger (hover también funciona)</Button>
+      </Tooltip>
+      <Button variant="primary" size="sm" onClick={() => setOpen((v) => !v)}>
+        {open ? 'Cerrar tooltip' : 'Abrir tooltip'}
+      </Button>
+    </div>
+  );
+};
+
 export const Controlled: Story = {
   args: { content: '', children: <span /> },
-  render: () => {
-    const [open, setOpen] = useState(false);
-    return (
-      <div className="flex flex-col items-center gap-4">
-        <Tooltip
-          content="Tooltip controlado externamente"
-          open={open}
-          onOpenChange={setOpen}
-        >
-          <Button variant="secondary">Trigger (hover también funciona)</Button>
-        </Tooltip>
-        <Button variant="primary" size="sm" onClick={() => setOpen((v) => !v)}>
-          {open ? 'Cerrar tooltip' : 'Abrir tooltip'}
-        </Button>
-      </div>
-    );
-  },
+  render: () => <ControlledDemo />,
 };
 
 // ─── Casos de uso ─────────────────────────────────────────────────────────────
