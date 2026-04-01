@@ -10,11 +10,32 @@
   display: none;
 }
 
+/* ─── Timeline horizontal ─────────────────────────────────────────────────── */
+
+.timelineHorizontal {
+  flex-direction: row;
+  align-items: flex-start;
+  overflow-x: auto;
+}
+
+/* In horizontal mode the last-child selector still hides the line */
+.timelineHorizontal > *:last-child .timelineLine {
+  display: none;
+}
+
 /* ─── TimelineItem ────────────────────────────────────────────────────────── */
 
 .item {
   display: flex;
   gap: 1rem;
+}
+
+.itemHorizontal {
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 8rem;
+  gap: 0;
 }
 
 /* ─── Left column ─────────────────────────────────────────────────────────── */
@@ -24,6 +45,12 @@
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
+}
+
+.leftColHorizontal {
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
 }
 
 /* Icon dot (large) */
@@ -82,12 +109,27 @@
   margin-top: 0.5rem;
 }
 
+/* Horizontal connector line */
+.timelineLineHorizontal {
+  flex: 1;
+  height: 1px;
+  width: auto;
+  margin-top: 0;
+  margin-left: 0.5rem;
+}
+
 /* ─── Right column ─────────────────────────────────────────────────────────── */
 
 .rightCol {
   padding-bottom: 1.5rem;
   flex: 1;
   min-width: 0;
+}
+
+.rightColHorizontal {
+  padding-bottom: 0;
+  padding-top: 0.75rem;
+  width: 100%;
 }
 
 .header {
@@ -118,4 +160,51 @@
 
 .childrenWrapper {
   margin-top: 0.5rem;
+}
+
+/* ─── Sizes ───────────────────────────────────────────────────────────────── */
+
+/* sm */
+.sizeSm .dot {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+.sizeSm .iconDot {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.sizeSm .title {
+  font-size: 0.75rem;
+}
+
+.sizeSm .date,
+.sizeSm .descriptionText {
+  font-size: 0.6875rem;
+}
+
+.sizeSm .rightCol {
+  padding-bottom: 1rem;
+}
+
+/* md — default, no overrides needed */
+
+/* lg */
+.sizeLg .dot {
+  width: 1rem;
+  height: 1rem;
+}
+
+.sizeLg .iconDot {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.sizeLg .title {
+  font-size: 1rem;
+}
+
+.sizeLg .rightCol {
+  padding-bottom: 2rem;
 }

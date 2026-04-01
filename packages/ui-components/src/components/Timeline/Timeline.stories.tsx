@@ -6,6 +6,12 @@ const meta = {
   component: Timeline,
   parameters: { layout: 'padded' },
   tags: ['autodocs'],
+  argTypes: {
+    orientation: {
+      control: 'radio',
+      options: ['vertical', 'horizontal'],
+    },
+  },
 } satisfies Meta<typeof Timeline>;
 
 export default meta;
@@ -14,7 +20,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: { children: null },
   render: () => (
-    <div className="w-96">
+    <div style={{ width: '24rem' }}>
       <Timeline>
         <TimelineItem date="10/03/2024" title="Primera consulta" description="Evaluación inicial, toma de radiografías panorámicas." />
         <TimelineItem date="20/03/2024" title="Plan de tratamiento" description="Se definió extracción del molar 38 y ortodoncia." variant="success" />
@@ -29,7 +35,7 @@ export const Default: Story = {
 export const ConIconos: Story = {
   args: { children: null },
   render: () => (
-    <div className="w-96">
+    <div style={{ width: '24rem' }}>
       <Timeline>
         <TimelineItem
           date="01/01/2024"
@@ -65,7 +71,7 @@ export const ConIconos: Story = {
 export const Psiquiatrico: Story = {
   args: { children: null },
   render: () => (
-    <div className="w-96">
+    <div style={{ width: '24rem' }}>
       <Timeline>
         <TimelineItem date="03/03/2024" title="Evaluación inicial" description="PHQ-9: 18 puntos — Depresión moderada severa." variant="error" />
         <TimelineItem date="10/03/2024" title="Inicio de tratamiento" description="Fluoxetina 20mg/día + terapia cognitivo-conductual." variant="default" />
@@ -73,5 +79,75 @@ export const Psiquiatrico: Story = {
         <TimelineItem date="07/04/2024" title="Revisión" description="PHQ-9: 6 puntos — Respuesta adecuada al tratamiento." variant="success" />
       </Timeline>
     </div>
+  ),
+};
+
+export const AllVariants: Story = {
+  args: { children: null },
+  render: () => (
+    <div style={{ width: '24rem' }}>
+      <Timeline aria-label="Variantes de estado">
+        <TimelineItem title="Default" description="Estado por defecto." variant="default" date="01/01/2024" />
+        <TimelineItem title="Success" description="Tarea completada correctamente." variant="success" date="02/01/2024" />
+        <TimelineItem title="Warning" description="Requiere atención." variant="warning" date="03/01/2024" />
+        <TimelineItem title="Error" description="Se detectó un problema." variant="error" date="04/01/2024" />
+      </Timeline>
+    </div>
+  ),
+};
+
+export const Sizes: Story = {
+  args: { children: null },
+  render: () => (
+    <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
+      <div>
+        <p style={{ fontSize: '0.75rem', color: '#929292', marginBottom: '0.5rem' }}>sm</p>
+        <Timeline aria-label="Tamaño pequeño">
+          <TimelineItem title="Consulta" date="10/03/2024" size="sm" variant="default" />
+          <TimelineItem title="Seguimiento" date="20/03/2024" size="sm" variant="success" />
+          <TimelineItem title="Alta" date="30/03/2024" size="sm" variant="success" />
+        </Timeline>
+      </div>
+      <div>
+        <p style={{ fontSize: '0.75rem', color: '#929292', marginBottom: '0.5rem' }}>md (default)</p>
+        <Timeline aria-label="Tamaño mediano">
+          <TimelineItem title="Consulta" date="10/03/2024" size="md" variant="default" />
+          <TimelineItem title="Seguimiento" date="20/03/2024" size="md" variant="success" />
+          <TimelineItem title="Alta" date="30/03/2024" size="md" variant="success" />
+        </Timeline>
+      </div>
+      <div>
+        <p style={{ fontSize: '0.75rem', color: '#929292', marginBottom: '0.5rem' }}>lg</p>
+        <Timeline aria-label="Tamaño grande">
+          <TimelineItem title="Consulta" date="10/03/2024" size="lg" variant="default" />
+          <TimelineItem title="Seguimiento" date="20/03/2024" size="lg" variant="success" />
+          <TimelineItem title="Alta" date="30/03/2024" size="lg" variant="success" />
+        </Timeline>
+      </div>
+    </div>
+  ),
+};
+
+export const Horizontal: Story = {
+  args: { children: null },
+  render: () => (
+    <Timeline orientation="horizontal" aria-label="Proceso de atención">
+      <TimelineItem date="10/03/2024" title="Registro" description="Datos del paciente." variant="success" />
+      <TimelineItem date="15/03/2024" title="Diagnóstico" description="Evaluación clínica." variant="success" />
+      <TimelineItem date="20/03/2024" title="Tratamiento" description="Inicio de protocolo." variant="default" />
+      <TimelineItem date="Pendiente" title="Revisión" description="Cita de seguimiento." variant="warning" />
+    </Timeline>
+  ),
+};
+
+export const HorizontalConIconos: Story = {
+  args: { children: null },
+  render: () => (
+    <Timeline orientation="horizontal" aria-label="Etapas del proceso">
+      <TimelineItem title="Registro" icon="👤" variant="success" date="01/01/2024" />
+      <TimelineItem title="Pago" icon="💳" variant="success" date="05/01/2024" />
+      <TimelineItem title="Cita" icon="📅" variant="default" date="10/01/2024" />
+      <TimelineItem title="Alta" icon="✓" variant="warning" date="Pendiente" />
+    </Timeline>
   ),
 };
