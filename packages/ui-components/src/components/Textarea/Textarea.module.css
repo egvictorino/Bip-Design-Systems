@@ -19,10 +19,12 @@
 .labelMd   { font-size: 0.875rem; line-height: 1.25rem; }
 .labelLg   { font-size: 1rem;     line-height: 1.5rem; }
 
-.labelNormal  { color: var(--color-txt); }
-.labelFocused { color: var(--color-primary); }
+.labelNormal  { color: var(--color-txt-utility); }
+.labelFocused { color: var(--color-txt); }
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
+
+.requiredMark { color: var(--color-danger); margin-left: 2px; }
 
 /* ─── Textarea base ─────────────────────────────────────────────────────────── */
 
@@ -64,10 +66,10 @@
 /* ─── Variant: outlined ─────────────────────────────────────────────────────── */
 
 .outlined {
-  border: 1px solid var(--color-primary);
+  border: 1px solid var(--color-edge);
   background-color: var(--color-field);
 }
-.outlined:hover:not(:disabled) { border-color: var(--color-primary-hover); }
+.outlined:hover:not(:disabled) { border-color: var(--color-edge-hover); }
 .outlined:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
 .outlined.error { border-color: var(--color-danger); }
 .outlined.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
@@ -75,12 +77,14 @@
 /* ─── Variant: filled ───────────────────────────────────────────────────────── */
 
 .filled {
-  border: none;
+  border: 1px solid var(--color-edge);
   background-color: var(--color-secondary);
 }
-.filled:hover:not(:disabled) { background-color: var(--color-secondary-hover); }
 .filled:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
-.filled.error { background-color: var(--color-danger-light); }
+.filled.error {
+  background-color: var(--color-danger-light);
+  border-color: transparent;
+}
 .filled.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
 
 /* ─── Variant: bare ─────────────────────────────────────────────────────────── */
@@ -104,3 +108,19 @@
 
 .helperText { color: var(--color-txt-secondary); }
 .errorText  { color: var(--color-danger); }
+
+/* ─── Footer (helper/error + counter row) ───────────────────────────────────── */
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.counterText  { color: var(--color-txt-secondary); white-space: nowrap; }
+.counterLimit { color: var(--color-danger); }
+
+/* ─── Auto-grow ─────────────────────────────────────────────────────────────── */
+
+.autoGrow { overflow-y: hidden; resize: none; }
