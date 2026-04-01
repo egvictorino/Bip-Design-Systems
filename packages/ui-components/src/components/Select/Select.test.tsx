@@ -157,4 +157,66 @@ describe('Select', () => {
     fireEvent.blur(select);
     expect(onBlur).toHaveBeenCalledTimes(1);
   });
+
+  it('calls consumer onChange when value changes', () => {
+    const onChange = vi.fn();
+    render(<Select options={options} label="País" onChange={onChange} />);
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'mx' } });
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  // ── Variants ────────────────────────────────────────────────────────────────
+
+  it.each(['outlined', 'filled', 'bare'] as const)('variant %s applies the correct class', (variant) => {
+    render(<Select options={options} variant={variant} />);
+    expect(screen.getByRole('combobox')).toHaveClass(variant);
+  });
+
+  // ── Required ────────────────────────────────────────────────────────────────
+
+  it('select has required attribute when required=true', () => {
+    render(<Select options={options} label="País" required />);
+    expect(screen.getByRole('combobox')).toBeRequired();
+  });
+
+  it('shows * indicator in label when required=true', () => {
+    render(<Select options={options} label="País" required />);
+    expect(screen.getByText('País').closest('label')).toHaveTextContent('País *');
+  });
+
+  it('does not show * indicator when required=false', () => {
+    render(<Select options={options} label="País" />);
+    expect(screen.getByText('País').closest('label')).not.toHaveTextContent('*');
+  });
+
+  // ── Optgroup ────────────────────────────────────────────────────────────────
+
+  it('renders optgroup with correct label', () => {
+    const groups = [
+      { label: 'Norte', options: [{ value: 'nl', label: 'Nuevo León' }] },
+      { label: 'Centro', options: [{ value: 'cdmx', label: 'Ciudad de México' }] },
+    ];
+    const { container } = render(<Select groups={groups} />);
+    const optgroups = container.querySelectorAll('optgroup');
+    expect(optgroups).toHaveLength(2);
+    expect(optgroups[0]).toHaveAttribute('label', 'Norte');
+    expect(optgroups[1]).toHaveAttribute('label', 'Centro');
+  });
+
+  it('renders options inside optgroups', () => {
+    const groups = [
+      { label: 'Norte', options: [{ value: 'nl', label: 'Nuevo León' }, { value: 'coah', label: 'Coahuila' }] },
+    ];
+    render(<Select groups={groups} />);
+    expect(screen.getByRole('option', { name: 'Nuevo León' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Coahuila' })).toBeInTheDocument();
+  });
+
+  // ── Chevron ─────────────────────────────────────────────────────────────────
+
+  it('chevron span has aria-hidden="true"', () => {
+    const { container } = render(<Select options={options} />);
+    const chevron = container.querySelector('[aria-hidden="true"]');
+    expect(chevron).toBeInTheDocument();
+  });
 });

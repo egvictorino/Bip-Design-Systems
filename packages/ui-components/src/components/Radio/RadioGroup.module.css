@@ -1,0 +1,61 @@
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.legend {
+  font-weight: 500;
+}
+
+/* Size variants — legend */
+.legendSm {
+  font-size: 0.75rem;
+}
+
+.legendMd {
+  font-size: 0.875rem;
+}
+
+.legendLg {
+  font-size: 1rem;
+}
+
+.legendDefault {
+  color: var(--color-txt);
+}
+
+.legendError {
+  color: var(--color-danger);
+}
+
+/* Children wrapper */
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Helper / error message */
+.helperSm {
+  font-size: 0.75rem;
+}
+
+.helperMd {
+  font-size: 0.75rem;
+}
+
+.helperLg {
+  font-size: 0.875rem;
+}
+
+.messageError {
+  color: var(--color-danger);
+}
+
+.messageHelper {
+  color: var(--color-txt-secondary);
+}

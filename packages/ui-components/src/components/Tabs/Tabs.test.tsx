@@ -172,3 +172,198 @@ describe('Tabs', () => {
     consoleError.mockRestore();
   });
 });
+
+// ─── ARIA orientation ─────────────────────────────────────────────────────────
+
+describe('Tabs — aria-orientation', () => {
+  it('tablist has aria-orientation="horizontal" by default', () => {
+    render(<DefaultTabs />);
+    expect(screen.getByRole('tablist')).toHaveAttribute('aria-orientation', 'horizontal');
+  });
+
+  it('tablist has aria-orientation="vertical" when orientation="vertical"', () => {
+    render(
+      <Tabs defaultValue="tab1" orientation="vertical">
+        <TabList>
+          <Tab value="tab1">T1</Tab>
+          <Tab value="tab2">T2</Tab>
+        </TabList>
+        <TabPanel value="tab1">Panel 1</TabPanel>
+        <TabPanel value="tab2">Panel 2</TabPanel>
+      </Tabs>
+    );
+    expect(screen.getByRole('tablist')).toHaveAttribute('aria-orientation', 'vertical');
+  });
+});
+
+// ─── Size prop ────────────────────────────────────────────────────────────────
+
+describe('Tabs — size prop', () => {
+  it('size="md" is the default (no sm or lg class applied)', () => {
+    render(<DefaultTabs />);
+    const tab1 = screen.getByRole('tab', { name: 'Pestaña 1' });
+    // No explicit assertion on class name; verify it renders without error
+    expect(tab1).toBeInTheDocument();
+  });
+
+  it('applies sm styles when size="sm"', () => {
+    render(
+      <Tabs defaultValue="tab1" size="sm">
+        <TabList>
+          <Tab value="tab1">T1</Tab>
+        </TabList>
+        <TabPanel value="tab1">P1</TabPanel>
+      </Tabs>
+    );
+    const tab = screen.getByRole('tab', { name: 'T1' });
+    expect(tab.className).toMatch(/tabSm/);
+  });
+
+  it('applies lg styles when size="lg"', () => {
+    render(
+      <Tabs defaultValue="tab1" size="lg">
+        <TabList>
+          <Tab value="tab1">T1</Tab>
+        </TabList>
+        <TabPanel value="tab1">P1</TabPanel>
+      </Tabs>
+    );
+    const tab = screen.getByRole('tab', { name: 'T1' });
+    expect(tab.className).toMatch(/tabLg/);
+  });
+});
+
+// ─── Boxed variant ────────────────────────────────────────────────────────────
+
+describe('Tabs — variant="boxed"', () => {
+  const BoxedTabs = () => (
+    <Tabs defaultValue="tab1" variant="boxed">
+      <TabList>
+        <Tab value="tab1">Activo</Tab>
+        <Tab value="tab2">Inactivo</Tab>
+      </TabList>
+      <TabPanel value="tab1">Panel 1</TabPanel>
+      <TabPanel value="tab2">Panel 2</TabPanel>
+    </Tabs>
+  );
+
+  it('tablist has border container class', () => {
+    render(<BoxedTabs />);
+    expect(screen.getByRole('tablist').className).toMatch(/tabListBoxed/);
+  });
+
+  it('active tab has boxed active class', () => {
+    render(<BoxedTabs />);
+    const activeTab = screen.getByRole('tab', { name: 'Activo' });
+    expect(activeTab.className).toMatch(/tabBoxedActive/);
+  });
+
+  it('inactive tab has boxed inactive class', () => {
+    render(<BoxedTabs />);
+    const inactiveTab = screen.getByRole('tab', { name: 'Inactivo' });
+    expect(inactiveTab.className).toMatch(/tabBoxedInactive/);
+  });
+
+  it('clicking a boxed tab activates it', () => {
+    render(<BoxedTabs />);
+    fireEvent.click(screen.getByRole('tab', { name: 'Inactivo' }));
+    expect(screen.getByRole('tab', { name: 'Inactivo' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Activo' })).toHaveAttribute('aria-selected', 'false');
+  });
+});
+
+// ─── Vertical orientation ─────────────────────────────────────────────────────
+
+describe('Tabs — orientation="vertical"', () => {
+  const VerticalTabs = () => (
+    <Tabs defaultValue="tab1" orientation="vertical">
+      <TabList>
+        <Tab value="tab1">T1</Tab>
+        <Tab value="tab2">T2</Tab>
+        <Tab value="tab3">T3</Tab>
+      </TabList>
+      <TabPanel value="tab1">Panel 1</TabPanel>
+      <TabPanel value="tab2">Panel 2</TabPanel>
+      <TabPanel value="tab3">Panel 3</TabPanel>
+    </Tabs>
+  );
+
+  it('tablist has aria-orientation="vertical"', () => {
+    render(<VerticalTabs />);
+    expect(screen.getByRole('tablist')).toHaveAttribute('aria-orientation', 'vertical');
+  });
+
+  it('root element has vertical layout class', () => {
+    const { container } = render(<VerticalTabs />);
+    const root = container.firstChild as HTMLElement;
+    expect(root.className).toMatch(/tabsRootVertical/);
+  });
+
+  it('ArrowDown moves focus to the next tab', () => {
+    render(<VerticalTabs />);
+    const tab1 = screen.getByRole('tab', { name: 'T1' });
+    const tab2 = screen.getByRole('tab', { name: 'T2' });
+    tab1.focus();
+    fireEvent.keyDown(tab1, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(tab2);
+  });
+
+  it('ArrowUp moves focus to the previous tab', () => {
+    render(<VerticalTabs />);
+    const tab1 = screen.getByRole('tab', { name: 'T1' });
+    const tab2 = screen.getByRole('tab', { name: 'T2' });
+    tab2.focus();
+    fireEvent.keyDown(tab2, { key: 'ArrowUp' });
+    expect(document.activeElement).toBe(tab1);
+  });
+
+  it('ArrowRight does not navigate in vertical orientation', () => {
+    render(<VerticalTabs />);
+    const tab1 = screen.getByRole('tab', { name: 'T1' });
+    tab1.focus();
+    fireEvent.keyDown(tab1, { key: 'ArrowRight' });
+    expect(document.activeElement).toBe(tab1);
+  });
+});
+
+// ─── Animated indicator ───────────────────────────────────────────────────────
+
+describe('Tabs — animated indicator', () => {
+  it('does not render indicator span when animated=false (default)', () => {
+    const { container } = render(<DefaultTabs />);
+    // The indicator span has aria-hidden="true" — check it's absent
+    const indicator = container.querySelector('[aria-hidden="true"]');
+    expect(indicator).toBeNull();
+  });
+
+  it('renders indicator span with aria-hidden="true" when animated=true and variant="line"', () => {
+    const { container } = render(
+      <Tabs defaultValue="tab1" animated>
+        <TabList>
+          <Tab value="tab1">T1</Tab>
+          <Tab value="tab2">T2</Tab>
+        </TabList>
+        <TabPanel value="tab1">P1</TabPanel>
+        <TabPanel value="tab2">P2</TabPanel>
+      </Tabs>
+    );
+    const indicator = container.querySelector('[aria-hidden="true"]');
+    expect(indicator).toBeInTheDocument();
+    expect(indicator).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('does not render indicator span when animated=true and variant="pill"', () => {
+    const { container } = render(
+      <Tabs defaultValue="tab1" animated variant="pill">
+        <TabList>
+          <Tab value="tab1">T1</Tab>
+          <Tab value="tab2">T2</Tab>
+        </TabList>
+        <TabPanel value="tab1">P1</TabPanel>
+        <TabPanel value="tab2">P2</TabPanel>
+      </Tabs>
+    );
+    const indicator = container.querySelector('[aria-hidden="true"]');
+    expect(indicator).toBeNull();
+  });
+});

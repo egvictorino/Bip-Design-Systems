@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Tooltip } from './Tooltip';
 import { Button } from '../Button';
@@ -9,11 +10,19 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     position: { control: 'select', options: ['top', 'bottom', 'left', 'right'] },
+    align: { control: 'select', options: ['start', 'center', 'end'] },
+    variant: { control: 'select', options: ['default', 'light', 'info', 'success', 'warning', 'error'] },
+    delay: { control: 'number' },
+    closeDelay: { control: 'number' },
+    open: { control: 'boolean' },
+    onOpenChange: { control: false },
   },
 } satisfies Meta<typeof Tooltip>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+// ─── Posiciones ───────────────────────────────────────────────────────────────
 
 export const Default: Story = {
   args: {
@@ -87,6 +96,100 @@ export const AllPositions: Story = {
     </div>
   ),
 };
+
+// ─── Alineación ───────────────────────────────────────────────────────────────
+
+export const Alignment: Story = {
+  args: { content: 'Tooltip', position: 'top', children: <span /> },
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="flex flex-col gap-12 p-16 items-center">
+      <div className="flex gap-8">
+        <Tooltip content="align=start" position="top" align="start" open={true}>
+          <Button variant="secondary" size="sm">Top start</Button>
+        </Tooltip>
+        <Tooltip content="align=center" position="top" align="center" open={true}>
+          <Button variant="secondary" size="sm">Top center</Button>
+        </Tooltip>
+        <Tooltip content="align=end" position="top" align="end" open={true}>
+          <Button variant="secondary" size="sm">Top end</Button>
+        </Tooltip>
+      </div>
+      <div className="flex gap-8 mt-8">
+        <Tooltip content="align=start" position="bottom" align="start" open={true}>
+          <Button variant="secondary" size="sm">Bottom start</Button>
+        </Tooltip>
+        <Tooltip content="align=center" position="bottom" align="center" open={true}>
+          <Button variant="secondary" size="sm">Bottom center</Button>
+        </Tooltip>
+        <Tooltip content="align=end" position="bottom" align="end" open={true}>
+          <Button variant="secondary" size="sm">Bottom end</Button>
+        </Tooltip>
+      </div>
+    </div>
+  ),
+};
+
+// ─── Variantes ────────────────────────────────────────────────────────────────
+
+export const Variants: Story = {
+  args: { content: 'Tooltip', position: 'top', children: <span /> },
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="flex flex-wrap gap-12 p-16 justify-center">
+      {(['default', 'light', 'info', 'success', 'warning', 'error'] as const).map((v) => (
+        <Tooltip key={v} content={`Variant: ${v}`} position="top" variant={v} open={true}>
+          <Button variant="secondary" size="sm">{v}</Button>
+        </Tooltip>
+      ))}
+    </div>
+  ),
+};
+
+// ─── Delay ────────────────────────────────────────────────────────────────────
+
+export const WithDelay: Story = {
+  args: {
+    content: 'Aparece después de 500ms',
+    delay: 500,
+    children: <Button variant="secondary">Hover con delay</Button>,
+  },
+};
+
+export const WithCloseDelay: Story = {
+  args: {
+    content: 'Tarda 300ms en cerrarse',
+    closeDelay: 300,
+    children: <Button variant="secondary">Hover y aleja el cursor</Button>,
+  },
+};
+
+// ─── Modo controlado ──────────────────────────────────────────────────────────
+
+const ControlledDemo = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <Tooltip
+        content="Tooltip controlado externamente"
+        open={open}
+        onOpenChange={setOpen}
+      >
+        <Button variant="secondary">Trigger (hover también funciona)</Button>
+      </Tooltip>
+      <Button variant="primary" size="sm" onClick={() => setOpen((v) => !v)}>
+        {open ? 'Cerrar tooltip' : 'Abrir tooltip'}
+      </Button>
+    </div>
+  );
+};
+
+export const Controlled: Story = {
+  args: { content: '', children: <span /> },
+  render: () => <ControlledDemo />,
+};
+
+// ─── Casos de uso ─────────────────────────────────────────────────────────────
 
 export const OnIcon: Story = {
   args: { content: 'Más información', position: 'top', children: <span /> },

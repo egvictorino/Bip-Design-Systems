@@ -1,6 +1,7 @@
-import { forwardRef, useId } from 'react';
+import { forwardRef, useId, useContext } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
+import { RadioGroupContext } from './RadioGroupContext';
 import styles from './Radio.module.css';
 
 export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
@@ -9,6 +10,7 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   helperText?: string;
   error?: boolean;
   errorMessage?: string;
+  required?: boolean;
 }
 
 type SizeTokens = { ring: string; dot: string; label: string; helper: string; indent: string };
@@ -40,18 +42,24 @@ const sizeClasses: Record<NonNullable<RadioProps['size']>, SizeTokens> = {
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(
   (
     {
-      size = 'md',
+      size: sizeProp,
       label,
       helperText,
-      error = false,
+      error: errorProp,
       errorMessage,
       className,
-      disabled = false,
+      disabled: disabledProp,
       id,
+      required,
       ...props
     },
     ref
   ) => {
+    const groupCtx = useContext(RadioGroupContext);
+    const error = errorProp ?? groupCtx?.error ?? false;
+    const disabled = disabledProp ?? groupCtx?.disabled ?? false;
+    const size = sizeProp ?? groupCtx?.size ?? 'md';
+
     const generatedId = useId();
     const radioId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
@@ -75,6 +83,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               id={radioId}
               type="radio"
               disabled={disabled}
+              required={required}
               aria-describedby={messageId}
               className={styles.nativeInput}
               {...props}
@@ -95,6 +104,11 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               )}
             >
               {label}
+              {required && (
+                <span aria-hidden="true" className={styles.required}>
+                  *
+                </span>
+              )}
             </label>
           )}
         </div>

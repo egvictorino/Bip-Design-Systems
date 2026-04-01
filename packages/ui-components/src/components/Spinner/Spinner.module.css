@@ -19,17 +19,36 @@
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
+.xs { width: 0.75rem; height: 0.75rem; }
 .sm { width: 1rem;    height: 1rem; }
 .md { width: 1.5rem;  height: 1.5rem; }
 .lg { width: 2rem;    height: 2rem; }
+.xl { width: 2.5rem;  height: 2.5rem; }
 
 /* ─── Variants ──────────────────────────────────────────────────────────────── */
 
 .primary   { color: var(--color-primary); }
 .secondary { color: var(--color-secondary); }
 .white     { color: var(--color-txt-white); }
+.danger    { color: var(--color-danger); }
+.success   { color: var(--color-success); }
+.info      { color: var(--color-info); }
+
+/* ─── Speed ─────────────────────────────────────────────────────────────────── */
+
+.slow   { animation-duration: 2s; }
+.normal { animation-duration: 1s; }
+.fast   { animation-duration: 0.5s; }
 
 /* ─── SVG path opacity helpers (referenced inline) ─────────────────────────── */
 
 .trackCircle { opacity: 0.25; }
 .fillPath    { opacity: 0.75; }
+
+/* ─── Accesibilidad ─────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .svg {
+    animation: none;
+  }
+}

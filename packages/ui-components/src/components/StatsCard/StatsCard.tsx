@@ -2,12 +2,18 @@ import React from 'react';
 import { cn } from '../../lib/cn';
 import styles from './StatsCard.module.css';
 
+export type StatsCardVariant = 'outlined' | 'filled' | 'elevated';
+export type StatsCardSize = 'sm' | 'md' | 'lg';
+
 export interface StatsCardProps {
   title: string;
   value: string | number;
   trend?: number;
   description?: string;
   icon?: React.ReactNode;
+  variant?: StatsCardVariant;
+  size?: StatsCardSize;
+  loading?: boolean;
   className?: string;
 }
 
@@ -17,14 +23,42 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   trend,
   description,
   icon,
+  variant = 'outlined',
+  size = 'md',
+  loading = false,
   className,
 }) => {
   const hasTrend = trend !== undefined;
   const isPositive = hasTrend && trend > 0;
   const isNegative = hasTrend && trend < 0;
+  const isNeutral = hasTrend && trend === 0;
+
+  if (loading) {
+    return (
+      <div
+        className={cn(styles.card, styles[variant], styles[size], className)}
+        role="region"
+        aria-label="Cargando estadística"
+        aria-busy="true"
+      >
+        <div className={styles.header}>
+          <span className={cn(styles.loadingBar, styles.loadingTitle)} />
+          {icon && <span className={cn(styles.loadingBar, styles.loadingIcon)} />}
+        </div>
+        <div className={styles.valueRow}>
+          <span className={cn(styles.loadingBar, styles.loadingValue)} />
+        </div>
+        <span className={cn(styles.loadingBar, styles.loadingDescription)} />
+      </div>
+    );
+  }
 
   return (
-    <div className={cn(styles.card, className)}>
+    <div
+      className={cn(styles.card, styles[variant], styles[size], className)}
+      role="region"
+      aria-label={title || undefined}
+    >
       <div className={styles.header}>
         <span className={styles.title}>{title}</span>
         {icon && (
@@ -43,7 +77,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
               styles.trend,
               isPositive && styles.trendPositive,
               isNegative && styles.trendNegative,
-              !isPositive && !isNegative && styles.trendNeutral
+              isNeutral && styles.trendNeutral
             )}
             aria-label={`Tendencia: ${trend > 0 ? '+' : ''}${trend}%`}
           >
@@ -71,6 +105,20 @@ export const StatsCard: React.FC<StatsCardProps> = ({
                 <path
                   fillRule="evenodd"
                   d="M8 12.78a.75.75 0 0 1-1.06 0L2.69 8.53a.75.75 0 0 1 1.06-1.06L7 10.69V4a.75.75 0 0 1 1.5 0v6.69l3.25-3.22a.75.75 0 1 1 1.06 1.06L8 12.78z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            )}
+            {isNeutral && (
+              <svg
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className={styles.trendIcon}
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M2.75 8a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9A.75.75 0 0 1 2.75 8zm7.72-2.03a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06L11.94 8l-1.47-1.47a.75.75 0 0 1 0-1.06z"
                   clipRule="evenodd"
                 />
               </svg>

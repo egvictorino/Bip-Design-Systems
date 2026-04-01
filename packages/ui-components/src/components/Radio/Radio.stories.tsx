@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Radio } from './Radio';
+import { RadioGroup } from './RadioGroup';
 
 const meta = {
   title: 'Components/Radio',
@@ -81,12 +82,20 @@ export const Large: Story = {
   },
 };
 
+export const Required: Story = {
+  args: {
+    label: 'Opción requerida',
+    required: true,
+    name: 'demo-required',
+  },
+};
+
 export const Group: Story = {
   render: () => (
-    <div className="flex flex-col gap-3">
+    <RadioGroup label="Plan de suscripción">
       <Radio name="plan" label="Plan básico" helperText="$9.99 / mes" defaultChecked />
       <Radio name="plan" label="Plan profesional" helperText="$29.99 / mes" />
       <Radio name="plan" label="Plan empresarial" helperText="$99.99 / mes" />
-    </div>
+    </RadioGroup>
   ),
 };

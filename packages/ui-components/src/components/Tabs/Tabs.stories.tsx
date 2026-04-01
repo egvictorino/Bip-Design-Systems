@@ -9,7 +9,10 @@ const meta = {
   parameters: { layout: 'padded' },
   tags: ['autodocs'],
   argTypes: {
-    variant: { control: 'select', options: ['line', 'pill'] },
+    variant: { control: 'select', options: ['line', 'pill', 'boxed'] },
+    size: { control: 'select', options: ['sm', 'md', 'lg'] },
+    orientation: { control: 'select', options: ['horizontal', 'vertical'] },
+    animated: { control: 'boolean' },
   },
 } satisfies Meta<typeof Tabs>;
 
@@ -55,6 +58,167 @@ export const Pill: Story = {
       </TabPanel>
       <TabPanel value="inventario" className="pt-4">
         <p className="text-sm text-txt-secondary">Estado actual del inventario.</p>
+      </TabPanel>
+    </Tabs>
+  ),
+};
+
+export const Boxed: Story = {
+  args: { children: null },
+  render: () => (
+    <Tabs defaultValue="activos" variant="boxed" className="w-[520px]">
+      <TabList>
+        <Tab value="activos">Activos</Tab>
+        <Tab value="inactivos">Inactivos</Tab>
+        <Tab value="archivados">Archivados</Tab>
+      </TabList>
+      <TabPanel value="activos" className="pt-4">
+        <p className="text-sm text-txt-secondary">Registros activos en el sistema.</p>
+      </TabPanel>
+      <TabPanel value="inactivos" className="pt-4">
+        <p className="text-sm text-txt-secondary">Registros desactivados temporalmente.</p>
+      </TabPanel>
+      <TabPanel value="archivados" className="pt-4">
+        <p className="text-sm text-txt-secondary">Registros archivados permanentemente.</p>
+      </TabPanel>
+    </Tabs>
+  ),
+};
+
+export const Sizes: Story = {
+  args: { children: null },
+  render: () => (
+    <div className="flex flex-col gap-8 w-[520px]">
+      <div className="flex flex-col gap-2">
+        <p className="text-xs text-txt-secondary font-medium">Small</p>
+        <Tabs defaultValue="tab1" size="sm">
+          <TabList>
+            <Tab value="tab1">General</Tab>
+            <Tab value="tab2">Seguridad</Tab>
+            <Tab value="tab3">Notificaciones</Tab>
+          </TabList>
+          <TabPanel value="tab1" className="pt-3">
+            <p className="text-sm text-txt-secondary">Configuración general.</p>
+          </TabPanel>
+          <TabPanel value="tab2" className="pt-3">
+            <p className="text-sm text-txt-secondary">Opciones de seguridad.</p>
+          </TabPanel>
+          <TabPanel value="tab3" className="pt-3">
+            <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
+          </TabPanel>
+        </Tabs>
+      </div>
+      <div className="flex flex-col gap-2">
+        <p className="text-xs text-txt-secondary font-medium">Medium (default)</p>
+        <Tabs defaultValue="tab1" size="md">
+          <TabList>
+            <Tab value="tab1">General</Tab>
+            <Tab value="tab2">Seguridad</Tab>
+            <Tab value="tab3">Notificaciones</Tab>
+          </TabList>
+          <TabPanel value="tab1" className="pt-3">
+            <p className="text-sm text-txt-secondary">Configuración general.</p>
+          </TabPanel>
+          <TabPanel value="tab2" className="pt-3">
+            <p className="text-sm text-txt-secondary">Opciones de seguridad.</p>
+          </TabPanel>
+          <TabPanel value="tab3" className="pt-3">
+            <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
+          </TabPanel>
+        </Tabs>
+      </div>
+      <div className="flex flex-col gap-2">
+        <p className="text-xs text-txt-secondary font-medium">Large</p>
+        <Tabs defaultValue="tab1" size="lg">
+          <TabList>
+            <Tab value="tab1">General</Tab>
+            <Tab value="tab2">Seguridad</Tab>
+            <Tab value="tab3">Notificaciones</Tab>
+          </TabList>
+          <TabPanel value="tab1" className="pt-3">
+            <p className="text-sm text-txt-secondary">Configuración general.</p>
+          </TabPanel>
+          <TabPanel value="tab2" className="pt-3">
+            <p className="text-sm text-txt-secondary">Opciones de seguridad.</p>
+          </TabPanel>
+          <TabPanel value="tab3" className="pt-3">
+            <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
+          </TabPanel>
+        </Tabs>
+      </div>
+    </div>
+  ),
+};
+
+export const Vertical: Story = {
+  args: { children: null },
+  render: () => (
+    <Tabs defaultValue="info" orientation="vertical" className="w-[600px]">
+      <TabList>
+        <Tab value="info">Información</Tab>
+        <Tab value="historial">Historial</Tab>
+        <Tab value="documentos">Documentos</Tab>
+        <Tab value="pagos">Pagos</Tab>
+      </TabList>
+      <TabPanel value="info" className="p-4">
+        <p className="text-sm text-txt-secondary">Datos generales del cliente y su cuenta.</p>
+      </TabPanel>
+      <TabPanel value="historial" className="p-4">
+        <p className="text-sm text-txt-secondary">Historial completo de transacciones.</p>
+      </TabPanel>
+      <TabPanel value="documentos" className="p-4">
+        <p className="text-sm text-txt-secondary">Documentos adjuntos al expediente.</p>
+      </TabPanel>
+      <TabPanel value="pagos" className="p-4">
+        <p className="text-sm text-txt-secondary">Métodos de pago y facturación.</p>
+      </TabPanel>
+    </Tabs>
+  ),
+};
+
+export const VerticalPill: Story = {
+  args: { children: null },
+  render: () => (
+    <Tabs defaultValue="ventas" orientation="vertical" variant="pill" className="w-[600px]">
+      <TabList>
+        <Tab value="ventas">Ventas</Tab>
+        <Tab value="compras">Compras</Tab>
+        <Tab value="inventario">Inventario</Tab>
+      </TabList>
+      <TabPanel value="ventas" className="p-4">
+        <p className="text-sm text-txt-secondary">Reporte de ventas del período.</p>
+      </TabPanel>
+      <TabPanel value="compras" className="p-4">
+        <p className="text-sm text-txt-secondary">Reporte de compras del período.</p>
+      </TabPanel>
+      <TabPanel value="inventario" className="p-4">
+        <p className="text-sm text-txt-secondary">Estado actual del inventario.</p>
+      </TabPanel>
+    </Tabs>
+  ),
+};
+
+export const AnimatedIndicator: Story = {
+  args: { children: null },
+  render: () => (
+    <Tabs defaultValue="general" animated className="w-[520px]">
+      <TabList>
+        <Tab value="general">General</Tab>
+        <Tab value="seguridad">Seguridad</Tab>
+        <Tab value="notificaciones">Notificaciones</Tab>
+        <Tab value="facturacion">Facturación</Tab>
+      </TabList>
+      <TabPanel value="general" className="pt-4">
+        <p className="text-sm text-txt-secondary">Configuración general de la cuenta.</p>
+      </TabPanel>
+      <TabPanel value="seguridad" className="pt-4">
+        <p className="text-sm text-txt-secondary">Opciones de seguridad y contraseña.</p>
+      </TabPanel>
+      <TabPanel value="notificaciones" className="pt-4">
+        <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
+      </TabPanel>
+      <TabPanel value="facturacion" className="pt-4">
+        <p className="text-sm text-txt-secondary">Datos de facturación y métodos de pago.</p>
       </TabPanel>
     </Tabs>
   ),

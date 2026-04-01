@@ -111,3 +111,71 @@ export const FullWidth: Story = {
     options: estadosMexico,
   },
 };
+
+export const Required: Story = {
+  args: {
+    variant: 'outlined',
+    label: 'Estado',
+    placeholder: 'Selecciona un estado',
+    required: true,
+    options: estadosMexico,
+  },
+};
+
+export const WithGroups: Story = {
+  args: {
+    variant: 'outlined',
+    label: 'Estado',
+    placeholder: 'Selecciona un estado',
+    groups: [
+      {
+        label: 'Norte',
+        options: [
+          { value: 'nl', label: 'Nuevo León' },
+          { value: 'coah', label: 'Coahuila' },
+          { value: 'chih', label: 'Chihuahua' },
+        ],
+      },
+      {
+        label: 'Centro',
+        options: [
+          { value: 'cdmx', label: 'Ciudad de México' },
+          { value: 'mex', label: 'Estado de México' },
+          { value: 'hgo', label: 'Hidalgo' },
+        ],
+      },
+      {
+        label: 'Occidente',
+        options: [
+          { value: 'jal', label: 'Jalisco' },
+          { value: 'mich', label: 'Michoacán' },
+        ],
+      },
+    ],
+  },
+};
+
+export const Sizes: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '280px' }}>
+      <Select
+        size="sm"
+        label="Tamaño sm"
+        placeholder="Selecciona..."
+        options={estadosMexico}
+      />
+      <Select
+        size="md"
+        label="Tamaño md"
+        placeholder="Selecciona..."
+        options={estadosMexico}
+      />
+      <Select
+        size="lg"
+        label="Tamaño lg"
+        placeholder="Selecciona..."
+        options={estadosMexico}
+      />
+    </div>
+  ),
+};

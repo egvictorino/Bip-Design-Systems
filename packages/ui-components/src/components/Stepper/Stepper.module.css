@@ -6,6 +6,10 @@
   width: 100%;
 }
 
+.stepperVertical {
+  flex-direction: column;
+}
+
 /* ─── StepperStep li wrapper ─────────────────────────────────────────────── */
 
 .stepItem {
@@ -15,6 +19,25 @@
 
 .stepItemFlex {
   flex: 1;
+}
+
+.stepItemVertical {
+  flex-direction: row;
+}
+
+/* ─── Vertical layout columns ────────────────────────────────────────────── */
+
+.indicatorCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.labelCol {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0.75rem;
+  padding-bottom: 1.25rem;
 }
 
 /* ─── Step inner (div for active, button for inactive) ───────────────────── */
@@ -55,15 +78,47 @@
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  width: 2rem;
-  height: 2rem;
-  font-size: 0.875rem;
   font-weight: 500;
   transition: background-color 0.15s, color 0.15s;
 }
 
+/* Size variants */
+.circleSm {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+}
+
+.circleMd {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.875rem;
+}
+
+.circleLg {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+}
+
+/* State variants */
 .circleError {
   background-color: var(--color-danger);
+  color: var(--color-txt-white);
+}
+
+.circleSuccess {
+  background-color: var(--color-success);
+  color: var(--color-txt-white);
+}
+
+.circleWarning {
+  background-color: var(--color-warning);
+  color: var(--color-txt-white);
+}
+
+.circleLoading {
+  background-color: var(--color-primary);
   color: var(--color-txt-white);
 }
 
@@ -91,14 +146,43 @@
 
 .dot {
   border-radius: 9999px;
+  transition: background-color 0.15s;
+}
+
+/* Size variants */
+.dotSm {
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: 13px;
+}
+
+.dotMd {
   width: 0.75rem;
   height: 0.75rem;
-  transition: background-color 0.15s;
   margin-top: 11px;
 }
 
+.dotLg {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 8px;
+}
+
+/* State variants */
 .dotError {
   background-color: var(--color-danger);
+}
+
+.dotSuccess {
+  background-color: var(--color-success);
+}
+
+.dotWarning {
+  background-color: var(--color-warning);
+}
+
+.dotLoading {
+  background-color: var(--color-primary);
 }
 
 .dotCompleted {
@@ -118,6 +202,23 @@
   opacity: 0.5;
 }
 
+/* ─── Loading spinner ────────────────────────────────────────────────────── */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 10px;
+  height: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
 /* ─── Label ──────────────────────────────────────────────────────────────── */
 
 .label {
@@ -131,6 +232,14 @@
 
 .labelError {
   color: var(--color-danger);
+}
+
+.labelSuccess {
+  color: var(--color-success-text);
+}
+
+.labelWarning {
+  color: var(--color-warning-light);
 }
 
 .labelActive {
@@ -156,21 +265,52 @@
 /* ─── Connector ──────────────────────────────────────────────────────────── */
 
 .connector {
+  transition: background-color 0.15s;
+}
+
+/* Horizontal connectors */
+.connectorCircleSm {
   flex: 1;
   height: 1px;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
-  transition: background-color 0.15s;
+  margin-top: 0.75rem;
 }
 
 .connectorCircle {
+  flex: 1;
+  height: 1px;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   margin-top: 1rem;
 }
 
+.connectorCircleLg {
+  flex: 1;
+  height: 1px;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  margin-top: 1.25rem;
+}
+
 .connectorDot {
+  flex: 1;
+  height: 1px;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   margin-top: 5px;
 }
 
+/* Vertical connector */
+.connectorVertical {
+  width: 1px;
+  flex: 1;
+  min-height: 1.5rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Color states (shared by horizontal & vertical) */
 .connectorCompleted {
   background-color: var(--color-primary);
 }
