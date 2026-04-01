@@ -1,6 +1,12 @@
-import React, { useId, useState, useContext } from 'react';
+import React, { useId, useState, useContext, useCallback, useRef, useEffect } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './Tabs.module.css';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type TabsVariant = 'line' | 'pill' | 'boxed';
+export type TabsSize = 'sm' | 'md' | 'lg';
+export type TabsOrientation = 'horizontal' | 'vertical';
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -8,7 +14,12 @@ interface TabsContextValue {
   activeTab: string;
   onChange: (value: string) => void;
   instanceId: string;
-  variant: 'line' | 'pill';
+  variant: TabsVariant;
+  size: TabsSize;
+  orientation: TabsOrientation;
+  animated: boolean;
+  tabRefs: React.RefObject<Map<string, HTMLButtonElement>>;
+  registerTabRef: (value: string, el: HTMLButtonElement | null) => void;
 }
 
 const TabsContext = React.createContext<TabsContextValue | null>(null);
@@ -25,7 +36,10 @@ export interface TabsProps {
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
-  variant?: 'line' | 'pill';
+  variant?: TabsVariant;
+  size?: TabsSize;
+  orientation?: TabsOrientation;
+  animated?: boolean;
   className?: string;
   children: React.ReactNode;
 }
@@ -35,21 +49,53 @@ export const Tabs: React.FC<TabsProps> = ({
   defaultValue = '',
   onChange,
   variant = 'line',
+  size = 'md',
+  orientation = 'horizontal',
+  animated = false,
   className,
   children,
 }) => {
   const [internalValue, setInternalValue] = useState(defaultValue);
   const instanceId = useId();
   const activeTab = value ?? internalValue;
+  const tabRefsMap = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   const handleChange = (v: string) => {
     if (value === undefined) setInternalValue(v);
     onChange?.(v);
   };
 
+  const registerTabRef = useCallback((tabValue: string, el: HTMLButtonElement | null) => {
+    if (el) {
+      tabRefsMap.current.set(tabValue, el);
+    } else {
+      tabRefsMap.current.delete(tabValue);
+    }
+  }, []);
+
   return (
-    <TabsContext.Provider value={{ activeTab, onChange: handleChange, instanceId, variant }}>
-      <div className={cn(styles.tabsRoot, className)}>{children}</div>
+    <TabsContext.Provider
+      value={{
+        activeTab,
+        onChange: handleChange,
+        instanceId,
+        variant,
+        size,
+        orientation,
+        animated,
+        tabRefs: tabRefsMap,
+        registerTabRef,
+      }}
+    >
+      <div
+        className={cn(
+          styles.tabsRoot,
+          orientation === 'vertical' && styles.tabsRootVertical,
+          className
+        )}
+      >
+        {children}
+      </div>
     </TabsContext.Provider>
   );
 };
@@ -60,19 +106,51 @@ export interface TabListProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
+const tabListClassMap: Record<TabsVariant, Record<'horizontal' | 'vertical', string>> = {
+  line: { horizontal: styles.tabListLine, vertical: styles.tabListLineVertical },
+  pill: { horizontal: styles.tabListPill, vertical: styles.tabListPillVertical },
+  boxed: { horizontal: styles.tabListBoxed, vertical: styles.tabListBoxed },
+};
+
 export const TabList: React.FC<TabListProps> = ({ className, children, ...props }) => {
-  const { variant } = useTabsContext();
+  const { variant, orientation, animated, activeTab, tabRefs } = useTabsContext();
+  const listRef = useRef<HTMLDivElement>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!animated || variant !== 'line' || orientation !== 'horizontal') return;
+    const activeEl = tabRefs.current.get(activeTab);
+    if (!activeEl || !listRef.current) return;
+    const listRect = listRef.current.getBoundingClientRect();
+    const tabRect = activeEl.getBoundingClientRect();
+    setIndicatorStyle({ left: tabRect.left - listRect.left, width: tabRect.width });
+    setInitialized(true);
+  }, [activeTab, animated, variant, orientation, tabRefs]);
+
+  const orientationKey = orientation === 'vertical' ? 'vertical' : 'horizontal';
+  const tabListClass = tabListClassMap[variant][orientationKey];
 
   return (
     <div
+      ref={listRef}
       role="tablist"
+      aria-orientation={orientation}
       className={cn(
-        variant === 'line' ? styles.tabListLine : styles.tabListPill,
+        tabListClass,
+        animated && variant === 'line' && orientation === 'horizontal' && styles.tabListAnimated,
         className
       )}
       {...props}
     >
       {children}
+      {animated && variant === 'line' && orientation === 'horizontal' && (
+        <span
+          aria-hidden="true"
+          className={cn(styles.tabIndicator, initialized && styles.tabIndicatorAnimated)}
+          style={{ left: indicatorStyle.left, width: indicatorStyle.width }}
+        />
+      )}
     </div>
   );
 };
@@ -84,11 +162,48 @@ export interface TabProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElem
   children: React.ReactNode;
 }
 
+interface TabVariantInfo {
+  base: string;
+  active: string;
+  inactive: string;
+  baseVertical?: string;
+  activeVertical?: string;
+  inactiveVertical?: string;
+}
+
+const tabVariantClasses: Record<TabsVariant, TabVariantInfo> = {
+  line: {
+    base: styles.tabLine,
+    active: styles.tabLineActive,
+    inactive: styles.tabLineInactive,
+    baseVertical: styles.tabLineVertical,
+    activeVertical: styles.tabLineVerticalActive,
+    inactiveVertical: styles.tabLineVerticalInactive,
+  },
+  pill: {
+    base: styles.tabPill,
+    active: styles.tabPillActive,
+    inactive: styles.tabPillInactive,
+  },
+  boxed: {
+    base: styles.tabBoxed,
+    active: styles.tabBoxedActive,
+    inactive: styles.tabBoxedInactive,
+  },
+};
+
 export const Tab: React.FC<TabProps> = ({ value, className, children, ...props }) => {
-  const { activeTab, onChange, instanceId, variant } = useTabsContext();
+  const { activeTab, onChange, instanceId, variant, size, orientation, registerTabRef } =
+    useTabsContext();
   const isActive = activeTab === value;
   const tabId = `${instanceId}-tab-${value}`;
   const panelId = `${instanceId}-panel-${value}`;
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    registerTabRef(value, buttonRef.current);
+    return () => registerTabRef(value, null);
+  }, [value, registerTabRef]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     const tablist = e.currentTarget.closest('[role="tablist"]');
@@ -99,10 +214,14 @@ export const Tab: React.FC<TabProps> = ({ value, className, children, ...props }
     const currentIndex = tabs.indexOf(e.currentTarget);
     let nextIndex = currentIndex;
 
-    if (e.key === 'ArrowRight') {
+    const isVertical = orientation === 'vertical';
+    const nextKey = isVertical ? 'ArrowDown' : 'ArrowRight';
+    const prevKey = isVertical ? 'ArrowUp' : 'ArrowLeft';
+
+    if (e.key === nextKey) {
       nextIndex = (currentIndex + 1) % tabs.length;
       e.preventDefault();
-    } else if (e.key === 'ArrowLeft') {
+    } else if (e.key === prevKey) {
       nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
       e.preventDefault();
     } else if (e.key === 'Home') {
@@ -118,13 +237,15 @@ export const Tab: React.FC<TabProps> = ({ value, className, children, ...props }
     }
   };
 
-  const tabClass =
-    variant === 'line'
-      ? cn(styles.tab, styles.tabLine, isActive ? styles.tabLineActive : styles.tabLineInactive)
-      : cn(styles.tab, styles.tabPill, isActive ? styles.tabPillActive : styles.tabPillInactive);
+  const isVertical = orientation === 'vertical';
+  const variantInfo = tabVariantClasses[variant];
+  const baseClass = isVertical && variant === 'line' ? variantInfo.baseVertical ?? variantInfo.base : variantInfo.base;
+  const activeClass = isVertical && variant === 'line' ? variantInfo.activeVertical ?? variantInfo.active : variantInfo.active;
+  const inactiveClass = isVertical && variant === 'line' ? variantInfo.inactiveVertical ?? variantInfo.inactive : variantInfo.inactive;
 
   return (
     <button
+      ref={buttonRef}
       role="tab"
       id={tabId}
       aria-controls={panelId}
@@ -133,7 +254,14 @@ export const Tab: React.FC<TabProps> = ({ value, className, children, ...props }
       type="button"
       onClick={() => onChange(value)}
       onKeyDown={handleKeyDown}
-      className={cn(tabClass, className)}
+      className={cn(
+        styles.tab,
+        baseClass,
+        isActive ? activeClass : inactiveClass,
+        size === 'sm' && styles.tabSm,
+        size === 'lg' && styles.tabLg,
+        className
+      )}
       {...props}
     >
       {children}
@@ -149,7 +277,7 @@ export interface TabPanelProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const TabPanel: React.FC<TabPanelProps> = ({ value, className, children, ...props }) => {
-  const { activeTab, instanceId } = useTabsContext();
+  const { activeTab, instanceId, orientation } = useTabsContext();
   const tabId = `${instanceId}-tab-${value}`;
   const panelId = `${instanceId}-panel-${value}`;
 
@@ -160,7 +288,11 @@ export const TabPanel: React.FC<TabPanelProps> = ({ value, className, children, 
       aria-labelledby={tabId}
       tabIndex={0}
       hidden={activeTab !== value}
-      className={cn(styles.tabPanel, className)}
+      className={cn(
+        styles.tabPanel,
+        orientation === 'vertical' && styles.tabPanelVertical,
+        className
+      )}
       {...props}
     >
       {children}
