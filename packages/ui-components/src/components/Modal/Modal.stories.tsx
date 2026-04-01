@@ -12,6 +12,7 @@ const meta = {
   argTypes: {
     size: { control: 'select', options: ['sm', 'md', 'lg', 'xl'] },
     closeOnBackdrop: { control: 'boolean' },
+    closeOnEscape: { control: 'boolean' },
   },
 } satisfies Meta<typeof Modal>;
 
@@ -164,14 +165,20 @@ const NoBackdropCloseModalStory = () => {
   return (
     <>
       <Button variant="primary" onClick={() => setOpen(true)}>
-        Abrir (sin cerrar al dar clic fuera)
+        Abrir (sin cerrar al dar clic fuera ni con Escape)
       </Button>
-      <Modal isOpen={open} onClose={() => setOpen(false)} size="sm" closeOnBackdrop={false}>
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        size="sm"
+        closeOnBackdrop={false}
+        closeOnEscape={false}
+      >
         <ModalHeader>Acción requerida</ModalHeader>
         <ModalBody>
           <p className="text-txt-secondary text-sm">
             Debes completar esta acción antes de continuar. No puedes cerrar este modal haciendo
-            clic fuera de él.
+            clic fuera de él ni presionando Escape.
           </p>
         </ModalBody>
         <ModalFooter>
@@ -187,4 +194,88 @@ const NoBackdropCloseModalStory = () => {
 export const NoBackdropClose: Story = {
   args: { isOpen: false, onClose: () => {}, children: null },
   render: () => <NoBackdropCloseModalStory />,
+};
+
+const FooterAlignStory = () => {
+  const [open, setOpen] = useState(false);
+  const [align, setAlign] = useState<'left' | 'center' | 'right'>('right');
+  return (
+    <>
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        {(['left', 'center', 'right'] as const).map((a) => (
+          <Button
+            key={a}
+            variant={align === a ? 'primary' : 'bare'}
+            size="sm"
+            onClick={() => { setAlign(a); setOpen(true); }}
+          >
+            Align {a}
+          </Button>
+        ))}
+      </div>
+      <Modal isOpen={open} onClose={() => setOpen(false)} size="sm">
+        <ModalHeader>Alineación del footer</ModalHeader>
+        <ModalBody>
+          <p className="text-txt-secondary text-sm">
+            Los botones del footer están alineados a la <strong>{align}</strong>.
+          </p>
+        </ModalBody>
+        <ModalFooter align={align}>
+          <Button variant="bare" size="sm" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
+          <Button variant="primary" size="sm" onClick={() => setOpen(false)}>
+            Confirmar
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </>
+  );
+};
+
+export const FooterAlign: Story = {
+  args: { isOpen: false, onClose: () => {}, children: null },
+  render: () => <FooterAlignStory />,
+};
+
+const LongContentStory = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="primary" onClick={() => setOpen(true)}>
+        Contenido largo (body scrollable)
+      </Button>
+      <Modal isOpen={open} onClose={() => setOpen(false)} size="md">
+        <ModalHeader>Historial de actividad</ModalHeader>
+        <ModalBody>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {Array.from({ length: 20 }, (_, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: '0.75rem',
+                  borderRadius: '0.375rem',
+                  backgroundColor: 'var(--color-surface-2)',
+                  fontSize: '0.875rem',
+                  color: 'var(--color-txt-secondary)',
+                }}
+              >
+                Entrada #{i + 1} — Acción registrada el {new Date().toLocaleDateString('es-MX')}
+              </div>
+            ))}
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="primary" size="sm" onClick={() => setOpen(false)}>
+            Cerrar
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </>
+  );
+};
+
+export const LongContent: Story = {
+  args: { isOpen: false, onClose: () => {}, children: null },
+  render: () => <LongContentStory />,
 };

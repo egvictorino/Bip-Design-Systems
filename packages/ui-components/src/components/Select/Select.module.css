@@ -24,6 +24,8 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
+.required { color: var(--color-danger); margin-left: 0.125rem; }
+
 /* ─── Select wrapper (for icon) ─────────────────────────────────────────────── */
 
 .selectWrapper {
@@ -56,17 +58,17 @@
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
 .sm { padding: 6px 2rem 6px 12px;  font-size: 0.75rem;  line-height: 1rem; }
-.md { padding: 10px 2rem 10px 20px; font-size: 0.875rem; line-height: 1.25rem; }
+.md { padding: 10px 2rem 10px 16px; font-size: 0.875rem; line-height: 1.25rem; }
 .lg { padding: 12px 2rem 12px 24px; font-size: 1.125rem; line-height: 1.75rem; }
 
 /* ─── Variant: outlined ─────────────────────────────────────────────────────── */
 
 .outlined {
-  border: 1px solid var(--color-primary);
+  border: 1px solid var(--color-edge);
   background-color: var(--color-field);
 }
-.outlined:hover:not(:disabled) { border-color: var(--color-primary-hover); }
-.outlined:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.outlined:hover:not(:disabled) { border-color: var(--color-primary); }
+.outlined:focus-visible { border-color: var(--color-primary); box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
 .outlined.error { border-color: var(--color-danger); }
 .outlined.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
 
@@ -92,7 +94,7 @@
 .bare:hover:not(:disabled) { border-bottom-color: var(--color-primary-hover); }
 .bare:focus-visible { box-shadow: none; border-bottom-color: var(--color-primary-hover); }
 .bare.error { border-bottom-color: var(--color-danger); }
-.bare.error:focus-visible { box-shadow: none; }
+.bare.error:focus-visible { box-shadow: none; border-bottom-color: var(--color-danger); }
 
 /* ─── Chevron icon ──────────────────────────────────────────────────────────── */
 
@@ -102,11 +104,11 @@
   right: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
-  transition: color 150ms;
+  transition: color 150ms, transform 150ms;
 }
 
 .chevronNormal   { color: var(--color-txt-secondary); }
-.chevronFocused  { color: var(--color-primary); }
+.chevronFocused  { color: var(--color-primary); transform: translateY(-50%) rotate(180deg); }
 .chevronError    { color: var(--color-danger); }
 .chevronDisabled { opacity: 0.5; }
 

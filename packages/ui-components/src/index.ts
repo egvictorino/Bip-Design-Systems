@@ -17,7 +17,7 @@ export { Input } from './components/Input';
 export type { InputProps, InputType } from './components/Input';
 
 export { FileUpload } from './components/FileUpload';
-export type { FileUploadProps } from './components/FileUpload';
+export type { FileUploadProps, RejectedFile } from './components/FileUpload';
 
 export { Checkbox } from './components/Checkbox';
 export type { CheckboxProps } from './components/Checkbox';
@@ -26,6 +26,8 @@ export type { CheckboxGroupProps } from './components/Checkbox';
 
 export { Radio } from './components/Radio';
 export type { RadioProps } from './components/Radio';
+export { RadioGroup } from './components/Radio';
+export type { RadioGroupProps } from './components/Radio';
 
 export { Textarea } from './components/Textarea';
 export type { TextareaProps } from './components/Textarea';
@@ -54,7 +56,15 @@ export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps, CardMe
 export { Toggle } from './components/Toggle';
 export type { ToggleProps } from './components/Toggle';
 
-export { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from './components/Table';
+export {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableHeader,
+  TableCell,
+  TableEmpty,
+} from './components/Table';
 export type {
   TableProps,
   TableHeadProps,
@@ -62,6 +72,7 @@ export type {
   TableRowProps,
   TableHeaderProps,
   TableCellProps,
+  TableEmptyProps,
 } from './components/Table';
 
 export { Pagination } from './components/Pagination';
@@ -115,6 +126,7 @@ export type { SkeletonProps } from './components/Skeleton';
 export { Navbar, NavbarBrand, NavbarNav, NavbarItem, NavbarActions } from './components/Navbar';
 export type {
   NavbarProps,
+  NavbarVariant,
   NavbarBrandProps,
   NavbarNavProps,
   NavbarItemProps,
@@ -151,6 +163,7 @@ export {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarItem,
+  SidebarSubMenu,
   SidebarFooter,
   SidebarTrigger,
 } from './components/Sidebar';
@@ -162,6 +175,7 @@ export type {
   SidebarGroupProps,
   SidebarGroupLabelProps,
   SidebarItemProps,
+  SidebarSubMenuProps,
   SidebarFooterProps,
   SidebarTriggerProps,
 } from './components/Sidebar';
@@ -177,6 +191,9 @@ export type { StatsCardProps } from './components/StatsCard';
 
 export { SearchInput } from './components/SearchInput';
 export type { SearchInputProps } from './components/SearchInput';
+
+export { NumberInput } from './components/NumberInput';
+export type { NumberInputProps } from './components/NumberInput';
 
 export { DateRangePicker } from './components/DateRangePicker';
 export type { DateRangePickerProps, DateRange } from './components/DateRangePicker';

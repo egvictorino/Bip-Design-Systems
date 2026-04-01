@@ -170,4 +170,107 @@ describe('ProgressBar', () => {
     const { container } = render(<ProgressBar value={50} />);
     expect(container.firstChild).toHaveClass('wrapper');
   });
+
+  // ── Props spread ───────────────────────────────────────────────────────────
+
+  it('spreads additional HTML attributes to the outer wrapper', () => {
+    render(<ProgressBar value={50} data-testid="pb-wrapper" />);
+    expect(screen.getByTestId('pb-wrapper')).toBeInTheDocument();
+  });
+
+  it('spread attributes do not end up on the progressbar element', () => {
+    render(<ProgressBar value={50} data-testid="pb-wrapper" />);
+    expect(screen.getByRole('progressbar')).not.toHaveAttribute('data-testid');
+  });
+
+  // ── aria-valuetext ─────────────────────────────────────────────────────────
+
+  it('sets aria-valuetext when valueText is provided and not indeterminate', () => {
+    render(<ProgressBar value={75} valueText="75 de 100 archivos" />);
+    expect(screen.getByRole('progressbar')).toHaveAttribute(
+      'aria-valuetext',
+      '75 de 100 archivos'
+    );
+  });
+
+  it('does not set aria-valuetext when not provided', () => {
+    render(<ProgressBar value={50} />);
+    expect(screen.getByRole('progressbar')).not.toHaveAttribute('aria-valuetext');
+  });
+
+  it('does not set aria-valuetext when indeterminate even if valueText is provided', () => {
+    render(<ProgressBar indeterminate valueText="Cargando datos..." />);
+    expect(screen.getByRole('progressbar')).not.toHaveAttribute('aria-valuetext');
+  });
+
+  // ── helperText ─────────────────────────────────────────────────────────────
+
+  it('renders helperText when provided', () => {
+    render(<ProgressBar value={40} helperText="2 de 5 archivos procesados" />);
+    expect(screen.getByText('2 de 5 archivos procesados')).toBeInTheDocument();
+  });
+
+  it('does not render helperText span when not provided', () => {
+    const { container } = render(<ProgressBar value={40} />);
+    expect(container.querySelector('.helperText')).not.toBeInTheDocument();
+  });
+
+  it('helperText span has id and progressbar has aria-describedby when id is provided', () => {
+    render(<ProgressBar value={40} id="pb-test" helperText="Descripción" />);
+    const pb = screen.getByRole('progressbar');
+    const helper = screen.getByText('Descripción');
+    expect(helper).toHaveAttribute('id', 'pb-test-description');
+    expect(pb).toHaveAttribute('aria-describedby', 'pb-test-description');
+  });
+
+  it('helperText span has no id and progressbar has no aria-describedby when id is absent', () => {
+    render(<ProgressBar value={40} helperText="Descripción sin id" />);
+    const pb = screen.getByRole('progressbar');
+    expect(pb).not.toHaveAttribute('aria-describedby');
+    const helper = screen.getByText('Descripción sin id');
+    expect(helper).not.toHaveAttribute('id');
+  });
+
+  // ── Striped / Animated ─────────────────────────────────────────────────────
+
+  it('fill has striped class when striped=true', () => {
+    const { container } = render(<ProgressBar value={50} striped />);
+    const fill = container.querySelector('[aria-hidden="true"]');
+    expect(fill).toHaveClass('striped');
+  });
+
+  it('fill does not have striped class when striped is not set', () => {
+    const { container } = render(<ProgressBar value={50} />);
+    const fill = container.querySelector('[aria-hidden="true"]');
+    expect(fill).not.toHaveClass('striped');
+  });
+
+  it('fill has animated class when striped=true and animated=true', () => {
+    const { container } = render(<ProgressBar value={50} striped animated />);
+    const fill = container.querySelector('[aria-hidden="true"]');
+    expect(fill).toHaveClass('animated');
+  });
+
+  it('fill does not have animated class when striped=false even if animated=true', () => {
+    const { container } = render(<ProgressBar value={50} animated />);
+    const fill = container.querySelector('[aria-hidden="true"]');
+    expect(fill).not.toHaveClass('animated');
+  });
+
+  it('indeterminate bar does not receive striped class', () => {
+    const { container } = render(<ProgressBar indeterminate striped />);
+    const fill = container.querySelector('[aria-hidden="true"]');
+    expect(fill).not.toHaveClass('striped');
+  });
+
+  // ── Record maps — regresión de variantes ───────────────────────────────────
+
+  it.each(['default', 'success', 'warning', 'error'] as const)(
+    'variant %s fill class resolves via Record map',
+    (variant) => {
+      const { container } = render(<ProgressBar value={50} variant={variant} />);
+      const fill = container.querySelector('[aria-hidden="true"]');
+      expect(fill).toHaveClass(variant);
+    }
+  );
 });

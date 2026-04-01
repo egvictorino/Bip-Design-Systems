@@ -21,7 +21,6 @@
   display: flex;
   height: 100vh;
   flex-direction: column;
-  background-color: white;
   border-right: 1px solid var(--color-edge);
   transition: width 200ms ease-in-out, transform 200ms ease-in-out;
 }
@@ -35,6 +34,48 @@
 @media (min-width: 768px) {
   .panelMobileClosed { transform: translateX(0); }
 }
+
+/* ─── Variants ───────────────────────────────────────────────────────────────── */
+
+.variantLight {
+  background-color: var(--color-surface-1);
+}
+
+.variantDark {
+  background-color: var(--color-surface-4);
+  color: var(--color-txt-white);
+  border-right-color: transparent;
+}
+
+.variantPrimary {
+  background-color: var(--color-primary);
+  color: white;
+  border-right-color: transparent;
+}
+
+/* Dark variant — cascade overrides */
+.variantDark .item          { color: rgba(255, 255, 255, 0.65); }
+.variantDark .itemActive    { background-color: rgba(255, 255, 255, 0.12); color: white; }
+.variantDark .itemDefault:hover { background-color: rgba(255, 255, 255, 0.08); color: white; }
+.variantDark .groupLabel    { color: rgba(255, 255, 255, 0.4); }
+.variantDark .brand         { color: white; }
+.variantDark .header        { border-bottom-color: rgba(255, 255, 255, 0.12); }
+.variantDark .footer        { border-top-color: rgba(255, 255, 255, 0.12); }
+.variantDark .trigger       { color: rgba(255, 255, 255, 0.65); }
+.variantDark .trigger:hover { background-color: rgba(255, 255, 255, 0.08); color: white; }
+.variantDark .badge         { background-color: var(--color-danger); }
+
+/* Primary variant — cascade overrides */
+.variantPrimary .item          { color: rgba(255, 255, 255, 0.75); }
+.variantPrimary .itemActive    { background-color: rgba(255, 255, 255, 0.2); color: white; }
+.variantPrimary .itemDefault:hover { background-color: rgba(255, 255, 255, 0.15); color: white; }
+.variantPrimary .groupLabel    { color: rgba(255, 255, 255, 0.5); }
+.variantPrimary .brand         { color: white; }
+.variantPrimary .header        { border-bottom-color: rgba(255, 255, 255, 0.2); }
+.variantPrimary .footer        { border-top-color: rgba(255, 255, 255, 0.2); }
+.variantPrimary .trigger       { color: rgba(255, 255, 255, 0.75); }
+.variantPrimary .trigger:hover { background-color: rgba(255, 255, 255, 0.15); color: white; }
+.variantPrimary .badge         { background-color: white; color: var(--color-primary); }
 
 /* ─── Header ─────────────────────────────────────────────────────────────────── */
 
@@ -119,6 +160,55 @@
 .itemDefault:hover { background-color: var(--color-surface-3); color: var(--color-txt); }
 .itemDisabled { color: var(--color-txt-disabled); cursor: not-allowed; pointer-events: none; }
 
+/* ─── Badge ──────────────────────────────────────────────────────────────────── */
+
+.badge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+  background-color: var(--color-danger);
+  color: white;
+  flex-shrink: 0;
+}
+
+/* ─── Sub-menu ───────────────────────────────────────────────────────────────── */
+
+.subMenuList {
+  list-style: none;
+  margin: 0.125rem 0 0;
+  padding: 0 0 0 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 200ms ease-in-out;
+}
+
+.subMenuListOpen {
+  max-height: 30rem;
+}
+
+.subMenuChevron {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: transform 200ms ease-in-out;
+}
+
+.subMenuChevronOpen {
+  transform: rotate(90deg);
+}
+
 /* ─── Footer ─────────────────────────────────────────────────────────────────── */
 
 .footer {
@@ -142,9 +232,9 @@
   border: none;
   cursor: pointer;
   transition: background-color 150ms, color 150ms;
+  outline: none;
 }
 
 .trigger:hover { background-color: var(--color-surface-3); color: var(--color-txt); }
-.trigger:focus { outline: none; }
 .trigger:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
 .triggerIcon { width: 1rem; height: 1rem; }

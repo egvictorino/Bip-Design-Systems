@@ -1,4 +1,12 @@
-import React, { useEffect, useRef, useContext, useId, useCallback, createContext } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useContext,
+  useId,
+  useCallback,
+  createContext,
+  useState,
+} from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
 import styles from './Modal.module.css';
@@ -21,6 +29,7 @@ export interface ModalProps {
   onClose: () => void;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   closeOnBackdrop?: boolean;
+  closeOnEscape?: boolean;
   className?: string;
   children: React.ReactNode;
 }
@@ -35,17 +44,35 @@ const sizeClass: Record<NonNullable<ModalProps['size']>, string> = {
 const FOCUSABLE_SELECTORS =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
+const ANIMATION_DURATION = 150;
+
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   size = 'md',
   closeOnBackdrop = true,
+  closeOnEscape = true,
   className,
   children,
 }) => {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
+  // Animation state: isVisible keeps the portal in the DOM during exit animation
+  const [isVisible, setIsVisible] = useState(isOpen);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsVisible(true);
+      requestAnimationFrame(() => setIsAnimating(true));
+    } else {
+      setIsAnimating(false);
+      const timer = setTimeout(() => setIsVisible(false), ANIMATION_DURATION);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // Lock body scroll while open
   useEffect(() => {
@@ -72,7 +99,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        if (closeOnEscape) onClose();
         return;
       }
 
@@ -107,9 +134,9 @@ export const Modal: React.FC<ModalProps> = ({
       document.removeEventListener('keydown', handleKeyDown);
       restoreFocus();
     };
-  }, [isOpen, onClose, restoreFocus]);
+  }, [isOpen, onClose, closeOnEscape, restoreFocus]);
 
-  if (!isOpen) return null;
+  if (!isVisible) return null;
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (closeOnBackdrop && e.target === e.currentTarget) {
@@ -122,7 +149,7 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Backdrop + centering container — presentational, Escape handled at document level */}
       <div
         role="presentation"
-        className={styles.backdrop}
+        className={cn(styles.backdrop, isAnimating && styles.backdropOpen)}
         onClick={handleBackdropClick}
       >
         {/* Dialog */}
@@ -132,7 +159,7 @@ export const Modal: React.FC<ModalProps> = ({
           aria-modal="true"
           aria-labelledby={titleId}
           tabIndex={-1}
-          className={cn(styles.dialog, sizeClass[size], className)}
+          className={cn(styles.dialog, sizeClass[size], isAnimating && styles.dialogOpen, className)}
         >
           {children}
         </div>
@@ -185,10 +212,22 @@ export const ModalBody: React.FC<ModalBodyProps> = ({ className, children, ...pr
 
 export interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
+  align?: 'left' | 'center' | 'right';
 }
 
-export const ModalFooter: React.FC<ModalFooterProps> = ({ className, children, ...props }) => (
-  <div className={cn(styles.footer, className)} {...props}>
+const footerAlignClass: Record<NonNullable<ModalFooterProps['align']>, string> = {
+  left: styles.footerLeft,
+  center: styles.footerCenter,
+  right: styles.footerRight,
+};
+
+export const ModalFooter: React.FC<ModalFooterProps> = ({
+  className,
+  children,
+  align = 'right',
+  ...props
+}) => (
+  <div className={cn(styles.footer, footerAlignClass[align], className)} {...props}>
     {children}
   </div>
 );

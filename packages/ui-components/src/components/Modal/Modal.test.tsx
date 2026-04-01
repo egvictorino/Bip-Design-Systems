@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from './Modal';
 
@@ -8,12 +8,14 @@ const DefaultModal = ({
   isOpen = true,
   onClose = vi.fn(),
   closeOnBackdrop = true,
+  closeOnEscape,
   size,
   className,
 }: {
   isOpen?: boolean;
   onClose?: () => void;
   closeOnBackdrop?: boolean;
+  closeOnEscape?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
 }) => (
@@ -21,6 +23,7 @@ const DefaultModal = ({
     isOpen={isOpen}
     onClose={onClose}
     closeOnBackdrop={closeOnBackdrop}
+    closeOnEscape={closeOnEscape}
     size={size}
     className={className}
   >
@@ -200,5 +203,65 @@ describe('Modal', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(() => render(<ModalHeader>Test</ModalHeader>)).toThrow();
     consoleError.mockRestore();
+  });
+
+  // ── closeOnEscape ────────────────────────────────────────────────────────────
+
+  it('pressing Escape does NOT call onClose when closeOnEscape=false', () => {
+    const onClose = vi.fn();
+    render(<DefaultModal onClose={onClose} closeOnEscape={false} />);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('pressing Escape calls onClose when closeOnEscape=true (default)', () => {
+    const onClose = vi.fn();
+    render(<DefaultModal onClose={onClose} closeOnEscape={true} />);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  // ── ModalFooter align ────────────────────────────────────────────────────────
+
+  it('ModalFooter default align is right', () => {
+    render(<DefaultModal />);
+    const footer = screen.getByRole('button', { name: 'Cerrar' }).parentElement!;
+    expect(footer.className).toMatch(/footerRight/);
+  });
+
+  it.each(['left', 'center', 'right'] as const)(
+    'ModalFooter align="%s" applies correct class',
+    (align) => {
+      render(
+        <Modal isOpen onClose={vi.fn()}>
+          <ModalHeader>T</ModalHeader>
+          <ModalBody>body</ModalBody>
+          <ModalFooter align={align}>
+            <button>Acción</button>
+          </ModalFooter>
+        </Modal>
+      );
+      const footer = screen.getByRole('button', { name: 'Acción' }).parentElement!;
+      expect(footer.className).toMatch(new RegExp(`footer${align.charAt(0).toUpperCase() + align.slice(1)}`));
+    }
+  );
+
+  // ── Animation ────────────────────────────────────────────────────────────────
+
+  it('modal stays in DOM during exit animation after isOpen changes to false', () => {
+    vi.useFakeTimers();
+    const onClose = vi.fn();
+    const { rerender } = render(<DefaultModal isOpen onClose={onClose} />);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    rerender(<DefaultModal isOpen={false} onClose={onClose} />);
+    // Still in DOM — animation timeout has not fired yet
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    act(() => { vi.runAllTimers(); });
+    // After timeout, modal is removed
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    vi.useRealTimers();
   });
 });

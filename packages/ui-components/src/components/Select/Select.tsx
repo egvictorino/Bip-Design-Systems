@@ -9,6 +9,12 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
+export interface SelectOptionGroup {
+  label: string;
+  options: SelectOption[];
+  disabled?: boolean;
+}
+
 export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
   variant?: 'outlined' | 'filled' | 'bare';
   size?: 'sm' | 'md' | 'lg';
@@ -18,7 +24,9 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   errorMessage?: string;
   fullWidth?: boolean;
   placeholder?: string;
-  options: SelectOption[];
+  options?: SelectOption[];
+  groups?: SelectOptionGroup[];
+  required?: boolean;
 }
 
 const labelSizeClass: Record<NonNullable<SelectProps['size']>, string> = {
@@ -46,7 +54,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       errorMessage,
       fullWidth = false,
       placeholder,
-      options,
+      options = [],
+      groups,
+      required = false,
       className,
       disabled = false,
       id,
@@ -59,7 +69,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const [focused, setFocused] = useState(false);
     const generatedId = useId();
     const selectId = id ?? generatedId;
-    const hasMessage = (error && errorMessage) || helperText;
+    const hasMessage = Boolean((error && errorMessage) || helperText);
     const messageId = hasMessage ? `${selectId}-message` : undefined;
 
     return (
@@ -75,6 +85,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             )}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className={styles.required}>
+                {' *'}
+              </span>
+            )}
           </label>
         )}
 
@@ -83,6 +98,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ref={ref}
             id={selectId}
             disabled={disabled}
+            required={required}
             aria-invalid={error || undefined}
             aria-describedby={messageId}
             className={cn(
@@ -112,6 +128,15 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               <option key={option.value} value={option.value} disabled={option.disabled}>
                 {option.label}
               </option>
+            ))}
+            {groups?.map((group) => (
+              <optgroup key={group.label} label={group.label} disabled={group.disabled}>
+                {group.options.map((option) => (
+                  <option key={option.value} value={option.value} disabled={option.disabled}>
+                    {option.label}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
 

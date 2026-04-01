@@ -107,3 +107,33 @@ export const FullWidth: Story = {
     rows: 3,
   },
 };
+
+export const Required: Story = {
+  args: {
+    variant: 'outlined',
+    label: 'Motivo',
+    placeholder: 'Describe el motivo...',
+    required: true,
+    rows: 4,
+  },
+};
+
+export const WithCounter: Story = {
+  args: {
+    variant: 'outlined',
+    label: 'Descripción',
+    placeholder: 'Describe el producto...',
+    maxLength: 200,
+    helperText: 'Breve descripción del producto',
+    rows: 4,
+  },
+};
+
+export const AutoGrow: Story = {
+  args: {
+    variant: 'outlined',
+    label: 'Mensaje',
+    placeholder: 'Escribe para ver el auto-crecimiento...',
+    autoGrow: true,
+  },
+};
