@@ -120,7 +120,7 @@ export const TabList: React.FC<TabListProps> = ({ className, children, ...props 
 
   useEffect(() => {
     if (!animated || variant !== 'line' || orientation !== 'horizontal') return;
-    const activeEl = tabRefs.current.get(activeTab);
+    const activeEl = tabRefs.current?.get(activeTab);
     if (!activeEl || !listRef.current) return;
     const listRect = listRef.current.getBoundingClientRect();
     const tabRect = activeEl.getBoundingClientRect();

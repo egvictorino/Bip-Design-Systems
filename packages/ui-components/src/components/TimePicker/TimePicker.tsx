@@ -303,7 +303,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
     const messageId = hasMessage ? `${inputId}-message` : undefined;
     const containerRef = useRef<HTMLDivElement>(null);
     const panelRef = useRef<HTMLDivElement>(null);
-    const internalTriggerRef = useRef<HTMLButtonElement>(null);
+    const internalTriggerRef = useRef<HTMLButtonElement | null>(null);
 
     // Combine forwarded ref with internal ref (picker mode only)
     const setTriggerRef = (node: HTMLButtonElement | null) => {
