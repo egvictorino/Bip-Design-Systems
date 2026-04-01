@@ -152,7 +152,6 @@ const MyPage = () => {
 
 ## Links
 
-- [Storybook](https://egvictorino.github.io/bip-ui/) — live component documentation
 - [Repository](https://github.com/egvictorino/bip-ui)
 - [shared-utils](https://www.npmjs.com/package/@bip-design-systems/shared-utils) — pure TypeScript utilities (formatCurrency, formatDate, validateRFC)
 
