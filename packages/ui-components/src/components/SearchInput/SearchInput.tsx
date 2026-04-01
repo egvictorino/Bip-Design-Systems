@@ -1,4 +1,4 @@
-import { forwardRef, useId, useState, useRef, useCallback, useEffect } from 'react';
+import React, { forwardRef, useId, useState, useRef, useCallback, useEffect } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './SearchInput.module.css';
@@ -104,7 +104,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         localRef.current = node;
         if (typeof ref === 'function') ref(node);
         else if (ref != null)
-          (ref as { current: HTMLInputElement | null }).current = node;
+          (ref as React.MutableRefObject<HTMLInputElement | null>).current = node;
       },
       [ref]
     );
