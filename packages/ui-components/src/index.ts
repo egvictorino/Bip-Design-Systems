@@ -56,7 +56,15 @@ export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps, CardMe
 export { Toggle } from './components/Toggle';
 export type { ToggleProps } from './components/Toggle';
 
-export { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from './components/Table';
+export {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableHeader,
+  TableCell,
+  TableEmpty,
+} from './components/Table';
 export type {
   TableProps,
   TableHeadProps,
@@ -64,6 +72,7 @@ export type {
   TableRowProps,
   TableHeaderProps,
   TableCellProps,
+  TableEmptyProps,
 } from './components/Table';
 
 export { Pagination } from './components/Pagination';

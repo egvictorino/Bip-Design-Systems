@@ -5,6 +5,8 @@ import styles from './Table.module.css';
 interface TableContextValue {
   striped: boolean;
   compact: boolean;
+  stickyHeader: boolean;
+  inHead: boolean;
 }
 
 const TableContext = createContext<TableContextValue | null>(null);
@@ -13,7 +15,7 @@ const useTableContext = (): TableContextValue => {
   const ctx = useContext(TableContext);
   if (!ctx)
     throw new Error(
-      'TableHead, TableBody, TableRow, TableHeader, and TableCell must be used inside <Table>'
+      'TableHead, TableBody, TableRow, TableHeader, TableCell, and TableEmpty must be used inside <Table>'
     );
   return ctx;
 };
@@ -23,19 +25,26 @@ const useTableContext = (): TableContextValue => {
 export interface TableProps extends React.HTMLAttributes<HTMLDivElement> {
   striped?: boolean;
   compact?: boolean;
+  caption?: string;
+  stickyHeader?: boolean;
   children: React.ReactNode;
 }
 
 export const Table: React.FC<TableProps> = ({
   striped = false,
   compact = false,
+  caption,
+  stickyHeader = false,
   className,
   children,
   ...props
 }) => (
-  <TableContext.Provider value={{ striped, compact }}>
+  <TableContext.Provider value={{ striped, compact, stickyHeader, inHead: false }}>
     <div className={cn(styles.wrapper, className)} {...props}>
-      <table className={styles.table}>{children}</table>
+      <table className={styles.table}>
+        {caption && <caption className={styles.caption}>{caption}</caption>}
+        {children}
+      </table>
     </div>
   </TableContext.Provider>
 );
@@ -46,11 +55,19 @@ export interface TableHeadProps extends React.HTMLAttributes<HTMLTableSectionEle
   children: React.ReactNode;
 }
 
-export const TableHead: React.FC<TableHeadProps> = ({ className, children, ...props }) => (
-  <thead className={cn(styles.thead, className)} {...props}>
-    {children}
-  </thead>
-);
+export const TableHead: React.FC<TableHeadProps> = ({ className, children, ...props }) => {
+  const ctx = useTableContext();
+  return (
+    <TableContext.Provider value={{ ...ctx, inHead: true }}>
+      <thead
+        className={cn(styles.thead, ctx.stickyHeader && styles.theadSticky, className)}
+        {...props}
+      >
+        {children}
+      </thead>
+    </TableContext.Provider>
+  );
+};
 
 // ─── TableBody ───────────────────────────────────────────────────────────────
 
@@ -68,25 +85,28 @@ export const TableBody: React.FC<TableBodyProps> = ({ className, children, ...pr
 
 export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   selected?: boolean;
+  clickable?: boolean;
   children: React.ReactNode;
 }
 
 export const TableRow: React.FC<TableRowProps> = ({
   selected = false,
+  clickable = false,
   className,
   children,
   ...props
 }) => {
-  const { striped } = useTableContext();
+  const { striped, inHead } = useTableContext();
 
   return (
     <tr
-      aria-selected={selected || undefined}
+      aria-selected={!inHead && selected ? true : undefined}
       className={cn(
         styles.row,
         selected
           ? styles.rowSelected
           : cn(styles.rowHoverable, !selected && striped && styles.rowStriped),
+        clickable && styles.rowClickable,
         className
       )}
       {...props}
@@ -103,6 +123,7 @@ export interface TableHeaderProps extends React.ThHTMLAttributes<HTMLTableCellEl
   sortDirection?: 'asc' | 'desc' | null;
   onSort?: () => void;
   align?: 'left' | 'center' | 'right';
+  scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';
   children: React.ReactNode;
 }
 
@@ -120,11 +141,7 @@ const SortIcon: React.FC<{ direction?: 'asc' | 'desc' | null }> = ({ direction }
     aria-hidden="true"
   >
     {direction === 'asc' ? (
-      <path
-        d="M8 11.5L3.5 6.5h9L8 11.5z"
-        fill="currentColor"
-        transform="rotate(180 8 8)"
-      />
+      <path d="M8 4.5L3.5 9.5h9L8 4.5z" fill="currentColor" />
     ) : direction === 'desc' ? (
       <path d="M8 11.5L3.5 6.5h9L8 11.5z" fill="currentColor" />
     ) : (
@@ -141,6 +158,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   sortDirection = null,
   onSort,
   align = 'left',
+  scope = 'col',
   className,
   children,
   ...props
@@ -164,7 +182,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
 
   return (
     <th
-      scope="col"
+      scope={scope}
       aria-sort={ariaSort}
       tabIndex={sortable ? 0 : undefined}
       className={cn(
@@ -220,9 +238,31 @@ export const TableCell: React.FC<TableCellProps> = ({
   );
 };
 
+// ─── TableEmpty ──────────────────────────────────────────────────────────────
+
+export interface TableEmptyProps {
+  colSpan: number;
+  children?: React.ReactNode;
+}
+
+export const TableEmpty: React.FC<TableEmptyProps> = ({ colSpan, children }) => {
+  const { compact } = useTableContext();
+  return (
+    <tr>
+      <td
+        colSpan={colSpan}
+        className={cn(styles.tdEmpty, compact ? styles.tdCompact : styles.tdNormal)}
+      >
+        {children ?? 'No hay registros que mostrar.'}
+      </td>
+    </tr>
+  );
+};
+
 Table.displayName = 'Table';
 TableHead.displayName = 'TableHead';
 TableBody.displayName = 'TableBody';
 TableRow.displayName = 'TableRow';
 TableHeader.displayName = 'TableHeader';
 TableCell.displayName = 'TableCell';
+TableEmpty.displayName = 'TableEmpty';

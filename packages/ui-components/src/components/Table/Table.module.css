@@ -13,9 +13,25 @@
   font-size: 0.875rem;
 }
 
+/* ─── Caption ────────────────────────────────────────────────────────────────── */
+
+.caption {
+  caption-side: top;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--color-txt-secondary);
+  text-align: left;
+}
+
 /* ─── Head ───────────────────────────────────────────────────────────────────── */
 
 .thead { background-color: var(--color-surface-3); }
+
+.theadSticky {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
 
 /* ─── Body ───────────────────────────────────────────────────────────────────── */
 
@@ -39,6 +55,8 @@
 .rowStriped:nth-child(even) {
   background-color: color-mix(in srgb, var(--color-surface-3) 30%, transparent);
 }
+
+.rowClickable { cursor: pointer; }
 
 /* ─── Header (th) ────────────────────────────────────────────────────────────── */
 
@@ -90,6 +108,13 @@
 
 .tdNormal  { padding: 0.75rem 1rem; }
 .tdCompact { padding: 0.5rem 0.75rem; }
+
+/* ─── Empty state ────────────────────────────────────────────────────────────── */
+
+.tdEmpty {
+  color: var(--color-txt-secondary);
+  text-align: center;
+}
 
 /* ─── Alignment ──────────────────────────────────────────────────────────────── */
 

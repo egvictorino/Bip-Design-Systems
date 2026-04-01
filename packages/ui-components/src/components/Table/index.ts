@@ -1,4 +1,4 @@
-export { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from './Table';
+export { Table, TableHead, TableBody, TableRow, TableHeader, TableCell, TableEmpty } from './Table';
 export type {
   TableProps,
   TableHeadProps,
@@ -6,4 +6,5 @@ export type {
   TableRowProps,
   TableHeaderProps,
   TableCellProps,
+  TableEmptyProps,
 } from './Table';
