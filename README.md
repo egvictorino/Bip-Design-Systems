@@ -90,7 +90,7 @@ pnpm dev     # Modo desarrollo paralelo
 
 ## Componentes UI
 
-> Storybook: <https://egvictorino.github.io/bip-ui/>
+> Storybook: <https://egvictorino.github.io/Bip-Design-Systems/>
 
 ### Entrada de datos
 
@@ -319,7 +319,7 @@ git commit -m "hotfix: descripción"
 
 | Branch | Ambiente | Storybook | Deploy |
 |--------|----------|-----------|--------|
-| `main` | Producción | [GitHub Pages](https://tu-usuario.github.io/bip-ui/) | Automático |
+| `main` | Producción | [GitHub Pages](https://egvictorino.github.io/Bip-Design-Systems/) | Automático |
 | `qa` | Testing | (por configurar) | Automático |
 | `dev` | Desarrollo | (por configurar) | Automático |
 
