@@ -117,19 +117,36 @@ jobs:
       - name: Check if version already published
         id: version-check
         run: |
-          PKG_VERSION=$(node -p "require('./packages/ui-components/package.json').version")
-          echo "version=$PKG_VERSION" >> $GITHUB_OUTPUT
-          if npm view @bip-design-systems/ui-components@$PKG_VERSION version 2>/dev/null; then
-            echo "already_published=true" >> $GITHUB_OUTPUT
-            echo "⚠️ Version $PKG_VERSION already published — skipping publish"
+          UI_VERSION=$(node -p "require('./packages/ui-components/package.json').version")
+          UTILS_VERSION=$(node -p "require('./packages/shared-utils/package.json').version")
+          echo "ui_version=$UI_VERSION" >> $GITHUB_OUTPUT
+          echo "utils_version=$UTILS_VERSION" >> $GITHUB_OUTPUT
+
+          if npm view @bip-design-systems/ui-components@$UI_VERSION version 2>/dev/null; then
+            echo "ui_already_published=true" >> $GITHUB_OUTPUT
+            echo "⚠️ ui-components@$UI_VERSION already published — skipping"
           else
-            echo "already_published=false" >> $GITHUB_OUTPUT
-            echo "✅ Version $PKG_VERSION not published yet — will publish"
+            echo "ui_already_published=false" >> $GITHUB_OUTPUT
+            echo "✅ ui-components@$UI_VERSION not published yet — will publish"
+          fi
+
+          if npm view @bip-design-systems/shared-utils@$UTILS_VERSION version 2>/dev/null; then
+            echo "utils_already_published=true" >> $GITHUB_OUTPUT
+            echo "⚠️ shared-utils@$UTILS_VERSION already published — skipping"
+          else
+            echo "utils_already_published=false" >> $GITHUB_OUTPUT
+            echo "✅ shared-utils@$UTILS_VERSION not published yet — will publish"
           fi
 
       - name: Publish @bip-design-systems/ui-components
-        if: steps.version-check.outputs.already_published == 'false'
+        if: steps.version-check.outputs.ui_already_published == 'false'
         run: pnpm --filter @bip-design-systems/ui-components publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @bip-design-systems/shared-utils
+        if: steps.version-check.outputs.utils_already_published == 'false'
+        run: pnpm --filter @bip-design-systems/shared-utils publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "packageManager": "pnpm@9.15.9",
   "private": true,
-  "description": "BipUI — React component library and design system",
+  "license": "MIT",
+  "description": "Bip Design Systems — React component library and design system",
   "scripts": {
     "dev": "pnpm --filter @bip-design-systems/ui-components storybook",
     "build": "pnpm --filter @bip-design-systems/shared-utils build && pnpm --filter @bip-design-systems/ui-components build",
@@ -49,7 +50,8 @@
       "picomatch@<2.3.2": "2.3.2",
       "picomatch@>=4.0.0 <4.0.4": "4.0.4",
       "brace-expansion@<1.1.13": "1.1.13",
-      "brace-expansion@>=4.0.0 <5.0.5": "5.0.5"
+      "brace-expansion@>=4.0.0 <5.0.5": "5.0.5",
+      "lodash": "^4.18.0"
     }
   }
 }
