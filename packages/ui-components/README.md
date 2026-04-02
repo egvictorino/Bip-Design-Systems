@@ -3,7 +3,7 @@
 React component library with full TypeScript support, CSS Modules, and design tokens. Built for the BipUI design system.
 
 [![npm version](https://img.shields.io/npm/v/@bip-design-systems/ui-components)](https://www.npmjs.com/package/@bip-design-systems/ui-components)
-[![license](https://img.shields.io/badge/license-Private-red)](https://github.com/egvictorino/bip-ui)
+[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/egvictorino/bip-ui/blob/main/LICENSE)
 
 ---
 
@@ -159,4 +159,4 @@ const MyPage = () => {
 
 ## License
 
-Private — All rights reserved.
+[MIT](https://github.com/egvictorino/bip-ui/blob/main/LICENSE) — Copyright (c) 2026 Eduardo Gonzalez
