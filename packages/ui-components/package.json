@@ -1,7 +1,25 @@
 {
   "name": "@bip-design-systems/ui-components",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "BipUI — React component library",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egvictorino/bip-ui.git",
+    "directory": "packages/ui-components"
+  },
+  "homepage": "https://egvictorino.github.io/Bip-Design-Systems/",
+  "bugs": {
+    "url": "https://github.com/egvictorino/bip-ui/issues"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "design-system",
+    "ui",
+    "typescript",
+    "css-modules"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

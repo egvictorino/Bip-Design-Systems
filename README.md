@@ -349,16 +349,6 @@ Pasos para consumir BipUI desde un repositorio independiente.
 
 ### 1. Instalar los paquetes
 
-**Desde GitHub (sin publicar en npm):**
-
-```bash
-# Con pnpm
-pnpm add github:egvictorino/bip-ui#main --filter @bip-design-systems/ui-components
-pnpm add github:egvictorino/bip-ui#main --filter @bip-design-systems/shared-utils
-```
-
-**Desde npm / registro privado (cuando se publique):**
-
 ```bash
 pnpm add @bip-design-systems/ui-components @bip-design-systems/shared-utils
 ```
@@ -411,4 +401,4 @@ export const MiPagina = () => {
 
 ## Licencia
 
-Privado — Todos los derechos reservados.
+[MIT](./LICENSE) — Copyright (c) 2026 Eduardo Gonzalez

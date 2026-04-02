@@ -1,7 +1,28 @@
 {
   "name": "@bip-design-systems/shared-utils",
   "version": "0.1.0",
-  "private": true,
+  "description": "Bip Design Systems — Pure TypeScript utilities (formatting, validation)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egvictorino/bip-ui.git",
+    "directory": "packages/shared-utils"
+  },
+  "bugs": {
+    "url": "https://github.com/egvictorino/bip-ui/issues"
+  },
+  "keywords": [
+    "typescript",
+    "utilities",
+    "formatting",
+    "validation",
+    "mexico",
+    "rfc"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
