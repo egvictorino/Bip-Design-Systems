@@ -132,6 +132,13 @@
   width: 100%;
 }
 
+/* In horizontal mode: stack date above title vertically */
+.itemHorizontal .header {
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 0.125rem;
+}
+
 .header {
   display: flex;
   align-items: flex-start;
