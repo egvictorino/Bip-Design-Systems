@@ -40,8 +40,6 @@ export interface OdontogramProps {
   value?: OdontogramValue;
   onChange?: (value: OdontogramValue) => void;
   readOnly?: boolean;
-  /** Condition applied when clicking a surface (interactive mode) */
-  activeTool?: ToothCondition;
   /** Dentition mode: permanent (default, 32 teeth FDI 11-48) or primary (20 teeth FDI 51-85) */
   dentition?: DentitionMode;
   label?: string;
@@ -75,10 +73,11 @@ export const CONDITION_LABELS: Record<ToothCondition, string> = {
   extraction_planned: 'Extracción planeada',
 };
 
-export const TOOTH_SIZE: Record<'sm' | 'md' | 'lg', number> = {
+export const TOOTH_SIZE: Record<'sm' | 'md' | 'lg' | 'xl', number> = {
   sm: 24,
   md: 32,
   lg: 40,
+  xl: 120,
 };
 
 export const NUMBER_TEXT_SIZE_CLASS: Record<'sm' | 'md' | 'lg', string> = {
