@@ -281,44 +281,50 @@ export const Controlled: Story = {
   render: () => <ControlledTabsStory />,
 };
 
+const tabBadgeStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '0.375rem',
+};
+
 export const WithBadge: Story = {
   args: { children: null },
   render: () => (
-    <Tabs defaultValue="abiertos" className="w-[520px]">
+    <Tabs defaultValue="abiertos" style={{ width: '520px' }}>
       <TabList>
         <Tab value="abiertos">
-          <span className="inline-flex items-center gap-1.5">
+          <span style={tabBadgeStyle}>
             Abiertos
-            <Badge variant="primary" size="sm">
-              12
-            </Badge>
+            <Badge variant="primary" size="sm">12</Badge>
           </span>
         </Tab>
         <Tab value="cerrados">
-          <span className="inline-flex items-center gap-1.5">
+          <span style={tabBadgeStyle}>
             Cerrados
-            <Badge variant="neutral" size="sm">
-              48
-            </Badge>
+            <Badge variant="neutral" size="sm">48</Badge>
           </span>
         </Tab>
         <Tab value="cancelados">
-          <span className="inline-flex items-center gap-1.5">
+          <span style={tabBadgeStyle}>
             Cancelados
-            <Badge variant="error" size="sm">
-              3
-            </Badge>
+            <Badge variant="error" size="sm">3</Badge>
           </span>
         </Tab>
       </TabList>
-      <TabPanel value="abiertos" className="pt-4">
-        <p className="text-sm text-txt-secondary">Tickets abiertos en espera de atención.</p>
+      <TabPanel value="abiertos" style={{ paddingTop: '1rem' }}>
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
+          Tickets abiertos en espera de atención.
+        </p>
       </TabPanel>
-      <TabPanel value="cerrados" className="pt-4">
-        <p className="text-sm text-txt-secondary">Tickets resueltos y cerrados.</p>
+      <TabPanel value="cerrados" style={{ paddingTop: '1rem' }}>
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
+          Tickets resueltos y cerrados.
+        </p>
       </TabPanel>
-      <TabPanel value="cancelados" className="pt-4">
-        <p className="text-sm text-txt-secondary">Tickets cancelados por el usuario.</p>
+      <TabPanel value="cancelados" style={{ paddingTop: '1rem' }}>
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
+          Tickets cancelados por el usuario.
+        </p>
       </TabPanel>
     </Tabs>
   ),
