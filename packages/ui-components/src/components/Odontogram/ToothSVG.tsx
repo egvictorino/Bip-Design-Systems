@@ -16,7 +16,7 @@ export interface ToothSVGProps {
   toothNumber: number;
   arch: 'upper' | 'lower';
   data: ToothData;
-  size: 'sm' | 'md' | 'lg';
+  size: 'sm' | 'md' | 'lg' | 'xl';
   interactive: boolean;
   onSurfaceClick: (toothNumber: number, surface: ToothSurface) => void;
 }
@@ -56,7 +56,7 @@ export const ToothSVG = React.memo<ToothSVGProps>(({
           ? data.condition!
           : (data.surfaces?.[surface] ?? 'healthy');
         const isActive = condition !== 'healthy';
-        const canClick = interactive && !isMissing;
+        const canClick = interactive;
 
         return (
           <polygon
