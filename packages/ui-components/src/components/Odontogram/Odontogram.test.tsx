@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Odontogram } from './Odontogram';
 import type { OdontogramValue, ToothImage } from './Odontogram';
@@ -14,6 +14,14 @@ const getToothSVG = (toothNumber: number) =>
 
 const getToothSVGQuery = (toothNumber: number) =>
   screen.queryByRole('img', { name: new RegExp(`Diente ${toothNumber}`) });
+
+const getToothButton = (toothNumber: number) =>
+  screen.getByRole('button', { name: new RegExp(`Seleccionar diente ${toothNumber}`) });
+
+const openDetailPanel = async (user: ReturnType<typeof userEvent.setup>, toothNumber: number) => {
+  await user.click(getToothButton(toothNumber));
+  return screen.getByTestId('tooth-detail-panel');
+};
 
 // ─── Render ───────────────────────────────────────────────────────────────────
 
@@ -159,10 +167,11 @@ describe('Odontogram — accessibility', () => {
     expect(tooth).toHaveAttribute('aria-label', expect.stringContaining('Ausente'));
   });
 
-  it('surfaces have role="button" when interactive', () => {
+  it('main view surfaces do NOT have role="button" (interaction via detail panel)', () => {
     render(<Odontogram onChange={() => {}} />);
+    // In main view, surfaces are not interactive — tooth cells are buttons
     const surfaces = getToothSVG(11).querySelectorAll('[role="button"]');
-    expect(surfaces.length).toBe(5);
+    expect(surfaces.length).toBe(0);
   });
 
   it('surfaces do NOT have role="button" when readOnly', () => {
@@ -171,29 +180,72 @@ describe('Odontogram — accessibility', () => {
     expect(surfaces.length).toBe(0);
   });
 
-  it('active surfaces have aria-pressed="true"', () => {
+  it('detail panel surfaces have role="button" when interactive', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 11);
+    const surfaces = within(panel).getByRole('img', { name: /Diente 11/ }).querySelectorAll('[role="button"]');
+    expect(surfaces.length).toBe(5);
+  });
+
+  it('active surfaces in detail panel have aria-pressed="true"', async () => {
+    const user = userEvent.setup();
     const value: OdontogramValue = { 11: { surfaces: { occlusal: 'caries' } } };
     render(<Odontogram value={value} onChange={() => {}} />);
-    const occlusal = getToothSVG(11).querySelector('[aria-label="Oclusal"]');
+
+    const panel = await openDetailPanel(user, 11);
+    const occlusal = within(panel).getByRole('img', { name: /Diente 11/ }).querySelector('[aria-label="Oclusal"]');
     expect(occlusal).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('healthy surfaces have aria-pressed="false"', () => {
+  it('healthy surfaces in detail panel have aria-pressed="false"', async () => {
+    const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
-    const occlusal = getToothSVG(11).querySelector('[aria-label="Oclusal"]');
+
+    const panel = await openDetailPanel(user, 11);
+    const occlusal = within(panel).getByRole('img', { name: /Diente 11/ }).querySelector('[aria-label="Oclusal"]');
     expect(occlusal).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('tooth buttons in interactive mode have aria-pressed indicating selection', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const toothBtn = getToothButton(11);
+    expect(toothBtn).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(toothBtn);
+    expect(toothBtn).toHaveAttribute('aria-pressed', 'true');
   });
 });
 
 // ─── Interactivity ────────────────────────────────────────────────────────────
 
 describe('Odontogram — interactivity', () => {
-  it('calls onChange with caries condition on surface click', async () => {
+  it('clicking a tooth in interactive mode opens the detail panel', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(getToothButton(11));
+    expect(screen.getByTestId('tooth-detail-panel')).toBeInTheDocument();
+  });
+
+  it('detail panel shows tooth number', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(getToothButton(16));
+    expect(screen.getByTestId('tooth-detail-panel')).toHaveTextContent('Diente 16');
+  });
+
+  it('calls onChange with caries condition on surface click in detail panel', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
-    render(<Odontogram onChange={handleChange} activeTool="caries" />);
+    render(<Odontogram onChange={handleChange} />);
 
-    const occlusal = getToothSVG(11).querySelector('[aria-label="Oclusal"]')!;
+    const panel = await openDetailPanel(user, 11);
+    const occlusal = within(panel).getByRole('img', { name: /Diente 11/ }).querySelector('[aria-label="Oclusal"]')!;
     await user.click(occlusal);
 
     expect(handleChange).toHaveBeenCalledOnce();
@@ -201,12 +253,15 @@ describe('Odontogram — interactivity', () => {
     expect(updated[11]?.surfaces?.occlusal).toBe('caries');
   });
 
-  it('calls onChange with whole-tooth condition (missing) on surface click', async () => {
+  it('calls onChange with whole-tooth condition after selecting it in the panel toolbar', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
-    render(<Odontogram onChange={handleChange} activeTool="missing" />);
+    render(<Odontogram onChange={handleChange} />);
 
-    const anyPolygon = getToothSVG(16).querySelector('polygon')!;
+    const panel = await openDetailPanel(user, 16);
+    await user.click(within(panel).getByRole('button', { name: 'Ausente' }));
+
+    const anyPolygon = within(panel).getByRole('img', { name: /Diente 16/ }).querySelector('polygon')!;
     await user.click(anyPolygon);
 
     expect(handleChange).toHaveBeenCalledOnce();
@@ -214,59 +269,65 @@ describe('Odontogram — interactivity', () => {
     expect(updated[16]?.condition).toBe('missing');
   });
 
-  it('does NOT call onChange when readOnly', async () => {
-    const user = userEvent.setup();
+  it('does NOT call onChange when readOnly', () => {
     const handleChange = vi.fn();
     render(<Odontogram onChange={handleChange} readOnly />);
 
-    // In readOnly mode, polygons have no onClick — clicking should have no effect
-    const svg = getToothSVG(11);
-    const polygon = svg.querySelector('polygon')!;
-    await user.click(polygon);
-
+    // In readOnly mode, tooth cells are not buttons
+    const buttons = screen.queryAllByRole('button', { name: /Seleccionar diente/ });
+    expect(buttons).toHaveLength(0);
     expect(handleChange).not.toHaveBeenCalled();
   });
 
-  it('does NOT call onChange when onChange prop is not provided', async () => {
-    const user = userEvent.setup();
+  it('does NOT call onChange when onChange prop is not provided', () => {
     // No onChange = display-only even without readOnly
-    render(<Odontogram activeTool="caries" />);
-    const polygon = getToothSVG(11).querySelector('polygon')!;
-    // Should not throw
-    await user.click(polygon);
+    render(<Odontogram />);
+    const buttons = screen.queryAllByRole('button', { name: /Seleccionar diente/ });
+    expect(buttons).toHaveLength(0);
   });
 
-  it('clicking missing tooth surfaces does not call onChange', async () => {
+  it('clicking a missing tooth opens the panel and surfaces are interactive to change condition', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     const value: OdontogramValue = { 18: { condition: 'missing' } };
-    render(<Odontogram value={value} onChange={handleChange} activeTool="caries" />);
+    render(<Odontogram value={value} onChange={handleChange} />);
 
-    const polygon = getToothSVG(18).querySelector('polygon')!;
-    await user.click(polygon);
-    expect(handleChange).not.toHaveBeenCalled();
+    const panel = await openDetailPanel(user, 18);
+    // Default tool is caries — clicking a surface should change the condition
+    const occlusal = within(panel).getByRole('img', { name: /Diente 18/ }).querySelector('[aria-label="Oclusal"]')!;
+    await user.click(occlusal);
+    expect(handleChange).toHaveBeenCalledOnce();
+    const updated: OdontogramValue = handleChange.mock.calls[0][0];
+    // Caries is a surface-level condition, so it clears the whole-tooth condition
+    expect(updated[18]?.condition).toBeUndefined();
+    expect(updated[18]?.surfaces?.occlusal).toBe('caries');
   });
 
-  it('setting activeTool=healthy removes an existing surface condition', async () => {
+  it('selecting Sano in panel toolbar removes an existing surface condition', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     const value: OdontogramValue = { 11: { surfaces: { occlusal: 'caries' } } };
-    render(<Odontogram value={value} onChange={handleChange} activeTool="healthy" />);
+    render(<Odontogram value={value} onChange={handleChange} />);
 
-    const occlusal = getToothSVG(11).querySelector('[aria-label="Oclusal"]')!;
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: 'Sano' }));
+
+    const occlusal = within(panel).getByRole('img', { name: /Diente 11/ }).querySelector('[aria-label="Oclusal"]')!;
     await user.click(occlusal);
 
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[11]?.surfaces?.occlusal).toBeUndefined();
   });
 
-  it('setting a surface condition clears a whole-tooth condition', async () => {
+  it('applying a surface condition via panel clears a whole-tooth condition', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     const value: OdontogramValue = { 16: { condition: 'crown' } };
-    render(<Odontogram value={value} onChange={handleChange} activeTool="caries" />);
+    render(<Odontogram value={value} onChange={handleChange} />);
 
-    const occlusal = getToothSVG(16).querySelector('[aria-label="Oclusal"]')!;
+    const panel = await openDetailPanel(user, 16);
+    // Default tool is caries
+    const occlusal = within(panel).getByRole('img', { name: /Diente 16/ }).querySelector('[aria-label="Oclusal"]')!;
     await user.click(occlusal);
 
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
@@ -274,18 +335,62 @@ describe('Odontogram — interactivity', () => {
     expect(updated[16]?.surfaces?.occlusal).toBe('caries');
   });
 
-  it('preserves existing value for other teeth when changing one tooth', async () => {
+  it('preserves existing value for other teeth when changing one tooth via panel', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     const value: OdontogramValue = { 21: { surfaces: { occlusal: 'restoration' } } };
-    render(<Odontogram value={value} onChange={handleChange} activeTool="caries" />);
+    render(<Odontogram value={value} onChange={handleChange} />);
 
-    const occlusal = getToothSVG(11).querySelector('[aria-label="Oclusal"]')!;
+    const panel = await openDetailPanel(user, 11);
+    const occlusal = within(panel).getByRole('img', { name: /Diente 11/ }).querySelector('[aria-label="Oclusal"]')!;
     await user.click(occlusal);
 
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[21]?.surfaces?.occlusal).toBe('restoration');
     expect(updated[11]?.surfaces?.occlusal).toBe('caries');
+  });
+
+  it('clicking the same tooth again deselects it and closes the panel', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await user.click(getToothButton(11));
+    expect(screen.getByTestId('tooth-detail-panel')).toBeInTheDocument();
+
+    await user.click(getToothButton(11));
+    expect(screen.queryByTestId('tooth-detail-panel')).not.toBeInTheDocument();
+  });
+
+  it('Cerrar detalle button closes the panel', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    await openDetailPanel(user, 11);
+    await user.click(screen.getByRole('button', { name: 'Cerrar detalle' }));
+
+    expect(screen.queryByTestId('tooth-detail-panel')).not.toBeInTheDocument();
+  });
+
+  it('detail panel toolbar has all condition buttons', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 11);
+
+    expect(within(panel).getByRole('button', { name: 'Sano' })).toBeInTheDocument();
+    expect(within(panel).getByRole('button', { name: 'Caries' })).toBeInTheDocument();
+    expect(within(panel).getByRole('button', { name: 'Corona' })).toBeInTheDocument();
+    expect(within(panel).getByRole('button', { name: 'Ausente' })).toBeInTheDocument();
+  });
+
+  it('default active condition in panel is Caries (aria-pressed="true")', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 11);
+
+    expect(within(panel).getByRole('button', { name: 'Caries' })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(panel).getByRole('button', { name: 'Sano' })).toHaveAttribute('aria-pressed', 'false');
   });
 });
 
@@ -311,6 +416,20 @@ describe('Odontogram — size', () => {
     const svg = getToothSVG(11);
     expect(svg).toHaveAttribute('width', '40');
     expect(svg).toHaveAttribute('height', '40');
+  });
+
+  it('detail panel renders large (xl=120px) tooth SVG', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 11);
+    // There are two SVGs for tooth 11: main view + detail panel
+    const allSvgs = screen.getAllByRole('img', { name: /Diente 11/ });
+    // The detail panel SVG is xl=120px
+    const detailSvg = within(panel).getByRole('img', { name: /Diente 11/ });
+    expect(detailSvg).toHaveAttribute('width', '120');
+    expect(detailSvg).toHaveAttribute('height', '120');
+    expect(allSvgs.length).toBe(2);
   });
 });
 
@@ -340,21 +459,20 @@ describe('Odontogram — primary dentition', () => {
     });
   });
 
-  it('interactive onChange works with primary teeth', async () => {
+  it('interactive onChange works with primary teeth via detail panel', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(
       <Odontogram
         dentition="primary"
         onChange={handleChange}
-        activeTool="caries"
         value={{}}
       />
     );
-    const surfaces = screen.getAllByRole('button', {
-      name: /oclusal/i,
-    });
-    await user.click(surfaces[0]);
+    const panel = await openDetailPanel(user, 51);
+    const occlusal = within(panel).getByRole('img', { name: /Diente 51/ }).querySelector('[aria-label="Oclusal"]')!;
+    await user.click(occlusal);
+
     expect(handleChange).toHaveBeenCalledTimes(1);
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     const changedTooth = Object.values(updated)[0];
@@ -372,8 +490,8 @@ describe('Odontogram — primary dentition', () => {
         value={{}}
       />
     );
-    const surfaces = screen.queryAllByRole('button');
-    expect(surfaces).toHaveLength(0);
+    const buttons = screen.queryAllByRole('button', { name: /Seleccionar diente/ });
+    expect(buttons).toHaveLength(0);
     await user.click(getToothSVG(51));
     expect(handleChange).not.toHaveBeenCalled();
   });
@@ -389,62 +507,52 @@ describe('Odontogram — primary dentition', () => {
 // ─── Notas por diente ─────────────────────────────────────────────────────────
 
 describe('Odontogram — notas', () => {
-  it('muestra botón en el número del diente en modo interactivo', () => {
-    render(<Odontogram onChange={() => {}} />);
-    expect(screen.getByRole('button', { name: /Nota del diente 11/ })).toBeInTheDocument();
-  });
-
-  it('muestra botón en el número del diente si hay nota en modo readOnly', () => {
-    const value: OdontogramValue = { 11: { notes: 'revisión pendiente' } };
-    render(<Odontogram value={value} readOnly />);
-    expect(screen.getByRole('button', { name: /Nota del diente 11/ })).toBeInTheDocument();
-  });
-
-  it('NO muestra botón si readOnly y el diente no tiene nota', () => {
-    render(<Odontogram readOnly />);
-    expect(screen.queryByRole('button', { name: /Nota del diente 11/ })).not.toBeInTheDocument();
-  });
-
-  it('muestra indicador visual en dientes que tienen nota', () => {
-    const value: OdontogramValue = { 11: { notes: 'fractura leve' } };
-    render(<Odontogram value={value} onChange={() => {}} />);
-    const btn = screen.getByRole('button', { name: /Nota del diente 11 — tiene nota/ });
-    expect(btn).toBeInTheDocument();
-  });
-
-  it('NO muestra indicador en dientes sin nota', () => {
-    render(<Odontogram onChange={() => {}} />);
-    const btn = screen.getByRole('button', { name: 'Nota del diente 11' });
-    // aria-label does not mention "tiene nota"
-    expect(btn).toHaveAttribute('aria-label', 'Nota del diente 11');
-  });
-
-  it('click en número abre el popover con textarea', async () => {
+  it('detail panel has Nota action button in interactive mode', async () => {
     const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    expect(within(panel).getByRole('button', { name: /Nota del diente 11/ })).toBeInTheDocument();
+  });
+
+  it('Nota button aria-label indicates when tooth has a note', async () => {
+    const user = userEvent.setup();
+    const value: OdontogramValue = { 11: { notes: 'fractura leve' } };
+    render(<Odontogram value={value} onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 11);
+    expect(within(panel).getByRole('button', { name: /tiene nota/ })).toBeInTheDocument();
+  });
+
+  it('clicking Nota opens the note popover', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 11/ }));
 
     expect(screen.getByRole('dialog', { name: /Nota del diente 11/ })).toBeInTheDocument();
     expect(screen.getByRole('textbox')).toBeInTheDocument();
   });
 
-  it('el textarea se prelllena con la nota existente', async () => {
+  it('nota textarea is prefilled with existing note', async () => {
     const user = userEvent.setup();
     const value: OdontogramValue = { 16: { notes: 'corona temporal' } };
     render(<Odontogram value={value} onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 16/ }));
+    const panel = await openDetailPanel(user, 16);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 16/ }));
 
     expect(screen.getByRole('textbox')).toHaveValue('corona temporal');
   });
 
-  it('click en ✕ cierra el popover sin llamar onChange', async () => {
+  it('clicking ✕ closes note popover without calling onChange', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Odontogram onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 11/ }));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Cerrar nota' }));
@@ -453,12 +561,13 @@ describe('Odontogram — notas', () => {
     expect(handleChange).not.toHaveBeenCalled();
   });
 
-  it('tecla Escape cierra el popover sin llamar onChange', async () => {
+  it('Escape closes note popover without calling onChange', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Odontogram onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 11/ }));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
     await user.keyboard('{Escape}');
@@ -467,12 +576,13 @@ describe('Odontogram — notas', () => {
     expect(handleChange).not.toHaveBeenCalled();
   });
 
-  it('click en Guardar llama onChange con la nota actualizada', async () => {
+  it('clicking Guardar calls onChange with updated note', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Odontogram onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 11/ }));
     await user.type(screen.getByRole('textbox'), 'caries interproximal');
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
 
@@ -481,13 +591,14 @@ describe('Odontogram — notas', () => {
     expect(updated[11]?.notes).toBe('caries interproximal');
   });
 
-  it('guardar texto vacío elimina la clave notes del diente', async () => {
+  it('saving empty text removes the notes key from tooth', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     const value: OdontogramValue = { 11: { notes: 'nota a borrar' } };
     render(<Odontogram value={value} onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 11/ }));
     await user.clear(screen.getByRole('textbox'));
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
 
@@ -496,12 +607,13 @@ describe('Odontogram — notas', () => {
     expect(updated[11]?.notes).toBeUndefined();
   });
 
-  it('guardar nota en diente sin data previa crea la entrada correctamente', async () => {
+  it('saving a note on tooth with no prior data creates the entry correctly', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Odontogram onChange={handleChange} value={{}} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 21/ }));
+    const panel = await openDetailPanel(user, 21);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 21/ }));
     await user.type(screen.getByRole('textbox'), 'nueva nota');
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
 
@@ -509,35 +621,25 @@ describe('Odontogram — notas', () => {
     expect(updated[21]?.notes).toBe('nueva nota');
   });
 
-  it('guardar cierra el popover', async () => {
+  it('saving closes the note popover', async () => {
     const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 11/ }));
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('popover en readOnly muestra textarea con atributo readOnly y sin botón Guardar', async () => {
-    const user = userEvent.setup();
-    const value: OdontogramValue = { 11: { notes: 'solo lectura' } };
-    render(<Odontogram value={value} readOnly />);
-
-    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
-
-    const textarea = screen.getByRole('textbox');
-    expect(textarea).toHaveAttribute('readonly');
-    expect(screen.queryByRole('button', { name: 'Guardar' })).not.toBeInTheDocument();
-  });
-
-  it('guardar preserva otras propiedades del diente (condición, superficies)', async () => {
+  it('saving preserves other tooth properties (condition, surfaces)', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     const value: OdontogramValue = { 16: { condition: 'crown', surfaces: {} } };
     render(<Odontogram value={value} onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 16/ }));
+    const panel = await openDetailPanel(user, 16);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 16/ }));
     await user.type(screen.getByRole('textbox'), 'corona provisional');
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
 
@@ -550,71 +652,73 @@ describe('Odontogram — notas', () => {
 // ─── Imágenes por diente ───────────────────────────────────────────────────────
 
 describe('Odontogram — imágenes', () => {
-  it('muestra botón de imagen en modo interactivo', () => {
-    render(<Odontogram onChange={() => {}} />);
-    expect(screen.getByRole('button', { name: /Imágenes del diente 11/ })).toBeInTheDocument();
-  });
-
-  it('NO muestra botón de imagen en readOnly sin imágenes', () => {
-    render(<Odontogram readOnly />);
-    expect(screen.queryByRole('button', { name: /Imágenes del diente 11/ })).not.toBeInTheDocument();
-  });
-
-  it('muestra botón de imagen en readOnly si el diente tiene imágenes', () => {
-    const value: OdontogramValue = { 11: { images: [SAMPLE_IMG] } };
-    render(<Odontogram value={value} readOnly />);
-    expect(screen.getByRole('button', { name: /Imágenes del diente 11/ })).toBeInTheDocument();
-  });
-
-  it('aria-label indica cuántas imágenes tiene el diente', () => {
-    const value: OdontogramValue = { 16: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
-    render(<Odontogram value={value} onChange={() => {}} />);
-    const btn = screen.getByRole('button', { name: /Imágenes del diente 16/ });
-    expect(btn.getAttribute('aria-label')).toMatch(/2 imagen/);
-  });
-
-  it('aria-label no menciona imágenes cuando el diente no tiene ninguna', () => {
-    render(<Odontogram onChange={() => {}} />);
-    const btn = screen.getByRole('button', { name: 'Imágenes del diente 11' });
-    expect(btn).toHaveAttribute('aria-label', 'Imágenes del diente 11');
-  });
-
-  it('click en botón abre el popover', async () => {
+  it('detail panel has Imágenes action button in interactive mode', async () => {
     const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    expect(within(panel).getByRole('button', { name: /Imágenes del diente 11/ })).toBeInTheDocument();
+  });
+
+  it('Imágenes button aria-label includes image count when tooth has images', async () => {
+    const user = userEvent.setup();
+    const value: OdontogramValue = { 16: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
+    render(<Odontogram value={value} onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 16);
+    const btn = within(panel).getByRole('button', { name: /Imágenes del diente 16/ });
+    expect(btn.getAttribute('aria-label')).toMatch(/2 imagen/);
+  });
+
+  it('Imágenes button aria-label does not mention images when tooth has none', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 11);
+    const btn = within(panel).getByRole('button', { name: 'Imágenes del diente 11' });
+    expect(btn).toHaveAttribute('aria-label', 'Imágenes del diente 11');
+  });
+
+  it('clicking Imágenes opens the image popover', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
 
     expect(screen.getByRole('dialog', { name: /Imágenes del diente 11/ })).toBeInTheDocument();
   });
 
-  it('popover en modo editable muestra selector de tipo y botón Agregar imagen', async () => {
+  it('image popover in editable mode shows type selector and file button', async () => {
     const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
 
     expect(screen.getByRole('combobox')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Seleccionar archivo/ })).toBeInTheDocument();
   });
 
-  it('selector de tipo tiene las 3 opciones correctas', async () => {
+  it('type selector has the 3 correct options', async () => {
     const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
 
     expect(screen.getByRole('option', { name: 'Radiografía' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Fotografía' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Otra' })).toBeInTheDocument();
   });
 
-  it('tecla Escape cierra el popover sin llamar onChange', async () => {
+  it('Escape closes image popover without calling onChange', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Odontogram onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
     await user.keyboard('{Escape}');
@@ -623,57 +727,50 @@ describe('Odontogram — imágenes', () => {
     expect(handleChange).not.toHaveBeenCalled();
   });
 
-  it('popover con imágenes muestra miniaturas con aria-label', async () => {
+  it('image popover with images shows thumbnails with aria-label', async () => {
     const user = userEvent.setup();
     const value: OdontogramValue = { 11: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
     render(<Odontogram value={value} onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
 
     expect(screen.getByRole('button', { name: /Ver imagen 1: Radiografía/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Ver imagen 2: Fotografía/ })).toBeInTheDocument();
   });
 
-  it('popover muestra el contador de imágenes en el header', async () => {
+  it('image popover shows image count in header', async () => {
     const user = userEvent.setup();
     const value: OdontogramValue = { 11: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
     render(<Odontogram value={value} onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
 
     expect(screen.getByText('(2)')).toBeInTheDocument();
   });
 
-  it('popover readOnly muestra miniaturas sin botones Eliminar', async () => {
-    const user = userEvent.setup();
-    const value: OdontogramValue = { 11: { images: [SAMPLE_IMG] } };
-    render(<Odontogram value={value} readOnly />);
-
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
-
-    expect(screen.queryByRole('button', { name: /Eliminar imagen/ })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Agregar imagen/ })).not.toBeInTheDocument();
-  });
-
-  it('click en miniatura muestra la imagen en vista previa', async () => {
+  it('clicking thumbnail shows image in preview', async () => {
     const user = userEvent.setup();
     const value: OdontogramValue = { 11: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
     render(<Odontogram value={value} onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
     await user.click(screen.getByRole('button', { name: /Ver imagen 2/ }));
 
     const preview = screen.getByAltText(/Fotografía — diente 11/);
     expect(preview).toHaveAttribute('src', SAMPLE_IMG2.url);
   });
 
-  it('eliminar una imagen llama onChange con el array actualizado', async () => {
+  it('deleting an image calls onChange with updated array', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     const value: OdontogramValue = { 11: { images: [SAMPLE_IMG, SAMPLE_IMG2] } };
     render(<Odontogram value={value} onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
     await user.click(screen.getByRole('button', { name: 'Eliminar imagen 1' }));
 
     expect(handleChange).toHaveBeenCalled();
@@ -682,26 +779,28 @@ describe('Odontogram — imágenes', () => {
     expect(updated[11]?.images?.[0].url).toBe(SAMPLE_IMG2.url);
   });
 
-  it('eliminar la única imagen deja images vacío y lo elimina del value', async () => {
+  it('deleting last image removes images from tooth data', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     const value: OdontogramValue = { 11: { images: [SAMPLE_IMG] } };
     render(<Odontogram value={value} onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
     await user.click(screen.getByRole('button', { name: 'Eliminar imagen 1' }));
 
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[11]?.images).toBeUndefined();
   });
 
-  it('eliminar imagen preserva otras propiedades del diente', async () => {
+  it('deleting image preserves other tooth properties', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     const value: OdontogramValue = { 16: { condition: 'crown', images: [SAMPLE_IMG] } };
     render(<Odontogram value={value} onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 16/ }));
+    const panel = await openDetailPanel(user, 16);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 16/ }));
     await user.click(screen.getByRole('button', { name: 'Eliminar imagen 1' }));
 
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
@@ -709,27 +808,26 @@ describe('Odontogram — imágenes', () => {
     expect(updated[16]?.images).toBeUndefined();
   });
 
-  it('cerrar el popover restaura el foco al botón de imagen', async () => {
+  it('closing image popover restores focus to the Imágenes button', async () => {
     const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
 
-    const imageBtn = screen.getByRole('button', { name: 'Imágenes del diente 11' });
+    const panel = await openDetailPanel(user, 11);
+    const imageBtn = within(panel).getByRole('button', { name: 'Imágenes del diente 11' });
     await user.click(imageBtn);
     await user.click(screen.getByRole('button', { name: 'Cerrar imágenes' }));
 
     expect(imageBtn).toHaveFocus();
   });
 
-  it('click en backdrop cierra el popover sin llamar onChange', async () => {
+  it('clicking backdrop closes image popover without calling onChange', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Odontogram onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
     const dialog = screen.getByRole('dialog');
-    expect(dialog).toBeInTheDocument();
-
-    // The backdrop is the previous sibling of the dialog in the portal
     const backdrop = dialog.previousElementSibling as HTMLElement;
     await user.click(backdrop);
 
@@ -737,13 +835,13 @@ describe('Odontogram — imágenes', () => {
     expect(handleChange).not.toHaveBeenCalled();
   });
 
-  it('abrir popover sin imágenes muestra el formulario de agregar directamente', async () => {
+  it('opening image popover without images shows the add form directly', async () => {
     const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Imágenes del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Imágenes del diente 11/ }));
 
-    // When there are no images and in editable mode, the add form is shown directly
     expect(screen.getByRole('combobox')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Agregar imagen/ })).not.toBeInTheDocument();
   });
@@ -768,24 +866,47 @@ describe('Odontogram — ref y className', () => {
 // ─── Teclado ──────────────────────────────────────────────────────────────────
 
 describe('Odontogram — teclado', () => {
-  it('superficies tienen tabIndex=0 en modo interactivo', () => {
+  it('tooth buttons in interactive mode are focusable', () => {
     render(<Odontogram onChange={() => {}} />);
-    const surfaces = getToothSVG(11).querySelectorAll('[role="button"]');
+    const toothBtn = getToothButton(11);
+    expect(toothBtn).toBeInTheDocument();
+  });
+
+  it('tooth cells in readOnly mode are not focusable buttons', () => {
+    render(<Odontogram readOnly />);
+    const buttons = screen.queryAllByRole('button', { name: /Seleccionar diente/ });
+    expect(buttons).toHaveLength(0);
+  });
+
+  it('detail panel surfaces have tabIndex=0 in interactive mode', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const panel = await openDetailPanel(user, 11);
+    const surfaces = within(panel).getByRole('img', { name: /Diente 11/ }).querySelectorAll('[role="button"]');
     surfaces.forEach((s) => expect(s).toHaveAttribute('tabindex', '0'));
   });
 
-  it('superficies NO tienen tabIndex en modo readOnly', () => {
-    render(<Odontogram readOnly />);
-    const polygons = getToothSVG(11).querySelectorAll('polygon');
-    polygons.forEach((p) => expect(p).not.toHaveAttribute('tabindex'));
+  it('Enter on a tooth button opens the detail panel', async () => {
+    const user = userEvent.setup();
+    render(<Odontogram onChange={() => {}} />);
+
+    const toothBtn = getToothButton(11);
+    toothBtn.focus();
+    await user.keyboard('{Enter}');
+
+    expect(screen.getByTestId('tooth-detail-panel')).toBeInTheDocument();
   });
 
-  it('Enter en una superficie activa la condición', async () => {
+  it('Enter on a detail panel surface applies the condition', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
-    render(<Odontogram onChange={handleChange} activeTool="caries" />);
+    render(<Odontogram onChange={handleChange} />);
 
-    const occlusal = getToothSVG(11).querySelector('[aria-label="Oclusal"]') as HTMLElement;
+    const panel = await openDetailPanel(user, 11);
+    const occlusal = within(panel)
+      .getByRole('img', { name: /Diente 11/ })
+      .querySelector('[aria-label="Oclusal"]') as HTMLElement;
     occlusal.focus();
     await user.keyboard('{Enter}');
 
@@ -794,12 +915,16 @@ describe('Odontogram — teclado', () => {
     expect(updated[11]?.surfaces?.occlusal).toBe('caries');
   });
 
-  it('Space en una superficie activa la condición', async () => {
+  it('Space on a detail panel surface applies the condition', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
-    render(<Odontogram onChange={handleChange} activeTool="restoration" />);
+    render(<Odontogram onChange={handleChange} />);
 
-    const mesial = getToothSVG(21).querySelector('[aria-label="Mesial"]') as HTMLElement;
+    const panel = await openDetailPanel(user, 21);
+    await user.click(within(panel).getByRole('button', { name: 'Restauración' }));
+    const mesial = within(panel)
+      .getByRole('img', { name: /Diente 21/ })
+      .querySelector('[aria-label="Mesial"]') as HTMLElement;
     mesial.focus();
     await user.keyboard(' ');
 
@@ -812,36 +937,36 @@ describe('Odontogram — teclado', () => {
 // ─── Notas — foco y backdrop ──────────────────────────────────────────────────
 
 describe('Odontogram — notas: foco y backdrop', () => {
-  it('popover de nota recibe foco en el textarea al abrirse', async () => {
+  it('nota popover receives focus on textarea when opened', async () => {
     const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 11/ }));
 
     expect(screen.getByRole('textbox')).toHaveFocus();
   });
 
-  it('cerrar nota con ✕ restaura el foco al botón de número', async () => {
+  it('closing nota with ✕ restores focus to the Nota button', async () => {
     const user = userEvent.setup();
     render(<Odontogram onChange={() => {}} />);
 
-    const noteBtn = screen.getByRole('button', { name: /Nota del diente 11/ });
+    const panel = await openDetailPanel(user, 11);
+    const noteBtn = within(panel).getByRole('button', { name: /Nota del diente 11/ });
     await user.click(noteBtn);
     await user.click(screen.getByRole('button', { name: 'Cerrar nota' }));
 
     expect(noteBtn).toHaveFocus();
   });
 
-  it('click en backdrop de nota cierra el popover sin guardar', async () => {
+  it('clicking nota backdrop closes popover without saving', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Odontogram onChange={handleChange} />);
 
-    await user.click(screen.getByRole('button', { name: /Nota del diente 11/ }));
+    const panel = await openDetailPanel(user, 11);
+    await user.click(within(panel).getByRole('button', { name: /Nota del diente 11/ }));
     const dialog = screen.getByRole('dialog');
-    expect(dialog).toBeInTheDocument();
-
-    // The backdrop is the previous sibling of the dialog in the portal
     const backdrop = dialog.previousElementSibling as HTMLElement;
     await user.click(backdrop);
 

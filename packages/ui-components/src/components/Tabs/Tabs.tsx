@@ -41,6 +41,7 @@ export interface TabsProps {
   orientation?: TabsOrientation;
   animated?: boolean;
   className?: string;
+  style?: React.CSSProperties;
   children: React.ReactNode;
 }
 
@@ -53,6 +54,7 @@ export const Tabs: React.FC<TabsProps> = ({
   orientation = 'horizontal',
   animated = false,
   className,
+  style,
   children,
 }) => {
   const [internalValue, setInternalValue] = useState(defaultValue);
@@ -93,6 +95,7 @@ export const Tabs: React.FC<TabsProps> = ({
           orientation === 'vertical' && styles.tabsRootVertical,
           className
         )}
+        style={style}
       >
         {children}
       </div>
