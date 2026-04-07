@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Odontogram, CONDITION_LABELS } from './Odontogram';
-import type { OdontogramValue, ToothCondition } from './Odontogram';
+import { Odontogram } from './Odontogram';
+import type { OdontogramValue } from './Odontogram';
 
 // Minimal placeholder base64 PNG (8x8 gray square) for story demos
 const PLACEHOLDER_IMG =
@@ -16,10 +16,6 @@ const meta = {
     value: { control: false },
     onChange: { control: false },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
-    activeTool: {
-      control: 'select',
-      options: Object.keys(CONDITION_LABELS) as ToothCondition[],
-    },
     dentition: { control: 'select', options: ['permanent', 'primary'] },
   },
 } satisfies Meta<typeof Odontogram>;
@@ -69,24 +65,6 @@ const wrapperStyle: React.CSSProperties = {
   gap: '1rem',
 };
 
-const toolbarStyle: React.CSSProperties = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '0.5rem',
-};
-
-const getToolButtonStyle = (active: boolean): React.CSSProperties => ({
-  padding: '0.25rem 0.75rem',
-  borderRadius: '0.25rem',
-  fontSize: '0.75rem',
-  fontWeight: 500,
-  border: '1px solid',
-  cursor: 'pointer',
-  borderColor: active ? 'var(--color-primary)' : 'var(--color-edge)',
-  backgroundColor: active ? 'var(--color-primary)' : 'transparent',
-  color: active ? 'var(--color-txt-white)' : 'var(--color-txt-secondary)',
-});
-
 const hintStyle: React.CSSProperties = {
   fontSize: '0.75rem',
   color: 'var(--color-txt-secondary)',
@@ -106,31 +84,15 @@ const jsonPreStyle: React.CSSProperties = {
 
 const InteractiveOdontogram = () => {
   const [value, setValue] = useState<OdontogramValue>({});
-  const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
-
-  const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
 
   return (
     <div style={wrapperStyle}>
-      <div style={toolbarStyle}>
-        {conditions.map(([condition, label]) => (
-          <button
-            key={condition}
-            onClick={() => setActiveTool(condition)}
-            style={getToolButtonStyle(activeTool === condition)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <p style={hintStyle}>
+        Haz clic en un diente para abrir su panel de detalle. Ahí podrás elegir la condición a
+        aplicar, marcar superficies, agregar notas e imágenes.
+      </p>
 
-      <Odontogram
-        value={value}
-        onChange={setValue}
-        activeTool={activeTool}
-        label="Odontograma interactivo"
-        size="md"
-      />
+      <Odontogram value={value} onChange={setValue} label="Odontograma interactivo" size="md" />
 
       {Object.keys(value).length > 0 && (
         <pre style={jsonPreStyle}>{JSON.stringify(value, null, 2)}</pre>
@@ -151,30 +113,19 @@ export const WithLabel: Story = {
 
 export const WithData: Story = {
   render: () => (
-    <Odontogram
-      label="Odontograma con condiciones"
-      value={SAMPLE_VALUE}
-      readOnly
-    />
+    <Odontogram label="Odontograma con condiciones" value={SAMPLE_VALUE} readOnly />
   ),
 };
 
 export const ReadOnly: Story = {
   render: () => (
-    <Odontogram
-      label="Vista de solo lectura"
-      value={SAMPLE_VALUE}
-      readOnly
-    />
+    <Odontogram label="Vista de solo lectura" value={SAMPLE_VALUE} readOnly />
   ),
 };
 
 export const EmptyReadOnly: Story = {
   render: () => (
-    <Odontogram
-      label="Odontograma vacío (solo lectura)"
-      readOnly
-    />
+    <Odontogram label="Odontograma vacío (solo lectura)" readOnly />
   ),
 };
 
@@ -202,17 +153,14 @@ export const Interactive: Story = {
 
 export const PrimaryDentition: Story = {
   render: () => (
-    <Odontogram
-      label="Dentición primaria"
-      dentition="primary"
-    />
+    <Odontogram label="Dentición primaria" dentition="primary" />
   ),
 };
 
 export const WithNotes: Story = {
   render: () => (
     <Odontogram
-      label="Odontograma con notas (haz clic en el número del diente)"
+      label="Odontograma con notas"
       value={SAMPLE_VALUE_WITH_NOTES}
       readOnly
     />
@@ -221,29 +169,15 @@ export const WithNotes: Story = {
 
 const WithNotesInteractiveDemo = () => {
   const [value, setValue] = useState<OdontogramValue>(SAMPLE_VALUE_WITH_NOTES);
-  const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
-  const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
   return (
     <div style={wrapperStyle}>
-      <div style={toolbarStyle}>
-        {conditions.map(([condition, label]) => (
-          <button
-            key={condition}
-            onClick={() => setActiveTool(condition)}
-            style={getToolButtonStyle(activeTool === condition)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
       <p style={hintStyle}>
-        Haz clic en las superficies para marcar condiciones. Haz clic en el número del diente para
-        agregar notas. Los dientes con nota muestran un punto azul.
+        Haz clic en un diente para abrir el panel de detalle. Desde ahí puedes marcar condiciones,
+        editar notas y gestionar imágenes.
       </p>
       <Odontogram
         value={value}
         onChange={setValue}
-        activeTool={activeTool}
         label="Odontograma interactivo con notas"
         size="md"
       />
@@ -261,7 +195,7 @@ export const WithNotesInteractive: Story = {
 export const WithImages: Story = {
   render: () => (
     <Odontogram
-      label="Odontograma con imágenes (haz clic en el ícono 📷 del diente)"
+      label="Odontograma con imágenes"
       value={{
         11: {
           surfaces: { occlusal: 'caries' },
@@ -291,29 +225,14 @@ export const WithImages: Story = {
 
 const WithImagesInteractiveDemo = () => {
   const [value, setValue] = useState<OdontogramValue>({});
-  const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
-  const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
   return (
     <div style={wrapperStyle}>
-      <div style={toolbarStyle}>
-        {conditions.map(([condition, label]) => (
-          <button
-            key={condition}
-            onClick={() => setActiveTool(condition)}
-            style={getToolButtonStyle(activeTool === condition)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
       <p style={hintStyle}>
-        Haz clic en el ícono de cámara junto al número del diente para adjuntar una imagen. Los
-        dientes con imagen muestran un punto azul claro.
+        Haz clic en un diente y luego en &quot;Imágenes&quot; para adjuntar radiografías o fotografías.
       </p>
       <Odontogram
         value={value}
         onChange={setValue}
-        activeTool={activeTool}
         label="Odontograma interactivo con imágenes"
         size="md"
       />
