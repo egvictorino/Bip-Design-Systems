@@ -75,7 +75,7 @@
 .status {
   position: absolute;
   border-radius: 9999px;
-  box-shadow: 0 0 0 2px white;
+  box-shadow: 0 0 0 2px var(--color-surface-1);
 }
 
 /* Status sizes */
@@ -99,8 +99,8 @@
 .bgSuccessText { background-color: var(--color-success-text); }
 .bgWarningText { background-color: var(--color-warning-text); }
 .bgInfoText    { background-color: var(--color-info-text); }
-.bgSlate       { background-color: #64748b; }
-.bgViolet      { background-color: #7c3aed; }
+.bgSlate       { background-color: var(--color-txt-utility); }
+.bgViolet      { background-color: var(--color-unique); }
 
 /* ─── AvatarGroup ───────────────────────────────────────────────────────────── */
 
@@ -110,7 +110,7 @@
 }
 
 .groupItem {
-  box-shadow: 0 0 0 2px white;
+  box-shadow: 0 0 0 2px var(--color-surface-1);
   border-radius: 9999px;
 }
 
@@ -134,6 +134,6 @@
   border-radius: 9999px;
   background-color: var(--color-surface-3);
   color: var(--color-txt-secondary);
-  box-shadow: 0 0 0 2px white;
+  box-shadow: 0 0 0 2px var(--color-surface-1);
   font-weight: 600;
 }
