@@ -1,5 +1,6 @@
 import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import { useClickOutside } from '../../lib/useClickOutside';
 import styles from './TimePicker.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -434,15 +435,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
 
     // ── Close on outside click ──────────────────────────────────────────────
 
-    useEffect(() => {
-      const onMouseDown = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-          setIsOpen(false);
-        }
-      };
-      document.addEventListener('mousedown', onMouseDown);
-      return () => document.removeEventListener('mousedown', onMouseDown);
-    }, []);
+    useClickOutside(containerRef, () => setIsOpen(false));
 
     // ── Close on Escape, return focus to trigger ────────────────────────────
 

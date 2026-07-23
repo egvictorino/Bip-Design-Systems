@@ -1,5 +1,7 @@
 import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import { useClickOutside } from '../../lib/useClickOutside';
+import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthIndex } from '../../lib/dateHelpers';
 import styles from './DatePicker.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -71,32 +73,6 @@ const DAY_ARIA_LABEL_FORMATTER = new Intl.DateTimeFormat('es-MX', {
 });
 
 const formatDisplay = (date: Date): string => DISPLAY_FORMATTER.format(date);
-
-/** Monday-first offset: 0 = Monday, 6 = Sunday */
-const getMondayOffset = (year: number, month: number): number => {
-  const day = new Date(year, month, 1).getDay();
-  return day === 0 ? 6 : day - 1;
-};
-
-const getDaysInMonth = (year: number, month: number): number =>
-  new Date(year, month + 1, 0).getDate();
-
-const isSameDay = (a: Date, b: Date): boolean =>
-  a.getFullYear() === b.getFullYear() &&
-  a.getMonth() === b.getMonth() &&
-  a.getDate() === b.getDate();
-
-/** Comparable month index for min/max navigation */
-const monthIndex = (d: Date): number => d.getFullYear() * 12 + d.getMonth();
-
-/** String key for a date — used for Set membership and data-date attribute */
-const dateKey = (d: Date): string => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-
-const addDays = (d: Date, delta: number): Date => {
-  const result = new Date(d);
-  result.setDate(result.getDate() + delta);
-  return result;
-};
 
 // ─── CalendarGrid (internal) ──────────────────────────────────────────────────
 
@@ -516,15 +492,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     }, [value, today]);
 
     // Close on outside click
-    useEffect(() => {
-      const onMouseDown = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-          setIsOpen(false);
-        }
-      };
-      document.addEventListener('mousedown', onMouseDown);
-      return () => document.removeEventListener('mousedown', onMouseDown);
-    }, []);
+    useClickOutside(containerRef, () => setIsOpen(false));
 
     // Close on Escape
     useEffect(() => {

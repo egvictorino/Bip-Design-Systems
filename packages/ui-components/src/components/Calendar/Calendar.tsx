@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
+import { addDays, isSameDay } from '../../lib/dateHelpers';
 import styles from './Calendar.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -61,12 +62,6 @@ export interface CalendarProps {
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
-function addDays(d: Date, n: number): Date {
-  const r = new Date(d);
-  r.setDate(r.getDate() + n);
-  return r;
-}
-
 function addMinutes(d: Date, n: number): Date {
   return new Date(d.getTime() + n * 60000);
 }
@@ -87,14 +82,6 @@ function startOfWeek(d: Date): Date {
 
 function startOfMonth(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), 1);
-}
-
-function isSameDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
 }
 
 function timeToMinutes(time: string): number {

@@ -225,50 +225,52 @@ export const Ghost: Story = {
 
 // ─── Controlled ───────────────────────────────────────────────────────────────
 
+const ControlledAccordionDemo: React.FC = () => {
+  const [open, setOpen] = React.useState<string>('item-1');
+
+  return (
+    <div style={{ width: '100%', maxWidth: '32rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        {['item-1', 'item-2', 'item-3'].map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => setOpen(v)}
+            style={{
+              borderRadius: '0.25rem',
+              border: '1px solid var(--color-primary)',
+              padding: '0.25rem 0.75rem',
+              fontSize: '0.75rem',
+              color: 'var(--color-primary)',
+              background: 'transparent',
+              cursor: 'pointer',
+            }}
+          >
+            Abrir {v}
+          </button>
+        ))}
+      </div>
+      <Accordion type="single" value={open} onChange={(v) => setOpen(v as string)}>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Item 1</AccordionTrigger>
+          <AccordionContent>Controlado externamente desde los botones superiores.</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Item 2</AccordionTrigger>
+          <AccordionContent>El estado vive en el componente padre.</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>Item 3</AccordionTrigger>
+          <AccordionContent>Útil para sincronizar el accordion con routing o URL params.</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+};
+ControlledAccordionDemo.displayName = 'ControlledAccordionDemo';
+
 export const Controlled: Story = {
   args: { children: null },
-  render: () => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [open, setOpen] = React.useState<string>('item-1');
-
-    return (
-      <div style={{ width: '100%', maxWidth: '32rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          {['item-1', 'item-2', 'item-3'].map((v) => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => setOpen(v)}
-              style={{
-                borderRadius: '0.25rem',
-                border: '1px solid var(--color-primary)',
-                padding: '0.25rem 0.75rem',
-                fontSize: '0.75rem',
-                color: 'var(--color-primary)',
-                background: 'transparent',
-                cursor: 'pointer',
-              }}
-            >
-              Abrir {v}
-            </button>
-          ))}
-        </div>
-        <Accordion type="single" value={open} onChange={(v) => setOpen(v as string)}>
-          <AccordionItem value="item-1">
-            <AccordionTrigger>Item 1</AccordionTrigger>
-            <AccordionContent>Controlado externamente desde los botones superiores.</AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger>Item 2</AccordionTrigger>
-            <AccordionContent>El estado vive en el componente padre.</AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger>Item 3</AccordionTrigger>
-            <AccordionContent>Útil para sincronizar el accordion con routing o URL params.</AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-    );
-  },
+  render: () => <ControlledAccordionDemo />,
 };
 

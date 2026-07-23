@@ -7,6 +7,7 @@ import { SearchInput } from '../SearchInput';
 import { Checkbox } from '../Checkbox';
 import { Button } from '../Button';
 import { cn } from '../../lib/cn';
+import { useClickOutside } from '../../lib/useClickOutside';
 import styles from './DataTable.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -135,16 +136,7 @@ export function DataTable<T = Record<string, unknown>>({
   }, [selectedKeys, data, keyExtractor, onSelectionChange]);
 
   // ─── Close column panel on outside click ──────────────────────────────────
-  useEffect(() => {
-    if (!colPanelOpen) return;
-    const handleMouseDown = (e: MouseEvent) => {
-      if (colPanelRef.current && !colPanelRef.current.contains(e.target as Node)) {
-        setColPanelOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleMouseDown);
-    return () => document.removeEventListener('mousedown', handleMouseDown);
-  }, [colPanelOpen]);
+  useClickOutside(colPanelRef, () => setColPanelOpen(false), colPanelOpen);
 
   // ─── Active columns (after visibility filter) ─────────────────────────────
   const activeColumns = useMemo(
