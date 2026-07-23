@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import { useClickOutside } from '../../lib/useClickOutside';
 import styles from './Dropdown.module.css';
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -53,15 +54,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ children, className }) => {
   const close = () => setIsOpen(false);
 
   // Close on outside click
-  useEffect(() => {
-    const onMouseDown = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', onMouseDown);
-    return () => document.removeEventListener('mousedown', onMouseDown);
-  }, []);
+  useClickOutside(containerRef, () => setIsOpen(false));
 
   // Close on Escape and return focus to trigger
   useEffect(() => {

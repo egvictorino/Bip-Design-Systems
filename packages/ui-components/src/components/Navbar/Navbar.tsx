@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { cn } from '../../lib/cn';
+import { useClickOutside } from '../../lib/useClickOutside';
 import styles from './Navbar.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -77,24 +78,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   const toggleMobile = useCallback(() => setIsMobileOpen((prev) => !prev), []);
   const closeMobile = useCallback(() => setIsMobileOpen(false), []);
 
-  // Escape & outside click
+  // Escape to close
   useEffect(() => {
     if (!isMobileOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeMobile();
     };
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        closeMobile();
-      }
-    };
     document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isMobileOpen, closeMobile]);
+
+  // Outside click to close
+  useClickOutside(navRef, closeMobile, isMobileOpen);
 
   // Focus management: open → focus first mobile item, close → focus hamburger
   useEffect(() => {
