@@ -1,5 +1,6 @@
 import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import { useClickOutside } from '../../lib/useClickOutside';
 import styles from './MultiSelect.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -244,15 +245,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
     // ─── Effects ─────────────────────────────────────────────────────────────
 
     // Click outside → close
-    useEffect(() => {
-      const onMouseDown = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-          close();
-        }
-      };
-      document.addEventListener('mousedown', onMouseDown);
-      return () => document.removeEventListener('mousedown', onMouseDown);
-    }, [close]);
+    useClickOutside(containerRef, close);
 
     // Escape → close + return focus to trigger
     useEffect(() => {
