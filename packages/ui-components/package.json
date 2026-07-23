@@ -67,17 +67,17 @@
     "@types/react-dom": "^18.2.18",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "happy-dom": "^20.8.8",
-    "postcss": "^8.4.32",
+    "happy-dom": "^20.8.9",
+    "postcss": "^8.5.12",
     "storybook": "^8.6.15",
     "typescript": "^5.3.3",
-    "vite": "^5.4.11",
+    "vite": "^6.4.3",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^2.1.8"
+    "vitest": "^3.2.7"
   }
 }
