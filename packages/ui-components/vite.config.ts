@@ -27,6 +27,7 @@ export default defineConfig({
         preserveModules: true,
         preserveModulesRoot: 'src',
         entryFileNames: '[name].js',
+        assetFileNames: 'style[extname]',
       },
     },
   },
