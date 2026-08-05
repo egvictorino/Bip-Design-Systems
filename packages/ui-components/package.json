@@ -1,6 +1,6 @@
 {
   "name": "@bip-design-systems/ui-components",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "BipUI — React component library",
   "license": "MIT",
   "repository": {
@@ -74,6 +74,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "happy-dom": "^20.8.9",
     "postcss": "^8.5.12",
+    "rollup-plugin-preserve-directives": "^0.4.0",
     "storybook": "^8.6.15",
     "typescript": "^5.3.3",
     "vite": "^6.4.3",

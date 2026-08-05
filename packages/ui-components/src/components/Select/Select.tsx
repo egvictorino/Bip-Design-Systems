@@ -1,3 +1,5 @@
+"use client";
+
 import { forwardRef, useId, useState } from 'react';
 import type { SelectHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';

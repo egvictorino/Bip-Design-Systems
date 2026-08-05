@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useId, useState, useContext, useCallback, useRef, useEffect } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './Tabs.module.css';
