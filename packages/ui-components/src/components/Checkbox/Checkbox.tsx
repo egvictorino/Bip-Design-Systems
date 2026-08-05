@@ -1,3 +1,5 @@
+"use client";
+
 import { forwardRef, useId, useRef, useEffect, useCallback, useContext } from 'react';
 import type { InputHTMLAttributes, MutableRefObject } from 'react';
 import { cn } from '../../lib/cn';

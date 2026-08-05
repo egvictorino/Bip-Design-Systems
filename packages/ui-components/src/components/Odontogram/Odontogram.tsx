@@ -1,3 +1,5 @@
+"use client";
+
 import { forwardRef, useCallback, useId, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './Odontogram.module.css';

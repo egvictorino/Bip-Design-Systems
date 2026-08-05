@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useContext, useId } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './Stepper.module.css';
