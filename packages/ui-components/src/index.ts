@@ -1,3 +1,8 @@
+// Design tokens + estilos base (nunca se incluían en el build: index.ts no
+// importaba index.css, así que Vite jamás los agregaba al grafo de módulos
+// y dist/style.css se publicaba sin ninguna definición de --color-*/--text-*/etc.)
+import './index.css';
+
 // Componentes
 export { EmptyState } from './components/EmptyState';
 export type { EmptyStateProps } from './components/EmptyState';
