@@ -1,3 +1,5 @@
+"use client";
+
 import React, { forwardRef, useId, useState, useRef, useCallback, useEffect } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';

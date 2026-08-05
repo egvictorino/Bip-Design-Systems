@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext } from 'react';
 import { cn } from '../../lib/cn';
 import styles from './Timeline.module.css';
