@@ -14,6 +14,13 @@
 .tabListLine {
   display: flex;
   border-bottom: 1px solid var(--color-edge);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tabListLine::-webkit-scrollbar {
+  display: none;
 }
 
 .tabListLineVertical {
@@ -26,10 +33,18 @@
 
 .tabListPill {
   display: inline-flex;
+  max-width: 100%;
   gap: 0.25rem;
   padding: 0.25rem;
   background-color: color-mix(in srgb, var(--color-surface-3) 50%, transparent);
   border-radius: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tabListPill::-webkit-scrollbar {
+  display: none;
 }
 
 .tabListPillVertical {
@@ -44,9 +59,16 @@
 
 .tabListBoxed {
   display: inline-flex;
+  max-width: 100%;
   border: 1px solid var(--color-edge);
   border-radius: 0.375rem;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tabListBoxed::-webkit-scrollbar {
+  display: none;
 }
 
 /* ─── TabList animated indicator ─────────────────────────────────────────────── */
@@ -61,6 +83,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: color 150ms, background-color 150ms, border-color 150ms;
   background: none;
   border: none;
