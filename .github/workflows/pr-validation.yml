@@ -46,8 +46,14 @@ jobs:
           echo "✅ Flujo de branches correcto"
       
       - name: Check PR title format
+        env:
+          # Passed via env instead of interpolated directly into the script:
+          # a PR title is free text, and a title containing a literal quote,
+          # backtick or $(...) breaks (or, more seriously, could inject into)
+          # a `run:` block that embeds ${{ ... }} straight into the YAML.
+          # env vars are passed as-is, with no re-parsing by the shell.
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
           if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore|hotfix)(\(.+\))?:\ .+ ]]; then
             echo "⚠️ Recomendación: Usa conventional commits"
             echo "Ejemplo: feat(button): agregar variante outline"
