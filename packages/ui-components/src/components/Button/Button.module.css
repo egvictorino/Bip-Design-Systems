@@ -43,7 +43,7 @@
 
 .primary {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
 }
 .primary:hover:not(:disabled) { background-color: var(--color-primary-hover); }
 .primary:active:not(:disabled) { background-color: var(--color-primary-press); }
@@ -76,7 +76,7 @@
 
 .danger {
   background-color: var(--color-danger);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-danger);
 }
 .danger:hover:not(:disabled) { background-color: var(--color-danger-hover); }
 .danger:active:not(:disabled) { background-color: var(--color-danger-press); }

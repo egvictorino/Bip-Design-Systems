@@ -49,11 +49,12 @@
 
 .variantPrimary {
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-txt-on-primary);
   border-right-color: transparent;
 }
 
-/* Dark variant — cascade overrides */
+/* Dark variant — cascade overrides. --color-surface-4 es un neutro fijo (no
+   una semilla de marca overrideable), así que blanco fijo es correcto aquí. */
 .variantDark .item          { color: rgba(255, 255, 255, 0.65); }
 .variantDark .itemActive    { background-color: rgba(255, 255, 255, 0.12); color: white; }
 .variantDark .itemDefault:hover { background-color: rgba(255, 255, 255, 0.08); color: white; }
@@ -65,17 +66,21 @@
 .variantDark .trigger:hover { background-color: rgba(255, 255, 255, 0.08); color: white; }
 .variantDark .badge         { background-color: var(--color-danger); }
 
-/* Primary variant — cascade overrides */
-.variantPrimary .item          { color: rgba(255, 255, 255, 0.75); }
-.variantPrimary .itemActive    { background-color: rgba(255, 255, 255, 0.2); color: white; }
-.variantPrimary .itemDefault:hover { background-color: rgba(255, 255, 255, 0.15); color: white; }
-.variantPrimary .groupLabel    { color: rgba(255, 255, 255, 0.5); }
-.variantPrimary .brand         { color: white; }
-.variantPrimary .header        { border-bottom-color: rgba(255, 255, 255, 0.2); }
-.variantPrimary .footer        { border-top-color: rgba(255, 255, 255, 0.2); }
-.variantPrimary .trigger       { color: rgba(255, 255, 255, 0.75); }
-.variantPrimary .trigger:hover { background-color: rgba(255, 255, 255, 0.15); color: white; }
-.variantPrimary .badge         { background-color: white; color: var(--color-primary); }
+/* Primary variant — cascade overrides. --color-primary SÍ es una semilla
+   overrideable vía ThemeProvider `tokens`, así que estos overlays usan
+   --color-txt-on-primary (blanco u oscuro según contraste, ver
+   src/lib/contrast.ts) en vez de blanco fijo — con un colorPrimary claro,
+   blanco fijo dejaría el sidebar ilegible. Mismos porcentajes que antes. */
+.variantPrimary .item          { color: color-mix(in srgb, var(--color-txt-on-primary), transparent 25%); }
+.variantPrimary .itemActive    { background-color: color-mix(in srgb, var(--color-txt-on-primary), transparent 80%); color: var(--color-txt-on-primary); }
+.variantPrimary .itemDefault:hover { background-color: color-mix(in srgb, var(--color-txt-on-primary), transparent 85%); color: var(--color-txt-on-primary); }
+.variantPrimary .groupLabel    { color: color-mix(in srgb, var(--color-txt-on-primary), transparent 50%); }
+.variantPrimary .brand         { color: var(--color-txt-on-primary); }
+.variantPrimary .header        { border-bottom-color: color-mix(in srgb, var(--color-txt-on-primary), transparent 80%); }
+.variantPrimary .footer        { border-top-color: color-mix(in srgb, var(--color-txt-on-primary), transparent 80%); }
+.variantPrimary .trigger       { color: color-mix(in srgb, var(--color-txt-on-primary), transparent 25%); }
+.variantPrimary .trigger:hover { background-color: color-mix(in srgb, var(--color-txt-on-primary), transparent 85%); color: var(--color-txt-on-primary); }
+.variantPrimary .badge         { background-color: var(--color-txt-on-primary); color: var(--color-primary); }
 
 /* ─── Header ─────────────────────────────────────────────────────────────────── */
 

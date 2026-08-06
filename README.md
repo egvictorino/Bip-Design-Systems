@@ -15,6 +15,7 @@ Monorepo basado en **pnpm workspaces** que centraliza la librería de componente
 - [Utilidades Compartidas](#utilidades-compartidas)
 - [Tokens de Diseño](#tokens-de-diseño)
 - [CSS Modules y Tokens de Diseño](#css-modules-y-tokens-de-diseño)
+- [Theming](#theming)
 - [Estrategia de Branches](#estrategia-de-branches)
 - [CI/CD](#cicd)
 - [Usar en un Proyecto Externo](#usar-en-un-proyecto-externo)
@@ -76,6 +77,7 @@ pnpm --filter @bip-design-systems/ui-components build            # Build librer�
 pnpm --filter @bip-design-systems/ui-components lint             # Lint
 pnpm --filter @bip-design-systems/shared-utils test              # Tests utilidades (vitest)
 pnpm --filter @bip-design-systems/ui-components test             # Tests componentes (vitest + happy-dom)
+pnpm --filter @bip-design-systems/ui-components test:visual      # Regresión visual del sistema de temas (Playwright)
 ```
 
 ### Monorepo completo
@@ -167,6 +169,7 @@ pnpm dev     # Modo desarrollo paralelo
 | `Divider` | Línea separadora horizontal o vertical con etiqueta opcional |
 | `EmptyState` | Estado vacío con icono, título, descripción y acción principal |
 | `Odontogram` | Odontograma interactivo para registrar condiciones dentales por pieza |
+| `ThemeProvider` | Provider de tema — controla forma (`square`/`rounded`), esquema de color (`light`/`dark`) y marca (`tokens`). Ver [Theming](#theming) |
 
 ---
 
@@ -193,7 +196,7 @@ validateRFC('abc800101AA1');    // false — no acepta minúsculas
 
 ## Tokens de Diseño
 
-Fuente única de verdad: `packages/ui-components/src/tokens.css` — **generado automáticamente** con `pnpm sync:tokens` desde Figma. No editar manualmente. Define todos los tokens como CSS custom properties bajo `:root` e importado por `Colors.stories.tsx` (documentación Storybook).
+Fuente única de verdad: `packages/ui-components/src/tokens.css` — **hand-authored**, se edita directamente. Define todos los tokens de color/sombra como CSS custom properties, con los valores `:root` (light) y sus overrides bajo `[data-color-scheme='dark']` en el mismo archivo. Documentado visualmente en `Colors.stories.tsx` (Storybook).
 
 ```css
 /* Interaction */
@@ -219,8 +222,11 @@ Fuente única de verdad: `packages/ui-components/src/tokens.css` — **generado 
 --color-warning, --color-warning-{light|subtle|text}
 ```
 
-> Para agregar un token: ejecutar `pnpm sync:tokens` (regenera `tokens.css` desde Figma).
-> Nunca editar `tokens.css` manualmente.
+**Semilla vs. derivado** — dentro de cada bloque (`:root` / `[data-color-scheme='dark']`), un token es:
+- **Semilla** — hex literal, uno por familia de color (`--color-primary`, `--color-danger`, `--color-info`, etc.). Es lo que el consumidor sobrescribe para theming de marca.
+- **Derivado** — el resto de la familia (`-hover`, `-press`, `-light`, `-subtle`, `-text`...), calculado desde la semilla con `color-mix()`. Sobrescribir la semilla recolorea automáticamente toda la familia.
+
+> Para agregar un token: editar `tokens.css` directamente — decidir primero de qué semilla deriva antes de escribir un hex nuevo. Ver [Theming](#theming) para el eje de marca en runtime.
 
 ---
 
@@ -232,7 +238,7 @@ Los estilos de todos los componentes usan **CSS Modules** (`ComponentName.module
 
 | Archivo | Rol |
 |---------|-----|
-| `packages/ui-components/src/tokens.css` | **Fuente de verdad** — define todos los tokens de color como variables CSS (`:root { --color-primary: …; }`). Generado automáticamente con `pnpm sync:tokens`. |
+| `packages/ui-components/src/tokens.css` | **Fuente de verdad** — define todos los tokens de color como variables CSS (`:root { --color-primary: …; }`), hand-authored. |
 | `packages/ui-components/src/components/**/*.module.css` | Estilos por componente (scoped). Usan las variables de `tokens.css`. |
 | `packages/ui-components/src/lib/cn.ts` | Utilidad `cn()` — wrapper de `clsx` para composición condicional de clases de CSS Module. |
 | `src/foundations/Colors.stories.tsx` | Documentación visual de todos los tokens en Storybook. |
@@ -268,11 +274,129 @@ Los tokens se consumen desde los archivos `.module.css` mediante `var()`:
 ### Flujo de actualización de tokens
 
 ```
-Figma  →  pnpm sync:tokens  →  src/tokens.css  →  pnpm build
+Editar src/tokens.css  →  pnpm build
 ```
 
-> `pnpm sync:tokens` regenera únicamente `tokens.css`.
-> Nunca edites `tokens.css` manualmente — los cambios se perderán en el siguiente sync.
+> `tokens.css` es hand-authored — edítalo directamente y sigue la regla semilla/derivado (ver [Tokens de Diseño](#tokens-de-diseño)).
+
+---
+
+## Theming
+
+Tres ejes independientes, todos controlados por `<ThemeProvider>` — sin configuración de build ni Tailwind.
+
+| Eje | Prop | Valores | Afecta |
+|-----|------|---------|--------|
+| Forma / tipografía | `theme` | `square` \| `rounded` | `--radius-*`, `--font-sans` |
+| Esquema de color | `colorScheme` | `light` \| `dark` (default `light`) | Toda la paleta `--color-*` |
+| Marca | `tokens` | overrides de semillas (ver abajo) | `--color-primary`, `--color-danger`, etc. y toda su familia derivada |
+
+```tsx
+import { ThemeProvider } from '@bip-design-systems/ui-components';
+
+export const App = () => (
+  <ThemeProvider theme="rounded" colorScheme="dark">
+    <MiApp />
+  </ThemeProvider>
+);
+```
+
+### Marca personalizada (`tokens`)
+
+Estilo `ConfigProvider` de Ant Design: pasa un color y toda la librería se recolorea — hover, press, focus ring, texto y variantes claras/sutiles se derivan automáticamente.
+
+```tsx
+<ThemeProvider
+  theme="rounded"
+  tokens={{
+    colorPrimary: '#e2007a',
+    colorDanger: '#d6336c',
+    // refinamiento opcional por esquema — gana sobre el valor plano
+    dark: { colorPrimary: '#ff4fa8' },
+  }}
+>
+  <MiApp />
+</ThemeProvider>
+```
+
+- Semillas disponibles: `colorPrimary`, `colorSecondary`, `colorDanger`, `colorInfo`, `colorSuccess`, `colorWarning`, `colorUnique`, `colorLink`, `colorTxt`, `colorSurface`, `colorEdge`, `colorField`, `fontFamily`.
+- `cssVars` es el escape hatch para cualquier custom property fuera de esa lista: `cssVars={{ '--color-selected': '#...' }}`.
+- Los `<ThemeProvider>` anidados hacen merge con el padre — uno interno solo sobrescribe lo que declara.
+- Los componentes con portal (`Modal`, `Toast`, `DrawerPanel`, `Calendar`, popovers de `Odontogram`) heredan la marca correctamente aunque se rendericen fuera del árbol DOM del provider.
+
+**Contraste automático.** Al sobrescribir `colorPrimary`, `colorDanger`, `colorSuccess`, `colorWarning`, `colorInfo` o `colorUnique`, `ThemeProvider` calcula el contraste WCAG (`src/lib/contrast.ts`) y elige texto blanco u oscuro automáticamente — un `colorPrimary` amarillo claro no deja el botón primario con texto blanco ilegible. Componentes migrados a este mecanismo: `Button`, `Avatar`, `Stepper`, `Sidebar` (`variant="primary"`).
+
+**Radius por marca.** Además del preset `theme`, se puede sobrescribir cualquiera de los 6 tokens semánticos de radius de forma independiente:
+
+```tsx
+<ThemeProvider theme="rounded" radius={{ field: '12px', container: '24px' }}>
+```
+
+Claves: `marker`, `field`, `control`, `surface`, `container`, `containerLg`.
+
+### Modo no-controlado, `system` y persistencia
+
+Sin `theme`/`colorScheme`, `ThemeProvider` maneja su propio estado (`defaultTheme`/`defaultColorScheme`) y expone controles vía `useThemeControls()` — útil para un botón de toggle sin levantar estado propio en la app:
+
+```tsx
+import { ThemeProvider, useThemeControls } from '@bip-design-systems/ui-components';
+
+const ToggleButton = () => {
+  const { resolvedColorScheme, toggleColorScheme } = useThemeControls();
+  return <button onClick={toggleColorScheme}>{resolvedColorScheme === 'dark' ? '🌙' : '☀️'}</button>;
+};
+
+export const App = () => (
+  <ThemeProvider defaultTheme="square" defaultColorScheme="system" storageKey="mi-app-theme">
+    <ToggleButton />
+    <MiApp />
+  </ThemeProvider>
+);
+```
+
+- `colorScheme`/`defaultColorScheme` aceptan `'system'` — sigue `prefers-color-scheme` del SO en vivo. Nunca se estampa `'system'` en el DOM, siempre el valor resuelto (`light`/`dark`).
+- `storageKey` persiste la preferencia en `localStorage` (best-effort — no falla en modo privado de Safari).
+- Un axis controlado (`colorScheme` pasado como prop) siempre gana sobre el estado interno y sobre lo persistido.
+
+**Evitar el flash de tema (FOUC) en SSR.** El primer paint del servidor no conoce la preferencia guardada en `localStorage`; usa `getThemeInitScript()` para estampar `data-theme`/`data-color-scheme` en `<html>` antes de hidratar:
+
+```tsx
+// Next.js App Router — app/layout.tsx
+import { getThemeInitScript } from '@bip-design-systems/ui-components';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: getThemeInitScript({ storageKey: 'mi-app-theme' }) }}
+        />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+`storageKey` debe coincidir con el pasado a `<ThemeProvider>`.
+
+Ver la story `Components/ThemeProvider` en Storybook para demos interactivas (incluye `CustomBrand`, `UncontrolledWithPersistence` y `SystemColorScheme`).
+
+### Soporte de navegadores
+
+El eje de marca depende de `color-mix()` nativo — sin bundle de fallback. Mínimo soportado:
+
+| Navegador | Versión mínima |
+|---|---|
+| Chrome / Edge | 111+ |
+| Safari | 16.2+ |
+| Firefox | 113+ |
+
+Todos de 2023 en adelante. Declarado en `packages/ui-components/package.json` (`browserslist`).
+
+### Fuentes
+
+Inter y Figtree se auto-hospedan (`@fontsource-variable`, `src/styles/fonts.css`) — ya no se cargan desde `fonts.googleapis.com`, así que funcionan bajo CSP estricta sin petición externa. Solo se incluyen los subsets `latin`/`latin-ext` (peso completo 100–900, normal + itálica); Cirílico/Griego/Vietnamita quedan fuera. Esto deja `style.css` en ~800KB — es el tradeoff de auto-hospedar variable fonts completas vs. el subsetting dinámico que hacía el CDN de Google.
 
 ---
 
@@ -373,14 +497,16 @@ No se requiere configurar Tailwind ni ningún otro preprocesador CSS.
 ### 4. Usar los componentes
 
 ```tsx
-import { Button, Input, ToastProvider, useToast } from '@bip-design-systems/ui-components';
+import { Button, Input, ThemeProvider, ToastProvider, useToast } from '@bip-design-systems/ui-components';
 import { formatCurrency, validateRFC } from '@bip-design-systems/shared-utils';
 
-// Wrap the app root with ToastProvider
+// ThemeProvider es opcional — sin él, el tema por defecto es square/light.
 export const App = () => (
-  <ToastProvider>
-    <MiPagina />
-  </ToastProvider>
+  <ThemeProvider theme="rounded" tokens={{ colorPrimary: '#e2007a' }}>
+    <ToastProvider>
+      <MiPagina />
+    </ToastProvider>
+  </ThemeProvider>
 );
 
 export const MiPagina = () => {

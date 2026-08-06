@@ -19,7 +19,8 @@ pnpm --filter @bip-design-systems/ui-components build-storybook
 # Lint & test (scoped)
 pnpm --filter @bip-design-systems/ui-components lint
 pnpm --filter @bip-design-systems/shared-utils test
-pnpm --filter @bip-design-systems/ui-components test   # component tests (vitest + happy-dom)
+pnpm --filter @bip-design-systems/ui-components test         # component tests (vitest + happy-dom)
+pnpm --filter @bip-design-systems/ui-components test:visual  # theme visual regression (Playwright, needs Storybook running)
 
 # All packages at once
 pnpm build
@@ -76,6 +77,10 @@ Test files live alongside components: `ComponentName.test.tsx`. Configured with:
 - `src/test-setup.ts` imports `@testing-library/jest-dom` to extend `expect`
 - `vite-plugin-dts` excludes `**/*.test.tsx` so test files never appear in `dist/`
 - `tsconfig.json` keeps test files **included** (no exclude) so the IDE resolves test imports correctly; `"types": ["vitest/globals", "@testing-library/jest-dom"]` provides global types
+
+### Visual regression (`packages/ui-components/visual/`)
+
+Separate from the vitest suite — `theme-matrix.spec.ts` uses `@playwright/test` against a running Storybook, not happy-dom, because it screenshots the theme system end-to-end (square/rounded × light/dark, custom brand, Foundations/Colors, Foundations/Radius). `playwright.visual.config.ts` auto-starts `pnpm storybook` if one isn't already running on :6006. Baselines are committed in `visual/theme-matrix.spec.ts-snapshots/` (platform-suffixed, e.g. `-chromium-darwin.png` — regenerate locally on your OS with `pnpm test:visual -- --update-snapshots` after a deliberate `tokens.css`/`ThemeProvider` change; not currently wired into CI).
 
 ## CI/CD
 
@@ -212,7 +217,36 @@ Single source of truth: `src/tokens.css` — defines all design tokens as CSS cu
 
 To use in a `.module.css` file: `background-color: var(--color-primary);`
 
-To add a token: edit `tokens.css` directly — add the light value under `:root` and, if it should differ in dark mode, a matching override under `[data-color-scheme='dark']`. No registration in `cn.ts` required.
+To add a token: edit `tokens.css` directly — add the light value under `:root, [data-color-scheme='light']` and, if it should differ in dark mode, a matching override under `:root[data-color-scheme='dark'], [data-color-scheme='dark']`. **Both selectors are double** (`:root` + attribute-only) — `:root` alone only matches `<html>`, never a nested `<ThemeProvider>` wrapper `<div>`, so a bare `:root` block would silently fail to re-resolve derived `var()` references inside a nested provider. No registration in `cn.ts` required.
+
+**Seed vs. derived tokens.** Within each color-scheme block, tokens are either:
+- **Seeds** — hex literals, one per color family (`--color-primary`, `--color-secondary`, `--color-danger`, `--color-info`, `--color-success`, `--color-warning`, `--color-unique`, `--color-link`, `--color-txt`, `--color-surface-1`, `--color-edge`, `--color-field`). These are the tokens a consumer overrides for brand theming.
+- **Derived** — everything else in that family (`-hover`, `-press`, `-light`, `-subtle`, `-text`, etc.), computed from the seed with `color-mix(in srgb, var(--color-x), black|white N%)`. Light derives toward `black`; dark derives toward `white`. Overriding a seed automatically recolors its whole family.
+- **Computed defaults** — `--color-txt-on-primary`, `-danger`, `-success`, `-warning`, `-info`, `-unique`: static hex fallback in `tokens.css` (can't be a `color-mix()` formula — WCAG contrast isn't expressible in CSS), but re-computed in JS by `ThemeProvider` via `src/lib/contrast.ts`'s `pickReadableText()` whenever the matching seed is overridden. See below.
+
+When adding a token, decide first which seed it derives from — don't add a new hex literal unless it genuinely doesn't belong to any existing family (e.g. `--color-selected`).
+
+**`Foundations/Colors` and `Foundations/Radius`** (Storybook, `src/foundations/`) document every token live — `tokens.data.ts` parses `tokens.css` at build time via `?raw` import (see `src/vite-env.d.ts`) and classifies each token as seed/derived, so the docs page cannot drift from the actual file. Never hand-maintain a duplicate token list for documentation purposes again (a prior `tailwind.tokens.js` doing exactly that was deleted for this reason).
+
+**Brand theming via `ThemeProvider`.** `ThemeProvider` accepts a `tokens` prop (Ant Design `ConfigProvider`-style) to override seeds at runtime, no CSS build step required:
+
+```tsx
+<ThemeProvider theme="rounded" tokens={{ colorPrimary: '#e2007a', dark: { colorPrimary: '#ff4fa8' } }}>
+  <App />
+</ThemeProvider>
+```
+
+- Flat keys (`colorPrimary`, `colorDanger`, ..., `fontFamily`) apply to both schemes; nested `light`/`dark` keys refine per scheme and win over the flat value for the active `colorScheme`.
+- `radius` (sibling prop, not inside `tokens`) overrides the 6 semantic radius tokens independently of `theme`: `{ marker, field, control, surface, container, containerLg }`.
+- `cssVars` is the escape hatch for anything not in `TOKEN_VAR_MAP` (e.g. `{ '--color-selected': '#...' }`) — it wins over both `tokens` and `radius`.
+- Values are applied as inline CSS custom properties on the provider's wrapper `<div>`, so specificity always beats `tokens.css`.
+- Nested `<ThemeProvider>`s merge with their parent — a nested provider only overrides the seeds it declares.
+- Portalled components (Modal, Toast, DrawerPanel, Calendar, Odontogram popovers) read the resolved vars via `useThemeAttributes()` (returns `{ 'data-theme', 'data-color-scheme', style }`) since `createPortal` moves them outside the provider's DOM subtree and they'd otherwise fall back to the default palette.
+- Adding a new seed: add it to `tokens.css` (both schemes) **and** to `TOKEN_VAR_MAP` in `ThemeProvider.tsx` — `tokens.test.ts` asserts every `TOKEN_VAR_MAP` entry points to a real token.
+
+**Automatic contrast on fill seeds.** Overriding `colorPrimary`, `colorDanger`, `colorSuccess`, `colorWarning`, `colorInfo`, or `colorUnique` also recomputes the matching `--color-txt-on-*` token via `pickReadableText()` (WCAG relative luminance, picks white or `--color-txt`'s dark value against the override) — a light `colorPrimary` won't leave white text stranded on a light button. Components painting text over one of these fills must consume `--color-txt-on-*`, never a hardcoded `--color-txt-white` — see `Button`, `Avatar`, `Stepper`, `Sidebar` (`variant="primary"`) for the pattern.
+
+**`system`, uncontrolled mode, persistence, SSR.** `theme`/`colorScheme` are controlled-or-uncontrolled (React standard pattern: prop wins if passed, else internal state seeded by `defaultTheme`/`defaultColorScheme`). `colorScheme` additionally accepts `'system'`, resolved live via `useSyncExternalStore` over `matchMedia('(prefers-color-scheme: dark)')` — **never stamped as `'system'` in the DOM**, always the resolved `light`/`dark`. `useThemeControls()` exposes `{ theme, colorScheme, resolvedColorScheme, setTheme, setColorScheme, toggleColorScheme }` for building a toggle without lifting state (no-op outside a provider or on a controlled axis). `storageKey` persists the uncontrolled preference to `localStorage` (best-effort, wrapped in `try/catch`). `getThemeInitScript({ storageKey })` returns a plain-JS IIFE string to inline in `<head>` before hydration — the only way to avoid a FOUC, since it must run before React mounts.
 
 ### `displayName` requirement
 
@@ -316,6 +350,8 @@ export const MyStory: Story = {
   ),
 };
 ```
+
+**No Tailwind classes.** The project migrated off Tailwind entirely — `className="flex gap-4 w-80"` etc. silently does nothing (no such classes exist in any built CSS) and was a real bug found across ~20 story files (dead classNames, layouts rendering unstyled). For one-off story layout, use inline `style={{ display: 'flex', gap: '1rem', width: '320px' }}`; for anything reused many times in one file, hoist a `const` style object. Only real design tokens (`.module.css` + `var(--color-*)`) belong in components themselves.
 
 ## TypeScript
 

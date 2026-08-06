@@ -46,7 +46,7 @@
 
 /* ─── Tema B · rounded ─── */
 [data-theme='rounded'] {
-  --font-sans: 'Figtree', 'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+  --font-sans: 'Figtree Variable', 'Figtree', 'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
   --font-letter-spacing: 0.005em;
 
   --radius-marker:       var(--radius-sm);   /* 0.25rem  */

@@ -128,14 +128,22 @@ export function DataTable<T = Record<string, unknown>>({
   }, [data]);
 
   // ─── Notify selection changes ─────────────────────────────────────────────
+  // keyExtractor/onSelectionChange are read via refs (not effect deps) because
+  // consumers commonly pass inline functions; depending on their identity would
+  // re-fire this effect every render and loop forever through onSelectionChange.
+  const keyExtractorRef = useRef(keyExtractor);
+  keyExtractorRef.current = keyExtractor;
+  const onSelectionChangeRef = useRef(onSelectionChange);
+  onSelectionChangeRef.current = onSelectionChange;
+
   useEffect(() => {
-    if (!onSelectionChange) return;
+    if (!onSelectionChangeRef.current) return;
     const selectedRows = data.filter((row, i) => {
-      const k = keyExtractor ? keyExtractor(row, i) : i;
+      const k = keyExtractorRef.current ? keyExtractorRef.current(row, i) : i;
       return selectedKeys.has(k);
     });
-    onSelectionChange(selectedRows);
-  }, [selectedKeys, data, keyExtractor, onSelectionChange]);
+    onSelectionChangeRef.current(selectedRows);
+  }, [selectedKeys, data]);
 
   // ─── Close column panel on outside click ──────────────────────────────────
   useClickOutside(colPanelRef, () => setColPanelOpen(false), colPanelOpen);

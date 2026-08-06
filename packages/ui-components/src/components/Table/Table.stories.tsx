@@ -237,15 +237,15 @@ export const WithActions: Story = {
           <TableRow key={c.id}>
             <TableCell>
               <div>
-                <p className="font-medium text-txt">{c.nombre}</p>
-                <p className="text-xs text-txt-secondary">{c.email}</p>
+                <p style={{ fontWeight: 500, color: 'var(--color-txt)' }}>{c.nombre}</p>
+                <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)' }}>{c.email}</p>
               </div>
             </TableCell>
             <TableCell>
               <Badge variant={estadoVariant[c.estado as Estado]}>{c.estado}</Badge>
             </TableCell>
             <TableCell align="right">
-              <div className="flex justify-end gap-2">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                 <Button variant="soul" size="sm">
                   Editar
                 </Button>

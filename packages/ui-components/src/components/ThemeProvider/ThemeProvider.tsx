@@ -1,16 +1,226 @@
-import React, { createContext, useContext } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from 'react';
+import { pickReadableText } from '../../lib/contrast';
 
 export type BipTheme = 'square' | 'rounded';
 export type BipColorScheme = 'light' | 'dark';
+/** Preferencia declarada por el consumidor — 'system' se resuelve a light/dark en runtime, nunca se estampa en el DOM. */
+export type BipColorSchemePreference = BipColorScheme | 'system';
+
+/**
+ * Overrides de marca — cada clave mapea a una token "semilla" en tokens.css
+ * (ver TOKEN_VAR_MAP). Sobrescribir una semilla recolorea automáticamente
+ * toda su familia derivada (hover/press/focus/text/light/subtle) vía los
+ * color-mix() ya declarados en tokens.css.
+ */
+export interface BipTokenOverrides {
+  colorPrimary?: string;
+  colorSecondary?: string;
+  colorDanger?: string;
+  colorInfo?: string;
+  colorSuccess?: string;
+  colorWarning?: string;
+  colorUnique?: string;
+  colorLink?: string;
+  colorTxt?: string;
+  colorSurface?: string;
+  colorEdge?: string;
+  colorField?: string;
+  /** Sobrescribe --font-sans — p. ej. 'Poppins, sans-serif'. No varía por esquema. */
+  fontFamily?: string;
+}
+
+/** Único punto a actualizar si se agrega una semilla nueva a tokens.css. */
+export const TOKEN_VAR_MAP: Record<keyof BipTokenOverrides, string> = {
+  colorPrimary: '--color-primary',
+  colorSecondary: '--color-secondary',
+  colorDanger: '--color-danger',
+  colorInfo: '--color-info',
+  colorSuccess: '--color-success',
+  colorWarning: '--color-warning',
+  colorUnique: '--color-unique',
+  colorLink: '--color-link',
+  colorTxt: '--color-txt',
+  colorSurface: '--color-surface-1',
+  colorEdge: '--color-edge',
+  colorField: '--color-field',
+  fontFamily: '--font-sans',
+};
+
+/**
+ * Overrides de los 6 tokens semánticos de radius (styles/themes.css) — un
+ * eje aparte de `tokens` porque no varía por esquema de color, sino por
+ * `theme` (square/rounded), y porque cada override es independiente en vez
+ * de derivarse de una única semilla como el eje de color.
+ */
+export interface BipRadiusOverrides {
+  marker?: string;
+  field?: string;
+  control?: string;
+  surface?: string;
+  container?: string;
+  containerLg?: string;
+}
+
+const RADIUS_VAR_MAP: Record<keyof BipRadiusOverrides, string> = {
+  marker: '--radius-marker',
+  field: '--radius-field',
+  control: '--radius-control',
+  surface: '--radius-surface',
+  container: '--radius-container',
+  containerLg: '--radius-container-lg',
+};
+
+const resolveRadiusVars = (radius: BipRadiusOverrides | undefined): Record<string, string> => {
+  if (!radius) return {};
+  const vars: Record<string, string> = {};
+  for (const [key, value] of Object.entries(radius)) {
+    if (value === undefined) continue;
+    vars[RADIUS_VAR_MAP[key as keyof BipRadiusOverrides]] = value;
+  }
+  return vars;
+};
+
+/**
+ * Semillas de relleno de marca — al sobrescribirlas, se recalcula con
+ * pickReadableText() el token --color-txt-on-* correspondiente (ver
+ * tokens.css § contraste automático). Solo las semillas usadas como fondo
+ * sólido con texto encima entran aquí — colorSecondary/colorSurface/etc.
+ * no tienen contraparte --color-txt-on-* porque hoy ningún componente pinta
+ * texto plano sobre ellas.
+ */
+const ON_TEXT_VAR_MAP: Partial<Record<keyof BipTokenOverrides, string>> = {
+  colorPrimary: '--color-txt-on-primary',
+  colorDanger: '--color-txt-on-danger',
+  colorSuccess: '--color-txt-on-success',
+  colorWarning: '--color-txt-on-warning',
+  colorInfo: '--color-txt-on-info',
+  colorUnique: '--color-txt-on-unique',
+};
+
+export interface ThemeControls {
+  theme: BipTheme;
+  /** Preferencia declarada — puede ser 'system'; usar `resolvedColorScheme` para pintar el icono sol/luna. */
+  colorScheme: BipColorSchemePreference;
+  resolvedColorScheme: BipColorScheme;
+  setTheme: (theme: BipTheme) => void;
+  setColorScheme: (colorScheme: BipColorSchemePreference) => void;
+  /** Alterna entre light/dark. Si la preferencia actual es 'system', parte del valor resuelto. */
+  toggleColorScheme: () => void;
+}
+
+const NOOP_CONTROLS: ThemeControls = {
+  theme: 'square',
+  colorScheme: 'light',
+  resolvedColorScheme: 'light',
+  setTheme: () => {},
+  setColorScheme: () => {},
+  toggleColorScheme: () => {},
+};
 
 interface ThemeContextValue {
   theme: BipTheme;
   colorScheme: BipColorScheme;
+  /** Vars CSS resueltas acumuladas (padre + propias) — ver ThemeProvider. */
+  resolvedVars: Record<string, string>;
+  controls: ThemeControls;
 }
 
-const DEFAULT_CONTEXT: ThemeContextValue = { theme: 'square', colorScheme: 'light' };
+const DEFAULT_CONTEXT: ThemeContextValue = {
+  theme: 'square',
+  colorScheme: 'light',
+  resolvedVars: {},
+  controls: NOOP_CONTROLS,
+};
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
+
+/**
+ * SSR-safe: getServerSnapshot devuelve 'light' (coincide con el default de
+ * :root en tokens.css), y solo se re-suscribe a matchMedia en el cliente.
+ */
+const getSystemColorScheme = (): BipColorScheme =>
+  typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+
+const subscribeToSystemColorScheme = (callback: () => void): (() => void) => {
+  if (typeof window === 'undefined' || !window.matchMedia) return () => {};
+  const mql = window.matchMedia('(prefers-color-scheme: dark)');
+  mql.addEventListener('change', callback);
+  return () => mql.removeEventListener('change', callback);
+};
+
+/** Sigue `prefers-color-scheme` del SO en vivo. Usado internamente cuando `colorScheme="system"`. */
+const useSystemColorScheme = (): BipColorScheme =>
+  useSyncExternalStore(subscribeToSystemColorScheme, getSystemColorScheme, () => 'light');
+
+interface StoredThemePreference {
+  theme?: BipTheme;
+  colorScheme?: BipColorSchemePreference;
+}
+
+const readStoredPreference = (storageKey: string): StoredThemePreference | null => {
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    return raw ? (JSON.parse(raw) as StoredThemePreference) : null;
+  } catch {
+    // localStorage inaccesible (modo privado) o valor corrupto — se ignora, quedan los defaults.
+    return null;
+  }
+};
+
+const writeStoredPreference = (storageKey: string, value: StoredThemePreference): void => {
+  try {
+    window.localStorage.setItem(storageKey, JSON.stringify(value));
+  } catch {
+    // Safari en modo privado lanza en setItem — la persistencia es best-effort.
+  }
+};
+
+/**
+ * Hook para leer/mutar el tema desde cualquier descendiente sin levantar
+ * estado propio — p. ej. un botón de toggle light/dark. Sin <ThemeProvider>
+ * ancestro (o si el axis correspondiente es controlado por props), los
+ * setters son no-op.
+ */
+export const useThemeControls = (): ThemeControls =>
+  (useContext(ThemeContext) ?? DEFAULT_CONTEXT).controls;
+
+/**
+ * Resuelve el mapa final { '--color-primary': '#...' } a partir de los
+ * overrides comunes + el refinamiento del esquema activo + el escape hatch
+ * cssVars, en ese orden (cada capa pisa a la anterior).
+ */
+export const resolveTokenVars = (
+  tokens: (BipTokenOverrides & { light?: BipTokenOverrides; dark?: BipTokenOverrides }) | undefined,
+  colorScheme: BipColorScheme,
+  cssVars: Record<string, string> | undefined
+): Record<string, string> => {
+  if (!tokens && !cssVars) return {};
+
+  const { light, dark, ...base } = tokens ?? {};
+  const scoped = colorScheme === 'dark' ? dark : light;
+  const merged: BipTokenOverrides = { ...base, ...scoped };
+
+  const vars: Record<string, string> = {};
+  for (const [key, value] of Object.entries(merged)) {
+    if (value === undefined) continue;
+    const typedKey = key as keyof BipTokenOverrides;
+    vars[TOKEN_VAR_MAP[typedKey]] = value;
+
+    const onTextVar = ON_TEXT_VAR_MAP[typedKey];
+    if (onTextVar) vars[onTextVar] = pickReadableText(value);
+  }
+  return { ...vars, ...cssVars };
+};
 
 /**
  * Sin <ThemeProvider> ancestro, el tema efectivo es square/light — coincide
@@ -25,24 +235,49 @@ export const useColorScheme = (): BipColorScheme =>
   (useContext(ThemeContext) ?? DEFAULT_CONTEXT).colorScheme;
 
 /**
- * Atributos data-* para estampar el eje de tema en un nodo portalled
- * (Modal, Toast, DrawerPanel, Calendar, Odontogram popovers) que vive
- * fuera del árbol DOM del provider y por eso no hereda el estampado
- * que hace <ThemeProvider> en su wrapper. Punto único a actualizar si
- * se agrega un tercer eje.
+ * Atributos data-* + style para estampar el eje de tema (incluidas las vars
+ * de marca resueltas) en un nodo portalled (Modal, Toast, DrawerPanel,
+ * Calendar, Odontogram popovers) que vive fuera del árbol DOM del provider
+ * y por eso no hereda ni el estampado ni las custom properties que hace
+ * <ThemeProvider> en su wrapper. `style` ya incluye THEME_RESET_STYLE, así
+ * que los call sites no necesitan importarlo aparte. Punto único a
+ * actualizar si se agrega un cuarto eje.
  */
 export const useThemeAttributes = (): {
   'data-theme': BipTheme;
   'data-color-scheme': BipColorScheme;
+  style: React.CSSProperties;
 } => {
-  const { theme, colorScheme } = useContext(ThemeContext) ?? DEFAULT_CONTEXT;
-  return { 'data-theme': theme, 'data-color-scheme': colorScheme };
+  const { theme, colorScheme, resolvedVars } = useContext(ThemeContext) ?? DEFAULT_CONTEXT;
+  return {
+    'data-theme': theme,
+    'data-color-scheme': colorScheme,
+    style: { ...THEME_RESET_STYLE, ...resolvedVars },
+  };
 };
 
 export interface ThemeProviderProps {
-  theme: BipTheme;
-  /** @default 'light' */
-  colorScheme?: BipColorScheme;
+  /** Controlado. Si se omite, el componente maneja su propio estado (ver `defaultTheme`). */
+  theme?: BipTheme;
+  /** Valor inicial en modo no-controlado. @default 'square' */
+  defaultTheme?: BipTheme;
+  /** Controlado. Acepta 'system' para seguir prefers-color-scheme del SO. */
+  colorScheme?: BipColorSchemePreference;
+  /** Valor inicial en modo no-controlado. @default 'light' */
+  defaultColorScheme?: BipColorSchemePreference;
+  /**
+   * Activa persistencia en localStorage bajo esta key — solo afecta los ejes
+   * no-controlados. Combinar con `getThemeInitScript({ storageKey })` en el
+   * <head> del documento para evitar el flash de tema por defecto en el
+   * primer paint (ver README § Theming).
+   */
+  storageKey?: string;
+  /** Overrides de marca comunes a ambos esquemas, con refinamiento opcional por esquema. */
+  tokens?: BipTokenOverrides & { light?: BipTokenOverrides; dark?: BipTokenOverrides };
+  /** Overrides de los tokens semánticos de radius — independiente de `theme`. */
+  radius?: BipRadiusOverrides;
+  /** Escape hatch: cualquier custom property, p. ej. { '--color-selected': '#...' }. Gana sobre `tokens` y `radius`. */
+  cssVars?: Record<string, string>;
   children: React.ReactNode;
 }
 
@@ -67,21 +302,144 @@ export const THEME_RESET_STYLE: React.CSSProperties = {
 /**
  * display:contents evita que el wrapper agregue una caja al layout —
  * es un drop-in transparente.
+ *
+ * `resolvedVars` acumula las vars del provider padre (si lo hay) más las
+ * propias, y se aplican siempre en el wrapper — no se depende de la
+ * herencia CSS del padre para que el valor sea correcto incluso si algo
+ * en el medio rompe la cadena de herencia.
+ *
+ * theme/colorScheme son controlado-u-no-controlado (patrón React estándar):
+ * si llega el prop, manda; si no, se usa estado interno sembrado por
+ * `defaultTheme`/`defaultColorScheme`. `colorScheme='system'` se resuelve
+ * en vivo vía useSystemColorScheme() pero NUNCA se estampa como tal en el
+ * DOM — tokens.css solo entiende light/dark.
  */
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({
-  theme,
-  colorScheme = 'light',
+  theme: themeProp,
+  defaultTheme = 'square',
+  colorScheme: colorSchemeProp,
+  defaultColorScheme = 'light',
+  storageKey,
+  tokens,
+  radius,
+  cssVars,
   children,
-}) => (
-  <ThemeContext.Provider value={{ theme, colorScheme }}>
-    <div
-      data-theme={theme}
-      data-color-scheme={colorScheme}
-      style={{ display: 'contents', ...THEME_RESET_STYLE }}
-    >
-      {children}
-    </div>
-  </ThemeContext.Provider>
-);
+}) => {
+  const [internalTheme, setInternalTheme] = useState<BipTheme>(defaultTheme);
+  const [internalColorScheme, setInternalColorScheme] =
+    useState<BipColorSchemePreference>(defaultColorScheme);
+
+  // Hidratación desde localStorage — deliberadamente solo al montar/cambiar
+  // storageKey, no en cada cambio de themeProp/colorSchemeProp (solo se leen
+  // para decidir si el axis es controlado en ese instante).
+  useEffect(() => {
+    if (!storageKey) return;
+    const saved = readStoredPreference(storageKey);
+    if (!saved) return;
+    if (themeProp === undefined && saved.theme) setInternalTheme(saved.theme);
+    if (colorSchemeProp === undefined && saved.colorScheme) setInternalColorScheme(saved.colorScheme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+
+  const theme = themeProp ?? internalTheme;
+  const colorSchemePreference = colorSchemeProp ?? internalColorScheme;
+  const systemColorScheme = useSystemColorScheme();
+  const colorScheme: BipColorScheme =
+    colorSchemePreference === 'system' ? systemColorScheme : colorSchemePreference;
+
+  useEffect(() => {
+    if (!storageKey) return;
+    writeStoredPreference(storageKey, { theme, colorScheme: colorSchemePreference });
+  }, [storageKey, theme, colorSchemePreference]);
+
+  const setTheme = useCallback((next: BipTheme) => setInternalTheme(next), []);
+  const setColorScheme = useCallback(
+    (next: BipColorSchemePreference) => setInternalColorScheme(next),
+    []
+  );
+  const toggleColorScheme = useCallback(() => {
+    setInternalColorScheme((prev) => {
+      const resolved = prev === 'system' ? getSystemColorScheme() : prev;
+      return resolved === 'dark' ? 'light' : 'dark';
+    });
+  }, []);
+
+  const parentContext = useContext(ThemeContext);
+  const resolvedVars = useMemo(
+    () => ({
+      ...(parentContext?.resolvedVars ?? {}),
+      // cssVars se aplica al final (más abajo) para que gane sobre tokens Y radius,
+      // por eso no se pasa aquí — resolveTokenVars también lo acepta cuando se
+      // llama standalone (ver tests), pero el componente resuelve la precedencia él mismo.
+      ...resolveTokenVars(tokens, colorScheme, undefined),
+      ...resolveRadiusVars(radius),
+      ...cssVars,
+    }),
+    [parentContext, tokens, colorScheme, radius, cssVars]
+  );
+
+  const controls = useMemo<ThemeControls>(
+    () => ({
+      theme,
+      colorScheme: colorSchemePreference,
+      resolvedColorScheme: colorScheme,
+      setTheme,
+      setColorScheme,
+      toggleColorScheme,
+    }),
+    [theme, colorSchemePreference, colorScheme, setTheme, setColorScheme, toggleColorScheme]
+  );
+
+  return (
+    <ThemeContext.Provider value={{ theme, colorScheme, resolvedVars, controls }}>
+      <div
+        data-theme={theme}
+        data-color-scheme={colorScheme}
+        style={{ display: 'contents', ...THEME_RESET_STYLE, ...resolvedVars }}
+      >
+        {children}
+      </div>
+    </ThemeContext.Provider>
+  );
+};
 
 ThemeProvider.displayName = 'ThemeProvider';
+
+export interface ThemeInitScriptOptions {
+  /** Debe coincidir con el `storageKey` pasado a <ThemeProvider>. */
+  storageKey?: string;
+  defaultTheme?: BipTheme;
+  defaultColorScheme?: BipColorSchemePreference;
+}
+
+/**
+ * Devuelve el string de un script síncrono para inlinear en el <head> del
+ * documento, ANTES de cualquier CSS/hidratación — es la única forma de
+ * evitar el flash de tema por defecto (FOUC) en el primer paint. Lee
+ * localStorage (si hay storageKey) y prefers-color-scheme, y estampa
+ * data-theme/data-color-scheme en <html>. El selector doble en tokens.css
+ * (`:root[data-color-scheme='dark'], [data-color-scheme='dark']`) ya
+ * soporta que el atributo viva ahí.
+ *
+ * Uso (Next.js App Router, layout.tsx):
+ *   <head>
+ *     <script dangerouslySetInnerHTML={{ __html: getThemeInitScript({ storageKey: 'bip-theme' }) }} />
+ *   </head>
+ */
+export const getThemeInitScript = (options: ThemeInitScriptOptions = {}): string => {
+  const { storageKey, defaultTheme = 'square', defaultColorScheme = 'light' } = options;
+  const storageRead = storageKey
+    ? `var raw=localStorage.getItem(${JSON.stringify(storageKey)});if(raw){var saved=JSON.parse(raw);if(saved.theme)t=saved.theme;if(saved.colorScheme)c=saved.colorScheme;}`
+    : '';
+  return (
+    `(function(){try{` +
+    `var d=document.documentElement;` +
+    `var t=${JSON.stringify(defaultTheme)};` +
+    `var c=${JSON.stringify(defaultColorScheme)};` +
+    storageRead +
+    `if(c==='system'){c=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}` +
+    `d.setAttribute('data-theme',t);` +
+    `d.setAttribute('data-color-scheme',c);` +
+    `}catch(e){}})();`
+  );
+};

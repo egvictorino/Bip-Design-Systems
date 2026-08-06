@@ -101,35 +101,36 @@
   font-size: 1rem;
 }
 
-/* State variants */
+/* State variants — texto vía --color-txt-on-* (contraste automático sobre
+   la semilla de relleno; ver ThemeProvider `tokens` y tokens.css). */
 .circleError {
   background-color: var(--color-danger);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-danger);
 }
 
 .circleSuccess {
   background-color: var(--color-success);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-success);
 }
 
 .circleWarning {
   background-color: var(--color-warning);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-warning);
 }
 
 .circleLoading {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
 }
 
 .circleCompleted {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
 }
 
 .circleActive {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 

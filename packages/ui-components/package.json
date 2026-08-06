@@ -36,6 +36,12 @@
   "files": [
     "dist"
   ],
+  "browserslist": [
+    "chrome >= 111",
+    "safari >= 16.2",
+    "firefox >= 113",
+    "edge >= 111"
+  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
@@ -45,6 +51,7 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "vitest --config vitest.config.ts",
+    "test:visual": "playwright test --config=playwright.visual.config.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -56,6 +63,9 @@
     "clsx": "^2.0.0"
   },
   "devDependencies": {
+    "@fontsource-variable/figtree": "5.3.0",
+    "@fontsource-variable/inter": "5.3.0",
+    "@playwright/test": "1.62.1",
     "@storybook/addon-essentials": "^8.6.15",
     "@storybook/addon-links": "^8.6.15",
     "@storybook/react": "^8.6.15",

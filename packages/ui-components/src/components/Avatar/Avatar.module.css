@@ -102,6 +102,16 @@
 .bgSlate       { background-color: var(--color-txt-utility); }
 .bgViolet      { background-color: var(--color-unique); }
 
+/* Contraste automático sobre las variantes cuyo fondo es una semilla de
+   marca overrideable (colorPrimary/colorDanger/colorUnique) — ver
+   ThemeProvider `tokens` y tokens.css § contraste automático. Las variantes
+   *-text (success/warning/info) usan tokens ya oscurecidos y --bgSlate/
+   --bgSecondary no son semillas de relleno de marca, así que mantienen el
+   blanco fijo previo. */
+.bgPrimary.initials { color: var(--color-txt-on-primary); }
+.bgDanger.initials  { color: var(--color-txt-on-danger); }
+.bgViolet.initials  { color: var(--color-txt-on-unique); }
+
 /* ─── AvatarGroup ───────────────────────────────────────────────────────────── */
 
 .group {

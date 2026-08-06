@@ -26,10 +26,10 @@ const ControlledFileUpload = (
 ) => {
   const [files, setFiles] = useState<File[]>([]);
   return (
-    <div className="max-w-md">
+    <div style={{ maxWidth: '28rem' }}>
       <FileUpload {...props} value={files} onChange={setFiles} />
       {files.length > 0 && (
-        <p className="mt-2 text-xs text-text-secondary">
+        <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--color-txt-secondary)' }}>
           {files.length} archivo(s) seleccionado(s)
         </p>
       )}
@@ -103,7 +103,7 @@ export const Disabled: Story = {
 
 export const FullWidth: Story = {
   render: () => (
-    <div className="w-full">
+    <div style={{ width: '100%' }}>
       <ControlledFileUpload label="Expediente clínico" fullWidth multiple />
     </div>
   ),
@@ -113,7 +113,7 @@ export const FullWidth: Story = {
 
 export const Compact: Story = {
   render: () => (
-    <div className="flex flex-col gap-4 max-w-md">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '28rem' }}>
       <ControlledFileUpload
         label="Adjuntar comprobante"
         variant="compact"
@@ -137,7 +137,7 @@ const WithMaxFilesStory = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [rejected, setRejected] = useState<RejectedFile[]>([]);
   return (
-    <div className="flex flex-col gap-2 max-w-md">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: '28rem' }}>
       <FileUpload
         label="Adjuntar archivos (máx. 3)"
         value={files}
@@ -150,7 +150,7 @@ const WithMaxFilesStory = () => {
         fullWidth
       />
       {rejected.length > 0 && (
-        <div className="text-xs text-danger mt-1">
+        <div style={{ fontSize: '0.75rem', color: 'var(--color-danger)', marginTop: '0.25rem' }}>
           {rejected.map((r, i) => (
             <p key={i}>
               {r.file.name} — rechazado ({r.reason === 'count' ? 'límite alcanzado' : 'tamaño'})
@@ -172,7 +172,7 @@ const WithRejectionStory = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [rejected, setRejected] = useState<RejectedFile[]>([]);
   return (
-    <div className="flex flex-col gap-2 max-w-md">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: '28rem' }}>
       <FileUpload
         label="Subir documentos"
         value={files}
@@ -185,10 +185,12 @@ const WithRejectionStory = () => {
         fullWidth
       />
       {rejected.length > 0 && (
-        <div className="mt-1">
-          <p className="text-xs font-medium text-danger">Archivos rechazados:</p>
+        <div style={{ marginTop: '0.25rem' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-danger)' }}>
+            Archivos rechazados:
+          </p>
           {rejected.map((r, i) => (
-            <p key={i} className="text-xs text-danger">
+            <p key={i} style={{ fontSize: '0.75rem', color: 'var(--color-danger)' }}>
               {r.file.name} ({r.reason === 'size' ? 'supera el tamaño máximo' : 'límite de archivos alcanzado'})
             </p>
           ))}
@@ -208,7 +210,7 @@ const ClinicalRecordFormStory = () => {
   const [lab, setLab] = useState<File[]>([]);
   const [imaging, setImaging] = useState<File[]>([]);
   return (
-    <div className="flex flex-col gap-6 max-w-lg">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '32rem' }}>
       <FileUpload
         label="Resultados de laboratorio"
         value={lab}

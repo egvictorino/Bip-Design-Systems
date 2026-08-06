@@ -11,7 +11,7 @@ import React, {
 } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
-import { useThemeAttributes, THEME_RESET_STYLE } from '../ThemeProvider';
+import { useThemeAttributes } from '../ThemeProvider';
 import styles from './Modal.module.css';
 
 interface ModalContextValue {
@@ -61,7 +61,7 @@ export const Modal: React.FC<ModalProps> = ({
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
-  const themeAttrs = useThemeAttributes();
+  const { style: themeStyle, ...themeAttrs } = useThemeAttributes();
 
   // Animation state: isVisible keeps the portal in the DOM during exit animation
   const [isVisible, setIsVisible] = useState(isOpen);
@@ -154,7 +154,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         role="presentation"
         {...themeAttrs}
-        style={THEME_RESET_STYLE}
+        style={themeStyle}
         className={cn(styles.backdrop, isAnimating && styles.backdropOpen)}
         onClick={handleBackdropClick}
       >

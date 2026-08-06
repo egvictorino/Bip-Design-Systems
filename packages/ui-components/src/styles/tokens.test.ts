@@ -1,8 +1,18 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { describe, it, expect } from 'vitest';
+import { TOKEN_VAR_MAP } from '../components/ThemeProvider/ThemeProvider';
 
 const TOKENS_CSS_PATH = resolve(__dirname, '../tokens.css');
+const THEMES_CSS_PATH = resolve(__dirname, './themes.css');
+
+/**
+ * TOKEN_VAR_MAP entries that live outside tokens.css by design — tokens.css
+ * is scoped to color and shadow tokens only (ver primer test de este
+ * archivo). fontFamily → --font-sans vive en styles/themes.css (capa
+ * semántica de theme, no de esquema de color).
+ */
+const CROSS_FILE_TOKEN_VARS = new Set(['--font-sans']);
 
 /**
  * Tokens que son invariantes a propósito entre esquemas de color y no
@@ -31,9 +41,9 @@ describe('tokens.css — dominio del eje de color/esquema', () => {
     }
   });
 
-  it('todo token del esquema claro (:root) tiene contraparte en [data-color-scheme=\'dark\'], salvo invariantes declarados', () => {
+  it('todo token del esquema claro ([data-color-scheme=\'light\']) tiene contraparte en [data-color-scheme=\'dark\'], salvo invariantes declarados', () => {
     const tokensCss = readFileSync(TOKENS_CSS_PATH, 'utf-8');
-    const lightTokens = extractDeclaredTokens(extractBlock(tokensCss, /:root\s*{([^}]*)}/s));
+    const lightTokens = extractDeclaredTokens(extractBlock(tokensCss, /\[data-color-scheme='light'\]\s*{([^}]*)}/s));
     const darkTokens = new Set(
       extractDeclaredTokens(extractBlock(tokensCss, /\[data-color-scheme='dark'\]\s*{([^}]*)}/s))
     );
@@ -47,7 +57,7 @@ describe('tokens.css — dominio del eje de color/esquema', () => {
   it('el bloque dark no declara tokens ausentes del esquema claro', () => {
     const tokensCss = readFileSync(TOKENS_CSS_PATH, 'utf-8');
     const lightTokens = new Set(
-      extractDeclaredTokens(extractBlock(tokensCss, /:root\s*{([^}]*)}/s))
+      extractDeclaredTokens(extractBlock(tokensCss, /\[data-color-scheme='light'\]\s*{([^}]*)}/s))
     );
     const darkTokens = extractDeclaredTokens(
       extractBlock(tokensCss, /\[data-color-scheme='dark'\]\s*{([^}]*)}/s)
@@ -61,5 +71,41 @@ describe('tokens.css — dominio del eje de color/esquema', () => {
     const tokensCss = readFileSync(TOKENS_CSS_PATH, 'utf-8');
     const darkBlock = extractBlock(tokensCss, /\[data-color-scheme='dark'\]\s*{([^}]*)}/s);
     expect(darkBlock).toMatch(/color-scheme:\s*dark/);
+  });
+
+  it('ambos esquemas usan selector doble (:root + [data-color-scheme=X]) — necesario para que los derivados se re-resuelvan en un <ThemeProvider> anidado, no solo en <html>', () => {
+    const tokensCss = readFileSync(TOKENS_CSS_PATH, 'utf-8');
+    expect(tokensCss).toMatch(/:root,\s*\n\s*\[data-color-scheme='light'\]\s*{/);
+    expect(tokensCss).toMatch(/:root\[data-color-scheme='dark'\],\s*\n\s*\[data-color-scheme='dark'\]\s*{/);
+  });
+
+  it('cada declaración de color es una semilla (hex literal) o un derivado que referencia var(--color-*)', () => {
+    const tokensCss = readFileSync(TOKENS_CSS_PATH, 'utf-8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const declarations = [
+      ...tokensCss.matchAll(/--(color-[\w-]+):\s*([^;]+);/g),
+    ].map(([, name, value]) => ({ name, value: value.trim() }));
+
+    const isHexLiteral = (v: string) => /^#[0-9a-fA-F]{3,8}$/.test(v);
+    const isDerived = (v: string) => v.startsWith('var(--') || v.startsWith('color-mix(');
+
+    const invalid = declarations.filter((d) => !isHexLiteral(d.value) && !isDerived(d.value));
+    expect(invalid).toEqual([]);
+  });
+
+  it('TOKEN_VAR_MAP (ThemeProvider) solo apunta a tokens semilla realmente declarados', () => {
+    const tokensCss = readFileSync(TOKENS_CSS_PATH, 'utf-8');
+    const themesCss = readFileSync(THEMES_CSS_PATH, 'utf-8');
+    const lightTokens = new Set(
+      extractDeclaredTokens(extractBlock(tokensCss, /\[data-color-scheme='light'\]\s*{([^}]*)}/s))
+    );
+
+    for (const cssVar of Object.values(TOKEN_VAR_MAP)) {
+      if (CROSS_FILE_TOKEN_VARS.has(cssVar)) {
+        expect(themesCss).toContain(`${cssVar}:`);
+        continue;
+      }
+      const tokenName = cssVar.replace(/^--/, '');
+      expect(lightTokens.has(tokenName)).toBe(true);
+    }
   });
 });
