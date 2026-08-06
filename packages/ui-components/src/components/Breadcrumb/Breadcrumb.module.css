@@ -55,7 +55,7 @@
 
 .link:hover { color: var(--color-txt); }
 .link:focus { outline: none; }
-.link:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.link:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
 
 /* ─── Non-link intermediate item ────────────────────────────────────────────── */
 

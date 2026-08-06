@@ -71,3 +71,38 @@ export const PortalTheming: Story = {
   args: { children: null, theme: 'rounded' },
   render: () => <PortalThemingDemo />,
 };
+
+const ColorSchemeCard = ({
+  theme,
+  colorScheme,
+}: {
+  theme: 'square' | 'rounded';
+  colorScheme: 'light' | 'dark';
+}) => (
+  <ThemeProvider theme={theme} colorScheme={colorScheme}>
+    <div style={{ background: 'var(--color-surface-2)', padding: '1rem' }}>
+      <Card>
+        <CardHeader>
+          {theme} · {colorScheme}
+        </CardHeader>
+        <CardBody style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <Avatar name="Ana López" />
+          <Button>Botón</Button>
+          <Badge variant="success">Activo</Badge>
+        </CardBody>
+      </Card>
+    </div>
+  </ThemeProvider>
+);
+
+export const ColorSchemes: Story = {
+  args: { children: null, theme: 'square' },
+  render: () => (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+      <ColorSchemeCard theme="square" colorScheme="light" />
+      <ColorSchemeCard theme="square" colorScheme="dark" />
+      <ColorSchemeCard theme="rounded" colorScheme="light" />
+      <ColorSchemeCard theme="rounded" colorScheme="dark" />
+    </div>
+  ),
+};

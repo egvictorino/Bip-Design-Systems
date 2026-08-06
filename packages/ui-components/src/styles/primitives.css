@@ -1,8 +1,10 @@
 /**
- * Escala cruda de tokens no-color — tipografía, radius, shadows.
- * Hand-owned (no generado por sync-figma-tokens.js). Ningún componente
- * debe leer estos tokens directamente: consumir la capa semántica en
- * themes.css (--radius-field, --radius-control, etc.) en su lugar.
+ * Escala cruda de tokens no-color — tipografía, radius. Invariante entre
+ * esquemas claro/oscuro (a diferencia de --shadow-*, que sí depende del
+ * color y vive en tokens.css junto al resto del eje de color).
+ * Hand-owned. Ningún componente debe leer estos tokens directamente:
+ * consumir la capa semántica en themes.css (--radius-field, --radius-control,
+ * etc.) en su lugar.
  */
 
 :root {
@@ -36,12 +38,4 @@
   --radius-2xl:  1rem;      /* 16px */
   --radius-3xl:  1.25rem;   /* 20px */
   --radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm:    0 1px 3px 0 rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);
-  --shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.10);
-  --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.10);
-  --shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 8px 10px -6px rgba(0, 0, 0, 0.10);
-  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 }

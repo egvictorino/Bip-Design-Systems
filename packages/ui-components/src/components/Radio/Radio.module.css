@@ -34,10 +34,10 @@
 
 /* Focus ring via group selector */
 .row:has(:focus-visible) .ring {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 .row:has(:focus-visible) .ring.ringError {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
 }
 
 .ringDisabled { opacity: 0.5; cursor: not-allowed; }

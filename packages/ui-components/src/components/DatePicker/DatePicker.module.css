@@ -55,7 +55,7 @@
 }
 
 .trigger:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .triggerError {
@@ -63,7 +63,7 @@
 }
 
 .triggerError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
 }
 
 .triggerError:hover:not(:disabled) {
@@ -126,7 +126,7 @@
   border-radius: var(--radius-surface);
   border: 1px solid var(--color-surface-3);
   background-color: var(--color-surface-1);
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ─── CalendarGrid ────────────────────────────────────────────────────────────── */
@@ -167,7 +167,7 @@
 }
 
 .monthNavBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .monthNavBtn:disabled {
@@ -200,7 +200,7 @@
 }
 
 .monthHeadingBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 /* ─── Day grid ────────────────────────────────────────────────────────────────── */
@@ -246,7 +246,7 @@
 }
 
 .dayBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .dayBtn:disabled {
@@ -301,7 +301,7 @@
 }
 
 .monthPickerBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .monthPickerBtn:disabled {
@@ -346,7 +346,7 @@
 }
 
 .clearBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .clearBtnError {
@@ -384,7 +384,7 @@
 }
 
 .todayBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .todayBtn:disabled {

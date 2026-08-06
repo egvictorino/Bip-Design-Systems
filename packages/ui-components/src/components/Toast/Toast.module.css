@@ -59,15 +59,12 @@
 .card {
   border-radius: var(--radius-container);
   overflow: hidden;
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -4px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg), 0 0 0 1px var(--color-edge);
 }
 
 /* ─── Progress bar ───────────────────────────────────────────────────────────── */
 
-.progressTrack { height: 0.25rem; background-color: rgba(0, 0, 0, 0.1); }
+.progressTrack { height: 0.25rem; background-color: var(--color-edge); }
 
 .progressBar { height: 100%; transition: width 100ms linear; }
 

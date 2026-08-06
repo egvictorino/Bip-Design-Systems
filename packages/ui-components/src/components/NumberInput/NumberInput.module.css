@@ -74,13 +74,13 @@
   background-color: var(--color-field);
 }
 .outlined:hover:not(:disabled) { border-color: var(--color-edge-hover); }
-.outlined:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.outlined:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
 
 .outlinedError {
   border: 1px solid var(--color-danger);
   background-color: var(--color-field);
 }
-.outlinedError:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+.outlinedError:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger); }
 
 /* ─── Variant: filled ───────────────────────────────────────────────────────── */
 
@@ -88,13 +88,13 @@
   border: 1px solid var(--color-edge);
   background-color: var(--color-secondary);
 }
-.filled:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.filled:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
 
 .filledError {
   background-color: var(--color-danger-light);
   border: 1px solid transparent;
 }
-.filledError:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+.filledError:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger); }
 
 /* ─── Variant: bare ─────────────────────────────────────────────────────────── */
 
@@ -142,7 +142,7 @@
 }
 
 .stepBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .stepBtn:disabled {

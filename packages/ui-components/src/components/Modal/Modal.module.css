@@ -25,7 +25,7 @@
   max-height: calc(100vh - 2rem);
   border-radius: var(--radius-container);
   background-color: var(--color-surface-1);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-xl);
   opacity: 0;
   transform: scale(0.95);
   transition: opacity 150ms ease, transform 150ms ease;

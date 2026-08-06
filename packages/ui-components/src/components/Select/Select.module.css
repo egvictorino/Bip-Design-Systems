@@ -68,9 +68,9 @@
   background-color: var(--color-field);
 }
 .outlined:hover:not(:disabled) { border-color: var(--color-primary); }
-.outlined:focus-visible { border-color: var(--color-primary); box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.outlined:focus-visible { border-color: var(--color-primary); box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
 .outlined.error { border-color: var(--color-danger); }
-.outlined.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+.outlined.error:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger); }
 
 /* ─── Variant: filled ───────────────────────────────────────────────────────── */
 
@@ -79,9 +79,9 @@
   background-color: var(--color-secondary);
 }
 .filled:hover:not(:disabled) { background-color: var(--color-secondary-hover); }
-.filled:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.filled:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
 .filled.error { background-color: var(--color-danger-light); }
-.filled.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+.filled.error:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger); }
 
 /* ─── Variant: bare ─────────────────────────────────────────────────────────── */
 

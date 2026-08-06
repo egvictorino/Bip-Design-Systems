@@ -40,7 +40,7 @@
 
 /* focus-visible ring */
 .trigger:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 /* Sizes */
@@ -81,7 +81,7 @@
 }
 
 .variantOutlinedError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
 }
 
 .variantFilled {
@@ -99,7 +99,7 @@
 }
 
 .variantFilledError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
 }
 
 .variantBare {
@@ -268,7 +268,7 @@
   background-color: var(--color-surface-1);
   border: 1px solid var(--color-surface-3);
   border-radius: var(--radius-control);
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
@@ -304,7 +304,7 @@
 }
 
 .searchInput:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 /* ─── Listbox ─────────────────────────────────────────────────────────────────── */

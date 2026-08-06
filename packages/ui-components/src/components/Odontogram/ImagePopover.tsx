@@ -1,7 +1,7 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
-import { useTheme } from '../ThemeProvider';
+import { useThemeAttributes, THEME_RESET_STYLE } from '../ThemeProvider';
 import styles from './Odontogram.module.css';
 import { FOCUSABLE_SELECTOR, IMAGE_TYPE_LABELS, IMAGE_TYPES } from './types';
 import type { ToothImage, ToothImageType } from './types';
@@ -49,7 +49,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
   const [selectedIdx, setSelectedIdx] = useState<number | null>(
     initialImages.length > 0 ? 0 : null
   );
-  const theme = useTheme();
+  const themeAttrs = useThemeAttributes();
   const [adding, setAdding] = useState(initialImages.length === 0 && editable);
   const [addType, setAddType] = useState<ToothImageType>('radiograph');
   const [addUrl, setAddUrl] = useState('');
@@ -118,7 +118,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
   const selectedImage = selectedIdx !== null ? images[selectedIdx] : null;
 
   return ReactDOM.createPortal(
-    <div data-theme={theme} style={{ display: 'contents' }}>
+    <div {...themeAttrs} style={{ display: 'contents', ...THEME_RESET_STYLE }}>
       <div className={styles.popoverBackdrop} aria-hidden="true" onClick={onClose} />
       <div
         ref={dialogRef}

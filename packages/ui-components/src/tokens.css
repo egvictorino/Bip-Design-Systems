@@ -1,7 +1,10 @@
 /**
  * Design tokens — CSS custom properties
- * GENERADO AUTOMÁTICAMENTE — no editar manualmente
- * Comando: pnpm sync:tokens
+ *
+ * Fuente de verdad manual del eje de esquema de color (light/dark).
+ * Ambos esquemas viven en este archivo por la misma razón documentada
+ * en styles/themes.css: el build concatena todo el CSS en dist/style.css
+ * y el orden de chunks entre archivos separados no está garantizado.
  */
 
 :root {
@@ -71,4 +74,100 @@
   --color-warning-subtle: #fef9c3;
   --color-warning-text: #a16207;
 
+  /* Shadows (light) */
+  --shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm:    0 1px 3px 0 rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);
+  --shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.10);
+  --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.10);
+  --shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 8px 10px -6px rgba(0, 0, 0, 0.10);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+/**
+ * Esquema oscuro — activado por [data-color-scheme='dark'].
+ *
+ * No es una inversión ciega: cada grupo sigue su propia regla semántica
+ * (ver CLAUDE.md § Design tokens). --color-txt-white NO se sobreescribe
+ * aquí a propósito — es "texto sobre relleno de marca", correcto en
+ * ambos esquemas. Doble selector para cubrir data-color-scheme tanto en
+ * <html> (gana por especificidad, 0,2,0) como en el wrapper del
+ * ThemeProvider (gana por herencia).
+ */
+:root[data-color-scheme='dark'],
+[data-color-scheme='dark'] {
+  color-scheme: dark;
+
+  /* Interaction */
+  --color-active: #5468e8;
+  --color-danger: #ff5a5f;
+  --color-danger-hover: #ff7a7e;
+  --color-danger-light: #3a1518;
+  --color-danger-muted: #5c2226;
+  --color-danger-press: #ff9a9d;
+  --color-danger-subtle: #4a1a1e;
+  --color-danger-text: #ff8a8d;
+  --color-disabled: #2a2a2a;
+  --color-field: #1c1c1c;
+  --color-field-readonly: #262626;
+  --color-primary: #5468e8;
+  --color-primary-hover: #6f80ee;
+  --color-primary-press: #8592f2;
+  --color-secondary: #2a2a2a;
+  --color-secondary-hover: #383838;
+  --color-secondary-press: #454545;
+  --color-selected: #10282a;
+  --color-unique: #c877ff;
+
+  /* Text */
+  --color-link: #6b7cff;
+  --color-link-hover: #8fa0ff;
+  --color-link-press: #aab6ff;
+  --color-txt: #f2f2f2;
+  --color-txt-black: #ffffff;
+  --color-txt-disabled: #5c5c5c;
+  --color-txt-important: #ff6169;
+  --color-txt-secondary: #a3a3a3;
+  --color-txt-utility: #8a8a8a;
+  /* --color-txt-white: invariante, ver comentario arriba */
+
+  /* Surface */
+  --color-scrim: #000000cc;
+  --color-surface-1: #121212;
+  --color-surface-2: #1c1c1c;
+  --color-surface-3: #262626;
+  --color-surface-4: #333333;
+
+  /* Border */
+  --color-edge: #3a3a3a;
+  --color-edge-disabled: #2a2a2a;
+  --color-edge-focus: #6b7cff;
+  --color-edge-heavy: #8a8a8a;
+  --color-edge-hover: #8fa0ff;
+  --color-edge-important: #ff5a5f;
+  --color-edge-medium: #5c5c5c;
+  --color-edge-success: #4ade80;
+  --color-edge-unique: #c877ff;
+  --color-edge-warning: #fbbf24;
+
+  /* Feedback */
+  --color-info: #6b7cff;
+  --color-info-light: #16213a;
+  --color-info-subtle: #1d2c4d;
+  --color-info-text: #93a9ff;
+  --color-success: #4ade80;
+  --color-success-light: #0f2a1a;
+  --color-success-subtle: #16391f;
+  --color-success-text: #86efac;
+  --color-warning: #fbbf24;
+  --color-warning-light: #332705;
+  --color-warning-subtle: #40330a;
+  --color-warning-text: #fde047;
+
+  /* Shadows (dark — mayor opacidad, la luz sobre superficie oscura casi no proyecta sombra visible al 10%) */
+  --shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm:    0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
 }

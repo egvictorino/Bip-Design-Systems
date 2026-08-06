@@ -9,13 +9,13 @@
 /* ─── Variants ──────────────────────────────────────────────────────────────── */
 
 .variantDefault {
-  background-color: white;
+  background-color: var(--color-surface-1);
   border-bottom: 1px solid var(--color-edge);
 }
 
 .variantElevated {
-  background-color: white;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface-1);
+  box-shadow: var(--shadow-sm);
 }
 
 .variantTransparent {
@@ -54,7 +54,7 @@
 
 .hamburger:hover { background-color: var(--color-surface-3); color: var(--color-txt); }
 .hamburger:focus { outline: none; }
-.hamburger:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.hamburger:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
 .hamburgerIcon { width: 1.25rem; height: 1.25rem; }
 
 @media (min-width: 768px) {
@@ -96,7 +96,7 @@
   top: 100%;
   left: 0;
   right: 0;
-  background-color: white;
+  background-color: var(--color-surface-1);
   border-bottom: 1px solid var(--color-edge);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 0.75rem 1rem;
@@ -173,7 +173,7 @@
 }
 
 .navItem:focus { outline: none; }
-.navItem:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.navItem:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
 
 @media (min-width: 768px) {
   .navItem { width: auto; }

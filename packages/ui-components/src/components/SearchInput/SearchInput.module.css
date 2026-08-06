@@ -169,7 +169,7 @@
 }
 
 .outlined:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .outlinedError {
@@ -178,7 +178,7 @@
 }
 
 .outlinedError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
 }
 
 /* ─── Variant: filled ─────────────────────────────────────────────────────── */
@@ -189,7 +189,7 @@
 }
 
 .filled:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .filledError {
@@ -198,7 +198,7 @@
 }
 
 .filledError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
 }
 
 /* ─── Variant: bare ───────────────────────────────────────────────────────── */
@@ -222,11 +222,11 @@
 }
 
 .bare:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .bareError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
 }
 
 /* ─── Clear button ────────────────────────────────────────────────────────── */
@@ -252,7 +252,7 @@
 }
 
 .clearBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
   border-radius: var(--radius-control);
 }
 

@@ -71,7 +71,7 @@
 /* Focus ring — shown when hidden input receives keyboard focus */
 .dropzoneFocused {
   outline: 2px solid transparent;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-edge-focus);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-edge-focus);
 }
 
 .dropzoneDefault {
@@ -233,7 +233,7 @@
 }
 
 .removeBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .removeBtn:disabled {

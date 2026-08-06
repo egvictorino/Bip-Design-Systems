@@ -23,7 +23,7 @@
   font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 500;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-md);
   visibility: hidden;
   opacity: 0;
   /* Salida: 100ms ease-in; visibility espera a que opacity termine */

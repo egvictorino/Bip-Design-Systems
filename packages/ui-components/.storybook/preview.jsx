@@ -32,14 +32,34 @@ const preview = {
         dynamicTitle: true,
       },
     },
+    colorScheme: {
+      description: 'Esquema de color (claro/oscuro)',
+      toolbar: {
+        icon: 'circlehollow',
+        items: [
+          { value: 'light', title: 'Light' },
+          { value: 'dark', title: 'Dark' },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   initialGlobals: {
     theme: 'square',
+    colorScheme: 'light',
   },
   decorators: [
     (Story, context) => (
-      <ThemeProvider theme={context.globals.theme ?? 'square'}>
-        <Story />
+      <ThemeProvider
+        theme={context.globals.theme ?? 'square'}
+        colorScheme={context.globals.colorScheme ?? 'light'}
+      >
+        {/* var(--color-surface-2) resuelve al esquema activo vía data-color-scheme
+            estampado por ThemeProvider — el canvas acompaña al toolbar sin
+            necesitar el addon de backgrounds. */}
+        <div style={{ minHeight: '100vh', padding: '1rem', background: 'var(--color-surface-2)' }}>
+          <Story />
+        </div>
       </ThemeProvider>
     ),
   ],

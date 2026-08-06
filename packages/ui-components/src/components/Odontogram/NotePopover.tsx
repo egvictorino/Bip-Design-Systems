@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
-import { useTheme } from '../ThemeProvider';
+import { useThemeAttributes, THEME_RESET_STYLE } from '../ThemeProvider';
 import styles from './Odontogram.module.css';
 import { FOCUSABLE_SELECTOR } from './types';
 
@@ -46,7 +46,7 @@ export const NotePopover = React.memo<NotePopoverProps>(({
   const [draft, setDraft] = useState(initialNote);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
-  const theme = useTheme();
+  const themeAttrs = useThemeAttributes();
   useFocusTrap(dialogRef);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export const NotePopover = React.memo<NotePopoverProps>(({
   }, [onClose]);
 
   return ReactDOM.createPortal(
-    <div data-theme={theme} style={{ display: 'contents' }}>
+    <div {...themeAttrs} style={{ display: 'contents', ...THEME_RESET_STYLE }}>
       <div className={styles.popoverBackdrop} aria-hidden="true" onClick={onClose} />
       <div
         ref={dialogRef}

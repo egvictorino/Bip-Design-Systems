@@ -17,7 +17,7 @@
 }
 
 .confirmDanger:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
 }
 
 .confirmWarning {
@@ -33,5 +33,5 @@
 }
 
 .confirmWarning:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-warning);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-warning);
 }

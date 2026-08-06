@@ -25,7 +25,7 @@
 }
 
 .btn:focus { outline: none; }
-.btn:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 3px var(--color-primary); }
+.btn:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 3px var(--color-primary); }
 
 /* ─── States ────────────────────────────────────────────────────────────────── */
 

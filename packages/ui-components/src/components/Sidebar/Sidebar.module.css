@@ -4,7 +4,7 @@
   position: fixed;
   inset: 0;
   z-index: 40;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--color-scrim);
 }
 
 @media (min-width: 768px) {
@@ -150,7 +150,7 @@
   cursor: pointer;
 }
 
-.item:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.item:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
 
 .itemExpanded  { gap: 0.75rem; padding: 0.5rem 0.75rem; }
 .itemCollapsed { justify-content: center; padding: 0.5rem; }
@@ -236,5 +236,5 @@
 }
 
 .trigger:hover { background-color: var(--color-surface-3); color: var(--color-txt); }
-.trigger:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.trigger:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
 .triggerIcon { width: 1rem; height: 1rem; }

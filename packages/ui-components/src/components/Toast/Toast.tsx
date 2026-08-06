@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
-import { useTheme } from '../ThemeProvider';
+import { useThemeAttributes, THEME_RESET_STYLE } from '../ThemeProvider';
 import styles from './Toast.module.css';
 import { Alert } from '../Alert/Alert';
 import type { AlertProps } from '../Alert/Alert';
@@ -312,7 +312,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
 }) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const idRef = useRef(0);
-  const theme = useTheme();
+  const themeAttrs = useThemeAttributes();
 
   const addToast = useCallback(
     (config: ToastConfig) => {
@@ -342,7 +342,8 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
           <div
             role="region"
             aria-label="Notificaciones"
-            data-theme={theme}
+            {...themeAttrs}
+            style={THEME_RESET_STYLE}
             className={cn(styles.region, positionClass[position])}
           >
             <ToastStack toasts={toasts} onRemove={removeToast} position={position} />

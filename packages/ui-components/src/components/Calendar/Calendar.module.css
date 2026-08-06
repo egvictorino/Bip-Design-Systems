@@ -45,7 +45,7 @@
 }
 
 .headerNavBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .headerNavIcon {
@@ -74,7 +74,7 @@
 }
 
 .headerTodayBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .headerTitle {
@@ -206,7 +206,7 @@
 }
 
 .eventBlock:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .eventBlockTitle {
@@ -264,10 +264,10 @@
   position: fixed;
   z-index: 50;
   width: 16rem;
-  background-color: white;
+  background-color: var(--color-surface-1);
   border: 1px solid var(--color-edge);
   border-radius: var(--radius-surface);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-xl);
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
@@ -303,7 +303,7 @@
 }
 
 .rangePopoverClose:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .rangePopoverConfirm {
@@ -323,7 +323,7 @@
 }
 
 .rangePopoverConfirm:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 /* ─── MonthView ──────────────────────────────────────────────────────────────── */
@@ -598,7 +598,7 @@
 }
 
 .agendaFilterBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .agendaFilterBtnInactive {
@@ -730,7 +730,7 @@
 }
 
 .agendaEventCard:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
 }
 
 .agendaEventCardCancelled {

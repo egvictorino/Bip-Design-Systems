@@ -1,16 +1,9 @@
 /**
- * Design tokens — Tailwind color config via CSS custom properties
- * GENERADO AUTOMÁTICAMENTE — no editar manualmente
- * Comando: pnpm sync:tokens
+ * Design tokens — color palette mirroring src/tokens.css via CSS custom properties
  *
- * Uso en componentes:
- *   bg-primary hover:bg-primary-hover active:bg-primary-press
- *   text-txt text-txt-secondary
- *   border-edge focus:border-edge-focus
- *   bg-surface-1 bg-surface-2
+ * Mantener en sincronía manual con src/tokens.css cuando se agreguen/renombren tokens.
  *
  * Imported by:
- *   - tailwind.preset.js  (Tailwind theme)
  *   - src/foundations/Colors.stories.tsx  (Storybook documentation)
  */
 
