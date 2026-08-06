@@ -3,7 +3,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .fullWidth { width: 100%; }
@@ -24,7 +24,7 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
-.required { color: var(--color-danger); margin-left: 0.125rem; }
+.required { color: var(--color-danger); margin-left: var(--space-0-5); }
 
 /* ─── Select wrapper (for icon) ─────────────────────────────────────────────── */
 
@@ -37,7 +37,7 @@
 .select {
   appearance: none;
   border-radius: var(--radius-field);
-  padding-right: 2rem;
+  padding-right: var(--space-8);
   transition: border-color var(--duration-fast), background-color var(--duration-fast), box-shadow var(--duration-fast);
   width: 100%;
 }
@@ -57,9 +57,13 @@
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
-.sm { padding: 6px 2rem 6px 12px;  font-size: var(--text-xs);  line-height: 1rem; }
-.md { padding: 10px 2rem 10px 16px; font-size: var(--text-sm); line-height: 1.25rem; }
-.lg { padding: 12px 2rem 12px 24px; font-size: var(--text-lg); line-height: 1.75rem; }
+/* Vertical padding y el left de sm/lg comparten la horquilla de densidad con
+   Button/Input/Textarea; el left de md (16px) es un valor propio de Select, no
+   --space-control-x-md (20px) — se deja en la escala cruda a propósito. El right
+   (--space-8) es el hueco fijo para el chevron, ajeno a densidad. */
+.sm { padding: var(--space-control-y-sm) var(--space-8) var(--space-control-y-sm) var(--space-control-x-sm);  font-size: var(--text-xs);  line-height: 1rem; }
+.md { padding: var(--space-control-y-md) var(--space-8) var(--space-control-y-md) var(--space-4); font-size: var(--text-sm); line-height: 1.25rem; }
+.lg { padding: var(--space-control-y-lg) var(--space-8) var(--space-control-y-lg) var(--space-control-x-lg); font-size: var(--text-lg); line-height: 1.75rem; }
 
 /* ─── Variant: outlined ─────────────────────────────────────────────────────── */
 

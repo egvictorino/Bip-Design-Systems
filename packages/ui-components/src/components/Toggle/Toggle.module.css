@@ -3,7 +3,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 /* ─── Row (group) ───────────────────────────────────────────────────────────── */
@@ -11,7 +11,7 @@
 .row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 /* ─── Track ─────────────────────────────────────────────────────────────────── */
@@ -114,6 +114,6 @@
 .errorText  { color: var(--color-danger); }
 
 /* Indent to align with label (accounts for track width + gap) */
-.indentSm { margin-left: 2.5rem; }  /* 2rem track + 0.5rem gap */
-.indentMd { margin-left: 3rem; }    /* 2.5rem track + 0.5rem gap */
-.indentLg { margin-left: 3.5rem; }  /* 3rem track + 0.5rem gap */
+.indentSm { margin-left: var(--space-10); }  /* 2rem track + 0.5rem gap */
+.indentMd { margin-left: var(--space-12); }    /* 2.5rem track + 0.5rem gap */
+.indentLg { margin-left: var(--space-14); }  /* 3rem track + 0.5rem gap */

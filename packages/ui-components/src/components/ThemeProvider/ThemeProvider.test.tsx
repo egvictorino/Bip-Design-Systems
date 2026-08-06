@@ -223,6 +223,71 @@ describe('ThemeProvider', () => {
     });
   });
 
+  describe('density prop — quinto eje, misma mecánica que radius/focusRing/motion', () => {
+    it('sin density, no estampa data-density (cae al default CSS)', () => {
+      render(
+        <ThemeProvider theme="square">
+          <span data-testid="child">contenido</span>
+        </ThemeProvider>
+      );
+      const wrapper = screen.getByTestId('child').parentElement as HTMLElement;
+      expect(wrapper).not.toHaveAttribute('data-density');
+    });
+
+    it('estampa data-density cuando se fija explícitamente', () => {
+      render(
+        <ThemeProvider theme="square" density="compact">
+          <span data-testid="child">contenido</span>
+        </ThemeProvider>
+      );
+      const wrapper = screen.getByTestId('child').parentElement as HTMLElement;
+      expect(wrapper).toHaveAttribute('data-density', 'compact');
+    });
+
+    it('un provider anidado sin density propio hereda el del padre', () => {
+      render(
+        <ThemeProvider theme="square" density="compact">
+          <ThemeProvider theme="square">
+            <span data-testid="child">contenido</span>
+          </ThemeProvider>
+        </ThemeProvider>
+      );
+      const wrapper = screen.getByTestId('child').parentElement as HTMLElement;
+      expect(wrapper).toHaveAttribute('data-density', 'compact');
+    });
+
+    it('spacing aplica cada clave a su var semántica de density.css', () => {
+      render(
+        <ThemeProvider theme="square" spacing={{ controlXMd: '2rem', controlYMd: '1rem' }}>
+          <span data-testid="child">contenido</span>
+        </ThemeProvider>
+      );
+      const wrapper = screen.getByTestId('child').parentElement as HTMLElement;
+      expect(wrapper.style.getPropertyValue('--space-control-x-md')).toBe('2rem');
+      expect(wrapper.style.getPropertyValue('--space-control-y-md')).toBe('1rem');
+    });
+
+    it('useThemeAttributes incluye data-density solo cuando está fijado', () => {
+      const Portalled = () => {
+        const attrs = useThemeAttributes();
+        return <span data-testid="portalled" {...attrs} />;
+      };
+      const { rerender } = render(
+        <ThemeProvider theme="square">
+          <Portalled />
+        </ThemeProvider>
+      );
+      expect(screen.getByTestId('portalled')).not.toHaveAttribute('data-density');
+
+      rerender(
+        <ThemeProvider theme="square" density="compact">
+          <Portalled />
+        </ThemeProvider>
+      );
+      expect(screen.getByTestId('portalled')).toHaveAttribute('data-density', 'compact');
+    });
+  });
+
   describe('modo no-controlado + system + persistencia', () => {
     beforeEach(() => {
       window.localStorage.clear();

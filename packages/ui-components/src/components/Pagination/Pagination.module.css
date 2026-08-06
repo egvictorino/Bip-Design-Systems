@@ -3,7 +3,7 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 /* ─── Base button ───────────────────────────────────────────────────────────── */

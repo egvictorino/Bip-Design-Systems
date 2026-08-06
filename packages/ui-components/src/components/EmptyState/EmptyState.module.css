@@ -10,9 +10,9 @@
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
-.sm { gap: 0.5rem;  padding: 2rem 1rem; }
-.md { gap: 0.75rem; padding: 3rem 1.5rem; }
-.lg { gap: 1rem;    padding: 4rem 2rem; }
+.sm { gap: var(--space-2);  padding: var(--space-8) var(--space-4); }
+.md { gap: var(--space-3); padding: var(--space-12) var(--space-6); }
+.lg { gap: var(--space-4);    padding: var(--space-16) var(--space-8); }
 
 /* ─── Icon box ──────────────────────────────────────────────────────────────── */
 
@@ -51,6 +51,6 @@
 
 /* ─── Action ────────────────────────────────────────────────────────────────── */
 
-.actionSm { margin-top: 0.5rem; }
-.actionMd { margin-top: 0.75rem; }
-.actionLg { margin-top: 1rem; }
+.actionSm { margin-top: var(--space-2); }
+.actionMd { margin-top: var(--space-3); }
+.actionLg { margin-top: var(--space-4); }

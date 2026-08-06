@@ -1,0 +1,33 @@
+/**
+ * Capa semántica de densidad — comfortable (default) y compact.
+ *
+ * Igual mecánica que themes.css (square/rounded): comfortable y compact viven en
+ * el mismo archivo — el build concatena todo el CSS en dist/style.css y el orden
+ * de chunks entre archivos separados no está garantizado — y :root/[data-density]
+ * comparten especificidad (0,1,0), así que quién gana depende del orden de aparición.
+ *
+ * Solo cubre --space-control-x/-y — la horquilla vertical/horizontal de padding
+ * que Button/Input/Textarea comparten exactamente (6px 12px / 10px 20px / 12px 24px).
+ * Es donde compact/comfortable paga de verdad: reduce el padding de campos y
+ * botones sin tocar radius, tipografía ni el resto de --space-* (que sigue en su
+ * escala fija, invariante a densidad — un --space-4 vale 1rem sin importar el modo).
+ */
+
+:root,
+[data-density='comfortable'] {
+  --space-control-x-sm: var(--space-3); /* 12px */
+  --space-control-y-sm: var(--space-1-5); /* 6px  */
+  --space-control-x-md: var(--space-5); /* 20px */
+  --space-control-y-md: var(--space-2-5); /* 10px */
+  --space-control-x-lg: var(--space-6); /* 24px */
+  --space-control-y-lg: var(--space-3); /* 12px */
+}
+
+[data-density='compact'] {
+  --space-control-x-sm: var(--space-2); /* 8px  */
+  --space-control-y-sm: var(--space-1); /* 4px  */
+  --space-control-x-md: var(--space-4); /* 16px */
+  --space-control-y-md: var(--space-2); /* 8px  */
+  --space-control-x-lg: var(--space-5); /* 20px */
+  --space-control-y-lg: var(--space-2-5); /* 10px */
+}

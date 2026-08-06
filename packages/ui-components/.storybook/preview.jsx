@@ -53,11 +53,23 @@ const preview = {
         dynamicTitle: true,
       },
     },
+    density: {
+      description: 'Densidad de espaciado en controles (padding de Button/Input/Textarea/Select)',
+      toolbar: {
+        icon: 'ruler',
+        items: [
+          { value: 'comfortable', title: 'Comfortable' },
+          { value: 'compact', title: 'Compact' },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   initialGlobals: {
     theme: 'square',
     colorScheme: 'light',
     brand: 'default',
+    density: 'comfortable',
   },
   decorators: [
     (Story, context) => (
@@ -65,6 +77,7 @@ const preview = {
         theme={context.globals.theme ?? 'square'}
         colorScheme={context.globals.colorScheme ?? 'light'}
         tokens={BRAND_PRESETS[context.globals.brand ?? 'default']?.tokens}
+        density={context.globals.density ?? 'comfortable'}
       >
         {/* var(--color-surface-2) resuelve al esquema activo vía data-color-scheme
             estampado por ThemeProvider — el canvas acompaña al toolbar sin

@@ -3,7 +3,7 @@
 .root {
   display: inline-flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: var(--space-1-5);
 }
 
 .label {
@@ -19,7 +19,7 @@
   flex-direction: column;
   border: 1px solid var(--color-edge);
   border-radius: var(--radius-container);
-  padding: 0.5rem;
+  padding: var(--space-2);
   background-color: var(--color-surface-1);
   overflow-x: auto;
 }
@@ -35,14 +35,14 @@
 .archSection {
   display: flex;
   flex-direction: row;
-  gap: 0.125rem;
+  gap: var(--space-0-5);
 }
 
 .archDivider {
   width: 1px;
   align-self: stretch;
   background-color: var(--color-edge);
-  margin: 0 0.375rem;
+  margin: var(--space-0) var(--space-1-5);
 }
 
 /* ─── Midline divider between upper and lower ────────────────────────────────── */
@@ -50,7 +50,7 @@
 .midline {
   height: 0.75rem;
   border-bottom: 1px solid var(--color-edge);
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-1);
 }
 
 /* ─── Single tooth cell ──────────────────────────────────────────────────────── */
@@ -65,7 +65,7 @@
 .toothCellButton {
   background: none;
   border: none;
-  padding: 2px;
+  padding: var(--space-0-5);
   border-radius: var(--radius-control);
   cursor: pointer;
 }
@@ -90,22 +90,22 @@
 .numberRowUpper {
   display: flex;
   align-items: center;
-  gap: 0.125rem;
-  margin-top: 0.125rem;
+  gap: var(--space-0-5);
+  margin-top: var(--space-0-5);
 }
 
 .numberRowLower {
   display: flex;
   align-items: center;
-  gap: 0.125rem;
-  margin-bottom: 0.125rem;
+  gap: var(--space-0-5);
+  margin-bottom: var(--space-0-5);
 }
 
 /* FDI number button (opens note popover) */
 .numberButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.125rem;
+  gap: var(--space-0-5);
   font-family: var(--font-mono);
   line-height: 1;
   border-radius: var(--radius-marker);
@@ -113,7 +113,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: var(--space-0);
 }
 
 .numberButton:focus-visible {
@@ -147,14 +147,14 @@
 .imageButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.125rem;
+  gap: var(--space-0-5);
   line-height: 1;
   border-radius: var(--radius-marker);
   color: var(--color-txt-secondary);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: var(--space-0);
 }
 
 .imageButton:focus-visible {
@@ -228,10 +228,10 @@
   border: 1px solid var(--color-edge);
   border-radius: var(--radius-surface);
   box-shadow: var(--shadow-lg);
-  padding: 0.75rem;
+  padding: var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .popoverHeader {
@@ -271,7 +271,7 @@
   border: 1px solid var(--color-edge);
   font-size: var(--text-sm);
   color: var(--color-txt);
-  padding: 0.5rem;
+  padding: var(--space-2);
   outline: none;
 }
 
@@ -291,7 +291,7 @@
 }
 
 .saveButton {
-  padding: 0.25rem 0.75rem;
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-control);
   background-color: var(--color-primary);
   color: var(--color-txt-on-primary);
@@ -320,14 +320,14 @@
   border: 1px solid var(--color-edge);
   border-radius: var(--radius-surface);
   box-shadow: var(--shadow-lg);
-  padding: 0.75rem;
+  padding: var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 .thumbnailCount {
-  margin-left: 0.375rem;
+  margin-left: var(--space-1-5);
   font-size: var(--text-xs);
   font-weight: 400;
   color: var(--color-txt-secondary);
@@ -337,13 +337,13 @@
 .thumbnailGallery {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .thumbnailList {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .thumbnailItem {
@@ -367,7 +367,7 @@
   outline: none;
   cursor: pointer;
   background: none;
-  padding: 0;
+  padding: var(--space-0);
 }
 
 .thumbnailButton:hover {
@@ -405,7 +405,7 @@
   opacity: 0;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: var(--space-0);
 }
 
 .thumbnailDeleteButton:focus-visible {
@@ -418,7 +418,7 @@
   font-size: 9px;
   color: var(--color-txt-secondary);
   text-align: center;
-  margin-top: 0.125rem;
+  margin-top: var(--space-0-5);
   line-height: 1.2;
 }
 
@@ -426,7 +426,7 @@
 .previewPane {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .previewImg {
@@ -455,9 +455,9 @@
 .addForm {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
   border-top: 1px solid var(--color-edge);
-  padding-top: 0.5rem;
+  padding-top: var(--space-2);
 }
 
 .addFormTitle {
@@ -469,7 +469,7 @@
 .addFormField {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .addFormLabel {
@@ -483,7 +483,7 @@
   border: 1px solid var(--color-edge);
   font-size: var(--text-sm);
   color: var(--color-txt);
-  padding: 0.375rem;
+  padding: var(--space-1-5);
   outline: none;
   background-color: var(--color-surface-1);
 }
@@ -504,7 +504,7 @@
 
 .fileButton {
   width: 100%;
-  padding: 0.375rem 0.75rem;
+  padding: var(--space-1-5) var(--space-3);
   border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   font-size: var(--text-sm);
@@ -524,12 +524,12 @@
 
 .addFormActions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   justify-content: flex-end;
 }
 
 .cancelButton {
-  padding: 0.25rem 0.75rem;
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   font-size: var(--text-xs);
@@ -548,7 +548,7 @@
 }
 
 .confirmButton {
-  padding: 0.25rem 0.75rem;
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-control);
   background-color: var(--color-primary);
   color: var(--color-txt-on-primary);
@@ -575,7 +575,7 @@
 /* Add image button (when not in adding mode) */
 .addImageButton {
   width: 100%;
-  padding: 0.375rem 0.75rem;
+  padding: var(--space-1-5) var(--space-3);
   border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   font-size: var(--text-sm);
@@ -585,7 +585,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.375rem;
+  gap: var(--space-1-5);
 }
 
 .addImageButton:hover {
@@ -613,8 +613,8 @@
   position: absolute;
   width: 1px;
   height: 1px;
-  padding: 0;
-  margin: -1px;
+  padding: var(--space-0);
+  margin: calc(var(--space-px) * -1);
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;

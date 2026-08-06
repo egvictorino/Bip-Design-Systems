@@ -3,7 +3,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .fullWidth { width: 100%; }
@@ -24,7 +24,7 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
-.requiredMark { color: var(--color-danger); margin-left: 2px; }
+.requiredMark { color: var(--color-danger); margin-left: var(--space-0-5); }
 
 /* ─── Textarea base ─────────────────────────────────────────────────────────── */
 
@@ -52,9 +52,9 @@
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
-.sm { padding: 6px 12px;  font-size: var(--text-xs);  line-height: 1rem; }
-.md { padding: 10px 20px; font-size: var(--text-sm); line-height: 1.25rem; }
-.lg { padding: 12px 24px; font-size: var(--text-lg); line-height: 1.75rem; }
+.sm { padding: var(--space-control-y-sm) var(--space-control-x-sm); font-size: var(--text-xs);  line-height: 1rem; }
+.md { padding: var(--space-control-y-md) var(--space-control-x-md); font-size: var(--text-sm); line-height: 1.25rem; }
+.lg { padding: var(--space-control-y-lg) var(--space-control-x-lg); font-size: var(--text-lg); line-height: 1.75rem; }
 
 /* ─── Resize ────────────────────────────────────────────────────────────────── */
 
@@ -115,7 +115,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .counterText  { color: var(--color-txt-secondary); white-space: nowrap; }

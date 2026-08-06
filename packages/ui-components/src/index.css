@@ -2,6 +2,7 @@
 @import './tokens.css';
 @import './styles/primitives.css';
 @import './styles/themes.css';
+@import './styles/density.css';
 
 /* Utilidades globales usadas por componentes */
 .sr-only {

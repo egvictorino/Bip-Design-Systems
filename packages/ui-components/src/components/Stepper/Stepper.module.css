@@ -36,8 +36,8 @@
 .labelCol {
   display: flex;
   flex-direction: column;
-  padding-left: 0.75rem;
-  padding-bottom: 1.25rem;
+  padding-left: var(--space-3);
+  padding-bottom: var(--space-5);
 }
 
 /* ─── Step inner (div for active, button for inactive) ───────────────────── */
@@ -54,7 +54,7 @@
   align-items: center;
   background: none;
   border: none;
-  padding: 0;
+  padding: var(--space-0);
   outline: none;
 }
 
@@ -154,19 +154,19 @@
 .dotSm {
   width: 0.5rem;
   height: 0.5rem;
-  margin-top: 13px;
+  margin-top: 13px; /* fuera de la grilla --space-* a propósito: centra el dot contra la línea del connector, no es espaciado sistemático */
 }
 
 .dotMd {
   width: 0.75rem;
   height: 0.75rem;
-  margin-top: 11px;
+  margin-top: 11px; /* ídem .dotSm */
 }
 
 .dotLg {
   width: 1rem;
   height: 1rem;
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 
 /* State variants */
@@ -224,7 +224,7 @@
 
 .label {
   font-size: var(--text-xs);
-  margin-top: 0.375rem;
+  margin-top: var(--space-1-5);
   text-align: center;
   font-weight: 500;
   transition: color var(--duration-fast);
@@ -273,33 +273,33 @@
 .connectorCircleSm {
   flex: 1;
   height: 1px;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  margin-top: 0.75rem;
+  margin-left: var(--space-2);
+  margin-right: var(--space-2);
+  margin-top: var(--space-3);
 }
 
 .connectorCircle {
   flex: 1;
   height: 1px;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  margin-top: 1rem;
+  margin-left: var(--space-2);
+  margin-right: var(--space-2);
+  margin-top: var(--space-4);
 }
 
 .connectorCircleLg {
   flex: 1;
   height: 1px;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  margin-top: 1.25rem;
+  margin-left: var(--space-2);
+  margin-right: var(--space-2);
+  margin-top: var(--space-5);
 }
 
 .connectorDot {
   flex: 1;
   height: 1px;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  margin-top: 5px;
+  margin-left: var(--space-2);
+  margin-right: var(--space-2);
+  margin-top: 5px; /* fuera de la grilla --space-* a propósito: centra la línea contra el dot, no es espaciado sistemático */
 }
 
 /* Vertical connector */
@@ -307,8 +307,8 @@
   width: 1px;
   flex: 1;
   min-height: 1.5rem;
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
+  margin-top: var(--space-1);
+  margin-bottom: var(--space-1);
 }
 
 /* Color states (shared by horizontal & vertical) */

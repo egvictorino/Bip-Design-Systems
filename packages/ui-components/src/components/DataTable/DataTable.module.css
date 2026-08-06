@@ -3,7 +3,7 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 /* ─── Toolbar ──────────────────────────────────────────────────────────────── */
@@ -11,7 +11,7 @@
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .searchWrapper {
@@ -29,15 +29,15 @@
   right: 0;
   top: 100%;
   z-index: var(--z-dropdown);
-  margin-top: 0.25rem;
+  margin-top: var(--space-1);
   display: flex;
   min-width: 160px;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
   border-radius: var(--radius-surface);
   border: 1px solid var(--color-edge);
   background-color: var(--color-surface-1);
-  padding: 0.5rem;
+  padding: var(--space-2);
   box-shadow: var(--shadow-md);
 }
 
@@ -46,11 +46,11 @@
 .bulkBar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   border-radius: var(--radius-surface);
   border: 1px solid var(--color-primary);
   background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-2) var(--space-3);
 }
 
 .bulkCount {
@@ -62,14 +62,14 @@
 .bulkActions {
   margin-left: auto;
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 /* ─── Empty cell ───────────────────────────────────────────────────────────── */
 
 .emptyCell {
-  padding-top: 0;
-  padding-bottom: 0;
+  padding-top: var(--space-0);
+  padding-bottom: var(--space-0);
 }
 
 /* ─── Pagination ───────────────────────────────────────────────────────────── */

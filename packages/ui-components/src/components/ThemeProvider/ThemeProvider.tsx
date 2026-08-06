@@ -116,6 +116,31 @@ export const MOTION_VAR_MAP: Record<keyof BipMotionOverrides, string> = {
   easeIn: '--ease-in',
 };
 
+export type BipDensity = 'comfortable' | 'compact';
+
+/**
+ * Overrides de la horquilla de padding de controles (density.css) — la parte de la
+ * escala --space-* donde compact/comfortable realmente cambia el layout. El resto de
+ * --space-* (gaps, paddings de superficie, etc.) es invariante a densidad por diseño.
+ */
+export interface BipSpacingOverrides {
+  controlXSm?: string;
+  controlYSm?: string;
+  controlXMd?: string;
+  controlYMd?: string;
+  controlXLg?: string;
+  controlYLg?: string;
+}
+
+export const SPACING_VAR_MAP: Record<keyof BipSpacingOverrides, string> = {
+  controlXSm: '--space-control-x-sm',
+  controlYSm: '--space-control-y-sm',
+  controlXMd: '--space-control-x-md',
+  controlYMd: '--space-control-y-md',
+  controlXLg: '--space-control-x-lg',
+  controlYLg: '--space-control-y-lg',
+};
+
 /**
  * Resuelve cualquier objeto de overrides "plano" (radius/focusRing/motion —
  * cada clave independiente, a diferencia de `tokens` que deriva toda una
@@ -174,6 +199,8 @@ const NOOP_CONTROLS: ThemeControls = {
 interface ThemeContextValue {
   theme: BipTheme;
   colorScheme: BipColorScheme;
+  /** undefined = sin opinión, cae al default CSS (:root, [data-density='comfortable']). */
+  density: BipDensity | undefined;
   /** Vars CSS resueltas acumuladas (padre + propias) — ver ThemeProvider. */
   resolvedVars: Record<string, string>;
   controls: ThemeControls;
@@ -182,6 +209,7 @@ interface ThemeContextValue {
 const DEFAULT_CONTEXT: ThemeContextValue = {
   theme: 'square',
   colorScheme: 'light',
+  density: undefined,
   resolvedVars: {},
   controls: NOOP_CONTROLS,
 };
@@ -308,24 +336,31 @@ export const useTheme = (): BipTheme => (useContext(ThemeContext) ?? DEFAULT_CON
 export const useColorScheme = (): BipColorScheme =>
   (useContext(ThemeContext) ?? DEFAULT_CONTEXT).colorScheme;
 
+/** undefined si el provider no fija `density` — cae al default CSS (comfortable). */
+export const useDensity = (): BipDensity | undefined =>
+  (useContext(ThemeContext) ?? DEFAULT_CONTEXT).density;
+
 /**
  * Atributos data-* + style para estampar el eje de tema (incluidas las vars
  * de marca resueltas) en un nodo portalled (Modal, Toast, DrawerPanel,
  * Calendar, Odontogram popovers) que vive fuera del árbol DOM del provider
  * y por eso no hereda ni el estampado ni las custom properties que hace
  * <ThemeProvider> en su wrapper. `style` ya incluye THEME_RESET_STYLE, así
- * que los call sites no necesitan importarlo aparte. Punto único a
- * actualizar si se agrega un cuarto eje.
+ * que los call sites no necesitan importarlo aparte. `data-density` solo se
+ * incluye cuando el provider lo fija — omitirlo dejaría el atributo con
+ * valor `"undefined"` en el DOM en vez de simplemente no estar presente.
  */
 export const useThemeAttributes = (): {
   'data-theme': BipTheme;
   'data-color-scheme': BipColorScheme;
+  'data-density'?: BipDensity;
   style: React.CSSProperties;
 } => {
-  const { theme, colorScheme, resolvedVars } = useContext(ThemeContext) ?? DEFAULT_CONTEXT;
+  const { theme, colorScheme, density, resolvedVars } = useContext(ThemeContext) ?? DEFAULT_CONTEXT;
   return {
     'data-theme': theme,
     'data-color-scheme': colorScheme,
+    ...(density ? { 'data-density': density } : {}),
     style: { ...THEME_RESET_STYLE, ...resolvedVars },
   };
 };
@@ -354,6 +389,15 @@ export interface ThemeProviderProps {
   focusRing?: BipFocusRingOverrides;
   /** Overrides de duración/easing de transiciones — ver primitives.css. */
   motion?: BipMotionOverrides;
+  /**
+   * 'compact' | 'comfortable' — estampa data-density en el wrapper (ver density.css).
+   * A diferencia de theme/colorScheme, no es controlado/no-controlado con persistencia
+   * propia: es un valor directo, como radius/focusRing/motion. @default sin fijar (cae
+   * al default CSS, comfortable).
+   */
+  density?: BipDensity;
+  /** Overrides de la horquilla de padding de controles — ver density.css. */
+  spacing?: BipSpacingOverrides;
   /** Escape hatch: cualquier custom property, p. ej. { '--color-selected': '#...' }. Gana sobre el resto de ejes. */
   cssVars?: Record<string, string>;
   children: React.ReactNode;
@@ -402,6 +446,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   radius,
   focusRing,
   motion,
+  density: densityProp,
+  spacing,
   cssVars,
   children,
 }) => {
@@ -454,12 +500,16 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   const parentContext = useContext(ThemeContext);
 
-  // Los overrides (tokens/radius/focusRing/motion/cssVars) casi siempre llegan
-  // como literales inline (`tokens={{ colorPrimary: '#...' }}`), que cambian
+  // density no tiene forma no-controlada propia (ver ThemeProviderProps) — si no se
+  // fija en esta instancia, hereda la del provider padre, igual que resolvedVars.
+  const density = densityProp ?? parentContext?.density;
+
+  // Los overrides (tokens/radius/focusRing/motion/spacing/cssVars) casi siempre
+  // llegan como literales inline (`tokens={{ colorPrimary: '#...' }}`), que cambian
   // de identidad en cada render del padre aunque el contenido sea idéntico.
   // Comparar por valor (JSON.stringify) evita que resolvedVars — y con él,
   // todo el subárbol que lee sus vars — se recalcule en cada render.
-  const overridesKey = JSON.stringify([tokens, radius, focusRing, motion, cssVars]);
+  const overridesKey = JSON.stringify([tokens, radius, focusRing, motion, spacing, cssVars]);
   const resolvedVars = useMemo(
     () => ({
       ...(parentContext?.resolvedVars ?? {}),
@@ -470,9 +520,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
       ...resolveVarMap(radius, RADIUS_VAR_MAP),
       ...resolveVarMap(focusRing, FOCUS_RING_VAR_MAP),
       ...resolveVarMap(motion, MOTION_VAR_MAP),
+      ...resolveVarMap(spacing, SPACING_VAR_MAP),
       ...cssVars,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- overridesKey ya cubre tokens/radius/focusRing/motion/cssVars por valor
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- overridesKey ya cubre tokens/radius/focusRing/motion/spacing/cssVars por valor
     [parentContext, colorScheme, overridesKey]
   );
 
@@ -489,10 +540,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   );
 
   return (
-    <ThemeContext.Provider value={{ theme, colorScheme, resolvedVars, controls }}>
+    <ThemeContext.Provider value={{ theme, colorScheme, density, resolvedVars, controls }}>
       <div
         data-theme={theme}
         data-color-scheme={colorScheme}
+        data-density={density}
         style={{ display: 'contents', ...THEME_RESET_STYLE, ...resolvedVars }}
       >
         {children}

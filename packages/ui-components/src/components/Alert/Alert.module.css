@@ -2,10 +2,10 @@
 
 .alert {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   border-radius: var(--radius-surface);
   border-left: 4px solid;
-  padding: 1rem;
+  padding: var(--space-4);
 }
 
 /* ─── Variants ──────────────────────────────────────────────────────────────── */
@@ -60,7 +60,7 @@
   line-height: 1.25rem;
 }
 
-.bodyWithTitle { margin-top: 0.25rem; }
+.bodyWithTitle { margin-top: var(--space-1); }
 
 /* Title and body colors per variant */
 .info .title, .info .body     { color: var(--color-info-text); }
@@ -74,7 +74,7 @@
   flex-shrink: 0;
   align-self: flex-start;
   border-radius: var(--radius-control);
-  padding: 0.125rem;
+  padding: var(--space-0-5);
   background: none;
   border: none;
   cursor: pointer;
