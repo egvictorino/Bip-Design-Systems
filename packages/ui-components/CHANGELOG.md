@@ -15,6 +15,14 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
   existían baselines macOS y ningún workflow invocaba `test:visual`. Nuevo
   `scripts/visual-docker.sh` (raíz del repo, `pnpm test:visual:docker`) corre la misma imagen
   en local para que verificar o regenerar baselines sea idéntico a lo que corre en CI.
+- `visual/component-matrix.spec.ts` — un screenshot por componente (42 de los 43 directorios
+  de `src/components`; `ThemeProvider` no tiene UI propia) más un subset de 15 en RTL
+  (`Sidebar`, `Toggle`, `Tooltip`, `Calendar`, `NumberInput`, `SearchInput`, `Input`, `Select`,
+  `Dropdown`, `DrawerPanel`, `Tabs`, `Stepper`, `Timeline`, `MultiSelect`, `DatePicker` — los
+  que tienen geometría direccional real). Antes las 8 baselines existentes cubrían solo
+  ThemeProvider/Foundations; una regresión visual en un componente en sí no la detectaba
+  nada. Guard de cobertura igual al de `a11y.test.tsx`: un componente nuevo sin entrada en
+  `component-matrix.ts` falla el build.
 
 ### Fixed
 
