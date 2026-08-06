@@ -50,7 +50,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint src --ext .ts,.tsx",
-    "test": "vitest --config vitest.config.ts",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts",
     "test:visual": "playwright test --config=playwright.visual.config.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

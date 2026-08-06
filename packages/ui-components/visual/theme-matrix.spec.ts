@@ -32,4 +32,28 @@ test.describe('theme matrix', () => {
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveScreenshot('foundations-radius.png', { fullPage: true });
   });
+
+  test('SideBySide — square y rounded renderizados uno junto al otro', async ({ page }) => {
+    await page.goto('/iframe.html?id=components-themeprovider--side-by-side&viewMode=story');
+    await page.waitForLoadState('networkidle');
+    await expect(page).toHaveScreenshot('side-by-side.png', { fullPage: true });
+  });
+
+  test('PortalTheming — Modal via createPortal hereda el tema del provider (no el de document.body)', async ({
+    page,
+  }) => {
+    await page.goto('/iframe.html?id=components-themeprovider--portal-theming&viewMode=story');
+    await page.waitForLoadState('networkidle');
+    await page.getByRole('button', { name: 'Abrir modal (rounded)' }).click();
+    await expect(page.getByText('Modal en tema rounded')).toBeVisible();
+    await expect(page).toHaveScreenshot('portal-theming.png', { fullPage: true });
+  });
+
+  test("SystemColorScheme — colorScheme='system' resuelve a light/dark sin estampar 'system'", async ({
+    page,
+  }) => {
+    await page.goto('/iframe.html?id=components-themeprovider--system-color-scheme&viewMode=story');
+    await page.waitForLoadState('networkidle');
+    await expect(page).toHaveScreenshot('system-color-scheme.png', { fullPage: true });
+  });
 });

@@ -380,6 +380,81 @@ describe('ThemeProvider', () => {
         )
       );
     });
+
+    it('el eje theme (no-controlado) persiste en localStorage y rehidrata al remontar', async () => {
+      const user = userEvent.setup();
+      const ThemeToggle = () => {
+        const { setTheme } = useThemeControls();
+        return <button onClick={() => setTheme('rounded')}>set-rounded</button>;
+      };
+      const { unmount } = render(
+        <ThemeProvider defaultTheme="square" defaultColorScheme="light" storageKey="bip-theme-axis-test">
+          <ThemeToggle />
+          <span data-testid="child">contenido</span>
+        </ThemeProvider>
+      );
+
+      await user.click(screen.getByRole('button'));
+      await waitFor(() =>
+        expect(JSON.parse(window.localStorage.getItem('bip-theme-axis-test')!)).toMatchObject({
+          theme: 'rounded',
+        })
+      );
+      unmount();
+
+      render(
+        <ThemeProvider defaultTheme="square" defaultColorScheme="light" storageKey="bip-theme-axis-test">
+          <span data-testid="child2">contenido</span>
+        </ThemeProvider>
+      );
+
+      await waitFor(() =>
+        expect(screen.getByTestId('child2').parentElement).toHaveAttribute('data-theme', 'rounded')
+      );
+    });
+
+    it('un theme controlado no se escribe a localStorage (guardia simétrica a la lectura)', async () => {
+      render(
+        <ThemeProvider theme="rounded" defaultColorScheme="light" storageKey="bip-theme-controlled-write">
+          <span data-testid="child">contenido</span>
+        </ThemeProvider>
+      );
+      await waitFor(() => {
+        const stored = window.localStorage.getItem('bip-theme-controlled-write');
+        expect(stored).not.toBeNull();
+        expect(JSON.parse(stored!)).not.toHaveProperty('theme');
+      });
+    });
+
+    it('JSON corrupto en storageKey no lanza y cae a los defaults', () => {
+      window.localStorage.setItem('bip-theme-corrupt', '{not valid json');
+      expect(() =>
+        render(
+          <ThemeProvider defaultTheme="rounded" defaultColorScheme="dark" storageKey="bip-theme-corrupt">
+            <span data-testid="child">contenido</span>
+          </ThemeProvider>
+        )
+      ).not.toThrow();
+      expect(screen.getByTestId('child').parentElement).toHaveAttribute('data-theme', 'rounded');
+      expect(screen.getByTestId('child').parentElement).toHaveAttribute('data-color-scheme', 'dark');
+    });
+
+    it('localStorage.setItem lanzando (modo privado de Safari) no rompe el render', () => {
+      const setItemSpy = vi
+        .spyOn(window.localStorage.__proto__, 'setItem')
+        .mockImplementation(() => {
+          throw new Error('QuotaExceededError');
+        });
+      expect(() =>
+        render(
+          <ThemeProvider defaultTheme="square" defaultColorScheme="light" storageKey="bip-theme-private-mode">
+            <span data-testid="child">contenido</span>
+          </ThemeProvider>
+        )
+      ).not.toThrow();
+      expect(screen.getByTestId('child').parentElement).toHaveAttribute('data-theme', 'square');
+      setItemSpy.mockRestore();
+    });
   });
 
   describe('getThemeInitScript', () => {
