@@ -7,6 +7,32 @@ import './index.css';
 export { EmptyState } from './components/EmptyState';
 export type { EmptyStateProps } from './components/EmptyState';
 
+export {
+  ThemeProvider,
+  useTheme,
+  useColorScheme,
+  useThemeAttributes,
+  useThemeControls,
+  getThemeInitScript,
+  THEME_RESET_STYLE,
+  TOKEN_VAR_MAP,
+  resolveTokenVars,
+} from './components/ThemeProvider';
+export type {
+  ThemeProviderProps,
+  ThemeInitScriptOptions,
+  ThemeControls,
+  BipTheme,
+  BipColorScheme,
+  BipColorSchemePreference,
+  BipTokenOverrides,
+  BipRadiusOverrides,
+  BipFocusRingOverrides,
+  BipMotionOverrides,
+} from './components/ThemeProvider';
+
+export { contrastRatio, pickReadableText } from './lib/contrast';
+
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/Accordion';
 export type {
   AccordionProps,

@@ -36,18 +36,18 @@
   font-weight: 600;
 }
 
-.titleSm { font-size: 0.875rem; line-height: 1.25rem; }
-.titleMd { font-size: 1rem;     line-height: 1.5rem; }
-.titleLg { font-size: 1.125rem; line-height: 1.75rem; }
+.titleSm { font-size: var(--text-sm); line-height: 1.25rem; }
+.titleMd { font-size: var(--text-base);     line-height: 1.5rem; }
+.titleLg { font-size: var(--text-lg); line-height: 1.75rem; }
 
 .description {
   color: var(--color-txt-secondary);
   max-width: 20rem;
 }
 
-.descriptionSm { font-size: 0.75rem;  line-height: 1rem; }
-.descriptionMd { font-size: 0.875rem; line-height: 1.25rem; }
-.descriptionLg { font-size: 1rem;     line-height: 1.5rem; }
+.descriptionSm { font-size: var(--text-xs);  line-height: 1rem; }
+.descriptionMd { font-size: var(--text-sm); line-height: 1.25rem; }
+.descriptionLg { font-size: var(--text-base);     line-height: 1.5rem; }
 
 /* ─── Action ────────────────────────────────────────────────────────────────── */
 

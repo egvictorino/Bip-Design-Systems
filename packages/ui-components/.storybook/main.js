@@ -3,6 +3,7 @@ const config = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
+    '@storybook/addon-a11y',
   ],
   framework: {
     name: '@storybook/react-vite',
@@ -12,7 +13,7 @@ const config = {
     config.css = { postcss: './postcss.config.js' };
     config.optimizeDeps = {
       ...config.optimizeDeps,
-      include: ['react', 'react-dom', 'clsx', 'tailwind-merge'],
+      include: ['react', 'react-dom', 'clsx'],
     };
     return config;
   },

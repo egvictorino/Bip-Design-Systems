@@ -78,7 +78,7 @@ export const Large: Story = {
 export const AllVariants: Story = {
   args: { children: 'Badge' },
   render: () => (
-    <div className="flex flex-wrap items-center gap-2">
+    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem' }}>
       <Badge variant="primary">Activo</Badge>
       <Badge variant="success">Completado</Badge>
       <Badge variant="warning">Pendiente</Badge>
@@ -91,7 +91,7 @@ export const AllVariants: Story = {
 export const AllWithDot: Story = {
   args: { children: 'Badge' },
   render: () => (
-    <div className="flex flex-wrap items-center gap-2">
+    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem' }}>
       <Badge variant="primary" dot>Activo</Badge>
       <Badge variant="success" dot>Completado</Badge>
       <Badge variant="warning" dot>Pendiente</Badge>

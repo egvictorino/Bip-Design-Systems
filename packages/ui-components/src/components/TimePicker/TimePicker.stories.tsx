@@ -24,10 +24,12 @@ type Story = StoryObj<typeof meta>;
 const ControlledTimePicker = (props: Omit<React.ComponentProps<typeof TimePicker>, 'onChange'>) => {
   const [value, setValue] = useState<string | undefined>(props.value);
   return (
-    <div className="min-w-[200px]">
+    <div style={{ minWidth: '200px' }}>
       <TimePicker {...props} value={value} onChange={setValue} />
       {value && (
-        <p className="mt-2 text-xs text-text-secondary">Seleccionado: {value}</p>
+        <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--color-txt-secondary)' }}>
+          Seleccionado: {value}
+        </p>
       )}
     </div>
   );
@@ -99,7 +101,7 @@ export const SizeLg: Story = {
 export const FullWidth: Story = {
   parameters: { layout: 'padded' },
   render: () => (
-    <div className="w-full max-w-sm">
+    <div style={{ width: '100%', maxWidth: '24rem' }}>
       <ControlledTimePicker label="Hora de inicio" fullWidth placeholder="HH:MM" />
     </div>
   ),
@@ -181,7 +183,7 @@ const AppointmentFormStory = () => {
   const [start, setStart] = useState<string | undefined>('09:00');
   const [end, setEnd] = useState<string | undefined>('09:30');
   return (
-    <div className="flex flex-col gap-4 w-64">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '16rem' }}>
       <TimePicker
         label="Hora de inicio"
         value={start}
@@ -209,7 +211,7 @@ const AppointmentFormAdvancedStory = () => {
   const [start, setStart] = useState<string | undefined>('09:00');
   const [end, setEnd] = useState<string | undefined>('09:30');
   return (
-    <div className="flex flex-col gap-4 w-72">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '18rem' }}>
       <TimePicker
         label="Hora de inicio"
         value={start}
@@ -231,7 +233,7 @@ const AppointmentFormAdvancedStory = () => {
         fullWidth
       />
       {start && end && (
-        <p className="text-xs text-text-secondary">
+        <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)' }}>
           Duración: {start} – {end}
         </p>
       )}

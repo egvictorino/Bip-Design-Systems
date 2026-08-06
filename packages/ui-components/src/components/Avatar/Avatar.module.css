@@ -28,8 +28,8 @@
 
 /* ─── Shapes ────────────────────────────────────────────────────────────────── */
 
-.circle { border-radius: 9999px; }
-.square { border-radius: 0.5rem; }
+.circle { border-radius: var(--radius-pill); }
+.square { border-radius: var(--radius-control); }
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
@@ -41,11 +41,11 @@
 
 /* ─── Text sizes ────────────────────────────────────────────────────────────── */
 
-.textXs   { font-size: 0.625rem; }
-.textSm   { font-size: 0.75rem;  line-height: 1rem; }
-.textMd   { font-size: 0.875rem; line-height: 1.25rem; }
-.textLg   { font-size: 1rem;     line-height: 1.5rem; }
-.textXl   { font-size: 1.25rem;  line-height: 1.75rem; }
+.textXs   { font-size: var(--text-3xs); }
+.textSm   { font-size: var(--text-xs);  line-height: 1rem; }
+.textMd   { font-size: var(--text-sm); line-height: 1.25rem; }
+.textLg   { font-size: var(--text-base);     line-height: 1.5rem; }
+.textXl   { font-size: var(--text-xl);  line-height: 1.75rem; }
 
 /* ─── Initials text ─────────────────────────────────────────────────────────── */
 
@@ -74,7 +74,7 @@
 
 .status {
   position: absolute;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   box-shadow: 0 0 0 2px var(--color-surface-1);
 }
 
@@ -102,6 +102,16 @@
 .bgSlate       { background-color: var(--color-txt-utility); }
 .bgViolet      { background-color: var(--color-unique); }
 
+/* Contraste automático sobre las variantes cuyo fondo es una semilla de
+   marca overrideable (colorPrimary/colorDanger/colorUnique) — ver
+   ThemeProvider `tokens` y tokens.css § contraste automático. Las variantes
+   *-text (success/warning/info) usan tokens ya oscurecidos y --bgSlate/
+   --bgSecondary no son semillas de relleno de marca, así que mantienen el
+   blanco fijo previo. */
+.bgPrimary.initials { color: var(--color-txt-on-primary); }
+.bgDanger.initials  { color: var(--color-txt-on-danger); }
+.bgViolet.initials  { color: var(--color-txt-on-unique); }
+
 /* ─── AvatarGroup ───────────────────────────────────────────────────────────── */
 
 .group {
@@ -111,7 +121,7 @@
 
 .groupItem {
   box-shadow: 0 0 0 2px var(--color-surface-1);
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
 }
 
 .groupItemOffset {
@@ -131,7 +141,7 @@
   width: 100%;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-surface-3);
   color: var(--color-txt-secondary);
   box-shadow: 0 0 0 2px var(--color-surface-1);

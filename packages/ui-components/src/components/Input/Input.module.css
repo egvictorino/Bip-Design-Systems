@@ -12,12 +12,12 @@
 
 .label {
   font-weight: 500;
-  transition: color 150ms;
+  transition: color var(--duration-fast);
 }
 
-.labelSm   { font-size: 0.75rem;  line-height: 1rem; }
-.labelMd   { font-size: 0.875rem; line-height: 1.25rem; }
-.labelLg   { font-size: 1rem;     line-height: 1.5rem; }
+.labelSm   { font-size: var(--text-xs);  line-height: 1rem; }
+.labelMd   { font-size: var(--text-sm); line-height: 1.25rem; }
+.labelLg   { font-size: var(--text-base);     line-height: 1.5rem; }
 
 .labelNormal  { color: var(--color-txt-utility); }
 .labelFocused { color: var(--color-txt); }
@@ -45,8 +45,8 @@
 /* ─── Input base ────────────────────────────────────────────────────────────── */
 
 .input {
-  border-radius: 1px;
-  transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+  border-radius: var(--radius-field);
+  transition: border-color var(--duration-fast), background-color var(--duration-fast), box-shadow var(--duration-fast);
 }
 
 .input:focus {
@@ -68,9 +68,9 @@
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
-.sm { padding: 6px 12px;  font-size: 0.75rem;  line-height: 1rem; }
-.md { padding: 10px 20px; font-size: 0.875rem; line-height: 1.25rem; }
-.lg { padding: 12px 24px; font-size: 1.125rem; line-height: 1.75rem; }
+.sm { padding: 6px 12px;  font-size: var(--text-xs);  line-height: 1rem; }
+.md { padding: 10px 20px; font-size: var(--text-sm); line-height: 1.25rem; }
+.lg { padding: 12px 24px; font-size: var(--text-lg); line-height: 1.75rem; }
 
 /* ─── Icon padding adjustments ───────────────────────────────────────────────── */
 
@@ -86,7 +86,7 @@
   align-items: center;
   color: var(--color-txt-utility);
   pointer-events: none;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 .rightAdornments {
@@ -95,7 +95,7 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 /* ─── Action buttons inside input ───────────────────────────────────────────── */
@@ -110,8 +110,8 @@
   background: transparent;
   cursor: pointer;
   color: var(--color-txt-utility);
-  border-radius: 2px;
-  transition: color 150ms;
+  border-radius: var(--radius-marker);
+  transition: color var(--duration-fast);
   line-height: 0;
 }
 
@@ -133,9 +133,9 @@
   background-color: var(--color-field);
 }
 .outlined:hover:not(:disabled) { border-color: var(--color-edge-hover); }
-.outlined:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.outlined:focus-visible { box-shadow: var(--focus-ring); }
 .outlined.error { border-color: var(--color-danger); }
-.outlined.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+.outlined.error:focus-visible  { --focus-ring-color: var(--color-danger); box-shadow: var(--focus-ring); }
 
 /* ─── Variant: filled ───────────────────────────────────────────────────────── */
 
@@ -143,12 +143,12 @@
   border: 1px solid var(--color-edge);
   background-color: var(--color-secondary);
 }
-.filled:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.filled:focus-visible { box-shadow: var(--focus-ring); }
 .filled.error {
   background-color: var(--color-danger-light);
   border-color: transparent;
 }
-.filled.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+.filled.error:focus-visible  { --focus-ring-color: var(--color-danger); box-shadow: var(--focus-ring); }
 
 /* ─── Variant: bare ─────────────────────────────────────────────────────────── */
 
@@ -156,7 +156,7 @@
   border: none;
   border-bottom: 2px solid var(--color-primary);
   background-color: transparent;
-  border-radius: 0;
+  border-radius: var(--radius-none);
 }
 .bare:hover:not(:disabled) { border-bottom-color: var(--color-primary-hover); }
 .bare:focus-visible { box-shadow: none; border-bottom-color: var(--color-primary-hover); }
@@ -165,9 +165,9 @@
 
 /* ─── Helper / Error message ────────────────────────────────────────────────── */
 
-.helperSm { font-size: 0.75rem; line-height: 1rem; }
-.helperMd { font-size: 0.75rem; line-height: 1rem; }
-.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+.helperSm { font-size: var(--text-xs); line-height: 1rem; }
+.helperMd { font-size: var(--text-xs); line-height: 1rem; }
+.helperLg { font-size: var(--text-sm); line-height: 1.25rem; }
 
 .helperText  { color: var(--color-txt-secondary); }
 .errorText   { color: var(--color-danger); }

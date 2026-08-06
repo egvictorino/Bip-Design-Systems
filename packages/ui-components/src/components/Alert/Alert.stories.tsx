@@ -71,7 +71,7 @@ export const Dismissible: Story = {
 export const AllVariants: Story = {
   args: { children: 'Mensaje de alerta' },
   render: () => (
-    <div className="flex flex-col gap-3 w-[480px]">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '480px' }}>
       <Alert variant="info">Tu solicitud está siendo procesada.</Alert>
       <Alert variant="success">Los cambios han sido guardados.</Alert>
       <Alert variant="warning">Tu sesión expirará en 5 minutos.</Alert>

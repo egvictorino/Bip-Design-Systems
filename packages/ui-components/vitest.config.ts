@@ -13,6 +13,10 @@ export default defineConfig({
     environment: 'happy-dom',
     globals: true,
     setupFiles: ['./src/test-setup.ts'],
+    // visual/ es la suite de regresión visual de Playwright (theme-matrix.spec.ts),
+    // no vitest — sin este exclude, el glob *.spec.ts por defecto la recoge y
+    // choca con el runner de @playwright/test.
+    exclude: ['**/node_modules/**', '**/visual/**'],
     css: {
       modules: {
         // Use plain local names in tests (e.g. styles.primary → "primary")

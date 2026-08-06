@@ -12,12 +12,12 @@
 
 .label {
   font-weight: 500;
-  transition: color 150ms;
+  transition: color var(--duration-fast);
 }
 
-.labelSm   { font-size: 0.75rem;  line-height: 1rem; }
-.labelMd   { font-size: 0.875rem; line-height: 1.25rem; }
-.labelLg   { font-size: 1rem;     line-height: 1.5rem; }
+.labelSm   { font-size: var(--text-xs);  line-height: 1rem; }
+.labelMd   { font-size: var(--text-sm); line-height: 1.25rem; }
+.labelLg   { font-size: var(--text-base);     line-height: 1.5rem; }
 
 .labelNormal   { color: var(--color-txt-utility); }
 .labelError    { color: var(--color-danger); }
@@ -32,8 +32,8 @@
 .trigger {
   width: 100%;
   text-align: left;
-  border-radius: 1px;
-  transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+  border-radius: var(--radius-field);
+  transition: border-color var(--duration-fast), background-color var(--duration-fast), box-shadow var(--duration-fast);
   border: 1px solid var(--color-edge);
   background-color: var(--color-field);
 }
@@ -43,7 +43,7 @@
 }
 
 .trigger:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .trigger:hover:not(:disabled) {
@@ -55,7 +55,8 @@
 }
 
 .triggerError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 .triggerDisabled {
@@ -70,9 +71,9 @@
 
 /* ─── Trigger sizes ──────────────────────────────────────────────────────────── */
 
-.triggerSm { padding: 6px 12px;  padding-right: 2.25rem; font-size: 0.75rem;  line-height: 1rem; }
-.triggerMd { padding: 10px 20px; padding-right: 2.25rem; font-size: 0.875rem; line-height: 1.25rem; }
-.triggerLg { padding: 12px 24px; padding-right: 2.25rem; font-size: 1.125rem; line-height: 1.75rem; }
+.triggerSm { padding: 6px 12px;  padding-right: 2.25rem; font-size: var(--text-xs);  line-height: 1rem; }
+.triggerMd { padding: 10px 20px; padding-right: 2.25rem; font-size: var(--text-sm); line-height: 1.25rem; }
+.triggerLg { padding: 12px 24px; padding-right: 2.25rem; font-size: var(--text-lg); line-height: 1.75rem; }
 
 /* ─── Display value / placeholder ───────────────────────────────────────────── */
 
@@ -99,14 +100,14 @@
 
 .popover {
   position: absolute;
-  z-index: 50;
+  z-index: var(--z-modal);
   margin-top: 0.25rem;
   top: 100%;
   left: 0;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-surface);
   border: 1px solid var(--color-edge);
   background-color: var(--color-surface-1);
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ─── Calendar grid container ────────────────────────────────────────────────── */
@@ -129,9 +130,9 @@
 
 .navButton {
   padding: 0.25rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   color: var(--color-txt-secondary);
-  transition: background-color 150ms, color 150ms;
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -156,22 +157,22 @@
 }
 
 .monthHeading {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-txt);
 }
 
 /* Heading button (opens month/year picker) */
 .monthHeadingBtn {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-txt);
   background: none;
   border: none;
   cursor: pointer;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   padding: 0.125rem 0.25rem;
-  transition: background-color 150ms;
+  transition: background-color var(--duration-fast);
 }
 
 .monthHeadingBtn:hover {
@@ -193,7 +194,7 @@
 
 .dayHeader {
   text-align: center;
-  font-size: 0.625rem;
+  font-size: var(--text-3xs);
   font-weight: 600;
   color: var(--color-txt-secondary);
   padding: 0.25rem 0;
@@ -209,9 +210,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  transition: background-color 150ms, color 150ms;
+  border-radius: var(--radius-control);
+  font-size: var(--text-sm);
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -225,7 +226,7 @@
 
 .dayButtonSelected {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
   font-weight: 600;
 }
 
@@ -258,13 +259,13 @@
 .monthPickerBtn {
   width: 100%;
   padding: 0.375rem 0.25rem;
-  font-size: 0.75rem;
-  border-radius: 0.25rem;
+  font-size: var(--text-xs);
+  border-radius: var(--radius-control);
   border: none;
   background: none;
   cursor: pointer;
   color: var(--color-txt);
-  transition: background-color 150ms;
+  transition: background-color var(--duration-fast);
   text-align: center;
 }
 
@@ -279,7 +280,7 @@
 
 .monthPickerBtnCurrent {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
   font-weight: 600;
 }
 
@@ -297,11 +298,11 @@
 
 .clearButton {
   width: 100%;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 500;
   padding: 0.375rem;
-  border-radius: 0.25rem;
-  transition: background-color 150ms;
+  border-radius: var(--radius-control);
+  transition: background-color var(--duration-fast);
   color: var(--color-txt-secondary);
   background: none;
   border: none;
@@ -319,9 +320,9 @@
 
 /* ─── Helper / Error message ─────────────────────────────────────────────────── */
 
-.helperSm { font-size: 0.75rem;  line-height: 1rem; }
-.helperMd { font-size: 0.75rem;  line-height: 1rem; }
-.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+.helperSm { font-size: var(--text-xs);  line-height: 1rem; }
+.helperMd { font-size: var(--text-xs);  line-height: 1rem; }
+.helperLg { font-size: var(--text-sm); line-height: 1.25rem; }
 
 .helperText { color: var(--color-txt-secondary); }
 .errorText  { color: var(--color-danger); }

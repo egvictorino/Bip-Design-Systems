@@ -29,7 +29,7 @@ const DefaultModalStory = () => {
       <Modal isOpen={open} onClose={() => setOpen(false)} size="md">
         <ModalHeader>Información importante</ModalHeader>
         <ModalBody>
-          <p className="text-txt-secondary text-sm">
+          <p style={{ color: 'var(--color-txt-secondary)', fontSize: '0.875rem' }}>
             Este proceso puede tardar hasta 24 horas hábiles en completarse.
           </p>
         </ModalBody>
@@ -61,7 +61,7 @@ const ConfirmationModalStory = () => {
       <Modal isOpen={open} onClose={() => setOpen(false)} size="sm">
         <ModalHeader>Confirmar eliminación</ModalHeader>
         <ModalBody>
-          <p className="text-txt-secondary text-sm">
+          <p style={{ color: 'var(--color-txt-secondary)', fontSize: '0.875rem' }}>
             ¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.
           </p>
         </ModalBody>
@@ -93,7 +93,7 @@ const WithFormModalStory = () => {
       <Modal isOpen={open} onClose={() => setOpen(false)} size="md">
         <ModalHeader>Nuevo cliente</ModalHeader>
         <ModalBody>
-          <div className="flex flex-col gap-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <Input label="Nombre completo" placeholder="Ej. María González" />
             <Input label="Correo electrónico" type="email" placeholder="correo@empresa.com" />
             <Input label="Teléfono" placeholder="(81) 1234-5678" />
@@ -127,7 +127,7 @@ const LargeModalStory = () => {
       <Modal isOpen={open} onClose={() => setOpen(false)} size="lg">
         <ModalHeader>Términos y condiciones</ModalHeader>
         <ModalBody>
-          <div className="flex flex-col gap-3 text-sm text-txt-secondary">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
             <p>
               Al utilizar esta plataforma, aceptas los presentes términos y condiciones de uso.
               Es importante que los leas detenidamente antes de continuar.
@@ -176,7 +176,7 @@ const NoBackdropCloseModalStory = () => {
       >
         <ModalHeader>Acción requerida</ModalHeader>
         <ModalBody>
-          <p className="text-txt-secondary text-sm">
+          <p style={{ color: 'var(--color-txt-secondary)', fontSize: '0.875rem' }}>
             Debes completar esta acción antes de continuar. No puedes cerrar este modal haciendo
             clic fuera de él ni presionando Escape.
           </p>
@@ -216,7 +216,7 @@ const FooterAlignStory = () => {
       <Modal isOpen={open} onClose={() => setOpen(false)} size="sm">
         <ModalHeader>Alineación del footer</ModalHeader>
         <ModalBody>
-          <p className="text-txt-secondary text-sm">
+          <p style={{ color: 'var(--color-txt-secondary)', fontSize: '0.875rem' }}>
             Los botones del footer están alineados a la <strong>{align}</strong>.
           </p>
         </ModalBody>

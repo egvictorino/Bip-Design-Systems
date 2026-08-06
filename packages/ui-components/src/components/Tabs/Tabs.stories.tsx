@@ -19,23 +19,28 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const panelText: React.CSSProperties = { fontSize: '0.875rem', color: 'var(--color-txt-secondary)' };
+const panelTopPad = { paddingTop: '1rem' };
+const panelTopPadSm = { paddingTop: '0.75rem' };
+const panelPad = { padding: '1rem' };
+
 export const Default: Story = {
   args: { children: null },
   render: () => (
-    <Tabs defaultValue="general" className="w-[520px]">
+    <Tabs defaultValue="general" style={{ width: '520px' }}>
       <TabList>
         <Tab value="general">General</Tab>
         <Tab value="seguridad">Seguridad</Tab>
         <Tab value="notificaciones">Notificaciones</Tab>
       </TabList>
-      <TabPanel value="general" className="pt-4">
-        <p className="text-sm text-txt-secondary">Configuración general de la cuenta.</p>
+      <TabPanel value="general" style={panelTopPad}>
+        <p style={panelText}>Configuración general de la cuenta.</p>
       </TabPanel>
-      <TabPanel value="seguridad" className="pt-4">
-        <p className="text-sm text-txt-secondary">Opciones de seguridad y contraseña.</p>
+      <TabPanel value="seguridad" style={panelTopPad}>
+        <p style={panelText}>Opciones de seguridad y contraseña.</p>
       </TabPanel>
-      <TabPanel value="notificaciones" className="pt-4">
-        <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
+      <TabPanel value="notificaciones" style={panelTopPad}>
+        <p style={panelText}>Preferencias de notificaciones.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -44,20 +49,20 @@ export const Default: Story = {
 export const Pill: Story = {
   args: { children: null },
   render: () => (
-    <Tabs defaultValue="ventas" variant="pill" className="w-[520px]">
+    <Tabs defaultValue="ventas" variant="pill" style={{ width: '520px' }}>
       <TabList>
         <Tab value="ventas">Ventas</Tab>
         <Tab value="compras">Compras</Tab>
         <Tab value="inventario">Inventario</Tab>
       </TabList>
-      <TabPanel value="ventas" className="pt-4">
-        <p className="text-sm text-txt-secondary">Reporte de ventas del período.</p>
+      <TabPanel value="ventas" style={panelTopPad}>
+        <p style={panelText}>Reporte de ventas del período.</p>
       </TabPanel>
-      <TabPanel value="compras" className="pt-4">
-        <p className="text-sm text-txt-secondary">Reporte de compras del período.</p>
+      <TabPanel value="compras" style={panelTopPad}>
+        <p style={panelText}>Reporte de compras del período.</p>
       </TabPanel>
-      <TabPanel value="inventario" className="pt-4">
-        <p className="text-sm text-txt-secondary">Estado actual del inventario.</p>
+      <TabPanel value="inventario" style={panelTopPad}>
+        <p style={panelText}>Estado actual del inventario.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -66,20 +71,20 @@ export const Pill: Story = {
 export const Boxed: Story = {
   args: { children: null },
   render: () => (
-    <Tabs defaultValue="activos" variant="boxed" className="w-[520px]">
+    <Tabs defaultValue="activos" variant="boxed" style={{ width: '520px' }}>
       <TabList>
         <Tab value="activos">Activos</Tab>
         <Tab value="inactivos">Inactivos</Tab>
         <Tab value="archivados">Archivados</Tab>
       </TabList>
-      <TabPanel value="activos" className="pt-4">
-        <p className="text-sm text-txt-secondary">Registros activos en el sistema.</p>
+      <TabPanel value="activos" style={panelTopPad}>
+        <p style={panelText}>Registros activos en el sistema.</p>
       </TabPanel>
-      <TabPanel value="inactivos" className="pt-4">
-        <p className="text-sm text-txt-secondary">Registros desactivados temporalmente.</p>
+      <TabPanel value="inactivos" style={panelTopPad}>
+        <p style={panelText}>Registros desactivados temporalmente.</p>
       </TabPanel>
-      <TabPanel value="archivados" className="pt-4">
-        <p className="text-sm text-txt-secondary">Registros archivados permanentemente.</p>
+      <TabPanel value="archivados" style={panelTopPad}>
+        <p style={panelText}>Registros archivados permanentemente.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -88,61 +93,63 @@ export const Boxed: Story = {
 export const Sizes: Story = {
   args: { children: null },
   render: () => (
-    <div className="flex flex-col gap-8 w-[520px]">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs text-txt-secondary font-medium">Small</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '520px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)', fontWeight: 500 }}>Small</p>
         <Tabs defaultValue="tab1" size="sm">
           <TabList>
             <Tab value="tab1">General</Tab>
             <Tab value="tab2">Seguridad</Tab>
             <Tab value="tab3">Notificaciones</Tab>
           </TabList>
-          <TabPanel value="tab1" className="pt-3">
-            <p className="text-sm text-txt-secondary">Configuración general.</p>
+          <TabPanel value="tab1" style={panelTopPadSm}>
+            <p style={panelText}>Configuración general.</p>
           </TabPanel>
-          <TabPanel value="tab2" className="pt-3">
-            <p className="text-sm text-txt-secondary">Opciones de seguridad.</p>
+          <TabPanel value="tab2" style={panelTopPadSm}>
+            <p style={panelText}>Opciones de seguridad.</p>
           </TabPanel>
-          <TabPanel value="tab3" className="pt-3">
-            <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
+          <TabPanel value="tab3" style={panelTopPadSm}>
+            <p style={panelText}>Preferencias de notificaciones.</p>
           </TabPanel>
         </Tabs>
       </div>
-      <div className="flex flex-col gap-2">
-        <p className="text-xs text-txt-secondary font-medium">Medium (default)</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)', fontWeight: 500 }}>
+          Medium (default)
+        </p>
         <Tabs defaultValue="tab1" size="md">
           <TabList>
             <Tab value="tab1">General</Tab>
             <Tab value="tab2">Seguridad</Tab>
             <Tab value="tab3">Notificaciones</Tab>
           </TabList>
-          <TabPanel value="tab1" className="pt-3">
-            <p className="text-sm text-txt-secondary">Configuración general.</p>
+          <TabPanel value="tab1" style={panelTopPadSm}>
+            <p style={panelText}>Configuración general.</p>
           </TabPanel>
-          <TabPanel value="tab2" className="pt-3">
-            <p className="text-sm text-txt-secondary">Opciones de seguridad.</p>
+          <TabPanel value="tab2" style={panelTopPadSm}>
+            <p style={panelText}>Opciones de seguridad.</p>
           </TabPanel>
-          <TabPanel value="tab3" className="pt-3">
-            <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
+          <TabPanel value="tab3" style={panelTopPadSm}>
+            <p style={panelText}>Preferencias de notificaciones.</p>
           </TabPanel>
         </Tabs>
       </div>
-      <div className="flex flex-col gap-2">
-        <p className="text-xs text-txt-secondary font-medium">Large</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)', fontWeight: 500 }}>Large</p>
         <Tabs defaultValue="tab1" size="lg">
           <TabList>
             <Tab value="tab1">General</Tab>
             <Tab value="tab2">Seguridad</Tab>
             <Tab value="tab3">Notificaciones</Tab>
           </TabList>
-          <TabPanel value="tab1" className="pt-3">
-            <p className="text-sm text-txt-secondary">Configuración general.</p>
+          <TabPanel value="tab1" style={panelTopPadSm}>
+            <p style={panelText}>Configuración general.</p>
           </TabPanel>
-          <TabPanel value="tab2" className="pt-3">
-            <p className="text-sm text-txt-secondary">Opciones de seguridad.</p>
+          <TabPanel value="tab2" style={panelTopPadSm}>
+            <p style={panelText}>Opciones de seguridad.</p>
           </TabPanel>
-          <TabPanel value="tab3" className="pt-3">
-            <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
+          <TabPanel value="tab3" style={panelTopPadSm}>
+            <p style={panelText}>Preferencias de notificaciones.</p>
           </TabPanel>
         </Tabs>
       </div>
@@ -153,24 +160,24 @@ export const Sizes: Story = {
 export const Vertical: Story = {
   args: { children: null },
   render: () => (
-    <Tabs defaultValue="info" orientation="vertical" className="w-[600px]">
+    <Tabs defaultValue="info" orientation="vertical" style={{ width: '600px' }}>
       <TabList>
         <Tab value="info">Información</Tab>
         <Tab value="historial">Historial</Tab>
         <Tab value="documentos">Documentos</Tab>
         <Tab value="pagos">Pagos</Tab>
       </TabList>
-      <TabPanel value="info" className="p-4">
-        <p className="text-sm text-txt-secondary">Datos generales del cliente y su cuenta.</p>
+      <TabPanel value="info" style={panelPad}>
+        <p style={panelText}>Datos generales del cliente y su cuenta.</p>
       </TabPanel>
-      <TabPanel value="historial" className="p-4">
-        <p className="text-sm text-txt-secondary">Historial completo de transacciones.</p>
+      <TabPanel value="historial" style={panelPad}>
+        <p style={panelText}>Historial completo de transacciones.</p>
       </TabPanel>
-      <TabPanel value="documentos" className="p-4">
-        <p className="text-sm text-txt-secondary">Documentos adjuntos al expediente.</p>
+      <TabPanel value="documentos" style={panelPad}>
+        <p style={panelText}>Documentos adjuntos al expediente.</p>
       </TabPanel>
-      <TabPanel value="pagos" className="p-4">
-        <p className="text-sm text-txt-secondary">Métodos de pago y facturación.</p>
+      <TabPanel value="pagos" style={panelPad}>
+        <p style={panelText}>Métodos de pago y facturación.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -179,20 +186,20 @@ export const Vertical: Story = {
 export const VerticalPill: Story = {
   args: { children: null },
   render: () => (
-    <Tabs defaultValue="ventas" orientation="vertical" variant="pill" className="w-[600px]">
+    <Tabs defaultValue="ventas" orientation="vertical" variant="pill" style={{ width: '600px' }}>
       <TabList>
         <Tab value="ventas">Ventas</Tab>
         <Tab value="compras">Compras</Tab>
         <Tab value="inventario">Inventario</Tab>
       </TabList>
-      <TabPanel value="ventas" className="p-4">
-        <p className="text-sm text-txt-secondary">Reporte de ventas del período.</p>
+      <TabPanel value="ventas" style={panelPad}>
+        <p style={panelText}>Reporte de ventas del período.</p>
       </TabPanel>
-      <TabPanel value="compras" className="p-4">
-        <p className="text-sm text-txt-secondary">Reporte de compras del período.</p>
+      <TabPanel value="compras" style={panelPad}>
+        <p style={panelText}>Reporte de compras del período.</p>
       </TabPanel>
-      <TabPanel value="inventario" className="p-4">
-        <p className="text-sm text-txt-secondary">Estado actual del inventario.</p>
+      <TabPanel value="inventario" style={panelPad}>
+        <p style={panelText}>Estado actual del inventario.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -201,24 +208,24 @@ export const VerticalPill: Story = {
 export const AnimatedIndicator: Story = {
   args: { children: null },
   render: () => (
-    <Tabs defaultValue="general" animated className="w-[520px]">
+    <Tabs defaultValue="general" animated style={{ width: '520px' }}>
       <TabList>
         <Tab value="general">General</Tab>
         <Tab value="seguridad">Seguridad</Tab>
         <Tab value="notificaciones">Notificaciones</Tab>
         <Tab value="facturacion">Facturación</Tab>
       </TabList>
-      <TabPanel value="general" className="pt-4">
-        <p className="text-sm text-txt-secondary">Configuración general de la cuenta.</p>
+      <TabPanel value="general" style={panelTopPad}>
+        <p style={panelText}>Configuración general de la cuenta.</p>
       </TabPanel>
-      <TabPanel value="seguridad" className="pt-4">
-        <p className="text-sm text-txt-secondary">Opciones de seguridad y contraseña.</p>
+      <TabPanel value="seguridad" style={panelTopPad}>
+        <p style={panelText}>Opciones de seguridad y contraseña.</p>
       </TabPanel>
-      <TabPanel value="notificaciones" className="pt-4">
-        <p className="text-sm text-txt-secondary">Preferencias de notificaciones.</p>
+      <TabPanel value="notificaciones" style={panelTopPad}>
+        <p style={panelText}>Preferencias de notificaciones.</p>
       </TabPanel>
-      <TabPanel value="facturacion" className="pt-4">
-        <p className="text-sm text-txt-secondary">Datos de facturación y métodos de pago.</p>
+      <TabPanel value="facturacion" style={panelTopPad}>
+        <p style={panelText}>Datos de facturación y métodos de pago.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -227,7 +234,7 @@ export const AnimatedIndicator: Story = {
 export const WithDisabled: Story = {
   args: { children: null },
   render: () => (
-    <Tabs defaultValue="activos" className="w-[520px]">
+    <Tabs defaultValue="activos" style={{ width: '520px' }}>
       <TabList>
         <Tab value="activos">Activos</Tab>
         <Tab value="pendientes">Pendientes</Tab>
@@ -235,14 +242,14 @@ export const WithDisabled: Story = {
           Archivados
         </Tab>
       </TabList>
-      <TabPanel value="activos" className="pt-4">
-        <p className="text-sm text-txt-secondary">Contratos activos.</p>
+      <TabPanel value="activos" style={panelTopPad}>
+        <p style={panelText}>Contratos activos.</p>
       </TabPanel>
-      <TabPanel value="pendientes" className="pt-4">
-        <p className="text-sm text-txt-secondary">Contratos pendientes de aprobación.</p>
+      <TabPanel value="pendientes" style={panelTopPad}>
+        <p style={panelText}>Contratos pendientes de aprobación.</p>
       </TabPanel>
-      <TabPanel value="archivados" className="pt-4">
-        <p className="text-sm text-txt-secondary">Contratos archivados.</p>
+      <TabPanel value="archivados" style={panelTopPad}>
+        <p style={panelText}>Contratos archivados.</p>
       </TabPanel>
     </Tabs>
   ),
@@ -251,10 +258,9 @@ export const WithDisabled: Story = {
 const ControlledTabsStory = () => {
   const [activeTab, setActiveTab] = useState('info');
   return (
-    <div className="flex flex-col gap-3 w-[520px]">
-      <p className="text-xs text-txt-secondary">
-        Pestaña activa:{' '}
-        <span className="font-medium text-txt">{activeTab}</span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '520px' }}>
+      <p style={{ fontSize: '0.75rem', color: 'var(--color-txt-secondary)' }}>
+        Pestaña activa: <span style={{ fontWeight: 500, color: 'var(--color-txt)' }}>{activeTab}</span>
       </p>
       <Tabs value={activeTab} onChange={setActiveTab}>
         <TabList>
@@ -262,14 +268,14 @@ const ControlledTabsStory = () => {
           <Tab value="historial">Historial</Tab>
           <Tab value="documentos">Documentos</Tab>
         </TabList>
-        <TabPanel value="info" className="pt-4">
-          <p className="text-sm text-txt-secondary">Datos generales del cliente.</p>
+        <TabPanel value="info" style={panelTopPad}>
+          <p style={panelText}>Datos generales del cliente.</p>
         </TabPanel>
-        <TabPanel value="historial" className="pt-4">
-          <p className="text-sm text-txt-secondary">Historial de transacciones.</p>
+        <TabPanel value="historial" style={panelTopPad}>
+          <p style={panelText}>Historial de transacciones.</p>
         </TabPanel>
-        <TabPanel value="documentos" className="pt-4">
-          <p className="text-sm text-txt-secondary">Documentos adjuntos.</p>
+        <TabPanel value="documentos" style={panelTopPad}>
+          <p style={panelText}>Documentos adjuntos.</p>
         </TabPanel>
       </Tabs>
     </div>
@@ -311,20 +317,14 @@ export const WithBadge: Story = {
           </span>
         </Tab>
       </TabList>
-      <TabPanel value="abiertos" style={{ paddingTop: '1rem' }}>
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
-          Tickets abiertos en espera de atención.
-        </p>
+      <TabPanel value="abiertos" style={panelTopPad}>
+        <p style={panelText}>Tickets abiertos en espera de atención.</p>
       </TabPanel>
-      <TabPanel value="cerrados" style={{ paddingTop: '1rem' }}>
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
-          Tickets resueltos y cerrados.
-        </p>
+      <TabPanel value="cerrados" style={panelTopPad}>
+        <p style={panelText}>Tickets resueltos y cerrados.</p>
       </TabPanel>
-      <TabPanel value="cancelados" style={{ paddingTop: '1rem' }}>
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
-          Tickets cancelados por el usuario.
-        </p>
+      <TabPanel value="cancelados" style={panelTopPad}>
+        <p style={panelText}>Tickets cancelados por el usuario.</p>
       </TabPanel>
     </Tabs>
   ),

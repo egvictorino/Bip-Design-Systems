@@ -67,27 +67,27 @@ export const Right: Story = {
 export const AllPositions: Story = {
   args: { content: 'Tooltip', position: 'top', children: <span /> },
   render: () => (
-    <div className="grid grid-cols-3 gap-8 p-16">
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', padding: '4rem' }}>
       <div />
-      <div className="flex justify-center">
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Tooltip content="Arriba" position="top">
           <Button variant="secondary" size="sm">Top</Button>
         </Tooltip>
       </div>
       <div />
-      <div className="flex justify-center">
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Tooltip content="Izquierda" position="left">
           <Button variant="secondary" size="sm">Left</Button>
         </Tooltip>
       </div>
       <div />
-      <div className="flex justify-center">
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Tooltip content="Derecha" position="right">
           <Button variant="secondary" size="sm">Right</Button>
         </Tooltip>
       </div>
       <div />
-      <div className="flex justify-center">
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Tooltip content="Abajo" position="bottom">
           <Button variant="secondary" size="sm">Bottom</Button>
         </Tooltip>
@@ -103,8 +103,8 @@ export const Alignment: Story = {
   args: { content: 'Tooltip', position: 'top', children: <span /> },
   parameters: { layout: 'padded' },
   render: () => (
-    <div className="flex flex-col gap-12 p-16 items-center">
-      <div className="flex gap-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', padding: '4rem', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '2rem' }}>
         <Tooltip content="align=start" position="top" align="start" open={true}>
           <Button variant="secondary" size="sm">Top start</Button>
         </Tooltip>
@@ -115,7 +115,7 @@ export const Alignment: Story = {
           <Button variant="secondary" size="sm">Top end</Button>
         </Tooltip>
       </div>
-      <div className="flex gap-8 mt-8">
+      <div style={{ display: 'flex', gap: '2rem', marginTop: '2rem' }}>
         <Tooltip content="align=start" position="bottom" align="start" open={true}>
           <Button variant="secondary" size="sm">Bottom start</Button>
         </Tooltip>
@@ -136,7 +136,7 @@ export const Variants: Story = {
   args: { content: 'Tooltip', position: 'top', children: <span /> },
   parameters: { layout: 'padded' },
   render: () => (
-    <div className="flex flex-wrap gap-12 p-16 justify-center">
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', padding: '4rem', justifyContent: 'center' }}>
       {(['default', 'light', 'info', 'success', 'warning', 'error'] as const).map((v) => (
         <Tooltip key={v} content={`Variant: ${v}`} position="top" variant={v} open={true}>
           <Button variant="secondary" size="sm">{v}</Button>
@@ -169,7 +169,7 @@ export const WithCloseDelay: Story = {
 const ControlledDemo = () => {
   const [open, setOpen] = useState(false);
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
       <Tooltip
         content="Tooltip controlado externamente"
         open={open}
@@ -194,15 +194,21 @@ export const Controlled: Story = {
 export const OnIcon: Story = {
   args: { content: 'Más información', position: 'top', children: <span /> },
   render: () => (
-    <div className="flex items-center gap-2">
-      <span className="text-sm text-txt">Monto total</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <span style={{ fontSize: '0.875rem', color: 'var(--color-txt)' }}>Monto total</span>
       <Tooltip content="Suma de todas las transacciones del período" position="top">
         <button
           type="button"
-          className="rounded-full text-txt-secondary hover:text-txt focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          style={{
+            borderRadius: 'var(--radius-full)',
+            color: 'var(--color-txt-secondary)',
+            background: 'transparent',
+            border: 0,
+            cursor: 'pointer',
+          }}
           aria-label="Más información sobre monto total"
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '1rem', height: '1rem' }} aria-hidden="true">
             <path
               fillRule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"

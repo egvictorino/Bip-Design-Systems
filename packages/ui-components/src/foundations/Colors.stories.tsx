@@ -1,27 +1,43 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { useState } from 'react';
-import { colors } from '../../tailwind.tokens.js';
+import { useEffect, useRef, useState } from 'react';
+import { ThemeProvider } from '../components/ThemeProvider';
+import { TOKEN_GROUPS, SHADOW_TOKENS } from './tokens.data';
+import type { TokenEntry } from './tokens.data';
 import pkg from '../../package.json';
+import styles from './Foundations.module.css';
 
 const meta = {
   title: 'Foundations/Colors',
-  parameters: {
-    layout: 'fullscreen',
-  },
+  parameters: { layout: 'fullscreen' },
   tags: ['autodocs'],
 } satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── ColorSwatch ──────────────────────────────────────────────────────────────
+// ─── ColorSwatch ────────────────────────────────────────────────────────────
+// Los datos de tokens.data.ts vienen del parseo estático de tokens.css — no
+// pueden desincronizarse porque leen el archivo real (`?raw`), no una copia
+// mantenida a mano. El hex resuelto en runtime (para mostrar/copiar) sale de
+// getComputedStyle, ya que la variable puede depender del esquema activo.
 
-const ColorSwatch = ({ name, value }: { name: string; value: string }) => {
+const ColorSwatch = ({ token, scheme }: { token: TokenEntry; scheme: 'light' | 'dark' }) => {
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [resolved, setResolved] = useState<string>('');
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (boxRef.current) {
+      setResolved(getComputedStyle(boxRef.current).backgroundColor);
+    }
+  }, []);
+
+  const formula = scheme === 'dark' ? (token.dark ?? token.light) : token.light;
+  const isInvariant = scheme === 'dark' && token.dark === null;
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(value);
+      await navigator.clipboard.writeText(resolved);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -32,85 +48,88 @@ const ColorSwatch = ({ name, value }: { name: string; value: string }) => {
   return (
     <button
       type="button"
-      className="flex flex-col items-center gap-2 cursor-pointer group bg-transparent border-0 p-0"
+      className={styles.swatchButton}
       onClick={handleCopy}
-      aria-label={`Copiar color ${name}: ${value}`}
+      aria-label={`Copiar ${token.name}: ${resolved}`}
     >
-      <div
-        className="w-24 h-24 rounded border border-gray-300 shadow-sm group-hover:shadow-lg transition-shadow"
-        style={{ backgroundColor: value }}
-      />
-      <div className="text-center">
-        <p className="text-sm font-semibold text-txt">{name}</p>
-        <p className="text-xs text-txt-secondary">{copied ? '¡Copiado!' : value}</p>
+      <div ref={boxRef} className={styles.swatchBox} style={{ backgroundColor: `var(--${token.name})` }} />
+      <div className={styles.swatchLabel}>
+        <p className={styles.swatchName}>{token.name}</p>
+        <p className={styles.swatchValue}>{copied ? '¡Copiado!' : resolved || '…'}</p>
+        <span className={`${styles.kindBadge} ${token.kind === 'seed' ? styles.kindSeed : styles.kindDerived}`}>
+          {token.kind === 'seed' ? 'Semilla' : 'Derivado'}
+        </span>
+        {token.kind === 'derived' && <p className={styles.formula}>{formula}</p>}
+        {isInvariant && <p className={styles.invariantNote}>invariante entre esquemas</p>}
       </div>
     </button>
   );
 };
 
-// ─── ColorGroup ───────────────────────────────────────────────────────────────
+// ─── ShadowSwatch ───────────────────────────────────────────────────────────
 
-const ColorGroup = ({
-  title,
-  colors: swatches,
-}: {
-  title: string;
-  colors: Record<string, string>;
-}) => (
-  <div className="mb-12">
-    <h2 className="text-2xl font-bold mb-6 text-txt">{title}</h2>
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-      {Object.entries(swatches).map(([name, value]) => (
-        <ColorSwatch key={name} name={name} value={value} />
-      ))}
+const ShadowSwatch = ({ name }: { name: string }) => (
+  <div className={styles.swatchButton} style={{ cursor: 'default' }}>
+    <div
+      className={styles.swatchBox}
+      style={{ backgroundColor: 'var(--color-surface-1)', boxShadow: `var(--${name})` }}
+    />
+    <div className={styles.swatchLabel}>
+      <p className={styles.swatchName}>{name}</p>
     </div>
   </div>
 );
 
-// ─── Story ────────────────────────────────────────────────────────────────────
+// ─── ColorPanel ─────────────────────────────────────────────────────────────
+
+const ColorPanel = ({ scheme }: { scheme: 'light' | 'dark' }) => (
+  <ThemeProvider theme="square" colorScheme={scheme}>
+    <div className={styles.panel}>
+      <h2 className={styles.panelTitle}>{scheme === 'light' ? 'Light' : 'Dark'}</h2>
+      {TOKEN_GROUPS.map(({ title, tokens }) => (
+        <div key={title} className={styles.group}>
+          <h3 className={styles.groupTitle}>{title}</h3>
+          <div className={styles.grid}>
+            {tokens.map((token) => (
+              <ColorSwatch key={token.name} token={token} scheme={scheme} />
+            ))}
+          </div>
+        </div>
+      ))}
+      <div className={styles.group}>
+        <h3 className={styles.groupTitle}>Shadows</h3>
+        <div className={styles.grid}>
+          {SHADOW_TOKENS.map((shadow) => (
+            <ShadowSwatch key={shadow.name} name={shadow.name} />
+          ))}
+        </div>
+      </div>
+    </div>
+  </ThemeProvider>
+);
+
+// ─── Story ──────────────────────────────────────────────────────────────────
 
 export const Overview: Story = {
-  render: () => {
-    // Agrupar tokens por prefijo semántico
-    const groups: Record<string, Record<string, string>> = {
-      Interaction: {},
-      Text: {},
-      Surface: {},
-      Border: {},
-    };
-
-    for (const [name, value] of Object.entries(colors)) {
-      if (['primary', 'secondary', 'danger', 'disabled', 'field', 'selected', 'active', 'unique'].some(
-        p => name === p || name.startsWith(p + '-')
-      )) {
-        groups.Interaction[name] = value;
-      } else if (name.startsWith('txt') || name === 'link' || name.startsWith('link-')) {
-        groups.Text[name] = value;
-      } else if (name.startsWith('surface') || name === 'scrim') {
-        groups.Surface[name] = value;
-      } else if (name.startsWith('edge')) {
-        groups.Border[name] = value;
-      }
-    }
-
-    return (
-      <div className="p-8 bg-gray-50 min-h-screen">
-        <h1 className="text-4xl font-bold mb-2 text-gray-900">Color Palette</h1>
-        <p className="text-xl font-semibold mb-4 text-gray-500">Versión {pkg.version}</p>
-        <p className="text-lg text-gray-900 mb-4">
-          Los siguientes colores son los colores base del design system.
-          <br />
-          Sigue las guías de uso para mantener consistencia en todo el producto.
-        </p>
-        <p className="text-sm text-gray-500 mb-12">
-          Haz clic en cualquier muestra para copiar el código hex al portapapeles.
-          <br />
-          Los valores mostrados son CSS custom properties — los hex se resuelven en runtime.
-        </p>
-        {Object.entries(groups).map(([title, swatches]) => (
-          <ColorGroup key={title} title={title} colors={swatches} />
-        ))}
+  render: () => (
+    <div className={styles.page}>
+      <h1 className={styles.title}>Color Palette</h1>
+      <p className={styles.version}>Versión {pkg.version}</p>
+      <p className={styles.lead}>
+        Los siguientes colores son los colores base del design system. Sigue las guías de uso
+        para mantener consistencia en todo el producto.
+      </p>
+      <p className={styles.hint}>
+        Haz clic en cualquier muestra para copiar el hex resuelto al portapapeles.{' '}
+        <strong>Semilla</strong> — hex editable vía <code>ThemeProvider tokens</code>.{' '}
+        <strong>Derivado</strong> — calculado desde una semilla con <code>color-mix()</code>;
+        recolorea automáticamente al sobrescribir la semilla. Ver ambos esquemas lado a lado, sin
+        depender del toolbar.
+      </p>
+      <div className={styles.panels}>
+        <ColorPanel scheme="light" />
+        <ColorPanel scheme="dark" />
       </div>
-    );
-  },
+    </div>
+  ),
 };

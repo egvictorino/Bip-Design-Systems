@@ -1,5 +1,5 @@
 .description {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   color: var(--color-txt-secondary);
 }
 
@@ -17,7 +17,8 @@
 }
 
 .confirmDanger:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 .confirmWarning {
@@ -33,5 +34,5 @@
 }
 
 .confirmWarning:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-warning);
+  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-warning);
 }

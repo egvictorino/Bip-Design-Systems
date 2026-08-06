@@ -37,7 +37,7 @@
   gap: 0.25rem;
   padding: 0.25rem;
   background-color: color-mix(in srgb, var(--color-surface-3) 50%, transparent);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-control);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -53,7 +53,7 @@
   gap: 0.25rem;
   padding: 0.25rem;
   background-color: color-mix(in srgb, var(--color-surface-3) 50%, transparent);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-control);
   flex-shrink: 0;
 }
 
@@ -61,7 +61,7 @@
   display: inline-flex;
   max-width: 100%;
   border: 1px solid var(--color-edge);
-  border-radius: 0.375rem;
+  border-radius: var(--radius-control);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -80,11 +80,11 @@
 /* ─── Tab base ───────────────────────────────────────────────────────────────── */
 
 .tab {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: color 150ms, background-color 150ms, border-color 150ms;
+  transition: color var(--duration-fast), background-color var(--duration-fast), border-color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -93,8 +93,8 @@
 .tab:focus { outline: none; }
 
 .tab:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
-  border-radius: 2px;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-marker);
 }
 
 .tab:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -103,12 +103,12 @@
 
 .tabSm {
   padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .tabLg {
   padding: 0.75rem 1.25rem;
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 /* ─── Line variant ───────────────────────────────────────────────────────────── */
@@ -158,12 +158,12 @@
 
 .tabPill {
   padding: 0.375rem 1rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius-control);
 }
 
 .tabPillActive {
-  background-color: white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface-1);
+  box-shadow: var(--shadow-xs);
   color: var(--color-txt);
 }
 
@@ -171,7 +171,7 @@
 
 .tabPillInactive:not(:disabled):hover {
   color: var(--color-txt);
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: color-mix(in srgb, var(--color-surface-1), transparent 50%);
 }
 
 /* ─── Boxed variant ──────────────────────────────────────────────────────────── */
@@ -187,7 +187,7 @@
 
 .tabBoxedActive {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
 }
 
 .tabBoxedInactive {
@@ -211,7 +211,7 @@
 }
 
 .tabIndicatorAnimated {
-  transition: left 200ms ease, width 200ms ease;
+  transition: left var(--duration-normal) ease, width var(--duration-normal) ease;
 }
 
 /* ─── TabPanel ───────────────────────────────────────────────────────────────── */

@@ -14,14 +14,34 @@ type Story = StoryObj<typeof meta>;
 
 // ─── Demo helpers ──────────────────────────────────────────────────────────────
 
+const toastButtonStyle: React.CSSProperties = {
+  padding: '0.5rem 1rem',
+  borderRadius: 'var(--radius-control)',
+  backgroundColor: 'var(--color-primary)',
+  color: 'var(--color-txt-on-primary)',
+  fontSize: '0.875rem',
+  fontWeight: 500,
+  border: 0,
+  cursor: 'pointer',
+};
+
+const stack: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.75rem',
+  alignItems: 'flex-start',
+};
+
+const helperText: React.CSSProperties = {
+  fontSize: '0.875rem',
+  color: 'var(--color-txt-secondary)',
+  marginBottom: '0.5rem',
+};
+
 const ToastButton = ({ label, config }: { label: string; config: ToastConfig }) => {
   const { addToast } = useToast();
   return (
-    <button
-      type="button"
-      onClick={() => addToast(config)}
-      className="px-4 py-2 rounded bg-primary text-txt-white text-sm font-medium hover:bg-primary-hover transition-colors"
-    >
+    <button type="button" onClick={() => addToast(config)} style={toastButtonStyle}>
       {label}
     </button>
   );
@@ -33,8 +53,8 @@ export const Default: Story = {
   args: { children: null },
   render: () => (
     <ToastProvider>
-      <div className="flex flex-col gap-3 items-start">
-        <p className="text-sm text-txt-secondary mb-2">
+      <div style={stack}>
+        <p style={helperText}>
           Las notificaciones aparecen en la esquina superior derecha.
           <br />
           Máximo 3 visibles al mismo tiempo. Se cierran solos en 5 s.
@@ -64,8 +84,8 @@ export const Persistent: Story = {
   args: { children: null },
   render: () => (
     <ToastProvider>
-      <div className="flex flex-col gap-3 items-start">
-        <p className="text-sm text-txt-secondary mb-2">
+      <div style={stack}>
+        <p style={helperText}>
           Con <code>duration: 0</code> el toast no se cierra automáticamente.
         </p>
         <ToastButton
@@ -86,8 +106,8 @@ export const MaxThree: Story = {
   args: { children: null },
   render: () => (
     <ToastProvider max={3}>
-      <div className="flex flex-col gap-3 items-start">
-        <p className="text-sm text-txt-secondary mb-2">
+      <div style={stack}>
+        <p style={helperText}>
           Al agregar un 4º toast, el más antiguo se elimina automáticamente.
         </p>
         <ToastButton
@@ -105,10 +125,8 @@ export const BottomRight: Story = {
   args: { children: null },
   render: () => (
     <ToastProvider position="bottom-right">
-      <div className="flex flex-col gap-3 items-start">
-        <p className="text-sm text-text-secondary mb-2">
-          Estilo Sonner — notificaciones en la esquina inferior derecha.
-        </p>
+      <div style={stack}>
+        <p style={helperText}>Estilo Sonner — notificaciones en la esquina inferior derecha.</p>
         <ToastButton label="Éxito" config={{ variant: 'success', message: '¡Cambios guardados!' }} />
         <ToastButton label="Error" config={{ variant: 'error', message: 'Ocurrió un error inesperado.' }} />
         <ToastButton label="Info" config={{ variant: 'info', message: 'Sincronización completada.' }} />
@@ -121,8 +139,8 @@ export const BottomCenter: Story = {
   args: { children: null },
   render: () => (
     <ToastProvider position="bottom-center">
-      <div className="flex flex-col gap-3 items-start">
-        <p className="text-sm text-text-secondary mb-2">Notificaciones centradas en la parte inferior.</p>
+      <div style={stack}>
+        <p style={helperText}>Notificaciones centradas en la parte inferior.</p>
         <ToastButton label="Info" config={{ variant: 'info', message: 'Archivo subido correctamente.' }} />
         <ToastButton
           label="Warning"
@@ -137,8 +155,8 @@ export const TopLeft: Story = {
   args: { children: null },
   render: () => (
     <ToastProvider position="top-left">
-      <div className="flex flex-col gap-3 items-start">
-        <p className="text-sm text-text-secondary mb-2">Notificaciones en la esquina superior izquierda.</p>
+      <div style={stack}>
+        <p style={helperText}>Notificaciones en la esquina superior izquierda.</p>
         <ToastButton label="Éxito" config={{ variant: 'success', message: 'Operación completada.' }} />
         <ToastButton label="Error" config={{ variant: 'error', message: 'No se pudo conectar.' }} />
       </div>
@@ -150,8 +168,8 @@ export const BottomLeft: Story = {
   args: { children: null },
   render: () => (
     <ToastProvider position="bottom-left">
-      <div className="flex flex-col gap-3 items-start">
-        <p className="text-sm text-text-secondary mb-2">Notificaciones en la esquina inferior izquierda.</p>
+      <div style={stack}>
+        <p style={helperText}>Notificaciones en la esquina inferior izquierda.</p>
         <ToastButton label="Info" config={{ variant: 'info', message: 'Proceso iniciado correctamente.' }} />
         <ToastButton
           label="Warning"
@@ -166,13 +184,13 @@ export const Stacking: Story = {
   args: { children: null },
   render: () => (
     <ToastProvider position="bottom-right" max={5}>
-      <div className="flex flex-col gap-3 items-start">
-        <p className="text-sm text-text-secondary mb-2">
+      <div style={stack}>
+        <p style={helperText}>
           Apila varios toasts y pasa el cursor encima para expandirlos.
           <br />
           Máximo 5 visibles al mismo tiempo.
         </p>
-        <div className="flex gap-2 flex-wrap">
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <ToastButton
             label="+ Éxito"
             config={{ variant: 'success', title: 'Guardado', message: 'Los cambios se guardaron correctamente.' }}
@@ -208,7 +226,7 @@ export const AllPositions: Story = {
       'bottom-right',
     ];
     return (
-      <div className="flex flex-wrap gap-4">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
         {positions.map((pos) => (
           <ToastProvider key={pos} position={pos}>
             <ToastButton
@@ -217,7 +235,7 @@ export const AllPositions: Story = {
             />
           </ToastProvider>
         ))}
-        <p className="w-full text-xs text-text-secondary mt-2">
+        <p style={{ width: '100%', fontSize: '0.75rem', color: 'var(--color-txt-secondary)', marginTop: '0.5rem' }}>
           Cada botón dispara un toast en su posición correspondiente.
         </p>
       </div>

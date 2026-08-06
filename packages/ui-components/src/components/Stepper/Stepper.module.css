@@ -59,8 +59,8 @@
 }
 
 .stepButton:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
-  border-radius: 0.25rem;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-control);
 }
 
 .stepButtonPointer {
@@ -77,59 +77,60 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font-weight: 500;
-  transition: background-color 0.15s, color 0.15s;
+  transition: background-color var(--duration-fast), color var(--duration-fast);
 }
 
 /* Size variants */
 .circleSm {
   width: 1.5rem;
   height: 1.5rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .circleMd {
   width: 2rem;
   height: 2rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .circleLg {
   width: 2.5rem;
   height: 2.5rem;
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
-/* State variants */
+/* State variants — texto vía --color-txt-on-* (contraste automático sobre
+   la semilla de relleno; ver ThemeProvider `tokens` y tokens.css). */
 .circleError {
   background-color: var(--color-danger);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-danger);
 }
 
 .circleSuccess {
   background-color: var(--color-success);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-success);
 }
 
 .circleWarning {
   background-color: var(--color-warning);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-warning);
 }
 
 .circleLoading {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
 }
 
 .circleCompleted {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
 }
 
 .circleActive {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
@@ -145,8 +146,8 @@
 /* ─── Dot indicator ──────────────────────────────────────────────────────── */
 
 .dot {
-  border-radius: 9999px;
-  transition: background-color 0.15s;
+  border-radius: var(--radius-pill);
+  transition: background-color var(--duration-fast);
 }
 
 /* Size variants */
@@ -213,20 +214,20 @@
 .spinner {
   width: 10px;
   height: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: white;
-  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--color-txt-on-primary), transparent 60%);
+  border-top-color: var(--color-txt-on-primary);
+  border-radius: var(--radius-circle);
   animation: spin 0.7s linear infinite;
 }
 
 /* ─── Label ──────────────────────────────────────────────────────────────── */
 
 .label {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   margin-top: 0.375rem;
   text-align: center;
   font-weight: 500;
-  transition: color 0.15s;
+  transition: color var(--duration-fast);
   white-space: nowrap;
 }
 
@@ -257,7 +258,7 @@
 /* ─── Description ────────────────────────────────────────────────────────── */
 
 .description {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--color-txt-secondary);
   text-align: center;
 }
@@ -265,7 +266,7 @@
 /* ─── Connector ──────────────────────────────────────────────────────────── */
 
 .connector {
-  transition: background-color 0.15s;
+  transition: background-color var(--duration-fast);
 }
 
 /* Horizontal connectors */

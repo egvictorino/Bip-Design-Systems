@@ -6,13 +6,13 @@
 
 .menu {
   position: absolute;
-  z-index: 50;
+  z-index: var(--z-modal);
   min-width: 160px;
-  border-radius: 0.375rem;
+  border-radius: var(--radius-surface);
   border: 1px solid var(--color-edge);
-  background-color: white;
+  background-color: var(--color-surface-1);
   padding: 0.25rem 0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 /* ─── Placements ─────────────────────────────────────────────────────────────── */
@@ -30,9 +30,9 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   text-align: left;
-  transition: background-color 150ms, color 150ms;
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -81,7 +81,7 @@
 
 .groupLabel {
   padding: 0.375rem 1rem 0.25rem;
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -99,11 +99,11 @@
 .searchInput {
   width: 100%;
   padding: 0.375rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   color: var(--color-txt);
   background: var(--color-surface-2);
   border: 1px solid var(--color-edge);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   outline: none;
   box-sizing: border-box;
 }
@@ -130,7 +130,7 @@
   justify-content: center;
   width: 1rem;
   height: 1rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--color-primary);
 }
 
@@ -150,7 +150,7 @@
 
 .submenuArrow {
   margin-left: auto;
-  font-size: 1rem;
+  font-size: var(--text-base);
   line-height: 1;
   color: var(--color-txt-secondary);
 }

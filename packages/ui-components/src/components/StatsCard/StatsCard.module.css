@@ -1,7 +1,7 @@
 /* ─── Card base ──────────────────────────────────────────────────────────────── */
 
 .card {
-  border-radius: 0.5rem;
+  border-radius: var(--radius-container);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -25,7 +25,7 @@
   background-color: var(--color-surface-1);
   border: none;
   padding: 1.25rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ─── Sizes ──────────────────────────────────────────────────────────────────── */
@@ -54,7 +54,7 @@
 }
 
 .title {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.25rem;
   font-weight: 500;
   color: var(--color-txt-secondary);
@@ -79,14 +79,14 @@
 }
 
 .value {
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-txt);
   line-height: 1;
 }
 
 .sm .value {
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
 }
 
 .lg .value {
@@ -99,7 +99,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.125rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1rem;
   font-weight: 500;
   margin-bottom: 0.125rem;
@@ -117,7 +117,7 @@
 /* ─── Description ───────────────────────────────────────────────────────────── */
 
 .description {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1rem;
   color: var(--color-txt-secondary);
 }
@@ -131,9 +131,9 @@
 
 .loadingBar {
   display: block;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   background-color: var(--color-edge);
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: pulse 1.5s var(--ease-standard) infinite;
 }
 
 .loadingTitle {
@@ -144,7 +144,7 @@
 .loadingIcon {
   width: 1.25rem;
   height: 1.25rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
 }
 
 .loadingValue {

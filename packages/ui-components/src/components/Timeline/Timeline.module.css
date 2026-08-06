@@ -57,7 +57,7 @@
 .iconDot {
   width: 2rem;
   height: 2rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 2px solid;
   display: flex;
   align-items: center;
@@ -66,15 +66,21 @@
 }
 
 .iconLabel {
-  color: var(--color-txt-white);
-  font-size: 0.75rem;
+  color: var(--color-txt-on-primary);
+  font-size: var(--text-xs);
 }
+
+/* El fondo de .iconDot lo decide su variant class hermana (ver abajo) —
+   .iconLabel necesita el --color-txt-on-* que corresponde a esa misma semilla. */
+.variantSuccess .iconLabel { color: var(--color-txt-on-success); }
+.variantWarning .iconLabel { color: var(--color-txt-on-warning); }
+.variantError .iconLabel   { color: var(--color-txt-on-danger); }
 
 /* Small dot */
 .dot {
   width: 0.75rem;
   height: 0.75rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 2px solid;
   flex-shrink: 0;
   margin-top: 0.125rem;
@@ -147,20 +153,20 @@
 }
 
 .title {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-txt);
 }
 
 .date {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--color-txt-secondary);
   flex-shrink: 0;
   margin-top: 0.125rem;
 }
 
 .descriptionText {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--color-txt-secondary);
   margin-top: 0.25rem;
 }
@@ -183,12 +189,12 @@
 }
 
 .sizeSm .title {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .sizeSm .date,
 .sizeSm .descriptionText {
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
 }
 
 .sizeSm .rightCol {
@@ -209,7 +215,7 @@
 }
 
 .sizeLg .title {
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .sizeLg .rightCol {

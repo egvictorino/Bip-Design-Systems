@@ -132,7 +132,7 @@ export const ConBusqueda: Story = {
 const ConSeleccionRender = () => {
   const [selected, setSelected] = useState<Paciente[]>([]);
   return (
-    <div className="flex flex-col gap-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <DataTable<Paciente>
         columns={columns}
         data={pacientes}
@@ -153,7 +153,7 @@ const ConSeleccionRender = () => {
           },
         ]}
       />
-      <p className="text-sm text-txt-secondary">
+      <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
         {selected.length} paciente(s) seleccionado(s)
       </p>
     </div>

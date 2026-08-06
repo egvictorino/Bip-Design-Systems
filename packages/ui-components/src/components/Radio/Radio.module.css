@@ -22,9 +22,9 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 2px solid var(--color-primary);
-  transition: border-color 150ms, background-color 150ms;
+  transition: border-color var(--duration-fast), background-color var(--duration-fast);
 }
 
 .ring:hover { border-color: var(--color-primary-hover); }
@@ -34,10 +34,11 @@
 
 /* Focus ring via group selector */
 .row:has(:focus-visible) .ring {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 .row:has(:focus-visible) .ring.ringError {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 .ringDisabled { opacity: 0.5; cursor: not-allowed; }
@@ -64,10 +65,10 @@
 /* ─── Inner dot ─────────────────────────────────────────────────────────────── */
 
 .dot {
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-primary);
   transform: scale(0);
-  transition: transform 150ms;
+  transition: transform var(--duration-fast);
 }
 
 .dot.dotError { background-color: var(--color-danger); }
@@ -85,13 +86,13 @@
 .label {
   user-select: none;
   font-weight: 500;
-  transition: color 150ms;
+  transition: color var(--duration-fast);
   cursor: pointer;
 }
 
-.labelSm { font-size: 0.75rem;  line-height: 1rem; }
-.labelMd { font-size: 0.875rem; line-height: 1.25rem; }
-.labelLg { font-size: 1rem;     line-height: 1.5rem; }
+.labelSm { font-size: var(--text-xs);  line-height: 1rem; }
+.labelMd { font-size: var(--text-sm); line-height: 1.25rem; }
+.labelLg { font-size: var(--text-base);     line-height: 1.5rem; }
 
 .labelNormal   { color: var(--color-txt); }
 .labelError    { color: var(--color-danger); }
@@ -106,8 +107,8 @@
 
 /* ─── Helper / Error message ────────────────────────────────────────────────── */
 
-.helperSm { font-size: 0.75rem;  line-height: 1rem; }
-.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+.helperSm { font-size: var(--text-xs);  line-height: 1rem; }
+.helperLg { font-size: var(--text-sm); line-height: 1.25rem; }
 
 .helperText { color: var(--color-txt-secondary); }
 .errorText  { color: var(--color-danger); }
