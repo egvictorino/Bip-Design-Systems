@@ -427,10 +427,18 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   const colorScheme: BipColorScheme =
     colorSchemePreference === 'system' ? systemColorScheme : colorSchemePreference;
 
+  // Simétrico a la hidratación de arriba: un axis controlado nunca se escribe, para no
+  // persistir un valor que el prop ya manda y que la próxima lectura ignoraría de todas
+  // formas — evita además pisar en disco la última preferencia no-controlada conocida de
+  // ESE axis con el valor que el padre le está imponiendo ahora.
   useEffect(() => {
     if (!storageKey) return;
-    writeStoredPreference(storageKey, { theme, colorScheme: colorSchemePreference });
-  }, [storageKey, theme, colorSchemePreference]);
+    const value: StoredThemePreference = {};
+    if (themeProp === undefined) value.theme = theme;
+    if (colorSchemeProp === undefined) value.colorScheme = colorSchemePreference;
+    if (Object.keys(value).length === 0) return;
+    writeStoredPreference(storageKey, value);
+  }, [storageKey, theme, colorSchemePreference, themeProp, colorSchemeProp]);
 
   const setTheme = useCallback((next: BipTheme) => setInternalTheme(next), []);
   const setColorScheme = useCallback(
