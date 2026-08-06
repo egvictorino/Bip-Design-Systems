@@ -33,7 +33,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  border-radius: 1px;
+  border-radius: var(--radius-field);
   transition: background-color 150ms, color 150ms, border-color 150ms;
   outline: none;
 }
@@ -106,7 +106,7 @@
   border: none;
   border-bottom: 2px solid var(--color-primary);
   background-color: transparent;
-  border-radius: 0;
+  border-radius: var(--radius-none);
 }
 
 .variantBare:focus-visible {
@@ -123,7 +123,7 @@
   border: none;
   border-bottom: 2px solid var(--color-danger);
   background-color: transparent;
-  border-radius: 0;
+  border-radius: var(--radius-none);
 }
 
 .variantBareError:focus-visible {
@@ -155,7 +155,7 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   background-color: var(--color-surface-3);
   color: var(--color-txt);
   font-weight: 500;
@@ -167,7 +167,7 @@
 
 /* Remove chip button */
 .chipRemove {
-  border-radius: 0.125rem;
+  border-radius: var(--radius-marker);
   padding: 0.125rem;
   line-height: 1;
   outline: none;
@@ -209,7 +209,7 @@
 
 /* Clear-all button */
 .clearAll {
-  border-radius: 0.125rem;
+  border-radius: var(--radius-marker);
   padding: 0.125rem;
   transition: background-color 150ms, color 150ms;
   outline: none;
@@ -267,7 +267,7 @@
   right: 0;
   background-color: var(--color-surface-1);
   border: 1px solid var(--color-surface-3);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   overflow: hidden;
 }
@@ -297,7 +297,7 @@
   padding: 0.375rem 0.75rem 0.375rem 2rem;
   font-size: 0.875rem;
   border: 1px solid var(--color-surface-3);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   outline: none;
   background-color: var(--color-field);
   color: var(--color-txt);
@@ -354,7 +354,7 @@
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--color-primary);
   display: flex;
   align-items: center;

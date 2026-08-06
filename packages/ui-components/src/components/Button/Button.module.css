@@ -9,7 +9,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  border-radius: 1px;
+  border-radius: var(--radius-field);
   font-weight: 500;
   transition: background-color 150ms, color 150ms, border-color 150ms, opacity 150ms;
   cursor: pointer;

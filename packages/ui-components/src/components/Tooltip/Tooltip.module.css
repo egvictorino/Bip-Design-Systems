@@ -12,7 +12,7 @@
   position: absolute;
   z-index: 50;
   max-width: 20rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius-surface);
   --tooltip-bg: var(--color-txt);
   --tooltip-color: var(--color-txt-white);
   --tooltip-border: transparent;

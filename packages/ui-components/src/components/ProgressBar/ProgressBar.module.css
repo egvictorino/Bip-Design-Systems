@@ -37,7 +37,7 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-surface-3);
 }
 
@@ -49,7 +49,7 @@
 
 .fill {
   height: 100%;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   transition: width 500ms ease;
 }
 
@@ -64,7 +64,7 @@
   position: absolute;
   inset-block: 0;
   width: 33.333%;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   animation: progressIndeterminate 1.5s ease-in-out infinite;
 }
 

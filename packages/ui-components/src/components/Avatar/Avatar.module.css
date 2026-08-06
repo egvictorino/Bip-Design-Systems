@@ -28,8 +28,8 @@
 
 /* ─── Shapes ────────────────────────────────────────────────────────────────── */
 
-.circle { border-radius: 9999px; }
-.square { border-radius: 0.5rem; }
+.circle { border-radius: var(--radius-pill); }
+.square { border-radius: var(--radius-control); }
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
@@ -74,7 +74,7 @@
 
 .status {
   position: absolute;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   box-shadow: 0 0 0 2px var(--color-surface-1);
 }
 
@@ -111,7 +111,7 @@
 
 .groupItem {
   box-shadow: 0 0 0 2px var(--color-surface-1);
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
 }
 
 .groupItemOffset {
@@ -131,7 +131,7 @@
   width: 100%;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-surface-3);
   color: var(--color-txt-secondary);
   box-shadow: 0 0 0 2px var(--color-surface-1);

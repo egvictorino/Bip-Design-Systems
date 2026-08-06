@@ -3,7 +3,7 @@
 .alert {
   display: flex;
   gap: 0.75rem;
-  border-radius: 1px;
+  border-radius: var(--radius-surface);
   border-left: 4px solid;
   padding: 1rem;
 }
@@ -73,7 +73,7 @@
 .closeBtn {
   flex-shrink: 0;
   align-self: flex-start;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   padding: 0.125rem;
   background: none;
   border: none;

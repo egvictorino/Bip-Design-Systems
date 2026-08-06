@@ -7,6 +7,9 @@ import './index.css';
 export { EmptyState } from './components/EmptyState';
 export type { EmptyStateProps } from './components/EmptyState';
 
+export { ThemeProvider, useTheme } from './components/ThemeProvider';
+export type { ThemeProviderProps, BipTheme } from './components/ThemeProvider';
+
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/Accordion';
 export type {
   AccordionProps,

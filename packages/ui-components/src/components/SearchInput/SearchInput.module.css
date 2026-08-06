@@ -109,7 +109,7 @@
 
 .input {
   width: 100%;
-  border-radius: 1px;
+  border-radius: var(--radius-field);
   transition: background-color 150ms, color 150ms, border-color 150ms;
 }
 
@@ -207,7 +207,7 @@
   border: none;
   border-bottom: 2px solid var(--color-primary);
   background-color: transparent;
-  border-radius: 0;
+  border-radius: var(--radius-none);
 }
 
 .bare:hover {
@@ -218,7 +218,7 @@
   border: none;
   border-bottom: 2px solid var(--color-danger);
   background-color: transparent;
-  border-radius: 0;
+  border-radius: var(--radius-none);
 }
 
 .bare:focus-visible {
@@ -253,7 +253,7 @@
 
 .clearBtn:focus-visible {
   box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
 }
 
 .clearBtnOffsetSm {

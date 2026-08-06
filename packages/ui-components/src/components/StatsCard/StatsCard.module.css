@@ -1,7 +1,7 @@
 /* ─── Card base ──────────────────────────────────────────────────────────────── */
 
 .card {
-  border-radius: 0.5rem;
+  border-radius: var(--radius-container);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -131,7 +131,7 @@
 
 .loadingBar {
   display: block;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   background-color: var(--color-edge);
   animation: pulse 1.5s ease-in-out infinite;
 }
@@ -144,7 +144,7 @@
 .loadingIcon {
   width: 1.25rem;
   height: 1.25rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
 }
 
 .loadingValue {

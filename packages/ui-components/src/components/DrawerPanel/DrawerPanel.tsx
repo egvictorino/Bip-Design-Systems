@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
+import { useTheme } from '../ThemeProvider';
 import styles from './DrawerPanel.module.css';
 
 export interface DrawerPanelProps {
@@ -44,6 +45,7 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
   headerActions,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   // Animation state
@@ -122,7 +124,7 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
   if (!mounted) return null;
 
   return ReactDOM.createPortal(
-    <div className={styles.overlay}>
+    <div className={styles.overlay} data-theme={theme}>
       {/* Backdrop — hidden from a11y tree; drawer closes via X button and Escape */}
       <button
         type="button"

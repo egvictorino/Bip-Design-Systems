@@ -93,7 +93,7 @@
 
 .closeBtn {
   flex-shrink: 0;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   padding: 0.25rem;
   color: var(--color-txt-secondary);
   transition: background-color 150ms, color 150ms;

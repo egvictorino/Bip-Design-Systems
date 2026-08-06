@@ -4,7 +4,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font-weight: 500;
 }
 
@@ -59,7 +59,7 @@
 
 .dot {
   flex-shrink: 0;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
 }
 
 .dotSm {

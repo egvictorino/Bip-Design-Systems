@@ -22,7 +22,7 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 2px solid var(--color-primary);
   transition: border-color 150ms, background-color 150ms;
 }
@@ -64,7 +64,7 @@
 /* ─── Inner dot ─────────────────────────────────────────────────────────────── */
 
 .dot {
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-primary);
   transform: scale(0);
   transition: transform 150ms;

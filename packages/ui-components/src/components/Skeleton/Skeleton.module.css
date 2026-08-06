@@ -37,17 +37,17 @@
 
 .text {
   width: 100%;
-  border-radius: 0.125rem;
+  border-radius: var(--radius-marker);
 }
 
 .circle {
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   flex-shrink: 0;
 }
 
 .rect {
   width: 100%;
-  border-radius: 0.375rem;
+  border-radius: var(--radius-control);
 }
 
 /* ─── Sizes: text ───────────────────────────────────────────────────────────── */

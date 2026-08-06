@@ -60,7 +60,7 @@
 
 .stepButton:focus-visible {
   box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
 }
 
 .stepButtonPointer {
@@ -77,7 +77,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font-weight: 500;
   transition: background-color 0.15s, color 0.15s;
 }
@@ -145,7 +145,7 @@
 /* ─── Dot indicator ──────────────────────────────────────────────────────── */
 
 .dot {
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   transition: background-color 0.15s;
 }
 
@@ -215,7 +215,7 @@
   height: 10px;
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-top-color: white;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   animation: spin 0.7s linear infinite;
 }
 

@@ -19,7 +19,7 @@
 .track {
   position: relative;
   flex-shrink: 0;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-surface-4);
   transition: background-color 150ms;
 }
@@ -71,7 +71,7 @@
   top: 50%;
   left: 2px;
   transform: translateY(-50%);
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: white;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   transition: transform 150ms;

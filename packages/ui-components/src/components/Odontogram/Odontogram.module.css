@@ -18,7 +18,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--color-edge);
-  border-radius: 0.375rem;
+  border-radius: var(--radius-container);
   padding: 0.5rem;
   background-color: var(--color-surface-1);
   overflow-x: auto;
@@ -66,7 +66,7 @@
   background: none;
   border: none;
   padding: 2px;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   cursor: pointer;
 }
 
@@ -82,7 +82,7 @@
 /* Selected tooth highlight */
 .toothSelected {
   box-shadow: 0 0 0 2px var(--color-primary);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
 }
 
 /* ─── Number row (FDI number + note/image buttons) ───────────────────────────── */
@@ -106,9 +106,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.125rem;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   line-height: 1;
-  border-radius: 0.125rem;
+  border-radius: var(--radius-marker);
   color: var(--color-txt-secondary);
   background: none;
   border: none;
@@ -123,7 +123,7 @@
 
 /* FDI number static span (read-only, no note) */
 .numberSpan {
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   line-height: 1;
   color: var(--color-txt-secondary);
 }
@@ -138,7 +138,7 @@
   display: inline-block;
   width: 0.25rem;
   height: 0.25rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-primary);
   flex-shrink: 0;
 }
@@ -149,7 +149,7 @@
   align-items: center;
   gap: 0.125rem;
   line-height: 1;
-  border-radius: 0.125rem;
+  border-radius: var(--radius-marker);
   color: var(--color-txt-secondary);
   background: none;
   border: none;
@@ -167,7 +167,7 @@
   display: inline-block;
   width: 0.25rem;
   height: 0.25rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-info);
   flex-shrink: 0;
 }
@@ -226,7 +226,7 @@
   width: 16rem;
   background-color: var(--color-surface-1);
   border: 1px solid var(--color-edge);
-  border-radius: 0.375rem;
+  border-radius: var(--radius-surface);
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   padding: 0.75rem;
   display: flex;
@@ -248,7 +248,7 @@
 
 .popoverClose {
   color: var(--color-txt-secondary);
-  border-radius: 0.125rem;
+  border-radius: var(--radius-marker);
   background: none;
   border: none;
   cursor: pointer;
@@ -267,7 +267,7 @@
 .noteTextarea {
   width: 100%;
   resize: none;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   font-size: 0.875rem;
   color: var(--color-txt);
@@ -292,7 +292,7 @@
 
 .saveButton {
   padding: 0.25rem 0.75rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   background-color: var(--color-primary);
   color: var(--color-txt-white);
   font-size: 0.75rem;
@@ -318,7 +318,7 @@
   width: 20rem;
   background-color: var(--color-surface-1);
   border: 1px solid var(--color-edge);
-  border-radius: 0.375rem;
+  border-radius: var(--radius-surface);
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   padding: 0.75rem;
   display: flex;
@@ -360,7 +360,7 @@
 .thumbnailButton {
   width: 4rem;
   height: 4rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 2px solid var(--color-edge);
   overflow: hidden;
   display: block;
@@ -394,7 +394,7 @@
   right: -0.375rem;
   width: 1rem;
   height: 1rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-danger);
   color: var(--color-txt-white);
   font-size: 9px;
@@ -433,7 +433,7 @@
   width: 100%;
   max-height: 11rem;
   object-fit: contain;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   background-color: var(--color-surface-1);
 }
@@ -479,7 +479,7 @@
 
 .addFormSelect {
   width: 100%;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   font-size: 0.875rem;
   color: var(--color-txt);
@@ -497,7 +497,7 @@
   width: 100%;
   max-height: 8rem;
   object-fit: contain;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   background-color: var(--color-surface-1);
 }
@@ -505,7 +505,7 @@
 .fileButton {
   width: 100%;
   padding: 0.375rem 0.75rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   font-size: 0.875rem;
   color: var(--color-txt);
@@ -530,7 +530,7 @@
 
 .cancelButton {
   padding: 0.25rem 0.75rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   font-size: 0.75rem;
   color: var(--color-txt);
@@ -549,7 +549,7 @@
 
 .confirmButton {
   padding: 0.25rem 0.75rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   background-color: var(--color-primary);
   color: var(--color-txt-white);
   font-size: 0.75rem;
@@ -576,7 +576,7 @@
 .addImageButton {
   width: 100%;
   padding: 0.375rem 0.75rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--color-edge);
   font-size: 0.875rem;
   color: var(--color-txt-secondary);

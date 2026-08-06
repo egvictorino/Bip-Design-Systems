@@ -57,7 +57,7 @@
 .iconDot {
   width: 2rem;
   height: 2rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 2px solid;
   display: flex;
   align-items: center;
@@ -74,7 +74,7 @@
 .dot {
   width: 0.75rem;
   height: 0.75rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 2px solid;
   flex-shrink: 0;
   margin-top: 0.125rem;

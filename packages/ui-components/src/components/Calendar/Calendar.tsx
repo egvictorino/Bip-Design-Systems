@@ -11,6 +11,7 @@ import React, {
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
 import { addDays, isSameDay } from '../../lib/dateHelpers';
+import { useTheme } from '../ThemeProvider';
 import styles from './Calendar.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -377,6 +378,7 @@ const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onCo
   const fmt = (d: Date) =>
     d.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
   const label = isSameDay(start, displayEnd) ? fmt(start) : `${fmt(start)} — ${fmt(displayEnd)}`;
+  const theme = useTheme();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -387,7 +389,7 @@ const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onCo
   }, [onClose]);
 
   return ReactDOM.createPortal(
-    <>
+    <div data-theme={theme} style={{ display: 'contents' }}>
       <div className={styles.rangeOverlay} aria-hidden="true" onClick={onClose} />
       <div
         role="dialog"
@@ -413,7 +415,7 @@ const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onCo
           Crear evento
         </button>
       </div>
-    </>,
+    </div>,
     document.body
   );
 });

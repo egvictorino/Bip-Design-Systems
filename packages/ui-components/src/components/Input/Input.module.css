@@ -45,7 +45,7 @@
 /* ─── Input base ────────────────────────────────────────────────────────────── */
 
 .input {
-  border-radius: 1px;
+  border-radius: var(--radius-field);
   transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
 }
 
@@ -110,7 +110,7 @@
   background: transparent;
   cursor: pointer;
   color: var(--color-txt-utility);
-  border-radius: 2px;
+  border-radius: var(--radius-marker);
   transition: color 150ms;
   line-height: 0;
 }
@@ -156,7 +156,7 @@
   border: none;
   border-bottom: 2px solid var(--color-primary);
   background-color: transparent;
-  border-radius: 0;
+  border-radius: var(--radius-none);
 }
 .bare:hover:not(:disabled) { border-bottom-color: var(--color-primary-hover); }
 .bare:focus-visible { box-shadow: none; border-bottom-color: var(--color-primary-hover); }

@@ -29,11 +29,11 @@
 
 /* ─── Radius ────────────────────────────────────────────────────────────────── */
 
-.radiusNone { border-radius: 0; }
-.radiusSm   { border-radius: 0.125rem; }
-.radiusMd   { border-radius: 0.375rem; }
-.radiusLg   { border-radius: 0.5rem; }
-.radiusXl   { border-radius: 0.75rem; }
+.radiusNone { border-radius: var(--radius-none); }
+.radiusSm   { border-radius: var(--radius-marker); }
+.radiusMd   { border-radius: var(--radius-surface); }
+.radiusLg   { border-radius: var(--radius-container); }
+.radiusXl   { border-radius: var(--radius-container-lg); }
 
 /* ─── Full width ────────────────────────────────────────────────────────────── */
 

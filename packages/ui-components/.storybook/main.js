@@ -12,7 +12,7 @@ const config = {
     config.css = { postcss: './postcss.config.js' };
     config.optimizeDeps = {
       ...config.optimizeDeps,
-      include: ['react', 'react-dom', 'clsx', 'tailwind-merge'],
+      include: ['react', 'react-dom', 'clsx'],
     };
     return config;
   },

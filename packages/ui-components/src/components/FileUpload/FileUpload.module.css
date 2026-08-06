@@ -51,7 +51,7 @@
   gap: 0.5rem;
   padding: 2.5rem 1rem;
   border: 2px dashed;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-control);
   transition: background-color 150ms, border-color 150ms, box-shadow 150ms;
   cursor: pointer;
 }
@@ -183,7 +183,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.375rem 0.75rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius-control);
   background-color: var(--color-surface-3);
   font-size: 0.875rem;
 }
@@ -215,7 +215,7 @@
 .removeBtn {
   flex-shrink: 0;
   padding: 0.125rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   transition: color 150ms, background-color 150ms;
   color: var(--color-txt-secondary);
   background: none;

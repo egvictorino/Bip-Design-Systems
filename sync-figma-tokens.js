@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * Sincroniza tokens de Figma → CSS variables + Tailwind tokens + cn.ts
+ * Sincroniza tokens de Figma → CSS variables + Tailwind tokens
  *
- * Genera 3 archivos:
- *   1. src/tokens.css           — CSS custom properties (:root)
+ * Genera 2 archivos:
+ *   1. src/tokens.css           — CSS custom properties (:root), SOLO colores
  *   2. tailwind.tokens.js       — colores semánticos con var(--*)
- *   3. src/lib/cn.ts            — tailwind-merge configurado
+ *
+ * src/tokens.css es 100% generado — tipografía/radius/shadows viven en
+ * src/styles/primitives.css (hand-owned, no tocar aquí).
  *
  * Uso: pnpm sync:tokens
  */
@@ -18,7 +20,6 @@ const INPUT_PATH = './MyStyleD/tokens/global.json';
 const UI_PKG = './packages/ui-components';
 const TOKENS_CSS_PATH = `${UI_PKG}/src/tokens.css`;
 const TOKENS_JS_PATH = `${UI_PKG}/tailwind.tokens.js`;
-const CN_PATH = `${UI_PKG}/src/lib/cn.ts`;
 
 if (!fs.existsSync(INPUT_PATH)) {
   console.error(`❌ No se encontró: ${INPUT_PATH}`);
@@ -226,54 +227,13 @@ export const colors = {\n`;
   return js;
 }
 
-// ─── 3. Generar cn.ts ─────────────────────────────────────────────────
-function generateCn(tokens) {
-  const allNames = Object.keys(tokens);
-
-  const interactionTokens = allNames.filter(n =>
-    ['primary', 'secondary', 'danger', 'disabled', 'field', 'field-readonly', 'selected', 'active', 'unique']
-      .some(p => n === p || n.startsWith(p + '-'))
-    && !n.startsWith('txt') && !n.startsWith('edge') && !n.startsWith('surface') && !n.startsWith('link') && !n.startsWith('scrim') && !n.startsWith('success') && !n.startsWith('warning') && !n.startsWith('info')
-  );
-  const textTokens = allNames.filter(n => n.startsWith('txt') || n === 'link' || n.startsWith('link-'));
-  const surfaceTokens = allNames.filter(n => n.startsWith('surface') || n === 'scrim');
-  const borderTokens = allNames.filter(n => n.startsWith('edge'));
-  const feedbackTokens = allNames.filter(n => ['success', 'warning', 'info'].some(p => n === p || n.startsWith(p + '-')));
-
-  const fmt = (arr) => arr.map(t => `'${t}'`).join(', ');
-
-  return `import { clsx, type ClassValue } from 'clsx';
-import { extendTailwindMerge } from 'tailwind-merge';
-
-/**
- * Tailwind-merge con tokens semánticos del proyecto.
- * GENERADO AUTOMÁTICAMENTE — no editar manualmente
- * Comando: pnpm sync:tokens
- */
-const twMerge = extendTailwindMerge({
-  extend: {
-    classGroups: {
-      'bg-color': [{ bg: [${fmt(interactionTokens)}, ${fmt(textTokens)}, ${fmt(surfaceTokens)}, ${fmt(feedbackTokens)}] }],
-      'text-color': [{ text: [${fmt(textTokens)}, ${fmt(interactionTokens)}, ${fmt(feedbackTokens)}] }],
-      'border-color': [{ border: [${fmt(interactionTokens)}, ${fmt(borderTokens)}, ${fmt(feedbackTokens)}] }],
-      'ring-color': [{ ring: [${fmt(interactionTokens)}, ${fmt(borderTokens)}, ${fmt(feedbackTokens)}] }],
-    },
-  },
-});
-
-export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
-`;
-}
-
 // ─── Escribir archivos ───────────────────────────────────────────────
 fs.writeFileSync(TOKENS_CSS_PATH, generateCSS(tokens));
 fs.writeFileSync(TOKENS_JS_PATH, generateTailwindTokens(tokens));
-fs.writeFileSync(CN_PATH, generateCn(tokens));
 
 console.log(`✨ Tokens sincronizados (${Object.keys(tokens).length} tokens)`);
 console.log(`   📄 ${TOKENS_CSS_PATH}  — CSS custom properties`);
 console.log(`   📄 ${TOKENS_JS_PATH}  — Tailwind colors`);
-console.log(`   📄 ${CN_PATH}  — tailwind-merge config`);
 console.log('');
 console.log('Uso en componentes:');
 console.log('   bg-primary hover:bg-primary-hover active:bg-primary-press');
