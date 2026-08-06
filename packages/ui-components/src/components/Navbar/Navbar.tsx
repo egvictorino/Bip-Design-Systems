@@ -187,11 +187,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </div>
 
-        {/* Mobile panel — always rendered for animation */}
+        {/* Mobile panel — always rendered for animation. `inert` when closed removes its
+            contents from tab order and assistive tech, satisfying aria-hidden-focus (an
+            aria-hidden container may not contain focusable descendants) without unmounting
+            the panel and breaking the open/close transition. */}
         <div
           id={mobileMenuId}
           className={cn(styles.mobilePanel, isMobileOpen && styles.mobilePanelOpen)}
           aria-hidden={!isMobileOpen}
+          inert={isMobileOpen ? undefined : ''}
         >
           <ul className={styles.mobileNavList}>{navChildren}</ul>
           {actionsChildren && (

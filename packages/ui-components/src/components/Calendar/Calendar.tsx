@@ -106,6 +106,14 @@ function setTimeFromMinutes(base: Date, minutes: number): Date {
   return r;
 }
 
+function chunk<T>(items: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    result.push(items.slice(i, i + size));
+  }
+  return result;
+}
+
 const MONTH_FORMATTER = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' });
 const TIME_FORMATTER = new Intl.DateTimeFormat('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false });
 const DAY_LONG_FORMATTER = new Intl.DateTimeFormat('es-MX', {
@@ -587,89 +595,97 @@ const MonthView: React.FC<MonthViewProps> = ({
           finalizeRange();
         }}
       >
-        {cells.map((cellDate, idx) => {
-          const key = startOfDay(cellDate).toISOString();
-          const dayEvents = eventsByDay.get(key) ?? [];
-          const isCurrentMonth = cellDate.getMonth() === date.getMonth();
-          const isToday = isSameDay(cellDate, today);
-          const visible = dayEvents.slice(0, 3);
-          const overflow = dayEvents.length - 3;
-          const inRange = isInRange(cellDate);
+        {chunk(cells, 7).map((week, weekIdx) => (
+          // display: contents keeps these as direct CSS grid items of .monthGrid (so the
+          // 7-column layout is unaffected) while giving each gridcell the role="row" ARIA
+          // parent it requires — see aria-required-parent under axe.
+          <div role="row" style={{ display: 'contents' }} key={weekIdx}>
+            {week.map((cellDate, i) => {
+              const idx = weekIdx * 7 + i;
+              const key = startOfDay(cellDate).toISOString();
+              const dayEvents = eventsByDay.get(key) ?? [];
+              const isCurrentMonth = cellDate.getMonth() === date.getMonth();
+              const isToday = isSameDay(cellDate, today);
+              const visible = dayEvents.slice(0, 3);
+              const overflow = dayEvents.length - 3;
+              const inRange = isInRange(cellDate);
 
-          const handleCellKeyDown = (e: React.KeyboardEvent) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              onEventCreate?.({ start: startOfDay(cellDate), end: addDays(startOfDay(cellDate), 1) });
-            }
-          };
+              const handleCellKeyDown = (e: React.KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  onEventCreate?.({ start: startOfDay(cellDate), end: addDays(startOfDay(cellDate), 1) });
+                }
+              };
 
-          return (
-            <div
-              key={idx}
-              role="gridcell"
-              tabIndex={0}
-              data-cell-idx={idx}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => handleDrop(e, cellDate)}
-              onMouseDown={(e) => {
-                if (e.button !== 0) return;
-                e.preventDefault();
-                isSelectingRef.current = true;
-                setRangeAnchor(startOfDay(cellDate));
-                setRangeHover(startOfDay(cellDate));
-              }}
-              onMouseEnter={() => {
-                if (!isSelectingRef.current) return;
-                setRangeHover(startOfDay(cellDate));
-              }}
-              onKeyDown={handleCellKeyDown}
-              className={cn(
-                styles.monthCell,
-                inRange
-                  ? styles.monthCellInRange
-                  : cn(
-                      styles.monthCellDefault,
-                      !isCurrentMonth && styles.monthCellOtherMonth,
-                      isToday && styles.monthCellToday
-                    )
-              )}
-            >
-              <div className={styles.monthCellDateRow}>
-                <span
+              return (
+                <div
+                  key={idx}
+                  role="gridcell"
+                  tabIndex={0}
+                  data-cell-idx={idx}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => handleDrop(e, cellDate)}
+                  onMouseDown={(e) => {
+                    if (e.button !== 0) return;
+                    e.preventDefault();
+                    isSelectingRef.current = true;
+                    setRangeAnchor(startOfDay(cellDate));
+                    setRangeHover(startOfDay(cellDate));
+                  }}
+                  onMouseEnter={() => {
+                    if (!isSelectingRef.current) return;
+                    setRangeHover(startOfDay(cellDate));
+                  }}
+                  onKeyDown={handleCellKeyDown}
                   className={cn(
-                    styles.monthCellDateNum,
-                    isToday ? styles.monthCellDateNumToday : undefined
+                    styles.monthCell,
+                    inRange
+                      ? styles.monthCellInRange
+                      : cn(
+                          styles.monthCellDefault,
+                          !isCurrentMonth && styles.monthCellOtherMonth,
+                          isToday && styles.monthCellToday
+                        )
                   )}
                 >
-                  {cellDate.getDate()}
-                </span>
-              </div>
-              <div>
-                {visible.map((ev) => (
-                  <EventChip
-                    key={ev.id}
-                    event={ev}
-                    resources={resources}
-                    onClick={onEventClick}
-                    onDragStart={handleDragStart}
-                  />
-                ))}
-                {overflow > 0 && (
-                  <button
-                    type="button"
-                    className={styles.monthCellOverflow}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDateChange?.(cellDate);
-                      onViewChange?.('day');
-                    }}
-                  >
-                    +{overflow} más
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+                  <div className={styles.monthCellDateRow}>
+                    <span
+                      className={cn(
+                        styles.monthCellDateNum,
+                        isToday ? styles.monthCellDateNumToday : undefined
+                      )}
+                    >
+                      {cellDate.getDate()}
+                    </span>
+                  </div>
+                  <div>
+                    {visible.map((ev) => (
+                      <EventChip
+                        key={ev.id}
+                        event={ev}
+                        resources={resources}
+                        onClick={onEventClick}
+                        onDragStart={handleDragStart}
+                      />
+                    ))}
+                    {overflow > 0 && (
+                      <button
+                        type="button"
+                        className={styles.monthCellOverflow}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDateChange?.(cellDate);
+                          onViewChange?.('day');
+                        }}
+                      >
+                        +{overflow} más
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       {rangePopover && (

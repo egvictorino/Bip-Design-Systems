@@ -69,7 +69,7 @@ export const ToothSVG = React.memo<ToothSVGProps>(({
             )}
             strokeWidth="2"
             aria-label={SURFACE_LABELS[surface]}
-            role={interactive ? 'button' : undefined}
+            role={interactive ? 'button' : 'graphics-symbol'}
             tabIndex={canClick ? 0 : undefined}
             aria-pressed={interactive ? isActive : undefined}
             onClick={canClick ? () => onSurfaceClick(toothNumber, surface) : undefined}
