@@ -136,6 +136,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
     const generatedId = useId();
     const triggerId = id ?? generatedId;
     const listboxId = `${triggerId}-listbox`;
+    const labelId = `${triggerId}-label`;
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage ? `${triggerId}-message` : undefined;
 
@@ -419,6 +420,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       >
         {label && (
           <label
+            id={labelId}
             htmlFor={triggerId}
             className={cn(
               styles.label,
@@ -444,6 +446,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           aria-controls={listboxId}
+          aria-labelledby={label ? labelId : undefined}
           aria-invalid={error || undefined}
           aria-describedby={messageId}
           aria-disabled={disabled || undefined}

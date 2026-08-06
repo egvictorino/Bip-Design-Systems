@@ -12,6 +12,15 @@ const preview = {
         date: /Date$/i,
       },
     },
+    // Same rule config as src/a11y.test.tsx's AXE_OPTIONS — color-contrast is disabled here
+    // too because Storybook's addon-a11y runs axe in a real browser, but the toolbar's
+    // theme/colorScheme/brand globals can put a story mid-transition when axe samples it;
+    // contrast is already covered by src/lib/contrast.test.ts + Foundations/Theming.
+    a11y: {
+      config: {
+        rules: [{ id: 'color-contrast', enabled: false }],
+      },
+    },
   },
   globalTypes: {
     theme: {

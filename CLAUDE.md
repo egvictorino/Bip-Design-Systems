@@ -307,6 +307,19 @@ CardHeader.displayName = 'CardHeader';
 
 ### Accessibility requirements
 
+**Automated a11y gate:** `src/a11y.test.tsx` renders one canonical instance of every component
+in `src/components/*` (plus its important interactive state — Modal/ConfirmDialog/DrawerPanel
+open, Dropdown menu open, Toast visible) and runs `jest-axe` against it as part of the normal
+`pnpm test` run — no separate command, no browser. A coverage guard in the same file fails the
+suite if a new component directory has no entry in the registry, so new components can't skip
+the check. `color-contrast` is disabled in the ruleset (`AXE_OPTIONS` in that file) — happy-dom
+can't resolve `color-mix()`/custom-property-based contrast with browser fidelity, and it's
+already covered by `src/lib/contrast.ts` + `contrast.test.ts` + the `Foundations/Theming` story.
+Portal-based components (Modal, ConfirmDialog, DrawerPanel, Toast) must be scanned via RTL's
+`baseElement`, not `container`, since `createPortal` renders them into `document.body`.
+`.storybook/preview.jsx`'s `parameters.a11y` mirrors the same rule config for the manual
+`addon-a11y` panel, so the two don't disagree.
+
 **Form components** must include:
 - `aria-invalid={error || undefined}` (not `aria-invalid="false"`) — valid on `<input type="checkbox">`, `<input type="text">`, `<textarea>`, `<select>`. **Do NOT add to `<input type="radio">`** — the `radio` role does not support `aria-invalid` per WAI-ARIA spec (jsx-a11y `role-supports-aria-props` will error). For radio, error state is communicated exclusively via `aria-describedby` → `role="alert"` span at the group level.
 - `aria-describedby={messageId}` linked to helper/error span
