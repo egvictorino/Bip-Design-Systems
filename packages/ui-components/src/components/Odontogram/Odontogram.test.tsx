@@ -248,7 +248,7 @@ describe('Odontogram — interactivity', () => {
     const occlusal = within(panel).getByRole('img', { name: /Diente 11/ }).querySelector('[aria-label="Oclusal"]')!;
     await user.click(occlusal);
 
-    expect(handleChange).toHaveBeenCalledOnce();
+    expect(handleChange).toHaveBeenCalledTimes(1);
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[11]?.surfaces?.occlusal).toBe('caries');
   });
@@ -264,7 +264,7 @@ describe('Odontogram — interactivity', () => {
     const anyPolygon = within(panel).getByRole('img', { name: /Diente 16/ }).querySelector('polygon')!;
     await user.click(anyPolygon);
 
-    expect(handleChange).toHaveBeenCalledOnce();
+    expect(handleChange).toHaveBeenCalledTimes(1);
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[16]?.condition).toBe('missing');
   });
@@ -296,7 +296,7 @@ describe('Odontogram — interactivity', () => {
     // Default tool is caries — clicking a surface should change the condition
     const occlusal = within(panel).getByRole('img', { name: /Diente 18/ }).querySelector('[aria-label="Oclusal"]')!;
     await user.click(occlusal);
-    expect(handleChange).toHaveBeenCalledOnce();
+    expect(handleChange).toHaveBeenCalledTimes(1);
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     // Caries is a surface-level condition, so it clears the whole-tooth condition
     expect(updated[18]?.condition).toBeUndefined();
@@ -586,7 +586,7 @@ describe('Odontogram — notas', () => {
     await user.type(screen.getByRole('textbox'), 'caries interproximal');
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
 
-    expect(handleChange).toHaveBeenCalledOnce();
+    expect(handleChange).toHaveBeenCalledTimes(1);
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[11]?.notes).toBe('caries interproximal');
   });
@@ -602,7 +602,7 @@ describe('Odontogram — notas', () => {
     await user.clear(screen.getByRole('textbox'));
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
 
-    expect(handleChange).toHaveBeenCalledOnce();
+    expect(handleChange).toHaveBeenCalledTimes(1);
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[11]?.notes).toBeUndefined();
   });
@@ -910,7 +910,7 @@ describe('Odontogram — teclado', () => {
     occlusal.focus();
     await user.keyboard('{Enter}');
 
-    expect(handleChange).toHaveBeenCalledOnce();
+    expect(handleChange).toHaveBeenCalledTimes(1);
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[11]?.surfaces?.occlusal).toBe('caries');
   });
@@ -928,7 +928,7 @@ describe('Odontogram — teclado', () => {
     mesial.focus();
     await user.keyboard(' ');
 
-    expect(handleChange).toHaveBeenCalledOnce();
+    expect(handleChange).toHaveBeenCalledTimes(1);
     const updated: OdontogramValue = handleChange.mock.calls[0][0];
     expect(updated[21]?.surfaces?.mesial).toBe('restoration');
   });
