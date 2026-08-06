@@ -37,6 +37,12 @@
   /* Interaction — derivados */
   --color-primary-hover: color-mix(in srgb, var(--color-primary), black 25%);
   --color-primary-press: color-mix(in srgb, var(--color-primary), black 50%);
+  /* --color-primary como color de TEXTO (Badge .primary, Tabs tab activo, MultiSelect
+     focused) — un rol de contraste distinto al de --color-primary como fill (ese ya lo
+     cubre --color-txt-on-primary). En light la semilla ya alcanza AA por sí sola (8.2:1
+     contra blanco); en dark no (3.3:1 contra superficies oscuras derivadas) — de ahí el
+     mix hacia white, mismo patrón que --color-danger-text/--color-info-text. */
+  --color-primary-text: var(--color-primary);
   --color-secondary-hover: color-mix(in srgb, var(--color-secondary), black 12%);
   --color-secondary-press: color-mix(in srgb, var(--color-secondary), black 35%);
   --color-danger-hover: color-mix(in srgb, var(--color-danger), black 25%);
@@ -61,7 +67,11 @@
   --color-txt-black: #0d0d0d;
   --color-txt-disabled: #ababab;
   --color-txt-important: var(--color-danger);
-  --color-txt-secondary: #929292;
+  /* #929292 medía 2.51–3.11:1 contra surface-1/surface-2/secondary/selected — nunca
+     alcanzaba AA (4.5:1) contra ningún fondo claro del sistema (hallazgo de
+     visual/a11y-browser.spec.ts, axe con color-contrast activado en navegador real).
+     #5c5c5c da >=5.1:1 contra el peor caso medido (--color-secondary, #e7e7e7). */
+  --color-txt-secondary: #5c5c5c;
   --color-txt-utility: #6e6e6e;
   --color-txt-white: #ffffff;
 
@@ -120,10 +130,12 @@
   --color-info-text: color-mix(in srgb, var(--color-info), black 25%);
   --color-success-light: color-mix(in srgb, var(--color-success), white 96%);
   --color-success-subtle: color-mix(in srgb, var(--color-success), white 90%);
-  --color-success-text: color-mix(in srgb, var(--color-success), black 30%);
+  /* black 30% medía 4.05:1 contra --color-success-light — bajo AA. 38% da ~5.0:1. */
+  --color-success-text: color-mix(in srgb, var(--color-success), black 38%);
   --color-warning-light: color-mix(in srgb, var(--color-warning), white 96%);
   --color-warning-subtle: color-mix(in srgb, var(--color-warning), white 90%);
-  --color-warning-text: color-mix(in srgb, var(--color-warning), black 35%);
+  /* black 35% medía 4.23:1 contra --color-warning-subtle — bajo AA. 45% da ~5.6:1. */
+  --color-warning-text: color-mix(in srgb, var(--color-warning), black 45%);
 
   /* Shadows (light) */
   --shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -161,6 +173,10 @@
   /* Interaction — derivados */
   --color-primary-hover: color-mix(in srgb, var(--color-primary), white 15%);
   --color-primary-press: color-mix(in srgb, var(--color-primary), white 30%);
+  /* La semilla dark (#5468e8) medía 3.3–3.7:1 como color de texto contra superficies
+     oscuras derivadas (selected/subtle/field) — bajo AA. white 20% da >=4.7:1 contra
+     esas mismas superficies (ver comentario del bloque light). */
+  --color-primary-text: color-mix(in srgb, var(--color-primary), white 20%);
   --color-secondary-hover: color-mix(in srgb, var(--color-secondary), white 18%);
   --color-secondary-press: color-mix(in srgb, var(--color-secondary), white 32%);
   --color-danger-hover: color-mix(in srgb, var(--color-danger), white 15%);
