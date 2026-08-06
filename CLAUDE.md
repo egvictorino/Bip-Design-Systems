@@ -20,7 +20,7 @@ pnpm --filter @bip-design-systems/ui-components build-storybook
 pnpm --filter @bip-design-systems/ui-components lint
 pnpm --filter @bip-design-systems/shared-utils test
 pnpm --filter @bip-design-systems/ui-components test         # component tests (vitest + happy-dom)
-pnpm --filter @bip-design-systems/ui-components test:visual  # theme visual regression (Playwright, needs Storybook running)
+pnpm test:visual:docker                                       # theme visual regression, in Docker (see § Visual regression) — never run test:visual natively
 
 # All packages at once
 pnpm build
@@ -80,7 +80,16 @@ Test files live alongside components: `ComponentName.test.tsx`. Configured with:
 
 ### Visual regression (`packages/ui-components/visual/`)
 
-Separate from the vitest suite — `theme-matrix.spec.ts` uses `@playwright/test` against a running Storybook, not happy-dom, because it screenshots the theme system end-to-end: square/rounded × light/dark, custom brand (which is also rounded, so that combination has a baseline too), Foundations/Colors, Foundations/Radius, `SideBySide`, `PortalTheming` (Modal via `createPortal` inheriting the active theme), `SystemColorScheme`, and `SideBySide` again under the `dir:rtl` Storybook global (passed via URL — `&globals=dir:rtl` — see the `RTL` test) to confirm logical properties/flex order actually mirror. `UncontrolledWithPersistence` is deliberately not screenshotted — it depends on `localStorage` state from a prior visit, which isn't reproducible pixel-for-pixel. `playwright.visual.config.ts` auto-starts `pnpm storybook` if one isn't already running on :6006. Baselines are committed in `visual/theme-matrix.spec.ts-snapshots/` (platform-suffixed, e.g. `-chromium-darwin.png` — regenerate locally on your OS with `pnpm test:visual -- --update-snapshots` after a deliberate `tokens.css`/`ThemeProvider` change; not currently wired into CI — the committed baselines are macOS-only, and CI runs on `ubuntu-latest`, so wiring it in would first need a parallel Linux baseline set, e.g. generated via the Playwright Docker image).
+Separate from the vitest suite — `theme-matrix.spec.ts` uses `@playwright/test` against a running Storybook, not happy-dom, because it screenshots the theme system end-to-end: square/rounded × light/dark, custom brand (which is also rounded, so that combination has a baseline too), Foundations/Colors, Foundations/Radius, `SideBySide`, `PortalTheming` (Modal via `createPortal` inheriting the active theme), `SystemColorScheme`, and `SideBySide` again under the `dir:rtl` Storybook global (passed via URL — `&globals=dir:rtl` — see the `RTL` test) to confirm logical properties/flex order actually mirror. `UncontrolledWithPersistence` is deliberately not screenshotted — it depends on `localStorage` state from a prior visit, which isn't reproducible pixel-for-pixel. `playwright.visual.config.ts` auto-starts `pnpm storybook` if one isn't already running on :6006.
+
+**Baselines are Linux-only, generated in Docker — never natively on macOS/Windows.** They live in `visual/theme-matrix.spec.ts-snapshots/`, suffixed `-chromium-linux.png` by Playwright's default `snapshotPathTemplate` (deliberately left at the default, not overridden to drop the platform suffix: running `pnpm --filter ui-components test:visual` natively on macOS should fail loudly with "snapshot missing" rather than silently generate a `-darwin.png` set that would diverge from what CI checks). The only supported way to generate or verify them is:
+```bash
+pnpm test:visual:docker                    # verify against committed baselines
+pnpm test:visual:docker --update-snapshots # regenerate after a deliberate visual change
+```
+This runs `scripts/visual-docker.sh`, which pulls `mcr.microsoft.com/playwright:v1.62.1-jammy` — pinned to the exact `@playwright/test` version in `packages/ui-components/package.json`, and the script refuses to run if they drift apart — with `--platform linux/amd64` (so it's identical on Apple Silicon, just emulated/slower) and mounts the repo with `node_modules` excluded via anonymous volumes (mounting the host's `node_modules` would leak macOS/arm64 native binaries — esbuild, rollup — into the Linux container and break the install). `pr-validation.yml`'s `visual-regression` job runs the same image directly as its `container:`, so local Docker runs and CI are the same environment, not just "similar."
+
+**Storybook's `Foundations/Colors` page needs an unusually long stability timeout** (`{ timeout: 15_000 }` on that one `toHaveScreenshot` call, vs. the 5s default): ~128 color swatches each resolve their value via `getComputedStyle()` in their own `useEffect` (see `Colors.stories.tsx`), and that many components settling independently makes the page's layout keep shifting for several seconds after `networkidle` — Playwright's built-in "wait for two consecutive stable screenshots" needs the extra runway, not a fixed sleep (a `waitForTimeout` was tried first and didn't reliably converge).
 
 `pnpm test` runs vitest once and exits (`vitest run`) — use `pnpm test:watch` for interactive watch mode. (Previously `test` ran in watch mode and only terminated in CI because GitHub Actions sets `CI=true`, which vitest respects — that was incidental, not by design.)
 
@@ -90,7 +99,7 @@ Four workflows, one per environment:
 
 | Workflow | Trigger | Key steps |
 |----------|---------|-----------|
-| `pr-validation.yml` | PR to any branch | branch check → lint → **test** → build |
+| `pr-validation.yml` | PR to any branch | branch check → lint → **test** → build → **visual regression** (parallel job, own container) |
 | `dev.yml` | push/PR to `dev` | lint → **test** → build → storybook preview |
 | `qa.yml` | push/PR to `qa` | security audit \| lint → **test** → build → storybook QA |
 | `production.yml` | push/PR to `main` | security + lint + **test** + type-check → build → GitHub Pages → release |

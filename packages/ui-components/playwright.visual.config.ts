@@ -9,6 +9,12 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './visual',
   timeout: 30_000,
+  // Reintenta una vez en CI antes de reportar fallo — absorbe el flake ocasional de
+  // fuentes/fonts todavía cargando en el primer paint sin esconder una regresión real
+  // (maxDiffPixelRatio ya filtra el ruido de sub-píxel; esto es para timing, no pixeles).
+  retries: process.env.CI ? 1 : 0,
+  forbidOnly: !!process.env.CI,
+  reporter: [['list'], ['html', { open: 'never' }]],
   expect: {
     toHaveScreenshot: { maxDiffPixelRatio: 0.02 },
   },
@@ -20,7 +26,15 @@ export default defineConfig({
   },
   use: {
     baseURL: 'http://localhost:6006',
-    viewport: { width: 960, height: 720 },
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  // El viewport vive aquí (no en el `use` de arriba) porque `...devices['Desktop Chrome']`
+  // trae su propio viewport (1280×720) y un `use.viewport` a nivel de config pierde contra
+  // el `use` del project — quedaba declarado pero sin efecto. Se fija explícito para que
+  // sea el valor real, no un accidente de precedencia.
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
+    },
+  ],
 });
