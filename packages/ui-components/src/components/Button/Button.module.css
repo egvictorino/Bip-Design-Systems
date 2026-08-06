@@ -8,7 +8,7 @@
 .button {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   border-radius: var(--radius-field);
   font-weight: 500;
   transition: background-color var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast), opacity var(--duration-fast);
@@ -84,9 +84,9 @@
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
-.sm { padding: 6px 12px;  font-size: var(--text-xs);  line-height: 1rem; }
-.md { padding: 10px 20px; font-size: var(--text-sm); line-height: 1.25rem; }
-.lg { padding: 12px 24px; font-size: var(--text-lg); line-height: 1.75rem; }
+.sm { padding: var(--space-control-y-sm) var(--space-control-x-sm); font-size: var(--text-xs);  line-height: 1rem; }
+.md { padding: var(--space-control-y-md) var(--space-control-x-md); font-size: var(--text-sm); line-height: 1.25rem; }
+.lg { padding: var(--space-control-y-lg) var(--space-control-x-lg); font-size: var(--text-lg); line-height: 1.75rem; }
 
 /* ─── Spinner icon ──────────────────────────────────────────────────────────── */
 

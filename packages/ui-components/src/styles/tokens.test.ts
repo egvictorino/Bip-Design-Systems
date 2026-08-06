@@ -7,11 +7,13 @@ import {
   ON_TEXT_VAR_MAP,
   FOCUS_RING_VAR_MAP,
   MOTION_VAR_MAP,
+  SPACING_VAR_MAP,
 } from '../components/ThemeProvider/ThemeProvider';
 
 const TOKENS_CSS_PATH = resolve(__dirname, '../tokens.css');
 const THEMES_CSS_PATH = resolve(__dirname, './themes.css');
 const PRIMITIVES_CSS_PATH = resolve(__dirname, './primitives.css');
+const DENSITY_CSS_PATH = resolve(__dirname, './density.css');
 
 /**
  * TOKEN_VAR_MAP entries that live outside tokens.css by design — tokens.css
@@ -167,5 +169,26 @@ describe('styles/primitives.css — dominio invariante (motion, focus ring, tipo
     for (const cssVar of Object.values(MOTION_VAR_MAP)) {
       expect(primitivesCss).toContain(`${cssVar}:`);
     }
+  });
+});
+
+describe('styles/density.css — dominio del eje de densidad (comfortable/compact)', () => {
+  it('SPACING_VAR_MAP (ThemeProvider) solo apunta a tokens realmente declarados', () => {
+    const densityCss = readFileSync(DENSITY_CSS_PATH, 'utf-8');
+    for (const cssVar of Object.values(SPACING_VAR_MAP)) {
+      expect(densityCss).toContain(`${cssVar}:`);
+    }
+  });
+
+  it("[data-density='comfortable'] y [data-density='compact'] declaran exactamente el mismo conjunto de tokens", () => {
+    const densityCss = readFileSync(DENSITY_CSS_PATH, 'utf-8');
+    const comfortableTokens = new Set(
+      extractDeclaredTokens(extractBlock(densityCss, /\[data-density='comfortable'\]\s*{([^}]*)}/s))
+    );
+    const compactTokens = new Set(
+      extractDeclaredTokens(extractBlock(densityCss, /\[data-density='compact'\]\s*{([^}]*)}/s))
+    );
+
+    expect([...comfortableTokens].sort()).toEqual([...compactTokens].sort());
   });
 });

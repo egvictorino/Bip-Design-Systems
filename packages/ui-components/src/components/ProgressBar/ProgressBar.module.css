@@ -12,7 +12,7 @@
 /* ─── Header ────────────────────────────────────────────────────────────────── */
 
 .header {
-  margin-bottom: 0.375rem;
+  margin-bottom: var(--space-1-5);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -97,7 +97,7 @@
 
 .helperText {
   display: block;
-  margin-top: 0.25rem;
+  margin-top: var(--space-1);
   font-size: var(--text-xs);
   line-height: 1rem;
   color: var(--color-txt-secondary);

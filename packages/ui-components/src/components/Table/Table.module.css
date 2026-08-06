@@ -17,7 +17,7 @@
 
 .caption {
   caption-side: top;
-  padding: 0.5rem 0;
+  padding: var(--space-2) var(--space-0);
   font-size: var(--text-sm);
   color: var(--color-txt-secondary);
   text-align: left;
@@ -69,8 +69,8 @@
   color: var(--color-txt-secondary);
 }
 
-.thNormal    { padding: 0.75rem 1rem; }
-.thCompact   { padding: 0.5rem 0.75rem; }
+.thNormal    { padding: var(--space-3) var(--space-4); }
+.thCompact   { padding: var(--space-2) var(--space-3); }
 
 .thSortable {
   cursor: pointer;
@@ -88,7 +88,7 @@
 .sortableInner {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 /* ─── Sort icon ──────────────────────────────────────────────────────────────── */
@@ -106,8 +106,8 @@
 
 .td { color: var(--color-txt); }
 
-.tdNormal  { padding: 0.75rem 1rem; }
-.tdCompact { padding: 0.5rem 0.75rem; }
+.tdNormal  { padding: var(--space-3) var(--space-4); }
+.tdCompact { padding: var(--space-2) var(--space-3); }
 
 /* ─── Empty state ────────────────────────────────────────────────────────────── */
 

@@ -3,7 +3,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .containerFullWidth {
@@ -45,7 +45,7 @@
   border: 1px solid var(--color-primary);
   background-color: var(--color-field);
   /* extra right padding to leave room for the calendar icon */
-  padding-right: 2.25rem;
+  padding-right: var(--space-9);
   outline: none;
   cursor: pointer;
 }
@@ -78,9 +78,9 @@
 }
 
 /* Sizes */
-.triggerSm { padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; font-size: var(--text-xs); }
-.triggerMd { padding-top: 0.625rem; padding-bottom: 0.625rem; padding-left: 1.25rem; font-size: var(--text-sm); }
-.triggerLg { padding-top: 0.75rem;  padding-bottom: 0.75rem;  padding-left: 1.5rem;  font-size: var(--text-lg); }
+.triggerSm { padding-top: var(--space-1-5); padding-bottom: var(--space-1-5); padding-left: var(--space-3); font-size: var(--text-xs); }
+.triggerMd { padding-top: var(--space-2-5); padding-bottom: var(--space-2-5); padding-left: var(--space-5); font-size: var(--text-sm); }
+.triggerLg { padding-top: var(--space-3);  padding-bottom: var(--space-3);  padding-left: var(--space-6);  font-size: var(--text-lg); }
 
 /* ─── Trigger text span ───────────────────────────────────────────────────────── */
 
@@ -121,7 +121,7 @@
 .popover {
   position: absolute;
   z-index: var(--z-modal);
-  margin-top: 0.25rem;
+  margin-top: var(--space-1);
   top: 100%;
   left: 0;
   border-radius: var(--radius-surface);
@@ -135,8 +135,8 @@
 .calendarGrid {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.75rem;
+  gap: var(--space-3);
+  padding: var(--space-3);
   width: 280px;
 }
 
@@ -149,7 +149,7 @@
 }
 
 .monthNavBtn {
-  padding: 0.25rem;
+  padding: var(--space-1);
   border-radius: var(--radius-control);
   color: var(--color-txt-secondary);
   transition: background-color var(--duration-fast), color var(--duration-fast);
@@ -191,7 +191,7 @@
   border: none;
   border-radius: var(--radius-control);
   cursor: pointer;
-  padding: 0.125rem 0.375rem;
+  padding: var(--space-0-5) var(--space-1-5);
   transition: background-color var(--duration-fast), color var(--duration-fast);
   outline: none;
 }
@@ -209,7 +209,7 @@
 .dayGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.125rem;
+  gap: var(--space-0-5);
 }
 
 .columnHeader {
@@ -217,7 +217,7 @@
   font-size: var(--text-3xs); /* 10px */
   font-weight: 600;
   color: var(--color-txt-secondary);
-  padding: 0.25rem 0;
+  padding: var(--space-1) var(--space-0);
 }
 
 /* ─── Day cell / button ───────────────────────────────────────────────────────── */
@@ -279,12 +279,12 @@
 .monthPickerGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .monthPickerBtn {
   width: 100%;
-  padding: 0.5rem 0.25rem;
+  padding: var(--space-2) var(--space-1);
   border-radius: var(--radius-control);
   font-size: 0.8125rem;
   font-weight: 500;
@@ -334,7 +334,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.125rem;
+  padding: var(--space-0-5);
   border-radius: var(--radius-control);
   color: var(--color-txt-secondary);
   transition: color var(--duration-fast), background-color var(--duration-fast);
@@ -363,14 +363,14 @@
 
 .todaySection {
   border-top: 1px solid var(--color-surface-3);
-  padding-top: 0.5rem;
+  padding-top: var(--space-2);
 }
 
 .todayBtn {
   width: 100%;
   font-size: var(--text-xs);
   font-weight: 500;
-  padding: 0.375rem 0;
+  padding: var(--space-1-5) var(--space-0);
   border-radius: var(--radius-control);
   transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;

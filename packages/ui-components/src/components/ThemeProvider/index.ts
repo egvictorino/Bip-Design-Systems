@@ -2,6 +2,7 @@ export {
   ThemeProvider,
   useTheme,
   useColorScheme,
+  useDensity,
   useThemeAttributes,
   useThemeControls,
   getThemeInitScript,
@@ -11,6 +12,7 @@ export {
   ON_TEXT_VAR_MAP,
   FOCUS_RING_VAR_MAP,
   MOTION_VAR_MAP,
+  SPACING_VAR_MAP,
   resolveTokenVars,
 } from './ThemeProvider';
 export type {
@@ -20,8 +22,10 @@ export type {
   BipTheme,
   BipColorScheme,
   BipColorSchemePreference,
+  BipDensity,
   BipTokenOverrides,
   BipRadiusOverrides,
   BipFocusRingOverrides,
   BipMotionOverrides,
+  BipSpacingOverrides,
 } from './ThemeProvider';

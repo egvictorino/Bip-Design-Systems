@@ -29,11 +29,11 @@
   height: 4rem;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
+  padding: var(--space-0) var(--space-4);
 }
 
 @media (min-width: 768px) {
-  .container { padding: 0 1.5rem; }
+  .container { padding: var(--space-0) var(--space-6); }
 }
 
 /* ─── Hamburger ─────────────────────────────────────────────────────────────── */
@@ -66,10 +66,10 @@
 .desktopNav {
   display: none;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
   list-style: none;
-  margin: 0;
-  padding: 0;
+  margin: var(--space-0);
+  padding: var(--space-0);
 }
 
 @media (min-width: 768px) {
@@ -99,7 +99,7 @@
   background-color: var(--color-surface-1);
   border-bottom: 1px solid var(--color-edge);
   box-shadow: var(--shadow-md);
-  padding: 0.75rem 1rem;
+  padding: var(--space-3) var(--space-4);
   z-index: var(--z-base);
 
   /* Animation — hidden by default */
@@ -124,10 +124,10 @@
 .mobileNavList {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
   list-style: none;
-  margin: 0;
-  padding: 0;
+  margin: var(--space-0);
+  padding: var(--space-0);
 }
 
 /* ─── Mobile actions ────────────────────────────────────────────────────────── */
@@ -135,9 +135,9 @@
 .mobileActions {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 0.75rem;
-  margin-top: 0.75rem;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  margin-top: var(--space-3);
   border-top: 1px solid var(--color-edge);
 }
 
@@ -146,7 +146,7 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   font-weight: 600;
   font-size: var(--text-sm);
   color: var(--color-txt);
@@ -159,8 +159,8 @@
 .navItem {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-control);
   font-size: var(--text-sm);
   font-weight: 500;
@@ -200,7 +200,7 @@
 .actions {
   display: none;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 @media (min-width: 768px) {

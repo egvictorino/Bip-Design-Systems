@@ -125,14 +125,14 @@
 }
 
 .groupItemOffset {
-  margin-left: -0.5rem;
+  margin-left: calc(var(--space-2) * -1);
 }
 
 .overflow {
   position: relative;
   display: inline-flex;
   flex-shrink: 0;
-  margin-left: -0.5rem;
+  margin-left: calc(var(--space-2) * -1);
 }
 
 .overflowInner {

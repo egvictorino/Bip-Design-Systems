@@ -3,7 +3,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .wrapperFull { width: 100%; }
@@ -24,7 +24,7 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
-.requiredMark { color: var(--color-danger); margin-left: 2px; }
+.requiredMark { color: var(--color-danger); margin-left: var(--space-0-5); }
 
 /* ─── Input wrapper ─────────────────────────────────────────────────────────── */
 
@@ -63,9 +63,9 @@
 
 /* ─── Input sizes — padding extra para los botones stepper ──────────────────── */
 
-.inputSm { padding: 6px 2rem;   font-size: var(--text-xs);  line-height: 1rem; }
-.inputMd { padding: 10px 2.5rem; font-size: var(--text-sm); line-height: 1.25rem; }
-.inputLg { padding: 12px 3rem;  font-size: var(--text-lg); line-height: 1.75rem; }
+.inputSm { padding: var(--space-1-5) var(--space-8);   font-size: var(--text-xs);  line-height: 1rem; }
+.inputMd { padding: var(--space-2-5) var(--space-10); font-size: var(--text-sm); line-height: 1.25rem; }
+.inputLg { padding: var(--space-3) var(--space-12);  font-size: var(--text-lg); line-height: 1.75rem; }
 
 /* ─── Variant: outlined ─────────────────────────────────────────────────────── */
 
@@ -129,7 +129,7 @@
   justify-content: center;
   color: var(--color-txt-secondary);
   transition: color var(--duration-fast);
-  padding: 0;
+  padding: var(--space-0);
   border-radius: var(--radius-control);
 }
 
@@ -156,9 +156,9 @@
 
 /* Per-size button padding + icon size */
 
-.stepBtnSm { padding: 0 0.5rem; }
-.stepBtnMd { padding: 0 0.625rem; }
-.stepBtnLg { padding: 0 0.75rem; }
+.stepBtnSm { padding: var(--space-0) var(--space-2); }
+.stepBtnMd { padding: var(--space-0) var(--space-2-5); }
+.stepBtnLg { padding: var(--space-0) var(--space-3); }
 
 .stepIcon {
   width: 1rem;
@@ -178,8 +178,8 @@
   white-space: nowrap;
 }
 
-.adornmentLeft  { padding-right: 0.25rem; }
-.adornmentRight { padding-left: 0.25rem; }
+.adornmentLeft  { padding-right: var(--space-1); }
+.adornmentRight { padding-left: var(--space-1); }
 
 /* Stepper button effective widths by size:
    sm = 0.5rem + 1rem icon + 0.5rem = 2rem
@@ -196,13 +196,13 @@
 
 /* Input extra padding when prefix/suffix present */
 
-.inputSmPrefix { padding-left: 4rem; }
-.inputMdPrefix { padding-left: 4.5rem; }
-.inputLgPrefix { padding-left: 5.5rem; }
+.inputSmPrefix { padding-left: var(--space-16); }
+.inputMdPrefix { padding-left: var(--space-18); }
+.inputLgPrefix { padding-left: var(--space-22); }
 
-.inputSmSuffix { padding-right: 4rem; }
-.inputMdSuffix { padding-right: 4.5rem; }
-.inputLgSuffix { padding-right: 5.5rem; }
+.inputSmSuffix { padding-right: var(--space-16); }
+.inputMdSuffix { padding-right: var(--space-18); }
+.inputLgSuffix { padding-right: var(--space-22); }
 
 /* ─── Helper / Error message ────────────────────────────────────────────────── */
 
