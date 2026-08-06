@@ -29,14 +29,19 @@ const findModuleCssFiles = (dir: string): string[] => {
  *   `align` ('start'|'center'|'end'), en el mismo archivo, sí es lógica y ya usa
  *   inset-inline-start/end — la excepción cubre solo los bloques .left/.right ligados
  *   a `position`, no todo el archivo por igual (ver el comentario en el propio CSS).
- * - ProgressBar: la animación indeterminada es puramente decorativa, sin significado
- *   direccional — translateX físico a propósito, sin --rtl-x.
+ *
+ * ProgressBar NO va en esta lista: su animación indeterminada usa translateX físico a
+ * propósito (decorativa, sin significado direccional — ver el comentario en
+ * ProgressBar.module.css), pero PHYSICAL_PROP_RE/TEXT_ALIGN_RE de abajo solo evalúan
+ * declaraciones left/right/margin-left/etc., nunca `transform: translateX()` — la
+ * exención ahí es inerte de por sí y, peor, encubriría un left/right físico real que
+ * alguien agregue después sin darse cuenta. No agregar un archivo a este allowlist salvo
+ * que realmente dispare uno de los dos regex.
  */
 const PHYSICAL_BY_DESIGN_ALLOWLIST = new Set([
   'components/DrawerPanel/DrawerPanel.module.css',
   'components/Toast/Toast.module.css',
   'components/Tooltip/Tooltip.module.css',
-  'components/ProgressBar/ProgressBar.module.css',
 ]);
 
 const PHYSICAL_PROP_RE =

@@ -8,6 +8,13 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ## [Unreleased]
 
+### Fixed
+
+- `src/styles/rtl.test.ts`: `ProgressBar.module.css` estaba en `PHYSICAL_BY_DESIGN_ALLOWLIST`
+  sin necesitarlo — no tiene ningún `left`/`right` físico, su exención era por un
+  `translateX` en `@keyframes` que ninguno de los dos regex del test evalúa. La entrada era
+  inerte y encubriría un `left`/`right` real que alguien agregara ahí después.
+
 ## [0.3.0] - 2026-08-06
 
 ### Added
