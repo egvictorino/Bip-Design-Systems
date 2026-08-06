@@ -121,7 +121,7 @@
   height: 1px;
   width: auto;
   margin-top: var(--space-0);
-  margin-left: var(--space-2);
+  margin-inline-start: var(--space-2);
 }
 
 /* ─── Right column ─────────────────────────────────────────────────────────── */

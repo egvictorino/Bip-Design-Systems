@@ -1,0 +1,24 @@
+/**
+ * Mecanismo para transforms direccionales (translateX) que las propiedades lógicas de
+ * CSS no cubren — `margin-inline-start`/`inset-inline-start`/etc. se resuelven solos
+ * según `dir`, pero `transform: translateX(Npx)` no tiene equivalente lógico: un
+ * translateX físico no se espeja automáticamente en RTL.
+ *
+ * Un único --rtl-x (1 en LTR, -1 en RTL) multiplicado dentro de translateX(calc(...))
+ * evita duplicar cada regla de animación/posición bajo un bloque [dir='rtl'] aparte.
+ * Ver ThemeProvider `dir` prop — estampa el atributo `dir` nativo (no data-*, es un
+ * atributo HTML global) en el wrapper, de donde sale este selector.
+ *
+ * Ojo: no todo translateX físico necesita esto. Solo cuando el desplazamiento es
+ * relativo al inicio/fin de lectura (p. ej. el thumb de un Toggle, un panel que entra
+ * desde el borde "de inicio"). Un translateX(-50%) de centrado, o un translateX ligado
+ * a una API explícitamente física (DrawerPanel `placement`, Toast `position`), se deja
+ * tal cual — documentado en el propio componente.
+ */
+:root {
+  --rtl-x: 1;
+}
+
+[dir='rtl'] {
+  --rtl-x: -1;
+}

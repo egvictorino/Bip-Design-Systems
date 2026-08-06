@@ -24,7 +24,7 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
-.requiredMark { color: var(--color-danger); margin-left: var(--space-0-5); }
+.requiredMark { color: var(--color-danger); margin-inline-start: var(--space-0-5); }
 
 /* ─── Input container (wraps input + icons) ──────────────────────────────────── */
 
@@ -74,14 +74,14 @@
 
 /* ─── Icon padding adjustments ───────────────────────────────────────────────── */
 
-.hasStartIcon   { padding-left: var(--space-10); }
-.hasEndAdornment { padding-right: var(--space-10); }
+.hasStartIcon   { padding-inline-start: var(--space-10); }
+.hasEndAdornment { padding-inline-end: var(--space-10); }
 
 /* ─── Icon containers ────────────────────────────────────────────────────────── */
 
 .iconStart {
   position: absolute;
-  left: 0.75rem;
+  inset-inline-start: 0.75rem;
   display: flex;
   align-items: center;
   color: var(--color-txt-utility);
@@ -91,7 +91,7 @@
 
 .rightAdornments {
   position: absolute;
-  right: 0.75rem;
+  inset-inline-end: 0.75rem;
   display: flex;
   align-items: center;
   gap: var(--space-1);

@@ -39,13 +39,13 @@
 
 .trigger {
   width: 100%;
-  text-align: left;
+  text-align: start;
   border-radius: var(--radius-field);
   transition: background-color var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
   border: 1px solid var(--color-primary);
   background-color: var(--color-field);
   /* extra right padding to leave room for the clock icon */
-  padding-right: var(--space-9);
+  padding-inline-end: var(--space-9);
   outline: none;
   cursor: pointer;
 }
@@ -78,9 +78,9 @@
 }
 
 /* Sizes */
-.triggerSm { padding-top: var(--space-1-5); padding-bottom: var(--space-1-5); padding-left: var(--space-3); font-size: var(--text-xs); }
-.triggerMd { padding-top: var(--space-2-5); padding-bottom: var(--space-2-5); padding-left: var(--space-5); font-size: var(--text-sm); }
-.triggerLg { padding-top: var(--space-3);  padding-bottom: var(--space-3);  padding-left: var(--space-6);  font-size: var(--text-lg); }
+.triggerSm { padding-top: var(--space-1-5); padding-bottom: var(--space-1-5); padding-inline-start: var(--space-3); font-size: var(--text-xs); }
+.triggerMd { padding-top: var(--space-2-5); padding-bottom: var(--space-2-5); padding-inline-start: var(--space-5); font-size: var(--text-sm); }
+.triggerLg { padding-top: var(--space-3);  padding-bottom: var(--space-3);  padding-inline-start: var(--space-6);  font-size: var(--text-lg); }
 
 /* Text input mode */
 .triggerText {
@@ -108,7 +108,7 @@
 .clockIcon {
   pointer-events: none;
   position: absolute;
-  right: 0.625rem;
+  inset-inline-end: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-txt-secondary);
@@ -126,7 +126,7 @@
 .clockIconBtn {
   pointer-events: auto;
   position: absolute;
-  right: 0.625rem;
+  inset-inline-end: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-txt-secondary);
@@ -166,7 +166,7 @@
   z-index: var(--z-modal);
   margin-top: var(--space-1);
   top: 100%;
-  left: 0;
+  inset-inline-start: 0;
   border-radius: var(--radius-surface);
   border: 1px solid var(--color-surface-3);
   background-color: var(--color-surface-1);
@@ -185,7 +185,7 @@
 }
 
 .columnsWrapper > * + * {
-  border-left: 1px solid var(--color-surface-3);
+  border-inline-start: 1px solid var(--color-surface-3);
 }
 
 /* ─── TimeColumn ──────────────────────────────────────────────────────────────── */

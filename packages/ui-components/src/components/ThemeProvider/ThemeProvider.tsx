@@ -117,6 +117,7 @@ export const MOTION_VAR_MAP: Record<keyof BipMotionOverrides, string> = {
 };
 
 export type BipDensity = 'comfortable' | 'compact';
+export type BipDirection = 'ltr' | 'rtl';
 
 /**
  * Overrides de la horquilla de padding de controles (density.css) — la parte de la
@@ -201,6 +202,8 @@ interface ThemeContextValue {
   colorScheme: BipColorScheme;
   /** undefined = sin opinión, cae al default CSS (:root, [data-density='comfortable']). */
   density: BipDensity | undefined;
+  /** undefined = sin opinión, cae al default del navegador (ltr) — ver styles/rtl.css. */
+  dir: BipDirection | undefined;
   /** Vars CSS resueltas acumuladas (padre + propias) — ver ThemeProvider. */
   resolvedVars: Record<string, string>;
   controls: ThemeControls;
@@ -210,6 +213,7 @@ const DEFAULT_CONTEXT: ThemeContextValue = {
   theme: 'square',
   colorScheme: 'light',
   density: undefined,
+  dir: undefined,
   resolvedVars: {},
   controls: NOOP_CONTROLS,
 };
@@ -340,27 +344,36 @@ export const useColorScheme = (): BipColorScheme =>
 export const useDensity = (): BipDensity | undefined =>
   (useContext(ThemeContext) ?? DEFAULT_CONTEXT).density;
 
+/** undefined si el provider no fija `dir` — cae al default del navegador (ltr). */
+export const useDir = (): BipDirection | undefined =>
+  (useContext(ThemeContext) ?? DEFAULT_CONTEXT).dir;
+
 /**
- * Atributos data-* + style para estampar el eje de tema (incluidas las vars
+ * Atributos data-* / dir + style para estampar el eje de tema (incluidas las vars
  * de marca resueltas) en un nodo portalled (Modal, Toast, DrawerPanel,
  * Calendar, Odontogram popovers) que vive fuera del árbol DOM del provider
  * y por eso no hereda ni el estampado ni las custom properties que hace
  * <ThemeProvider> en su wrapper. `style` ya incluye THEME_RESET_STYLE, así
- * que los call sites no necesitan importarlo aparte. `data-density` solo se
- * incluye cuando el provider lo fija — omitirlo dejaría el atributo con
- * valor `"undefined"` en el DOM en vez de simplemente no estar presente.
+ * que los call sites no necesitan importarlo aparte. `data-density`/`dir`
+ * solo se incluyen cuando el provider los fija — omitirlos dejaría el
+ * atributo con valor `"undefined"` en el DOM en vez de simplemente no
+ * estar presente. `dir` es un atributo HTML nativo (no data-*): portales
+ * lo necesitan explícito porque `[dir='rtl']` en rtl.css no cruza el
+ * límite del portal hacia document.body.
  */
 export const useThemeAttributes = (): {
   'data-theme': BipTheme;
   'data-color-scheme': BipColorScheme;
   'data-density'?: BipDensity;
+  dir?: BipDirection;
   style: React.CSSProperties;
 } => {
-  const { theme, colorScheme, density, resolvedVars } = useContext(ThemeContext) ?? DEFAULT_CONTEXT;
+  const { theme, colorScheme, density, dir, resolvedVars } = useContext(ThemeContext) ?? DEFAULT_CONTEXT;
   return {
     'data-theme': theme,
     'data-color-scheme': colorScheme,
     ...(density ? { 'data-density': density } : {}),
+    ...(dir ? { dir } : {}),
     style: { ...THEME_RESET_STYLE, ...resolvedVars },
   };
 };
@@ -398,6 +411,13 @@ export interface ThemeProviderProps {
   density?: BipDensity;
   /** Overrides de la horquilla de padding de controles — ver density.css. */
   spacing?: BipSpacingOverrides;
+  /**
+   * 'ltr' | 'rtl' — estampa el atributo HTML nativo `dir` en el wrapper (ver
+   * styles/rtl.css § --rtl-x). Mismo tratamiento que `density`: valor directo, sin
+   * modo controlado/no-controlado propio; un provider anidado sin `dir` hereda el
+   * del padre. @default sin fijar (cae al default del navegador, ltr).
+   */
+  dir?: BipDirection;
   /** Escape hatch: cualquier custom property, p. ej. { '--color-selected': '#...' }. Gana sobre el resto de ejes. */
   cssVars?: Record<string, string>;
   children: React.ReactNode;
@@ -448,6 +468,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   motion,
   density: densityProp,
   spacing,
+  dir: dirProp,
   cssVars,
   children,
 }) => {
@@ -500,9 +521,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   const parentContext = useContext(ThemeContext);
 
-  // density no tiene forma no-controlada propia (ver ThemeProviderProps) — si no se
-  // fija en esta instancia, hereda la del provider padre, igual que resolvedVars.
+  // density/dir no tienen forma no-controlada propia (ver ThemeProviderProps) — si no
+  // se fijan en esta instancia, heredan la del provider padre, igual que resolvedVars.
   const density = densityProp ?? parentContext?.density;
+  const dir = dirProp ?? parentContext?.dir;
 
   // Los overrides (tokens/radius/focusRing/motion/spacing/cssVars) casi siempre
   // llegan como literales inline (`tokens={{ colorPrimary: '#...' }}`), que cambian
@@ -540,11 +562,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   );
 
   return (
-    <ThemeContext.Provider value={{ theme, colorScheme, density, resolvedVars, controls }}>
+    <ThemeContext.Provider value={{ theme, colorScheme, density, dir, resolvedVars, controls }}>
       <div
         data-theme={theme}
         data-color-scheme={colorScheme}
         data-density={density}
+        dir={dir}
         style={{ display: 'contents', ...THEME_RESET_STYLE, ...resolvedVars }}
       >
         {children}

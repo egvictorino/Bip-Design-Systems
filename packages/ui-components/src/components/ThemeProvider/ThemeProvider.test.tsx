@@ -288,6 +288,60 @@ describe('ThemeProvider', () => {
     });
   });
 
+  describe('dir prop — mismo tratamiento que density', () => {
+    it('sin dir, no estampa el atributo dir (cae al default del navegador)', () => {
+      render(
+        <ThemeProvider theme="square">
+          <span data-testid="child">contenido</span>
+        </ThemeProvider>
+      );
+      const wrapper = screen.getByTestId('child').parentElement as HTMLElement;
+      expect(wrapper).not.toHaveAttribute('dir');
+    });
+
+    it('estampa dir cuando se fija explícitamente', () => {
+      render(
+        <ThemeProvider theme="square" dir="rtl">
+          <span data-testid="child">contenido</span>
+        </ThemeProvider>
+      );
+      const wrapper = screen.getByTestId('child').parentElement as HTMLElement;
+      expect(wrapper).toHaveAttribute('dir', 'rtl');
+    });
+
+    it('un provider anidado sin dir propio hereda el del padre', () => {
+      render(
+        <ThemeProvider theme="square" dir="rtl">
+          <ThemeProvider theme="square">
+            <span data-testid="child">contenido</span>
+          </ThemeProvider>
+        </ThemeProvider>
+      );
+      const wrapper = screen.getByTestId('child').parentElement as HTMLElement;
+      expect(wrapper).toHaveAttribute('dir', 'rtl');
+    });
+
+    it('useThemeAttributes incluye dir solo cuando está fijado', () => {
+      const Portalled = () => {
+        const attrs = useThemeAttributes();
+        return <span data-testid="portalled" {...attrs} />;
+      };
+      const { rerender } = render(
+        <ThemeProvider theme="square">
+          <Portalled />
+        </ThemeProvider>
+      );
+      expect(screen.getByTestId('portalled')).not.toHaveAttribute('dir');
+
+      rerender(
+        <ThemeProvider theme="square" dir="rtl">
+          <Portalled />
+        </ThemeProvider>
+      );
+      expect(screen.getByTestId('portalled')).toHaveAttribute('dir', 'rtl');
+    });
+  });
+
   describe('modo no-controlado + system + persistencia', () => {
     beforeEach(() => {
       window.localStorage.clear();

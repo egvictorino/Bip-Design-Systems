@@ -1,3 +1,5 @@
+/* Animación decorativa (sin significado direccional que transmitir) — se deja física a
+   propósito, sin --rtl-x. */
 @keyframes progressIndeterminate {
   0%   { transform: translateX(-100%); }
   100% { transform: translateX(300%); }

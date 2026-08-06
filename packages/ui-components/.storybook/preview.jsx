@@ -64,12 +64,24 @@ const preview = {
         dynamicTitle: true,
       },
     },
+    dir: {
+      description: 'Dirección de texto — ver styles/rtl.css',
+      toolbar: {
+        icon: 'transfer',
+        items: [
+          { value: 'ltr', title: 'LTR' },
+          { value: 'rtl', title: 'RTL' },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   initialGlobals: {
     theme: 'square',
     colorScheme: 'light',
     brand: 'default',
     density: 'comfortable',
+    dir: 'ltr',
   },
   decorators: [
     (Story, context) => (
@@ -78,6 +90,7 @@ const preview = {
         colorScheme={context.globals.colorScheme ?? 'light'}
         tokens={BRAND_PRESETS[context.globals.brand ?? 'default']?.tokens}
         density={context.globals.density ?? 'comfortable'}
+        dir={context.globals.dir ?? 'ltr'}
       >
         {/* var(--color-surface-2) resuelve al esquema activo vía data-color-scheme
             estampado por ThemeProvider — el canvas acompaña al toolbar sin

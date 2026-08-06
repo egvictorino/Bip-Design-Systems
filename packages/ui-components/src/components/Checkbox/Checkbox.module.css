@@ -120,7 +120,7 @@
 /* ─── Required asterisk ─────────────────────────────────────────────────────── */
 
 .required {
-  margin-left: var(--space-0-5);
+  margin-inline-start: var(--space-0-5);
   color: var(--color-danger);
 }
 
@@ -133,6 +133,6 @@
 .errorText  { color: var(--color-danger); }
 
 /* Indent to align with label */
-.indentSm { margin-left: 1.375rem; }  /* 0.875rem box + 0.5rem gap */
-.indentMd { margin-left: var(--space-6); }   /* 1rem box + 0.5rem gap */
-.indentLg { margin-left: var(--space-7); }  /* 1.25rem box + 0.5rem gap */
+.indentSm { margin-inline-start: 1.375rem; }  /* 0.875rem box + 0.5rem gap */
+.indentMd { margin-inline-start: var(--space-6); }   /* 1rem box + 0.5rem gap */
+.indentLg { margin-inline-start: var(--space-7); }  /* 1.25rem box + 0.5rem gap */

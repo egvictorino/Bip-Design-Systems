@@ -56,4 +56,14 @@ test.describe('theme matrix', () => {
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveScreenshot('system-color-scheme.png', { fullPage: true });
   });
+
+  test('RTL — SideBySide con dir=rtl: flex/logical properties se espejan sin cambiar el markup', async ({
+    page,
+  }) => {
+    await page.goto(
+      '/iframe.html?id=components-themeprovider--side-by-side&viewMode=story&globals=dir:rtl'
+    );
+    await page.waitForLoadState('networkidle');
+    await expect(page).toHaveScreenshot('rtl-side-by-side.png', { fullPage: true });
+  });
 });

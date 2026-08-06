@@ -43,7 +43,10 @@
   transform: translateX(0);
 }
 
-/* Placement */
+/* Placement — `placement` es un prop físico explícito (DrawerPanel.tsx: 'left' | 'right'),
+   no relativo a inicio/fin de lectura: quien pide placement="right" quiere el borde
+   derecho físico de la pantalla sin importar `dir`, igual que Toast `position`. Se deja
+   left/right + translateX literales a propósito — no usar inset-inline-* / --rtl-x aquí. */
 .placementRight {
   right: 0;
   transform: translateX(100%);
@@ -88,7 +91,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .closeBtn {

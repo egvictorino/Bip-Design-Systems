@@ -24,7 +24,7 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
-.requiredMark { color: var(--color-danger); margin-left: var(--space-0-5); }
+.requiredMark { color: var(--color-danger); margin-inline-start: var(--space-0-5); }
 
 /* ─── Input wrapper ─────────────────────────────────────────────────────────── */
 
@@ -151,8 +151,8 @@
   pointer-events: none;
 }
 
-.stepBtnLeft  { left: 0; }
-.stepBtnRight { right: 0; }
+.stepBtnLeft  { inset-inline-start: 0; }
+.stepBtnRight { inset-inline-end: 0; }
 
 /* Per-size button padding + icon size */
 
@@ -178,31 +178,31 @@
   white-space: nowrap;
 }
 
-.adornmentLeft  { padding-right: var(--space-1); }
-.adornmentRight { padding-left: var(--space-1); }
+.adornmentLeft  { padding-inline-end: var(--space-1); }
+.adornmentRight { padding-inline-start: var(--space-1); }
 
 /* Stepper button effective widths by size:
    sm = 0.5rem + 1rem icon + 0.5rem = 2rem
    md = 0.625rem + 1rem icon + 0.625rem = 2.25rem
    lg = 0.75rem + 1rem icon + 0.75rem = 2.5rem  */
 
-.prefixSm { left: 2rem; }
-.prefixMd { left: 2.25rem; }
-.prefixLg { left: 2.5rem; }
+.prefixSm { inset-inline-start: 2rem; }
+.prefixMd { inset-inline-start: 2.25rem; }
+.prefixLg { inset-inline-start: 2.5rem; }
 
-.suffixSm { right: 2rem; }
-.suffixMd { right: 2.25rem; }
-.suffixLg { right: 2.5rem; }
+.suffixSm { inset-inline-end: 2rem; }
+.suffixMd { inset-inline-end: 2.25rem; }
+.suffixLg { inset-inline-end: 2.5rem; }
 
 /* Input extra padding when prefix/suffix present */
 
-.inputSmPrefix { padding-left: var(--space-16); }
-.inputMdPrefix { padding-left: var(--space-18); }
-.inputLgPrefix { padding-left: var(--space-22); }
+.inputSmPrefix { padding-inline-start: var(--space-16); }
+.inputMdPrefix { padding-inline-start: var(--space-18); }
+.inputLgPrefix { padding-inline-start: var(--space-22); }
 
-.inputSmSuffix { padding-right: var(--space-16); }
-.inputMdSuffix { padding-right: var(--space-18); }
-.inputLgSuffix { padding-right: var(--space-22); }
+.inputSmSuffix { padding-inline-end: var(--space-16); }
+.inputMdSuffix { padding-inline-end: var(--space-18); }
+.inputLgSuffix { padding-inline-end: var(--space-22); }
 
 /* ─── Helper / Error message ────────────────────────────────────────────────── */
 

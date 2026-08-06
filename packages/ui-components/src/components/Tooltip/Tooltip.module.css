@@ -51,11 +51,19 @@
 }
 
 /* ─── Positions (base — align="center" by default) ───────────────────────────── */
+/* `position` (TooltipProps) es un prop físico explícito ('top'|'bottom'|'left'|'right'),
+   igual que DrawerPanel `placement`/Toast `position` — position="left" pide que la
+   burbuja aparezca al lado físico izquierdo del trigger sin importar `dir`. Todo
+   left/right/translateX ligado al position de .left/.right se deja literal a propósito.
+   left: 50% en .top/.bottom SÍ se vuelve inset-inline-start: es el punto medio del eje
+   horizontal, simétrico — no cambia de valor, solo de nombre, y así el resto del
+   bloque (alignStart/alignEnd más abajo, que sí es relativo a inicio/fin de lectura)
+   queda consistente con la misma propiedad. */
 
 /* Top — state cerrado: desplazado hacia abajo */
 .top {
   bottom: 100%;
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) translateY(8px);
   margin-bottom: var(--space-2);
 }
@@ -65,7 +73,7 @@
 }
 
 .top .arrow {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) rotate(45deg);
   top: 100%;
   margin-top: calc(var(--space-1) * -1);
@@ -74,7 +82,7 @@
 /* Bottom — state cerrado: desplazado hacia arriba */
 .bottom {
   top: 100%;
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) translateY(-8px);
   margin-top: var(--space-2);
 }
@@ -84,7 +92,7 @@
 }
 
 .bottom .arrow {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) rotate(45deg);
   bottom: 100%;
   margin-bottom: calc(var(--space-1) * -1);
@@ -130,85 +138,90 @@
 
 /* ─── Align overrides ─────────────────────────────────────────────────────────── */
 
+/* `align` (TooltipProps) SÍ es relativo a inicio/fin de lectura — 'start'|'center'|'end',
+   no 'left'|'right' — así que a diferencia de `position` arriba, estos bloques usan
+   inset-inline-start/end: align="start" debe pegar la burbuja al lado de INICIO de
+   lectura (izquierda en LTR, derecha en RTL), no a la izquierda física siempre. */
+
 /* top + alignStart */
 .top.alignStart {
-  left: 0;
+  inset-inline-start: 0;
   transform: translateY(8px);
 }
 .top.alignStart[data-open='true'] {
   transform: translateY(0);
 }
 .top.alignStart .arrow {
-  left: 0.75rem;
+  inset-inline-start: 0.75rem;
   transform: rotate(45deg);
 }
 
 /* top + alignCenter (explicit — same as base .top) */
 .top.alignCenter {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) translateY(8px);
 }
 .top.alignCenter[data-open='true'] {
   transform: translateX(-50%) translateY(0);
 }
 .top.alignCenter .arrow {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) rotate(45deg);
 }
 
 /* top + alignEnd */
 .top.alignEnd {
-  left: auto;
-  right: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
   transform: translateY(8px);
 }
 .top.alignEnd[data-open='true'] {
   transform: translateY(0);
 }
 .top.alignEnd .arrow {
-  left: auto;
-  right: 0.75rem;
+  inset-inline-start: auto;
+  inset-inline-end: 0.75rem;
   transform: rotate(45deg);
 }
 
 /* bottom + alignStart */
 .bottom.alignStart {
-  left: 0;
+  inset-inline-start: 0;
   transform: translateY(-8px);
 }
 .bottom.alignStart[data-open='true'] {
   transform: translateY(0);
 }
 .bottom.alignStart .arrow {
-  left: 0.75rem;
+  inset-inline-start: 0.75rem;
   transform: rotate(45deg);
 }
 
 /* bottom + alignCenter */
 .bottom.alignCenter {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) translateY(-8px);
 }
 .bottom.alignCenter[data-open='true'] {
   transform: translateX(-50%) translateY(0);
 }
 .bottom.alignCenter .arrow {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) rotate(45deg);
 }
 
 /* bottom + alignEnd */
 .bottom.alignEnd {
-  left: auto;
-  right: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
   transform: translateY(-8px);
 }
 .bottom.alignEnd[data-open='true'] {
   transform: translateY(0);
 }
 .bottom.alignEnd .arrow {
-  left: auto;
-  right: 0.75rem;
+  inset-inline-start: auto;
+  inset-inline-end: 0.75rem;
   transform: rotate(45deg);
 }
 

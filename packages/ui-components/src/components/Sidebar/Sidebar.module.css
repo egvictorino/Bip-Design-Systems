@@ -15,21 +15,23 @@
 
 .panel {
   position: fixed;
-  left: 0;
+  inset-inline-start: 0;
   top: 0;
   z-index: var(--z-modal);
   display: flex;
   height: 100vh;
   flex-direction: column;
-  border-right: 1px solid var(--color-edge);
+  border-inline-end: 1px solid var(--color-edge);
   transition: width var(--duration-normal) var(--ease-standard), transform var(--duration-normal) var(--ease-standard);
 }
 
 .panelExpanded  { width: 15rem; }
 .panelCollapsed { width: 4rem; }
 
+/* --rtl-x espeja el slide-in: el panel entra desde inset-inline-start, que es la
+   izquierda física en LTR y la derecha en RTL — ver styles/rtl.css. */
 .panelMobileOpen   { transform: translateX(0); }
-.panelMobileClosed { transform: translateX(-100%); }
+.panelMobileClosed { transform: translateX(calc(var(--rtl-x) * -100%)); }
 
 @media (min-width: 768px) {
   .panelMobileClosed { transform: translateX(0); }
@@ -44,13 +46,13 @@
 .variantDark {
   background-color: var(--color-surface-4);
   color: var(--color-txt-white);
-  border-right-color: transparent;
+  border-inline-end-color: transparent;
 }
 
 .variantPrimary {
   background-color: var(--color-primary);
   color: var(--color-txt-on-primary);
-  border-right-color: transparent;
+  border-inline-end-color: transparent;
 }
 
 /* Dark variant — cascade overrides. --color-surface-4 es un neutro fijo (no
@@ -168,7 +170,7 @@
 /* ─── Badge ──────────────────────────────────────────────────────────────────── */
 
 .badge {
-  margin-left: auto;
+  margin-inline-start: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -205,7 +207,7 @@
 .subMenuChevron {
   width: 0.75rem;
   height: 0.75rem;
-  margin-left: auto;
+  margin-inline-start: auto;
   flex-shrink: 0;
   transition: transform var(--duration-normal) var(--ease-standard);
 }
