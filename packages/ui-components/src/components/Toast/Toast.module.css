@@ -7,6 +7,9 @@
 }
 
 /* ─── Positions ──────────────────────────────────────────────────────────────── */
+/* `position` (ToastPosition) es un prop físico explícito, igual que DrawerPanel
+   `placement` — topLeft pide la esquina física superior-izquierda sin importar `dir`.
+   left/right + translateX se dejan literales a propósito en todo este bloque. */
 
 .topLeft     { top: 1rem; left: 1rem; }
 .topCenter   { top: 1rem; left: 50%; transform: translateX(-50%); }

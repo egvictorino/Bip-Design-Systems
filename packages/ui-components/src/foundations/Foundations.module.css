@@ -210,7 +210,7 @@
 }
 
 .themingSeedRow code {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-txt-utility);
@@ -274,7 +274,7 @@
 .themingCopyButton {
   position: absolute;
   top: 0.75rem;
-  right: 0.75rem;
+  inset-inline-end: 0.75rem;
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-control);
   border: none;

@@ -24,7 +24,7 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
-.required { color: var(--color-danger); margin-left: var(--space-0-5); }
+.required { color: var(--color-danger); margin-inline-start: var(--space-0-5); }
 
 /* ─── Select wrapper (for icon) ─────────────────────────────────────────────── */
 
@@ -37,7 +37,7 @@
 .select {
   appearance: none;
   border-radius: var(--radius-field);
-  padding-right: var(--space-8);
+  padding-inline-end: var(--space-8);
   transition: border-color var(--duration-fast), background-color var(--duration-fast), box-shadow var(--duration-fast);
   width: 100%;
 }
@@ -105,7 +105,7 @@
 .chevron {
   pointer-events: none;
   position: absolute;
-  right: 0.625rem;
+  inset-inline-end: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
   transition: color var(--duration-fast), transform var(--duration-fast);

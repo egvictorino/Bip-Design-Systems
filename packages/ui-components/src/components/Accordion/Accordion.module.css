@@ -23,7 +23,7 @@
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  text-align: left;
+  text-align: start;
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-txt);

@@ -26,7 +26,7 @@
 .tabListLineVertical {
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--color-edge);
+  border-inline-end: 1px solid var(--color-edge);
   border-bottom: none;
   flex-shrink: 0;
 }
@@ -136,14 +136,14 @@
 .tabLineVertical {
   padding: var(--space-2) var(--space-4);
   margin-bottom: var(--space-0);
-  margin-right: calc(var(--space-px) * -1);
+  margin-inline-end: calc(var(--space-px) * -1);
   border-bottom: none;
-  border-right: 2px solid transparent;
-  text-align: left;
+  border-inline-end: 2px solid transparent;
+  text-align: start;
 }
 
 .tabLineVerticalActive {
-  border-right-color: var(--color-primary);
+  border-inline-end-color: var(--color-primary);
   color: var(--color-primary);
 }
 
@@ -151,7 +151,7 @@
 
 .tabLineVerticalInactive:not(:disabled):hover {
   color: var(--color-txt);
-  border-right-color: var(--color-edge-hover);
+  border-inline-end-color: var(--color-edge-hover);
 }
 
 /* ─── Pill variant ───────────────────────────────────────────────────────────── */
@@ -178,11 +178,11 @@
 
 .tabBoxed {
   padding: var(--space-2) var(--space-4);
-  border-right: 1px solid var(--color-edge);
+  border-inline-end: 1px solid var(--color-edge);
 }
 
 .tabBoxed:last-child {
-  border-right: none;
+  border-inline-end: none;
 }
 
 .tabBoxedActive {

@@ -201,12 +201,12 @@
 /* ─── Trigger right side (clear + chevron) ────────────────────────────────────── */
 
 .triggerRight {
-  margin-left: auto;
+  margin-inline-start: auto;
   display: flex;
   align-items: center;
   gap: var(--space-1);
   flex-shrink: 0;
-  padding-left: var(--space-1);
+  padding-inline-start: var(--space-1);
 }
 
 /* Clear-all button */
@@ -265,8 +265,8 @@
   position: absolute;
   z-index: var(--z-modal);
   top: 0.25rem;
-  left: 0;
-  right: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
   background-color: var(--color-surface-1);
   border: 1px solid var(--color-surface-3);
   border-radius: var(--radius-control);
@@ -288,7 +288,7 @@
 .searchIcon {
   pointer-events: none;
   position: absolute;
-  left: 0.625rem;
+  inset-inline-start: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-txt-disabled);

@@ -70,7 +70,7 @@
 .thumb {
   position: absolute;
   top: 50%;
-  left: 2px;
+  inset-inline-start: 2px;
   transform: translateY(-50%);
   border-radius: var(--radius-pill);
   background-color: var(--color-surface-1);
@@ -83,10 +83,11 @@
 .thumbMd { width: 1rem;    height: 1rem; }
 .thumbLg { width: 1.25rem; height: 1.25rem; }
 
-/* Thumb: checked translation */
-.row:has(:checked) .thumbSm { transform: translateY(-50%) translateX(1rem); }
-.row:has(:checked) .thumbMd { transform: translateY(-50%) translateX(1.25rem); }
-.row:has(:checked) .thumbLg { transform: translateY(-50%) translateX(1.5rem); }
+/* Thumb: checked translation — --rtl-x espeja el desplazamiento (el thumb viaja hacia
+   inset-inline-end, que es la derecha física en LTR y la izquierda en RTL) — ver styles/rtl.css. */
+.row:has(:checked) .thumbSm { transform: translateY(-50%) translateX(calc(var(--rtl-x) * 1rem)); }
+.row:has(:checked) .thumbMd { transform: translateY(-50%) translateX(calc(var(--rtl-x) * 1.25rem)); }
+.row:has(:checked) .thumbLg { transform: translateY(-50%) translateX(calc(var(--rtl-x) * 1.5rem)); }
 
 /* ─── Label ─────────────────────────────────────────────────────────────────── */
 
@@ -114,6 +115,6 @@
 .errorText  { color: var(--color-danger); }
 
 /* Indent to align with label (accounts for track width + gap) */
-.indentSm { margin-left: var(--space-10); }  /* 2rem track + 0.5rem gap */
-.indentMd { margin-left: var(--space-12); }    /* 2.5rem track + 0.5rem gap */
-.indentLg { margin-left: var(--space-14); }  /* 3rem track + 0.5rem gap */
+.indentSm { margin-inline-start: var(--space-10); }  /* 2rem track + 0.5rem gap */
+.indentMd { margin-inline-start: var(--space-12); }    /* 2.5rem track + 0.5rem gap */
+.indentLg { margin-inline-start: var(--space-14); }  /* 3rem track + 0.5rem gap */

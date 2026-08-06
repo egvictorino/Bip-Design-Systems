@@ -24,7 +24,7 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
-.requiredMark { color: var(--color-danger); margin-left: var(--space-0-5); }
+.requiredMark { color: var(--color-danger); margin-inline-start: var(--space-0-5); }
 
 /* ─── Textarea base ─────────────────────────────────────────────────────────── */
 

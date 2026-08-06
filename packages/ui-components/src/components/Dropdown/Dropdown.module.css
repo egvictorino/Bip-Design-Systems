@@ -17,10 +17,10 @@
 
 /* ─── Placements ─────────────────────────────────────────────────────────────── */
 
-.bottomStart { top: 100%; left: 0; margin-top: var(--space-1); }
-.bottomEnd   { top: 100%; right: 0; margin-top: var(--space-1); }
-.topStart    { bottom: 100%; left: 0; margin-bottom: var(--space-1); }
-.topEnd      { bottom: 100%; right: 0; margin-bottom: var(--space-1); }
+.bottomStart { top: 100%; inset-inline-start: 0; margin-top: var(--space-1); }
+.bottomEnd   { top: 100%; inset-inline-end: 0; margin-top: var(--space-1); }
+.topStart    { bottom: 100%; inset-inline-start: 0; margin-bottom: var(--space-1); }
+.topEnd      { bottom: 100%; inset-inline-end: 0; margin-bottom: var(--space-1); }
 
 /* ─── Item ───────────────────────────────────────────────────────────────────── */
 
@@ -31,7 +31,7 @@
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-sm);
-  text-align: left;
+  text-align: start;
   transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;
   border: none;
@@ -149,7 +149,7 @@
 }
 
 .submenuArrow {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: var(--text-base);
   line-height: 1;
   color: var(--color-txt-secondary);
@@ -158,6 +158,6 @@
 .submenu {
   position: absolute;
   top: 0;
-  left: 100%;
-  margin-left: var(--space-1);
+  inset-inline-start: 100%;
+  margin-inline-start: var(--space-1);
 }

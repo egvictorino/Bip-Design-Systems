@@ -20,7 +20,7 @@
   padding: var(--space-2) var(--space-0);
   font-size: var(--text-sm);
   color: var(--color-txt-secondary);
-  text-align: left;
+  text-align: start;
 }
 
 /* ─── Head ───────────────────────────────────────────────────────────────────── */
@@ -118,6 +118,6 @@
 
 /* ─── Alignment ──────────────────────────────────────────────────────────────── */
 
-.alignLeft   { text-align: left; }
+.alignLeft   { text-align: start; }
 .alignCenter { text-align: center; }
-.alignRight  { text-align: right; }
+.alignRight  { text-align: end; }

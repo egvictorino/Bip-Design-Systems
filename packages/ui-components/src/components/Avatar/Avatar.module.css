@@ -79,11 +79,11 @@
 }
 
 /* Status sizes */
-.statusXs { width: 0.5rem;    height: 0.5rem;   bottom: -0.125rem; right: -0.125rem; }
-.statusSm { width: 0.625rem;  height: 0.625rem; bottom: -0.125rem; right: -0.125rem; }
-.statusMd { width: 0.75rem;   height: 0.75rem;  bottom: 0;         right: 0; }
-.statusLg { width: 0.875rem;  height: 0.875rem; bottom: 0;         right: 0; }
-.statusXl { width: 1rem;      height: 1rem;     bottom: 0.125rem;  right: 0.125rem; }
+.statusXs { width: 0.5rem;    height: 0.5rem;   bottom: -0.125rem; inset-inline-end: -0.125rem; }
+.statusSm { width: 0.625rem;  height: 0.625rem; bottom: -0.125rem; inset-inline-end: -0.125rem; }
+.statusMd { width: 0.75rem;   height: 0.75rem;  bottom: 0;         inset-inline-end: 0; }
+.statusLg { width: 0.875rem;  height: 0.875rem; bottom: 0;         inset-inline-end: 0; }
+.statusXl { width: 1rem;      height: 1rem;     bottom: 0.125rem;  inset-inline-end: 0.125rem; }
 
 /* Status colors */
 .online  { background-color: var(--color-success); }
@@ -125,14 +125,14 @@
 }
 
 .groupItemOffset {
-  margin-left: calc(var(--space-2) * -1);
+  margin-inline-start: calc(var(--space-2) * -1);
 }
 
 .overflow {
   position: relative;
   display: inline-flex;
   flex-shrink: 0;
-  margin-left: calc(var(--space-2) * -1);
+  margin-inline-start: calc(var(--space-2) * -1);
 }
 
 .overflowInner {
