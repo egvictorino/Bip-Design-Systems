@@ -205,28 +205,31 @@ jobs:
           PKG_VERSION=$(node -p "require('./packages/ui-components/package.json').version")
           echo "version=$PKG_VERSION" >> $GITHUB_OUTPUT
 
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          CHANGELOG_FILE="packages/ui-components/CHANGELOG.md"
+          {
+            echo "body<<CHANGELOG_EOF"
+            awk -v ver="## [$VERSION]" '
+              index($0, ver) == 1 { found=1; print; next }
+              found && /^## \[/ { exit }
+              found { print }
+            ' "$CHANGELOG_FILE"
+            echo ""
+            echo "### Recursos"
+            echo "- [NPM](https://www.npmjs.com/package/@bip-design-systems/ui-components)"
+            echo "- [Storybook](https://egvictorino.github.io/bip-ui/)"
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.version.outputs.version }}
-          release_name: Release v${{ steps.version.outputs.version }}
-          body: |
-            ## 🚀 Cambios en Producción
-
-            **Versión:** `${{ steps.version.outputs.version }}`
-            **Commit:** ${{ github.sha }}
-            **Autor:** ${{ github.actor }}
-
-            ### Instalación
-            ```sh
-            npm install @bip-design-systems/ui-components@${{ steps.version.outputs.version }}
-            # o
-            pnpm add @bip-design-systems/ui-components@${{ steps.version.outputs.version }}
-            ```
-
-            ### Recursos
-            - [NPM](https://www.npmjs.com/package/@bip-design-systems/ui-components)
-            - [Storybook](https://egvictorino.github.io/bip-ui/)
+          name: Release v${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.body }}
           draft: false
           prerelease: false
 

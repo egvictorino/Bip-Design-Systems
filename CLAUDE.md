@@ -98,6 +98,22 @@ Four workflows, one per environment:
 - Tests for **both** packages always run **before** build (fail-fast): `pnpm --filter @bip-design-systems/shared-utils test` then `pnpm --filter @bip-design-systems/ui-components test`.
 - Build order in every pipeline: `shared-utils → ui-components`.
 
+## Versioning
+
+`packages/ui-components` keeps a `CHANGELOG.md` (Keep a Changelog format). No changesets/automated
+versioning — both the bump and the changelog entry are manual.
+
+- Every PR into `dev` that changes `ui-components` behavior (new prop, new component, bug fix,
+  breaking change) adds an entry under `## [Unreleased]` in `CHANGELOG.md`.
+- The version bump in `package.json` happens when the release is cut for `main`, not per-PR:
+  rename `## [Unreleased]` to `## [x.y.z] - YYYY-MM-DD` and add a fresh empty `## [Unreleased]`
+  above it.
+- `production.yml`'s `create-release` job extracts that version's section from `CHANGELOG.md` as
+  the GitHub release body (via `awk`, matching the `## [x.y.z]` header) — keep entries scoped
+  under their version header so extraction doesn't bleed into the next one.
+- `shared-utils` does not currently have its own CHANGELOG or release tagging; its version in
+  `package.json` is bumped independently when it changes, with no automated release step.
+
 ## Component Patterns (`packages/ui-components`)
 
 ### Structure for every new component
