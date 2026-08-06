@@ -10,25 +10,25 @@
 .tooltip {
   pointer-events: none;
   position: absolute;
-  z-index: 50;
+  z-index: var(--z-modal);
   max-width: 20rem;
   border-radius: var(--radius-surface);
-  --tooltip-bg: var(--color-txt);
-  --tooltip-color: var(--color-txt-white);
+  --tooltip-bg: var(--color-surface-inverse);
+  --tooltip-color: var(--color-txt-on-inverse);
   --tooltip-border: transparent;
   background-color: var(--tooltip-bg);
   color: var(--tooltip-color);
   border: 1px solid var(--tooltip-border);
   padding: 0.375rem 0.625rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1rem;
   font-weight: 500;
   box-shadow: var(--shadow-md);
   visibility: hidden;
   opacity: 0;
-  /* Salida: 100ms ease-in; visibility espera a que opacity termine */
-  transition: opacity 100ms ease-in, transform 100ms ease-in,
-              visibility 0s linear 100ms;
+  /* Salida: var(--duration-instant) var(--ease-in); visibility espera a que opacity termine */
+  transition: opacity var(--duration-instant) var(--ease-in), transform var(--duration-instant) var(--ease-in),
+              visibility 0s linear var(--duration-instant);
   white-space: normal;
 }
 
@@ -36,8 +36,8 @@
 .tooltip[data-open='true'] {
   visibility: visible;
   opacity: 1;
-  /* Entrada: 150ms ease-out; visibility cambia inmediatamente */
-  transition: opacity 150ms ease-out, transform 150ms ease-out, visibility 0s;
+  /* Entrada: var(--duration-fast) var(--ease-out); visibility cambia inmediatamente */
+  transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out), visibility 0s;
 }
 
 /* ─── Arrow ─────────────────────────────────────────────────────────────────── */

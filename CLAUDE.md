@@ -219,6 +219,25 @@ To use in a `.module.css` file: `background-color: var(--color-primary);`
 
 To add a token: edit `tokens.css` directly — add the light value under `:root, [data-color-scheme='light']` and, if it should differ in dark mode, a matching override under `:root[data-color-scheme='dark'], [data-color-scheme='dark']`. **Both selectors are double** (`:root` + attribute-only) — `:root` alone only matches `<html>`, never a nested `<ThemeProvider>` wrapper `<div>`, so a bare `:root` block would silently fail to re-resolve derived `var()` references inside a nested provider. No registration in `cn.ts` required.
 
+**Non-color primitives** (`src/styles/primitives.css` — invariant to `data-theme`/`data-color-scheme`, consumed directly by components, no `[data-theme=...]` layer needed):
+```css
+/* Typography */
+--text-3xs, --text-2xs, --text-xs, --text-sm, --text-base, --text-lg, --text-xl, --text-2xl
+--leading-tight, --leading-normal, --leading-relaxed
+--font-normal, --font-medium, --font-semibold, --font-bold
+
+/* Motion — overridable via ThemeProvider `motion` prop */
+--duration-instant, --duration-fast, --duration-normal, --duration-slow
+--ease-standard, --ease-out, --ease-in
+
+/* Focus ring — overridable via ThemeProvider `focusRing` prop */
+--focus-ring-width, --focus-ring-offset, --focus-ring-color, --focus-ring
+
+/* Z-index — not exposed on ThemeProvider (app-wide stacking, not a brand concern) */
+--z-base, --z-raised, --z-dropdown, --z-overlay, --z-modal, --z-toast
+```
+`--focus-ring` is a compound token (`0 0 0 var(--focus-ring-offset) var(--color-surface-1), 0 0 0 calc(...) var(--focus-ring-color)`) — components use `box-shadow: var(--focus-ring);` directly; a danger-variant focus ring redeclares only `--focus-ring-color: var(--color-danger);` in the same rule instead of duplicating the shadow. `prefers-reduced-motion: reduce` collapses all four `--duration-*` tokens to `0ms` globally in `index.css` — components don't need their own media query as long as their transitions reference `var(--duration-*)`.
+
 **Seed vs. derived tokens.** Within each color-scheme block, tokens are either:
 - **Seeds** — hex literals, one per color family (`--color-primary`, `--color-secondary`, `--color-danger`, `--color-info`, `--color-success`, `--color-warning`, `--color-unique`, `--color-link`, `--color-txt`, `--color-surface-1`, `--color-edge`, `--color-field`). These are the tokens a consumer overrides for brand theming.
 - **Derived** — everything else in that family (`-hover`, `-press`, `-light`, `-subtle`, `-text`, etc.), computed from the seed with `color-mix(in srgb, var(--color-x), black|white N%)`. Light derives toward `black`; dark derives toward `white`. Overriding a seed automatically recolors its whole family.
@@ -227,6 +246,8 @@ To add a token: edit `tokens.css` directly — add the light value under `:root,
 When adding a token, decide first which seed it derives from — don't add a new hex literal unless it genuinely doesn't belong to any existing family (e.g. `--color-selected`).
 
 **`Foundations/Colors` and `Foundations/Radius`** (Storybook, `src/foundations/`) document every token live — `tokens.data.ts` parses `tokens.css` at build time via `?raw` import (see `src/vite-env.d.ts`) and classifies each token as seed/derived, so the docs page cannot drift from the actual file. Never hand-maintain a duplicate token list for documentation purposes again (a prior `tailwind.tokens.js` doing exactly that was deleted for this reason).
+
+**`Foundations/Theming`** (`src/foundations/Theming.stories.tsx`) is a live playground, not a static doc page: `<input type="color">` per fill seed, a computed-contrast panel (ratio + AA pass/fail via `contrastRatio()`), a copy-to-clipboard `<ThemeProvider>` snippet, and a gallery of the components most likely to paint text over a fill (Button, Avatar, Tabs, Pagination). It's also how you manually verify a change to `ON_TEXT_VAR_MAP`/`--color-txt-on-*` didn't regress — try `colorPrimary: '#ffe066'` (a light yellow) and confirm every gallery item keeps readable text. The Storybook toolbar's `brand` global (`src/foundations/brandPresets.ts`) applies the same presets to *every* story, not just this one — `canary` (`#ffe066`) is the one to reach for when eyeballing any component under a light-override brand.
 
 **Brand theming via `ThemeProvider`.** `ThemeProvider` accepts a `tokens` prop (Ant Design `ConfigProvider`-style) to override seeds at runtime, no CSS build step required:
 
@@ -243,8 +264,13 @@ When adding a token, decide first which seed it derives from — don't add a new
 - Nested `<ThemeProvider>`s merge with their parent — a nested provider only overrides the seeds it declares.
 - Portalled components (Modal, Toast, DrawerPanel, Calendar, Odontogram popovers) read the resolved vars via `useThemeAttributes()` (returns `{ 'data-theme', 'data-color-scheme', style }`) since `createPortal` moves them outside the provider's DOM subtree and they'd otherwise fall back to the default palette.
 - Adding a new seed: add it to `tokens.css` (both schemes) **and** to `TOKEN_VAR_MAP` in `ThemeProvider.tsx` — `tokens.test.ts` asserts every `TOKEN_VAR_MAP` entry points to a real token.
+- `focusRing` (sibling prop) overrides `{ width, offset, color }` against `--focus-ring-*` in `primitives.css` — the double box-shadow ring every focusable component uses (`box-shadow: var(--focus-ring)`), instead of the hand-written `0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary)` that used to be duplicated per component.
+- `motion` (sibling prop) overrides `{ durationInstant, durationFast, durationNormal, durationSlow, easeStandard, easeOut, easeIn }` against `--duration-*`/`--ease-*` in `primitives.css`.
+- All four "flat override" axes (`radius`, `focusRing`, `motion`, and the non-scoped keys of `tokens`) share one resolver — `resolveVarMap(overrides, VAR_MAP)` in `ThemeProvider.tsx` — so adding a fifth axis means adding one `*_VAR_MAP` constant and one `resolveVarMap()` call, not a new bespoke resolver.
 
-**Automatic contrast on fill seeds.** Overriding `colorPrimary`, `colorDanger`, `colorSuccess`, `colorWarning`, `colorInfo`, or `colorUnique` also recomputes the matching `--color-txt-on-*` token via `pickReadableText()` (WCAG relative luminance, picks white or `--color-txt`'s dark value against the override) — a light `colorPrimary` won't leave white text stranded on a light button. Components painting text over one of these fills must consume `--color-txt-on-*`, never a hardcoded `--color-txt-white` — see `Button`, `Avatar`, `Stepper`, `Sidebar` (`variant="primary"`) for the pattern.
+**Automatic contrast on fill seeds.** Overriding `colorPrimary`, `colorDanger`, `colorSuccess`, `colorWarning`, `colorInfo`, or `colorUnique` also recomputes the matching `--color-txt-on-*` token via `pickReadableText()` (WCAG relative luminance, picks white or `--color-txt`'s dark value against the override) — a light `colorPrimary` won't leave white text stranded on a light button. Components painting text over one of these fills must consume `--color-txt-on-*`, **never** `--color-txt-white`, which is reserved for a short, explicit allowlist of fixed-neutral surfaces that aren't brand seeds (`Sidebar` `.variantDark` on `--color-surface-4`, `Spinner`'s `.white` variant, `Avatar`'s non-brand `bg*` fallbacks) — see `Button`, `Avatar` (`bgPrimary`/`bgDanger`/`bgViolet`), `Stepper`, `Sidebar` (`variant="primary"`) for the `--color-txt-on-*` pattern. `src/styles/on-text.test.ts` fails the build if `--color-txt-white` shows up anywhere outside that allowlist. Dev builds also get a `console.warn` from `resolveTokenVars()` when an override's computed contrast falls below WCAG AA (4.5:1) against both text options.
+
+Two fixed-neutral surfaces that deliberately invert relative to the page — `--color-surface-inverse` / `--color-txt-on-inverse` (used by `Tooltip`'s default bubble) — follow the same seed/derived split as color but are **not** brand-overridable via `tokens`; they exist so a component can flip light↔dark independent of the active `colorScheme`.
 
 **`system`, uncontrolled mode, persistence, SSR.** `theme`/`colorScheme` are controlled-or-uncontrolled (React standard pattern: prop wins if passed, else internal state seeded by `defaultTheme`/`defaultColorScheme`). `colorScheme` additionally accepts `'system'`, resolved live via `useSyncExternalStore` over `matchMedia('(prefers-color-scheme: dark)')` — **never stamped as `'system'` in the DOM**, always the resolved `light`/`dark`. `useThemeControls()` exposes `{ theme, colorScheme, resolvedColorScheme, setTheme, setColorScheme, toggleColorScheme }` for building a toggle without lifting state (no-op outside a provider or on a controlled axis). `storageKey` persists the uncontrolled preference to `localStorage` (best-effort, wrapped in `try/catch`). `getThemeInitScript({ storageKey })` returns a plain-JS IIFE string to inline in `<head>` before hydration — the only way to avoid a FOUC, since it must run before React mounts.
 

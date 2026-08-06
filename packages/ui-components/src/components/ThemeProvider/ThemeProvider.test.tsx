@@ -170,6 +170,21 @@ describe('ThemeProvider', () => {
       expect(vars['--color-txt-on-primary']).toBe('#ff00ff');
     });
 
+    it('warns in dev when a fill seed override fails WCAG AA contrast', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      // Gris medio: ni blanco (4.17:1) ni el oscuro del sistema (4.21:1) alcanzan 4.5:1 AA.
+      resolveTokenVars({ colorPrimary: '#7c7c7c' }, 'light', undefined);
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('colorPrimary'));
+      warnSpy.mockRestore();
+    });
+
+    it('does not warn for a fill seed that already passes WCAG AA', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      resolveTokenVars({ colorPrimary: '#111111' }, 'light', undefined);
+      expect(warnSpy).not.toHaveBeenCalled();
+      warnSpy.mockRestore();
+    });
+
     it('fontFamily maps to --font-sans', () => {
       render(
         <ThemeProvider theme="square" tokens={{ fontFamily: 'Poppins, sans-serif' }}>

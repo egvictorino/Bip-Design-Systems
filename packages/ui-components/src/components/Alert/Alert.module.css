@@ -50,13 +50,13 @@
 }
 
 .title {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.25rem;
   font-weight: 600;
 }
 
 .body {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.25rem;
 }
 
@@ -78,7 +78,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  transition: background-color 150ms;
+  transition: background-color var(--duration-fast);
   line-height: 0;
 }
 

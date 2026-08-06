@@ -65,6 +65,16 @@
   --color-txt-utility: #6e6e6e;
   --color-txt-white: #ffffff;
 
+  /* Superficie invertida — para elementos que deliberadamente voltean el
+     esquema de color de la página (Tooltip por defecto: fondo oscuro con
+     texto claro incluso en modo claro). --color-surface-inverse replica el
+     --color-txt del esquema activo; --color-txt-on-inverse es su contraparte
+     legible. A diferencia de --color-txt-white, SÍ se sobreescribe en dark
+     (ver bloque dark más abajo) para que el efecto de inversión se mantenga
+     en ambos esquemas en vez de colapsar a texto claro sobre fondo claro. */
+  --color-surface-inverse: #191919;
+  --color-txt-on-inverse: #ffffff;
+
   /* Text — contraste automático sobre relleno de marca (ver ThemeProvider `tokens`,
      src/lib/contrast.ts). Default estático para las semillas sin override — cuando
      el consumidor sobrescribe colorPrimary/colorDanger/etc., ThemeProvider recalcula
@@ -178,6 +188,11 @@
   --color-txt-secondary: #a3a3a3;
   --color-txt-utility: #8a8a8a;
   /* --color-txt-white: invariante, ver comentario arriba */
+
+  /* Superficie invertida — opuesta a --color-surface-inverse de light, para
+     que el efecto de inversión (Tooltip) se mantenga en ambos esquemas. */
+  --color-surface-inverse: #f2f2f2;
+  --color-txt-on-inverse: #191919;
 
   /* Text — contraste automático sobre relleno de marca. Nota: estos valores
      son independientes del esquema — comparan contra el fill en sí, no

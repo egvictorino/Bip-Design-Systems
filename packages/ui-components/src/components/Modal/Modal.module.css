@@ -3,14 +3,14 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: var(--z-modal);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   background-color: var(--color-scrim);
   opacity: 0;
-  transition: opacity 150ms ease;
+  transition: opacity var(--duration-fast) ease;
 }
 
 .backdropOpen { opacity: 1; }
@@ -28,7 +28,7 @@
   box-shadow: var(--shadow-xl);
   opacity: 0;
   transform: scale(0.95);
-  transition: opacity 150ms ease, transform 150ms ease;
+  transition: opacity var(--duration-fast) ease, transform var(--duration-fast) ease;
 }
 
 .dialog:focus { outline: none; }
@@ -57,7 +57,7 @@
 }
 
 .title {
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--color-txt);
   margin: 0;
@@ -71,7 +71,7 @@
   border-radius: var(--radius-control);
   padding: 0.25rem;
   color: var(--color-txt-secondary);
-  transition: background-color 150ms, color 150ms;
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -85,7 +85,7 @@
 .closeBtn:focus { outline: none; }
 
 .closeBtn:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .closeBtnIcon { width: 1.25rem; height: 1.25rem; }

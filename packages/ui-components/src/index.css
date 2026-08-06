@@ -32,3 +32,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
+
+/* Todo componente que anima usa --duration-*/--ease-* (ver primitives.css) —
+   colapsarlos a 0ms aquí desactiva la animación de TODA la librería de una
+   vez, sin tener que auditar cada @keyframes/transition individualmente. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+  }
+}

@@ -7,7 +7,7 @@ import React, {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { pickReadableText } from '../../lib/contrast';
+import { pickReadableText, contrastRatio } from '../../lib/contrast';
 
 export type BipTheme = 'square' | 'rounded';
 export type BipColorScheme = 'light' | 'dark';
@@ -69,7 +69,7 @@ export interface BipRadiusOverrides {
   containerLg?: string;
 }
 
-const RADIUS_VAR_MAP: Record<keyof BipRadiusOverrides, string> = {
+export const RADIUS_VAR_MAP: Record<keyof BipRadiusOverrides, string> = {
   marker: '--radius-marker',
   field: '--radius-field',
   control: '--radius-control',
@@ -78,12 +78,58 @@ const RADIUS_VAR_MAP: Record<keyof BipRadiusOverrides, string> = {
   containerLg: '--radius-container-lg',
 };
 
-const resolveRadiusVars = (radius: BipRadiusOverrides | undefined): Record<string, string> => {
-  if (!radius) return {};
+/**
+ * Overrides del anillo de foco — reemplaza el `box-shadow: 0 0 0 2px
+ * var(--color-surface-1), 0 0 0 4px var(--color-primary)` que antes se
+ * repetía a mano en cada componente (ver `--focus-ring` en primitives.css).
+ */
+export interface BipFocusRingOverrides {
+  width?: string;
+  offset?: string;
+  color?: string;
+}
+
+export const FOCUS_RING_VAR_MAP: Record<keyof BipFocusRingOverrides, string> = {
+  width: '--focus-ring-width',
+  offset: '--focus-ring-offset',
+  color: '--focus-ring-color',
+};
+
+/** Overrides de motion — duraciones/easings de primitives.css. */
+export interface BipMotionOverrides {
+  durationInstant?: string;
+  durationFast?: string;
+  durationNormal?: string;
+  durationSlow?: string;
+  easeStandard?: string;
+  easeOut?: string;
+  easeIn?: string;
+}
+
+export const MOTION_VAR_MAP: Record<keyof BipMotionOverrides, string> = {
+  durationInstant: '--duration-instant',
+  durationFast: '--duration-fast',
+  durationNormal: '--duration-normal',
+  durationSlow: '--duration-slow',
+  easeStandard: '--ease-standard',
+  easeOut: '--ease-out',
+  easeIn: '--ease-in',
+};
+
+/**
+ * Resuelve cualquier objeto de overrides "plano" (radius/focusRing/motion —
+ * cada clave independiente, a diferencia de `tokens` que deriva toda una
+ * familia de una sola semilla) contra su *_VAR_MAP correspondiente.
+ */
+const resolveVarMap = <T extends object>(
+  overrides: T | undefined,
+  map: Record<keyof T, string>
+): Record<string, string> => {
+  if (!overrides) return {};
   const vars: Record<string, string> = {};
-  for (const [key, value] of Object.entries(radius)) {
+  for (const [key, value] of Object.entries(overrides) as [keyof T, string | undefined][]) {
     if (value === undefined) continue;
-    vars[RADIUS_VAR_MAP[key as keyof BipRadiusOverrides]] = value;
+    vars[map[key]] = value;
   }
   return vars;
 };
@@ -96,7 +142,7 @@ const resolveRadiusVars = (radius: BipRadiusOverrides | undefined): Record<strin
  * no tienen contraparte --color-txt-on-* porque hoy ningún componente pinta
  * texto plano sobre ellas.
  */
-const ON_TEXT_VAR_MAP: Partial<Record<keyof BipTokenOverrides, string>> = {
+export const ON_TEXT_VAR_MAP: Partial<Record<keyof BipTokenOverrides, string>> = {
   colorPrimary: '--color-txt-on-primary',
   colorDanger: '--color-txt-on-danger',
   colorSuccess: '--color-txt-on-success',
@@ -194,6 +240,30 @@ const writeStoredPreference = (storageKey: string, value: StoredThemePreference)
 export const useThemeControls = (): ThemeControls =>
   (useContext(ThemeContext) ?? DEFAULT_CONTEXT).controls;
 
+/** Evita re-avisar el mismo hex en cada render — solo una vez por valor visto. */
+const warnedLowContrastValues = new Set<string>();
+
+/**
+ * WCAG AA para texto normal (4.5:1) — el mismo umbral que
+ * `pickReadableText()` no puede garantizar cuando ninguna de las dos
+ * opciones (blanco/oscuro del sistema) alcanza un contraste aceptable
+ * contra un override extremo (p. ej. un gris medio).
+ */
+const AA_CONTRAST_THRESHOLD = 4.5;
+
+const warnIfLowContrast = (seedKey: string, hex: string, onTextHex: string): void => {
+  if (process.env.NODE_ENV === 'production') return;
+  if (warnedLowContrastValues.has(hex)) return;
+  const ratio = contrastRatio(hex, onTextHex);
+  if (ratio >= AA_CONTRAST_THRESHOLD) return;
+  warnedLowContrastValues.add(hex);
+  // eslint-disable-next-line no-console
+  console.warn(
+    `[bip-design-systems] tokens.${seedKey}="${hex}" no alcanza contraste WCAG AA (${ratio.toFixed(2)}:1, ` +
+      `mínimo 4.5:1) contra el texto calculado (${onTextHex}). Prueba un tono más saturado u oscuro/claro.`
+  );
+};
+
 /**
  * Resuelve el mapa final { '--color-primary': '#...' } a partir de los
  * overrides comunes + el refinamiento del esquema activo + el escape hatch
@@ -217,7 +287,11 @@ export const resolveTokenVars = (
     vars[TOKEN_VAR_MAP[typedKey]] = value;
 
     const onTextVar = ON_TEXT_VAR_MAP[typedKey];
-    if (onTextVar) vars[onTextVar] = pickReadableText(value);
+    if (onTextVar) {
+      const onTextHex = pickReadableText(value);
+      vars[onTextVar] = onTextHex;
+      warnIfLowContrast(typedKey, value, onTextHex);
+    }
   }
   return { ...vars, ...cssVars };
 };
@@ -276,7 +350,11 @@ export interface ThemeProviderProps {
   tokens?: BipTokenOverrides & { light?: BipTokenOverrides; dark?: BipTokenOverrides };
   /** Overrides de los tokens semánticos de radius — independiente de `theme`. */
   radius?: BipRadiusOverrides;
-  /** Escape hatch: cualquier custom property, p. ej. { '--color-selected': '#...' }. Gana sobre `tokens` y `radius`. */
+  /** Overrides del anillo de foco (width/offset/color) — ver `--focus-ring` en primitives.css. */
+  focusRing?: BipFocusRingOverrides;
+  /** Overrides de duración/easing de transiciones — ver primitives.css. */
+  motion?: BipMotionOverrides;
+  /** Escape hatch: cualquier custom property, p. ej. { '--color-selected': '#...' }. Gana sobre el resto de ejes. */
   cssVars?: Record<string, string>;
   children: React.ReactNode;
 }
@@ -322,6 +400,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   storageKey,
   tokens,
   radius,
+  focusRing,
+  motion,
   cssVars,
   children,
 }) => {
@@ -365,17 +445,27 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   }, []);
 
   const parentContext = useContext(ThemeContext);
+
+  // Los overrides (tokens/radius/focusRing/motion/cssVars) casi siempre llegan
+  // como literales inline (`tokens={{ colorPrimary: '#...' }}`), que cambian
+  // de identidad en cada render del padre aunque el contenido sea idéntico.
+  // Comparar por valor (JSON.stringify) evita que resolvedVars — y con él,
+  // todo el subárbol que lee sus vars — se recalcule en cada render.
+  const overridesKey = JSON.stringify([tokens, radius, focusRing, motion, cssVars]);
   const resolvedVars = useMemo(
     () => ({
       ...(parentContext?.resolvedVars ?? {}),
-      // cssVars se aplica al final (más abajo) para que gane sobre tokens Y radius,
+      // cssVars se aplica al final (más abajo) para que gane sobre el resto,
       // por eso no se pasa aquí — resolveTokenVars también lo acepta cuando se
       // llama standalone (ver tests), pero el componente resuelve la precedencia él mismo.
       ...resolveTokenVars(tokens, colorScheme, undefined),
-      ...resolveRadiusVars(radius),
+      ...resolveVarMap(radius, RADIUS_VAR_MAP),
+      ...resolveVarMap(focusRing, FOCUS_RING_VAR_MAP),
+      ...resolveVarMap(motion, MOTION_VAR_MAP),
       ...cssVars,
     }),
-    [parentContext, tokens, colorScheme, radius, cssVars]
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- overridesKey ya cubre tokens/radius/focusRing/motion/cssVars por valor
+    [parentContext, colorScheme, overridesKey]
   );
 
   const controls = useMemo<ThemeControls>(

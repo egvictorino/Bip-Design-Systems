@@ -12,12 +12,12 @@
 
 .label {
   font-weight: 500;
-  transition: color 150ms;
+  transition: color var(--duration-fast);
 }
 
-.labelSm   { font-size: 0.75rem;  line-height: 1rem; }
-.labelMd   { font-size: 0.875rem; line-height: 1.25rem; }
-.labelLg   { font-size: 1rem;     line-height: 1.5rem; }
+.labelSm   { font-size: var(--text-xs);  line-height: 1rem; }
+.labelMd   { font-size: var(--text-sm); line-height: 1.25rem; }
+.labelLg   { font-size: var(--text-base);     line-height: 1.5rem; }
 
 .labelNormal  { color: var(--color-txt-utility); }
 .labelFocused { color: var(--color-txt); }
@@ -42,7 +42,7 @@
   width: 100%;
   text-align: center;
   border-radius: var(--radius-field);
-  transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+  transition: border-color var(--duration-fast), background-color var(--duration-fast), box-shadow var(--duration-fast);
 }
 
 .input:focus {
@@ -63,9 +63,9 @@
 
 /* ─── Input sizes — padding extra para los botones stepper ──────────────────── */
 
-.inputSm { padding: 6px 2rem;   font-size: 0.75rem;  line-height: 1rem; }
-.inputMd { padding: 10px 2.5rem; font-size: 0.875rem; line-height: 1.25rem; }
-.inputLg { padding: 12px 3rem;  font-size: 1.125rem; line-height: 1.75rem; }
+.inputSm { padding: 6px 2rem;   font-size: var(--text-xs);  line-height: 1rem; }
+.inputMd { padding: 10px 2.5rem; font-size: var(--text-sm); line-height: 1.25rem; }
+.inputLg { padding: 12px 3rem;  font-size: var(--text-lg); line-height: 1.75rem; }
 
 /* ─── Variant: outlined ─────────────────────────────────────────────────────── */
 
@@ -74,13 +74,13 @@
   background-color: var(--color-field);
 }
 .outlined:hover:not(:disabled) { border-color: var(--color-edge-hover); }
-.outlined:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
+.outlined:focus-visible { box-shadow: var(--focus-ring); }
 
 .outlinedError {
   border: 1px solid var(--color-danger);
   background-color: var(--color-field);
 }
-.outlinedError:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger); }
+.outlinedError:focus-visible  { --focus-ring-color: var(--color-danger); box-shadow: var(--focus-ring); }
 
 /* ─── Variant: filled ───────────────────────────────────────────────────────── */
 
@@ -88,13 +88,13 @@
   border: 1px solid var(--color-edge);
   background-color: var(--color-secondary);
 }
-.filled:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
+.filled:focus-visible { box-shadow: var(--focus-ring); }
 
 .filledError {
   background-color: var(--color-danger-light);
   border: 1px solid transparent;
 }
-.filledError:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger); }
+.filledError:focus-visible  { --focus-ring-color: var(--color-danger); box-shadow: var(--focus-ring); }
 
 /* ─── Variant: bare ─────────────────────────────────────────────────────────── */
 
@@ -128,7 +128,7 @@
   align-items: center;
   justify-content: center;
   color: var(--color-txt-secondary);
-  transition: color 150ms;
+  transition: color var(--duration-fast);
   padding: 0;
   border-radius: var(--radius-control);
 }
@@ -142,7 +142,7 @@
 }
 
 .stepBtn:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .stepBtn:disabled {
@@ -206,9 +206,9 @@
 
 /* ─── Helper / Error message ────────────────────────────────────────────────── */
 
-.helperSm { font-size: 0.75rem;  line-height: 1rem; }
-.helperMd { font-size: 0.75rem;  line-height: 1rem; }
-.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+.helperSm { font-size: var(--text-xs);  line-height: 1rem; }
+.helperMd { font-size: var(--text-xs);  line-height: 1rem; }
+.helperLg { font-size: var(--text-sm); line-height: 1.25rem; }
 
 .helperText { color: var(--color-txt-secondary); }
 .errorText  { color: var(--color-danger); }

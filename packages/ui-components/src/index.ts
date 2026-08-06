@@ -15,6 +15,8 @@ export {
   useThemeControls,
   getThemeInitScript,
   THEME_RESET_STYLE,
+  TOKEN_VAR_MAP,
+  resolveTokenVars,
 } from './components/ThemeProvider';
 export type {
   ThemeProviderProps,
@@ -25,7 +27,11 @@ export type {
   BipColorSchemePreference,
   BipTokenOverrides,
   BipRadiusOverrides,
+  BipFocusRingOverrides,
+  BipMotionOverrides,
 } from './components/ThemeProvider';
+
+export { contrastRatio, pickReadableText } from './lib/contrast';
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/Accordion';
 export type {

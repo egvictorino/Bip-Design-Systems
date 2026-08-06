@@ -19,14 +19,14 @@
 }
 
 .label {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.25rem;
   font-weight: 500;
   color: var(--color-txt);
 }
 
 .valueText {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.25rem;
   color: var(--color-txt-secondary);
 }
@@ -65,7 +65,7 @@
   inset-block: 0;
   width: 33.333%;
   border-radius: var(--radius-pill);
-  animation: progressIndeterminate 1.5s ease-in-out infinite;
+  animation: progressIndeterminate 1.5s var(--ease-standard) infinite;
 }
 
 /* ─── Striped ───────────────────────────────────────────────────────────────── */
@@ -98,7 +98,7 @@
 .helperText {
   display: block;
   margin-top: 0.25rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1rem;
   color: var(--color-txt-secondary);
 }

@@ -28,7 +28,7 @@
   position: absolute;
   right: 0;
   top: 100%;
-  z-index: 20;
+  z-index: var(--z-dropdown);
   margin-top: 0.25rem;
   display: flex;
   min-width: 160px;
@@ -54,7 +54,7 @@
 }
 
 .bulkCount {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-txt);
 }

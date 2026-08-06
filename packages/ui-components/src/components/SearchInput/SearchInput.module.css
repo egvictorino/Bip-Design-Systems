@@ -14,19 +14,19 @@
 
 .label {
   font-weight: 500;
-  transition: color 150ms;
+  transition: color var(--duration-fast);
 }
 
 .labelSm {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .labelMd {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .labelLg {
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .labelNormal {
@@ -110,7 +110,7 @@
 .input {
   width: 100%;
   border-radius: var(--radius-field);
-  transition: background-color 150ms, color 150ms, border-color 150ms;
+  transition: background-color var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
 }
 
 .input:focus {
@@ -134,7 +134,7 @@
   padding-right: 2rem;
   padding-top: 6px;
   padding-bottom: 6px;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .inputMd {
@@ -142,7 +142,7 @@
   padding-right: 2.25rem;
   padding-top: 10px;
   padding-bottom: 10px;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .inputLg {
@@ -150,7 +150,7 @@
   padding-right: 2.5rem;
   padding-top: 12px;
   padding-bottom: 12px;
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
 }
 
 .inputCursorText {
@@ -169,7 +169,7 @@
 }
 
 .outlined:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .outlinedError {
@@ -178,7 +178,8 @@
 }
 
 .outlinedError:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 /* ─── Variant: filled ─────────────────────────────────────────────────────── */
@@ -189,7 +190,7 @@
 }
 
 .filled:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .filledError {
@@ -198,7 +199,8 @@
 }
 
 .filledError:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 /* ─── Variant: bare ───────────────────────────────────────────────────────── */
@@ -222,11 +224,12 @@
 }
 
 .bare:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .bareError:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 /* ─── Clear button ────────────────────────────────────────────────────────── */
@@ -236,7 +239,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-txt-secondary);
-  transition: color 150ms;
+  transition: color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -252,7 +255,7 @@
 }
 
 .clearBtn:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
   border-radius: var(--radius-control);
 }
 
@@ -271,15 +274,15 @@
 /* ─── Helper / error text ─────────────────────────────────────────────────── */
 
 .helperTextSm {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .helperTextMd {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .helperTextLg {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .helperText {

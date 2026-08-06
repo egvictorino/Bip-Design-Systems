@@ -80,11 +80,11 @@
 /* ─── Tab base ───────────────────────────────────────────────────────────────── */
 
 .tab {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: color 150ms, background-color 150ms, border-color 150ms;
+  transition: color var(--duration-fast), background-color var(--duration-fast), border-color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -93,7 +93,7 @@
 .tab:focus { outline: none; }
 
 .tab:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
   border-radius: var(--radius-marker);
 }
 
@@ -103,12 +103,12 @@
 
 .tabSm {
   padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .tabLg {
   padding: 0.75rem 1.25rem;
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 /* ─── Line variant ───────────────────────────────────────────────────────────── */
@@ -187,7 +187,7 @@
 
 .tabBoxedActive {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
 }
 
 .tabBoxedInactive {
@@ -211,7 +211,7 @@
 }
 
 .tabIndicatorAnimated {
-  transition: left 200ms ease, width 200ms ease;
+  transition: left var(--duration-normal) ease, width var(--duration-normal) ease;
 }
 
 /* ─── TabPanel ───────────────────────────────────────────────────────────────── */

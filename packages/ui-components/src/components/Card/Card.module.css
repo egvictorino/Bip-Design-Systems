@@ -43,12 +43,12 @@
 
 .clickable {
   cursor: pointer;
-  transition: box-shadow 200ms;
+  transition: box-shadow var(--duration-normal);
 }
 .clickable:hover  { box-shadow: var(--shadow-lg); }
 .clickable:active { box-shadow: var(--shadow-xs); }
 .clickable:focus  { outline: none; }
-.clickable:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
+.clickable:focus-visible { box-shadow: var(--focus-ring); }
 
 /* ─── Loading skeleton ──────────────────────────────────────────────────────── */
 

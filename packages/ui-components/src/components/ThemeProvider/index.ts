@@ -7,6 +7,10 @@ export {
   getThemeInitScript,
   THEME_RESET_STYLE,
   TOKEN_VAR_MAP,
+  RADIUS_VAR_MAP,
+  ON_TEXT_VAR_MAP,
+  FOCUS_RING_VAR_MAP,
+  MOTION_VAR_MAP,
   resolveTokenVars,
 } from './ThemeProvider';
 export type {
@@ -18,4 +22,6 @@ export type {
   BipColorSchemePreference,
   BipTokenOverrides,
   BipRadiusOverrides,
+  BipFocusRingOverrides,
+  BipMotionOverrides,
 } from './ThemeProvider';

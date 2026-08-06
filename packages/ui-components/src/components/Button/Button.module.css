@@ -11,7 +11,7 @@
   gap: 0.5rem;
   border-radius: var(--radius-field);
   font-weight: 500;
-  transition: background-color 150ms, color 150ms, border-color 150ms, opacity 150ms;
+  transition: background-color var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast), opacity var(--duration-fast);
   cursor: pointer;
   border: none;
 }
@@ -22,7 +22,7 @@
 
 .button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .button:disabled {
@@ -47,7 +47,7 @@
 }
 .primary:hover:not(:disabled) { background-color: var(--color-primary-hover); }
 .primary:active:not(:disabled) { background-color: var(--color-primary-press); }
-.primary:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
+.primary:focus-visible { box-shadow: var(--focus-ring); }
 
 .secondary {
   background-color: var(--color-secondary);
@@ -64,7 +64,7 @@
 }
 .bare:hover:not(:disabled) { color: var(--color-primary-hover); border-color: var(--color-primary-hover); }
 .bare:active:not(:disabled) { color: var(--color-primary-press); border-color: var(--color-primary-press); }
-.bare:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
+.bare:focus-visible { box-shadow: var(--focus-ring); }
 
 .soul {
   background-color: transparent;
@@ -72,7 +72,7 @@
 }
 .soul:hover:not(:disabled) { color: var(--color-primary-hover); }
 .soul:active:not(:disabled) { color: var(--color-primary-press); }
-.soul:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary); }
+.soul:focus-visible { box-shadow: var(--focus-ring); }
 
 .danger {
   background-color: var(--color-danger);
@@ -80,13 +80,13 @@
 }
 .danger:hover:not(:disabled) { background-color: var(--color-danger-hover); }
 .danger:active:not(:disabled) { background-color: var(--color-danger-press); }
-.danger:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-danger); }
+.danger:focus-visible  { --focus-ring-color: var(--color-danger); box-shadow: var(--focus-ring); }
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
-.sm { padding: 6px 12px;  font-size: 0.75rem;  line-height: 1rem; }
-.md { padding: 10px 20px; font-size: 0.875rem; line-height: 1.25rem; }
-.lg { padding: 12px 24px; font-size: 1.125rem; line-height: 1.75rem; }
+.sm { padding: 6px 12px;  font-size: var(--text-xs);  line-height: 1rem; }
+.md { padding: 10px 20px; font-size: var(--text-sm); line-height: 1.25rem; }
+.lg { padding: 12px 24px; font-size: var(--text-lg); line-height: 1.75rem; }
 
 /* ─── Spinner icon ──────────────────────────────────────────────────────────── */
 

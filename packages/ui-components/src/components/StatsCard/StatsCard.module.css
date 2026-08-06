@@ -54,7 +54,7 @@
 }
 
 .title {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.25rem;
   font-weight: 500;
   color: var(--color-txt-secondary);
@@ -79,14 +79,14 @@
 }
 
 .value {
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-txt);
   line-height: 1;
 }
 
 .sm .value {
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
 }
 
 .lg .value {
@@ -99,7 +99,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.125rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1rem;
   font-weight: 500;
   margin-bottom: 0.125rem;
@@ -117,7 +117,7 @@
 /* ─── Description ───────────────────────────────────────────────────────────── */
 
 .description {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1rem;
   color: var(--color-txt-secondary);
 }
@@ -133,7 +133,7 @@
   display: block;
   border-radius: var(--radius-control);
   background-color: var(--color-edge);
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: pulse 1.5s var(--ease-standard) infinite;
 }
 
 .loadingTitle {

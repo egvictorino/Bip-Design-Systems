@@ -1,10 +1,17 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { describe, it, expect } from 'vitest';
-import { TOKEN_VAR_MAP } from '../components/ThemeProvider/ThemeProvider';
+import {
+  TOKEN_VAR_MAP,
+  RADIUS_VAR_MAP,
+  ON_TEXT_VAR_MAP,
+  FOCUS_RING_VAR_MAP,
+  MOTION_VAR_MAP,
+} from '../components/ThemeProvider/ThemeProvider';
 
 const TOKENS_CSS_PATH = resolve(__dirname, '../tokens.css');
 const THEMES_CSS_PATH = resolve(__dirname, './themes.css');
+const PRIMITIVES_CSS_PATH = resolve(__dirname, './primitives.css');
 
 /**
  * TOKEN_VAR_MAP entries that live outside tokens.css by design — tokens.css
@@ -106,6 +113,59 @@ describe('tokens.css — dominio del eje de color/esquema', () => {
       }
       const tokenName = cssVar.replace(/^--/, '');
       expect(lightTokens.has(tokenName)).toBe(true);
+    }
+  });
+
+  it('ON_TEXT_VAR_MAP (contraste automático) apunta a tokens --color-txt-on-* realmente declarados en ambos esquemas', () => {
+    const tokensCss = readFileSync(TOKENS_CSS_PATH, 'utf-8');
+    const lightTokens = new Set(
+      extractDeclaredTokens(extractBlock(tokensCss, /\[data-color-scheme='light'\]\s*{([^}]*)}/s))
+    );
+    const darkTokens = new Set(
+      extractDeclaredTokens(extractBlock(tokensCss, /\[data-color-scheme='dark'\]\s*{([^}]*)}/s))
+    );
+
+    for (const cssVar of Object.values(ON_TEXT_VAR_MAP)) {
+      const tokenName = cssVar.replace(/^--/, '');
+      expect(lightTokens.has(tokenName)).toBe(true);
+      expect(darkTokens.has(tokenName)).toBe(true);
+    }
+  });
+});
+
+describe('styles/themes.css — dominio del eje de tema (square/rounded)', () => {
+  it('RADIUS_VAR_MAP (ThemeProvider) solo apunta a tokens semánticos realmente declarados', () => {
+    const themesCss = readFileSync(THEMES_CSS_PATH, 'utf-8');
+    for (const cssVar of Object.values(RADIUS_VAR_MAP)) {
+      expect(themesCss).toContain(`${cssVar}:`);
+    }
+  });
+
+  it("[data-theme='square'] y [data-theme='rounded'] declaran exactamente el mismo conjunto de tokens", () => {
+    const themesCss = readFileSync(THEMES_CSS_PATH, 'utf-8');
+    const squareTokens = new Set(
+      extractDeclaredTokens(extractBlock(themesCss, /\[data-theme='square'\]\s*{([^}]*)}/s))
+    );
+    const roundedTokens = new Set(
+      extractDeclaredTokens(extractBlock(themesCss, /\[data-theme='rounded'\]\s*{([^}]*)}/s))
+    );
+
+    expect([...squareTokens].sort()).toEqual([...roundedTokens].sort());
+  });
+});
+
+describe('styles/primitives.css — dominio invariante (motion, focus ring, tipografía, z-index)', () => {
+  it('FOCUS_RING_VAR_MAP (ThemeProvider) solo apunta a tokens realmente declarados', () => {
+    const primitivesCss = readFileSync(PRIMITIVES_CSS_PATH, 'utf-8');
+    for (const cssVar of Object.values(FOCUS_RING_VAR_MAP)) {
+      expect(primitivesCss).toContain(`${cssVar}:`);
+    }
+  });
+
+  it('MOTION_VAR_MAP (ThemeProvider) solo apunta a tokens realmente declarados', () => {
+    const primitivesCss = readFileSync(PRIMITIVES_CSS_PATH, 'utf-8');
+    for (const cssVar of Object.values(MOTION_VAR_MAP)) {
+      expect(primitivesCss).toContain(`${cssVar}:`);
     }
   });
 });
