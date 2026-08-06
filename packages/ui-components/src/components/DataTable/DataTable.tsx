@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '../Table';
 import { Pagination } from '../Pagination';

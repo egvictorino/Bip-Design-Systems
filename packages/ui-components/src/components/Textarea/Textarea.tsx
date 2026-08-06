@@ -1,3 +1,5 @@
+"use client";
+
 import React, { forwardRef, useId, useState, useRef, useEffect, useCallback } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
