@@ -15,6 +15,7 @@ import { Calendar } from './components/Calendar';
 import { Card, CardBody } from './components/Card';
 import { Checkbox } from './components/Checkbox';
 import { ConfirmDialog } from './components/ConfirmDialog';
+import { Container } from './components/Container';
 import { DataTable } from './components/DataTable';
 import { DatePicker } from './components/DatePicker';
 import { DateRangePicker } from './components/DateRangePicker';
@@ -23,6 +24,8 @@ import { DrawerPanel } from './components/DrawerPanel';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from './components/Dropdown';
 import { EmptyState } from './components/EmptyState';
 import { FileUpload } from './components/FileUpload';
+import { Grid } from './components/Grid';
+import { Heading } from './components/Heading';
 import { Input } from './components/Input';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from './components/Modal';
 import { MultiSelect } from './components/MultiSelect';
@@ -45,10 +48,12 @@ import {
 } from './components/Sidebar';
 import { Skeleton } from './components/Skeleton';
 import { Spinner } from './components/Spinner';
+import { Stack } from './components/Stack';
 import { StatsCard } from './components/StatsCard';
 import { Stepper, StepperStep } from './components/Stepper';
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from './components/Table';
 import { Tabs, TabList, Tab, TabPanel } from './components/Tabs';
+import { Text } from './components/Text';
 import { Textarea } from './components/Textarea';
 import { TimePicker } from './components/TimePicker';
 import { Timeline, TimelineItem } from './components/Timeline';
@@ -133,6 +138,7 @@ const REGISTRY: Record<string, () => ReactElement> = {
       variant="info"
     />
   ),
+  Container: () => <Container maxWidth="md">Contenido centrado.</Container>,
   DataTable: () => (
     <DataTable
       columns={[
@@ -164,6 +170,13 @@ const REGISTRY: Record<string, () => ReactElement> = {
   ),
   EmptyState: () => <EmptyState title="No hay resultados" description="Ajusta los filtros e intenta de nuevo." />,
   FileUpload: () => <FileUpload />,
+  Grid: () => (
+    <Grid columns={2}>
+      <div>uno</div>
+      <div>dos</div>
+    </Grid>
+  ),
+  Heading: () => <Heading level={2}>Título de sección</Heading>,
   Input: () => <Input variant="outlined" label="Correo" type="email" placeholder="correo@ejemplo.com" />,
   Modal: () => (
     <Modal isOpen onClose={noop} size="md">
@@ -232,6 +245,12 @@ const REGISTRY: Record<string, () => ReactElement> = {
   ),
   Skeleton: () => <Skeleton variant="text" />,
   Spinner: () => <Spinner size="md" variant="primary" />,
+  Stack: () => (
+    <Stack direction="row" gap="2">
+      <div>uno</div>
+      <div>dos</div>
+    </Stack>
+  ),
   StatsCard: () => <StatsCard title="Citas hoy" value={12} trend={8} description="vs. ayer" />,
   Stepper: () => (
     <div style={{ width: 560 }}>
@@ -268,6 +287,7 @@ const REGISTRY: Record<string, () => ReactElement> = {
       <TabPanel value="historial">Contenido de historial.</TabPanel>
     </Tabs>
   ),
+  Text: () => <Text color="secondary">Texto de cuerpo.</Text>,
   Textarea: () => <Textarea variant="outlined" label="Descripción" placeholder="Escribe aquí..." rows={4} />,
   TimePicker: () => <TimePicker placeholder="HH:MM" />,
   Timeline: () => (

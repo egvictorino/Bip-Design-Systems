@@ -9,7 +9,7 @@ import { SearchInput } from '../SearchInput';
 import { Checkbox } from '../Checkbox';
 import { Button } from '../Button';
 import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../lib/useClickOutside';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import styles from './DataTable.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

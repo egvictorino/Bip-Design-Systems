@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../lib/useClickOutside';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import styles from './Dropdown.module.css';
 
 // ─── Context ─────────────────────────────────────────────────────────────────

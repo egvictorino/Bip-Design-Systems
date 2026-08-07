@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
+import { useFocusTrap, useScrollLock } from '../../hooks';
 import { useThemeAttributes } from '../ThemeProvider';
 import styles from './DrawerPanel.module.css';
 
@@ -27,9 +28,6 @@ const sizeStyles: Record<NonNullable<DrawerPanelProps['size']>, string> = {
   lg: styles.sizeLg,
 };
 
-const FOCUSABLE_SELECTORS =
-  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const DrawerPanel: React.FC<DrawerPanelProps> = ({
@@ -46,16 +44,10 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const { style: themeStyle, ...themeAttrs } = useThemeAttributes();
-  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   // Animation state
   const [mounted, setMounted] = useState(open);
   const [visible, setVisible] = useState(open);
-
-  const restoreFocus = useCallback(() => {
-    previouslyFocusedRef.current?.focus();
-    previouslyFocusedRef.current = null;
-  }, []);
 
   // Animation lifecycle — controls mount/unmount with delayed exit
   useEffect(() => {
@@ -70,56 +62,8 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
     }
   }, [open]);
 
-  // Lock scroll + save focus when opening
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-      previouslyFocusedRef.current = document.activeElement as HTMLElement;
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
-
-  // Focus trap + Escape
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-        return;
-      }
-      if (e.key === 'Tab') {
-        const focusable = panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTORS);
-        if (!focusable || focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            last.focus();
-            e.preventDefault();
-          }
-        } else {
-          if (document.activeElement === last) {
-            first.focus();
-            e.preventDefault();
-          }
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    // Focus first focusable element inside panel
-    const firstFocusable = panelRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTORS);
-    (firstFocusable ?? panelRef.current)?.focus();
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      restoreFocus();
-    };
-  }, [open, onClose, restoreFocus]);
+  useScrollLock(open);
+  useFocusTrap(panelRef, { enabled: open, onEscape: onClose });
 
   if (!mounted) return null;
 

@@ -248,7 +248,7 @@ jobs:
             echo ""
             echo "### Recursos"
             echo "- [NPM](https://www.npmjs.com/package/@bip-design-systems/ui-components)"
-            echo "- [Storybook](https://egvictorino.github.io/bip-ui/)"
+            echo "- [Storybook](https://egvictorino.github.io/Bip-Design-Systems/)"
             echo "CHANGELOG_EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -270,5 +270,5 @@ jobs:
       - name: Success notification
         run: |
           echo "✅ Deploy a PRODUCCIÓN completado exitosamente"
-          echo "🔗 Storybook: https://tu-usuario.github.io/bip-ui/"
+          echo "🔗 Storybook: https://egvictorino.github.io/Bip-Design-Systems/"
           # Integración con Slack/Discord/Email

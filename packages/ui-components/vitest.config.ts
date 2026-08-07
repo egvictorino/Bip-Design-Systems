@@ -24,5 +24,25 @@ export default defineConfig({
         classNameStrategy: 'non-scoped',
       },
     },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.stories.{ts,tsx}',
+        'src/test-setup.ts',
+        'src/vite-env.d.ts',
+        'src/**/*.d.ts',
+      ],
+      // Umbral fijado en el nivel actual (ver CHANGELOG) para que no baje — no es un número
+      // aspiracional: súbelo cuando la cobertura real suba, no lo bajes para pasar el build.
+      thresholds: {
+        statements: 90,
+        branches: 85,
+        functions: 88,
+        lines: 90,
+      },
+    },
   },
 });

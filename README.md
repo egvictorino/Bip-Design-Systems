@@ -451,19 +451,26 @@ git commit -m "hotfix: descripción"
 
 ## CI/CD
 
+> Para contribuir (flujo de ramas, changesets, cómo regenerar baselines visuales), ver
+> [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 Cuatro workflows de GitHub Actions, uno por ambiente:
 
 | Workflow | Trigger | Pasos clave |
 |----------|---------|-------------|
-| `pr-validation.yml` | PR a cualquier rama | validación de branch → lint → **tests** → build |
+| `pr-validation.yml` | PR a cualquier rama | validación de branch → lint → typecheck → **tests** → build → verificación de package (`publint`/`attw`) → **regresión visual** (job aparte, propio container) → **changeset check** (solo PR→`dev`) → security audit (solo PR→`qa`, no bloqueante) |
 | `dev.yml` | push/PR a `dev` | lint → **tests** → build → storybook preview |
-| `qa.yml` | push/PR a `qa` | security audit · lint → **tests** → build → storybook QA |
-| `production.yml` | push/PR a `main` | security · lint → **tests** → type-check → build → GitHub Pages → release tag |
+| `qa.yml` | push/PR a `qa` | lint → **tests** → build → **e2e-consumer** (tarball real) → storybook QA |
+| `production.yml` | push/PR a `main` | security audit (bloqueante) · lint · **tests** · type-check → build → **e2e-consumer** → publish npm → GitHub Pages → release tag |
 
 **Reglas del pipeline:**
 - Todos los workflows instalan dependencias con `--frozen-lockfile` para garantizar reproducibilidad.
 - Los tests siempre se ejecutan **antes** del build (fail-fast).
 - Orden de build garantizado: `shared-utils → ui-components`.
+- `e2e-consumer` (solo `qa.yml`/`production.yml`) instala el tarball real de `pnpm pack`, no un
+  link de workspace — es un gate de release, no corre en cada PR por su costo.
+- `changeset-check` solo corre en PRs hacia `dev` (donde nace un cambio real) — `dev→qa` y
+  `qa→main` son promociones del mismo código ya versionado.
 
 ---
 

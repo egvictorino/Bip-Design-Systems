@@ -34,5 +34,6 @@
 }
 
 .confirmWarning:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-warning);
+  --focus-ring-color: var(--color-warning);
+  box-shadow: var(--focus-ring);
 }

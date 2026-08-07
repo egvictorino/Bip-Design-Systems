@@ -83,7 +83,7 @@
 }
 
 .closeBtn:focus { outline: none; }
-.closeBtn:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px currentColor; }
+.closeBtn:focus-visible { --focus-ring-color: currentColor; box-shadow: var(--focus-ring); }
 
 .closeBtnInfo:hover    { background-color: var(--color-info-subtle); color: var(--color-primary); }
 .closeBtnSuccess:hover { background-color: var(--color-success-subtle); color: var(--color-success); }

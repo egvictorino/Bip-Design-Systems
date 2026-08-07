@@ -2,7 +2,7 @@
 
 import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../lib/useClickOutside';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import styles from './MultiSelect.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

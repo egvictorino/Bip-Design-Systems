@@ -1,6 +1,6 @@
 /**
  * Manifiesto de cobertura visual por componente — un screenshot canónico por directorio de
- * src/components (43, todos salvo ThemeProvider — ver SKIP_LIST abajo, mismo criterio que
+ * src/components (48, todos salvo ThemeProvider — ver SKIP_LIST abajo, mismo criterio que
  * SKIP_LIST en src/a11y.test.tsx: no renderiza UI propia).
  *
  * `storyId` es la story canónica de cada componente (la primera exportada de su
@@ -30,6 +30,7 @@ export const COMPONENT_MATRIX: ComponentMatrixEntry[] = [
   { dir: 'Card', storyId: 'components-card--elevated' },
   { dir: 'Checkbox', storyId: 'components-checkbox--default' },
   { dir: 'ConfirmDialog', storyId: 'components-confirmdialog--info' },
+  { dir: 'Container', storyId: 'components-container--default' },
   { dir: 'DataTable', storyId: 'components-datatable--default' },
   { dir: 'DatePicker', storyId: 'components-datepicker--default', rtl: true },
   { dir: 'DateRangePicker', storyId: 'components-daterangepicker--default' },
@@ -38,6 +39,8 @@ export const COMPONENT_MATRIX: ComponentMatrixEntry[] = [
   { dir: 'Dropdown', storyId: 'components-dropdown--default', rtl: true },
   { dir: 'EmptyState', storyId: 'components-emptystate--default' },
   { dir: 'FileUpload', storyId: 'components-fileupload--default' },
+  { dir: 'Grid', storyId: 'components-grid--responsive' },
+  { dir: 'Heading', storyId: 'components-heading--default' },
   { dir: 'Input', storyId: 'components-input--outlined', rtl: true },
   { dir: 'Modal', storyId: 'components-modal--default' },
   { dir: 'MultiSelect', storyId: 'components-multiselect--default', rtl: true },
@@ -52,10 +55,12 @@ export const COMPONENT_MATRIX: ComponentMatrixEntry[] = [
   { dir: 'Sidebar', storyId: 'components-sidebar--default', rtl: true },
   { dir: 'Skeleton', storyId: 'components-skeleton--text' },
   { dir: 'Spinner', storyId: 'components-spinner--default' },
+  { dir: 'Stack', storyId: 'components-stack--row' },
   { dir: 'StatsCard', storyId: 'components-statscard--default' },
   { dir: 'Stepper', storyId: 'components-stepper--default', rtl: true },
   { dir: 'Table', storyId: 'components-table--default' },
   { dir: 'Tabs', storyId: 'components-tabs--default', rtl: true },
+  { dir: 'Text', storyId: 'components-text--default' },
   { dir: 'Textarea', storyId: 'components-textarea--outlined' },
   { dir: 'TimePicker', storyId: 'components-timepicker--default' },
   { dir: 'Timeline', storyId: 'components-timeline--default', rtl: true },

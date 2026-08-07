@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react';
 import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../lib/useClickOutside';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthIndex } from '../../lib/dateHelpers';
 import styles from './DateRangePicker.module.css';
 

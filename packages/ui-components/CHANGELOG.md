@@ -73,6 +73,49 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
   - `MultiSelect` `.placeholder`: mismo caso — es un `<span>` real (no `::placeholder`
     nativo), `--color-txt-disabled` fallaba 2.29:1. Swap a `--color-txt-secondary`.
 
+### Added
+
+- Nuevos componentes primitivos de layout y tipografía: `Stack`, `Grid`, `Container`, `Text`,
+  `Heading` — cierran el hueco que hasta ahora obligaba a resolver layout en las stories con
+  estilos inline (`style={{ display: 'flex', gap: '1rem' }}`).
+- Nuevos hooks públicos en `src/hooks/` (exportados desde el paquete):
+  `useClickOutside` (promovido desde `lib/`, ya usado por 7 componentes), `useDisclosure`,
+  `useFocusTrap`, `useMediaQuery`, `useScrollLock`. `cn` también se exporta ahora.
+- `BREAKPOINTS`/`mediaQuery` (`src/styles/breakpoints.ts`) — fuente única para los `@media`
+  que antes se repetían como literales en varios `.module.css` (Navbar, Sidebar) y para
+  `useMediaQuery` en runtime. `src/styles/breakpoints.test.ts` hace cumplir la escala.
+- Storybook: página `Introduction` (antes no había ningún `.mdx` ni landing page) y foundations
+  `Typography`, `Motion`, `Breakpoints` — `Elevation` no se agregó como página aparte porque
+  `Foundations/Colors` ya documenta los tokens `--shadow-*` (light/dark) dentro de su propia
+  página.
+- `publint`/`@arethetypeswrong` (`pnpm --filter ui-components lint:package`), wired into
+  `pr-validation.yml`, para detectar regresiones de empaquetado (exports map, resolución de
+  tipos) automáticamente en vez de a mano.
+- Cobertura de tests (`@vitest/coverage-v8`, `pnpm test:coverage`) con umbral fijado al nivel
+  actual, corriendo en CI.
+
+### Fixed
+
+- **`ThemeProvider` no declaraba `"use client"`** pese a ser el único componente con hooks de
+  React sin la directiva — rompía en Next.js App Router al renderizarse desde un Server
+  Component. Nuevo `src/styles/use-client.test.ts` lo hace cumplir para cualquier componente
+  futuro con hooks.
+- Mapa `exports` de ambos paquetes: `types` ahora precede a `import` (algunos resolvers de TS
+  no encontraban los tipos con el orden anterior); `ui-components` gana subpath exports
+  (`@bip-design-systems/ui-components/Button`, etc.) aprovechando que el build ya emite
+  `preserveModules: true`.
+- `repository`/`bugs`/`homepage` de ambos paquetes apuntaban a `github.com/egvictorino/bip-ui`,
+  un repo que no existe — corregido a `Bip-Design-Systems`.
+- `peerDependencies` de React ampliado a `^18.2.0 || ^19.0.0` (antes excluía React 19).
+- `tsconfig.json` raíz referenciaba `./apps/template-base`, un directorio inexistente —
+  `tsc -b` fallaba desde la raíz. Simplificado; nuevo script `pnpm typecheck` en la raíz.
+- `Modal` y `DrawerPanel` duplicaban literalmente `FOCUSABLE_SELECTORS`, el bloqueo de scroll y
+  la lógica de focus trap — extraído a `useFocusTrap`/`useScrollLock`, sin cambio de
+  comportamiento (mismos tests de a11y y de componente pasan sin modificar).
+- Focus ring hardcodeado en `Button` `.secondary`, `Alert` `.closeBtn` y `ConfirmDialog`
+  `.confirmWarning` — usaban un `box-shadow` escrito a mano en vez de `var(--focus-ring)`, así
+  que ignoraban silenciosamente la prop `focusRing` de `ThemeProvider`.
+
 ## [0.3.0] - 2026-08-06
 
 ### Added

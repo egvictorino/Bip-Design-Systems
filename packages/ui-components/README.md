@@ -3,7 +3,7 @@
 React component library with full TypeScript support, CSS Modules, and design tokens. Built for the BipUI design system.
 
 [![npm version](https://img.shields.io/npm/v/@bip-design-systems/ui-components)](https://www.npmjs.com/package/@bip-design-systems/ui-components)
-[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/egvictorino/bip-ui/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/egvictorino/Bip-Design-Systems/blob/main/LICENSE)
 
 ---
 
@@ -285,11 +285,11 @@ your own font loading strategy.
 
 ## Links
 
-- [Repository](https://github.com/egvictorino/bip-ui)
+- [Repository](https://github.com/egvictorino/Bip-Design-Systems)
 - [shared-utils](https://www.npmjs.com/package/@bip-design-systems/shared-utils) — pure TypeScript utilities (formatCurrency, formatDate, validateRFC)
 
 ---
 
 ## License
 
-[MIT](https://github.com/egvictorino/bip-ui/blob/main/LICENSE) — Copyright (c) 2026 Eduardo Gonzalez
+[MIT](https://github.com/egvictorino/Bip-Design-Systems/blob/main/LICENSE) — Copyright (c) 2026 Eduardo Gonzalez
