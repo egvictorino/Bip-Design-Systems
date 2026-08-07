@@ -1,9 +1,12 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
+import { useFocusTrap } from '../../hooks/useFocusTrap.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
 import styles from './Odontogram.module.css';
-import { FOCUSABLE_SELECTOR, IMAGE_TYPE_LABELS, IMAGE_TYPES } from './types';
-import type { ToothImage, ToothImageType } from './types';
+import { IMAGE_TYPES } from './types.js';
+import type { ToothImage, ToothImageType } from './types.js';
 
 export interface ImagePopoverProps {
   toothNumber: number;
@@ -15,27 +18,6 @@ export interface ImagePopoverProps {
   onSave: (images: ToothImage[]) => void;
 }
 
-function useFocusTrap(ref: React.RefObject<HTMLElement | null>) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const focusables = el.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
-    const first = focusables[0];
-    const last = focusables[focusables.length - 1];
-    const trap = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-      if (focusables.length === 0) { e.preventDefault(); return; }
-      if (e.shiftKey) {
-        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-      } else {
-        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
-      }
-    };
-    document.addEventListener('keydown', trap);
-    return () => document.removeEventListener('keydown', trap);
-  }, [ref]);
-}
-
 export const ImagePopover = React.memo<ImagePopoverProps>(({
   toothNumber,
   initialImages,
@@ -44,10 +26,12 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
   onClose,
   onSave,
 }) => {
+  const t = useBipLocale();
   const [images, setImages] = useState<ToothImage[]>(initialImages);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(
     initialImages.length > 0 ? 0 : null
   );
+  const { style: themeStyle, ...themeAttrs } = useThemeAttributes();
   const [adding, setAdding] = useState(initialImages.length === 0 && editable);
   const [addType, setAddType] = useState<ToothImageType>('radiograph');
   const [addUrl, setAddUrl] = useState('');
@@ -56,7 +40,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const addSelectRef = useRef<HTMLSelectElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(dialogRef);
+  useFocusTrap(dialogRef, { enabled: true, onEscape: onClose });
 
   useEffect(() => {
     if (adding) {
@@ -65,14 +49,6 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
       closeButtonRef.current?.focus();
     }
   }, [adding]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -116,13 +92,13 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
   const selectedImage = selectedIdx !== null ? images[selectedIdx] : null;
 
   return ReactDOM.createPortal(
-    <>
+    <div {...themeAttrs} style={{ display: 'contents', ...themeStyle }}>
       <div className={styles.popoverBackdrop} aria-hidden="true" onClick={onClose} />
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label={`Imágenes del diente ${toothNumber}`}
+        aria-label={t.odontogram.toothImages(toothNumber)}
         style={{ top: position.top, left: position.left }}
         className={styles.imagePopover}
       >
@@ -139,7 +115,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
           <button
             ref={closeButtonRef}
             onClick={onClose}
-            aria-label="Cerrar imágenes"
+            aria-label={t.odontogram.closeImages}
             className={styles.popoverClose}
           >
             ✕
@@ -149,7 +125,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
         {/* Thumbnail gallery */}
         {images.length > 0 && (
           <div className={styles.thumbnailGallery}>
-            <div className={styles.thumbnailList} role="list" aria-label="Imágenes adjuntas">
+            <div className={styles.thumbnailList} role="list" aria-label={t.odontogram.attachedImages}>
               {images.map((img, idx) => (
                 <div
                   key={idx}
@@ -158,7 +134,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
                 >
                   <button
                     onClick={() => setSelectedIdx(idx === selectedIdx ? null : idx)}
-                    aria-label={`Ver imagen ${idx + 1}: ${IMAGE_TYPE_LABELS[img.type]}`}
+                    aria-label={t.odontogram.viewImage(idx + 1, t.odontogram.imageTypeLabels[img.type])}
                     aria-pressed={selectedIdx === idx}
                     className={cn(
                       styles.thumbnailButton,
@@ -167,21 +143,21 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
                   >
                     <img
                       src={img.url}
-                      alt={IMAGE_TYPE_LABELS[img.type]}
+                      alt={t.odontogram.imageTypeLabels[img.type]}
                       className={styles.thumbnailImg}
                     />
                   </button>
                   {editable && (
                     <button
                       onClick={() => handleDelete(idx)}
-                      aria-label={`Eliminar imagen ${idx + 1}`}
+                      aria-label={t.odontogram.removeImage(idx + 1)}
                       className={styles.thumbnailDeleteButton}
                     >
                       ✕
                     </button>
                   )}
                   <p className={styles.thumbnailLabel}>
-                    {IMAGE_TYPE_LABELS[img.type]}
+                    {t.odontogram.imageTypeLabels[img.type]}
                   </p>
                 </div>
               ))}
@@ -192,11 +168,14 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
               <div className={styles.previewPane}>
                 <img
                   src={selectedImage.url}
-                  alt={`${IMAGE_TYPE_LABELS[selectedImage.type]} — diente ${toothNumber}`}
+                  alt={t.odontogram.imagePreviewAlt(
+                    t.odontogram.imageTypeLabels[selectedImage.type],
+                    toothNumber
+                  )}
                   className={styles.previewImg}
                 />
                 <p className={styles.previewLabel}>
-                  {IMAGE_TYPE_LABELS[selectedImage.type]}
+                  {t.odontogram.imageTypeLabels[selectedImage.type]}
                 </p>
               </div>
             )}
@@ -204,15 +183,17 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
         )}
 
         {images.length === 0 && !adding && (
-          <p className={styles.emptyImages}>Sin imágenes adjuntas</p>
+          <p className={styles.emptyImages}>{t.odontogram.noImagesAttached}</p>
         )}
 
         {/* Add image form */}
         {editable && adding && (
           <div className={styles.addForm}>
-            <p className={styles.addFormTitle}>Nueva imagen</p>
+            <p className={styles.addFormTitle}>{t.odontogram.newImage}</p>
             <div className={styles.addFormField}>
-              <label htmlFor={addTypeId} className={styles.addFormLabel}>Tipo</label>
+              <label htmlFor={addTypeId} className={styles.addFormLabel}>
+                {t.odontogram.imageType}
+              </label>
               <select
                 id={addTypeId}
                 ref={addSelectRef}
@@ -220,9 +201,9 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
                 onChange={(e) => setAddType(e.target.value as ToothImageType)}
                 className={styles.addFormSelect}
               >
-                {IMAGE_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {IMAGE_TYPE_LABELS[t]}
+                {IMAGE_TYPES.map((imageType) => (
+                  <option key={imageType} value={imageType}>
+                    {t.odontogram.imageTypeLabels[imageType]}
                   </option>
                 ))}
               </select>
@@ -231,14 +212,14 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              aria-label="Seleccionar archivo de imagen"
+              aria-label={t.odontogram.selectImageFile}
               className={styles.srOnly}
               onChange={handleFileChange}
             />
             {addUrl ? (
               <img
                 src={addUrl}
-                alt="Vista previa"
+                alt={t.odontogram.previewAlt}
                 className={styles.addFormPreviewImg}
               />
             ) : null}
@@ -246,7 +227,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
               onClick={() => fileInputRef.current?.click()}
               className={styles.fileButton}
             >
-              {addUrl ? 'Cambiar archivo' : 'Seleccionar archivo'}
+              {addUrl ? t.odontogram.changeFile : t.odontogram.selectFile}
             </button>
             <div className={styles.addFormActions}>
               {images.length > 0 && (
@@ -290,7 +271,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
           </button>
         )}
       </div>
-    </>,
+    </div>,
     document.body
   );
 });

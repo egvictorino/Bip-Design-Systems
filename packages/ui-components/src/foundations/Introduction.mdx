@@ -1,0 +1,69 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# BipUI
+
+Librería de componentes React con TypeScript, CSS Modules y tokens de diseño. Sin dependencia
+de Tailwind ni otra herramienta de CSS.
+
+## Instalación
+
+```bash
+pnpm add @bip-design-systems/ui-components
+```
+
+Requiere React 18+ (o 19) y Node ≥ 20.
+
+## Setup
+
+Importa el CSS compilado una sola vez en el punto de entrada de tu app:
+
+```ts
+// src/main.tsx
+import '@bip-design-systems/ui-components/style.css';
+```
+
+Envuelve tu app con `ThemeProvider` — es opcional (sin él, el tema por defecto es
+`square`/`light`), pero es el punto de entrada para theming, dark mode, RTL y density:
+
+```tsx
+import { Button, ThemeProvider } from '@bip-design-systems/ui-components';
+
+export const App = () => (
+  <ThemeProvider theme="rounded">
+    <Button variant="primary">Hola BipUI</Button>
+  </ThemeProvider>
+);
+```
+
+## Explorar
+
+- **Foundations** — [Colors](/docs/foundations-colors--docs), [Radius](/docs/foundations-radius--docs),
+  [Spacing](/docs/foundations-spacing--docs), [Typography](/docs/foundations-typography--docs),
+  [Motion](/docs/foundations-motion--docs), [Breakpoints](/docs/foundations-breakpoints--docs) y
+  [Theming](/docs/foundations-theming--docs) (playground en vivo de overrides de marca).
+- **Components** — cada componente tiene su propia página con controles interactivos y
+  autodocs generados desde sus props de TypeScript.
+
+## Theming en runtime
+
+`ThemeProvider` acepta overrides sin paso de build, estilo Ant Design `ConfigProvider`:
+
+```tsx
+<ThemeProvider
+  theme="rounded"
+  tokens={{ colorPrimary: '#e2007a', dark: { colorPrimary: '#ff4fa8' } }}
+>
+  <App />
+</ThemeProvider>
+```
+
+Ver [Foundations/Theming](/docs/foundations-theming--docs) para el playground completo
+(seeds editables, panel de contraste WCAG, snippet copiable).
+
+## Recursos
+
+- [Repositorio en GitHub](https://github.com/egvictorino/Bip-Design-Systems)
+- [Paquete en npm](https://www.npmjs.com/package/@bip-design-systems/ui-components)
+- [CHANGELOG](https://github.com/egvictorino/Bip-Design-Systems/blob/main/packages/ui-components/CHANGELOG.md)

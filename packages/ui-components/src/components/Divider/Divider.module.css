@@ -3,11 +3,11 @@
 .vertical {
   align-self: stretch;
   width: 1px;
-  border-left: 1px solid var(--color-edge);
+  border-inline-start: 1px solid var(--color-edge);
 }
 
 .vertical.dashed {
-  border-left-style: dashed;
+  border-inline-start-style: dashed;
 }
 
 /* ─── Horizontal with label ─────────────────────────────────────────────────── */
@@ -15,7 +15,7 @@
 .withLabel {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 .line {
@@ -28,7 +28,7 @@
 }
 
 .labelText {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1rem;
   color: var(--color-txt-secondary);
   white-space: nowrap;
@@ -39,7 +39,7 @@
 .horizontal {
   border: 0;
   border-top: 1px solid var(--color-edge);
-  margin: 0;
+  margin: var(--space-0);
 }
 
 .horizontal.dashed {

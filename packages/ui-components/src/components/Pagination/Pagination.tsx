@@ -1,5 +1,6 @@
 import React from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Pagination.module.css';
 
 export interface PaginationProps {
@@ -54,18 +55,20 @@ export const Pagination: React.FC<PaginationProps> = ({
   siblingCount = 1,
   className,
 }) => {
+  const t = useBipLocale();
+
   if (totalPages <= 1) return null;
 
   const pageRange = getPageRange(currentPage, totalPages, siblingCount);
 
   return (
-    <nav aria-label="Paginación" className={cn(styles.nav, className)}>
+    <nav aria-label={t.pagination.nav} className={cn(styles.nav, className)}>
       {/* Previous */}
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        aria-label="Página anterior"
+        aria-label={t.pagination.prevPage}
         className={cn(styles.btn, currentPage === 1 ? styles.btnDisabled : styles.btnDefault)}
       >
         <svg viewBox="0 0 16 16" fill="none" className={styles.arrowIcon} aria-hidden="true">
@@ -90,7 +93,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             key={page}
             type="button"
             onClick={() => onPageChange(page as number)}
-            aria-label={`Página ${page}`}
+            aria-label={t.pagination.page(page)}
             aria-current={currentPage === page ? 'page' : undefined}
             className={cn(styles.btn, currentPage === page ? styles.btnActive : styles.btnDefault)}
           >
@@ -104,7 +107,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         type="button"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        aria-label="Página siguiente"
+        aria-label={t.pagination.nextPage}
         className={cn(
           styles.btn,
           currentPage === totalPages ? styles.btnDisabled : styles.btnDefault

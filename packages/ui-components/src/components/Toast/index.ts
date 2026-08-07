@@ -1,2 +1,2 @@
-export { ToastProvider, useToast } from './Toast';
-export type { ToastProviderProps, ToastConfig, ToastPosition } from './Toast';
+export { ToastProvider, useToast } from './Toast.js';
+export type { ToastProviderProps, ToastConfig, ToastPosition } from './Toast.js';

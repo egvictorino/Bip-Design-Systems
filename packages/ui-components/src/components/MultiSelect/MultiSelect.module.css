@@ -3,7 +3,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .containerFullWidth {
@@ -14,17 +14,17 @@
 
 .label {
   font-weight: 500;
-  transition: color 150ms;
+  transition: color var(--duration-fast);
   cursor: default;
   color: var(--color-txt);
 }
 
-.labelSm { font-size: 0.75rem; }
-.labelMd { font-size: 0.875rem; }
-.labelLg { font-size: 1rem; }
+.labelSm { font-size: var(--text-xs); }
+.labelMd { font-size: var(--text-sm); }
+.labelLg { font-size: var(--text-base); }
 
 .labelError   { color: var(--color-danger); }
-.labelFocused { color: var(--color-primary); }
+.labelFocused { color: var(--color-primary-text); }
 .labelDisabled { opacity: 0.5; }
 
 /* ─── Trigger (combobox) ─────────────────────────────────────────────────────── */
@@ -33,36 +33,36 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  border-radius: 1px;
-  transition: background-color 150ms, color 150ms, border-color 150ms;
+  border-radius: var(--radius-field);
+  transition: background-color var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
   outline: none;
 }
 
 /* focus-visible ring */
 .trigger:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 /* Sizes */
 .triggerSm {
   min-height: 32px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  gap: 0.25rem;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  gap: var(--space-1);
 }
 
 .triggerMd {
   min-height: 42px;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  gap: 0.375rem;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  gap: var(--space-1-5);
 }
 
 .triggerLg {
   min-height: 50px;
-  padding: 0.625rem 1.25rem;
-  font-size: 1rem;
-  gap: 0.5rem;
+  padding: var(--space-2-5) var(--space-5);
+  font-size: var(--text-base);
+  gap: var(--space-2);
 }
 
 /* Variants */
@@ -81,7 +81,8 @@
 }
 
 .variantOutlinedError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 .variantFilled {
@@ -99,14 +100,15 @@
 }
 
 .variantFilledError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 .variantBare {
   border: none;
   border-bottom: 2px solid var(--color-primary);
   background-color: transparent;
-  border-radius: 0;
+  border-radius: var(--radius-none);
 }
 
 .variantBare:focus-visible {
@@ -123,7 +125,7 @@
   border: none;
   border-bottom: 2px solid var(--color-danger);
   background-color: transparent;
-  border-radius: 0;
+  border-radius: var(--radius-none);
 }
 
 .variantBareError:focus-visible {
@@ -145,7 +147,7 @@
 .chipsWrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: var(--space-1);
   flex: 1;
   min-width: 0;
 }
@@ -155,20 +157,20 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   background-color: var(--color-surface-3);
   color: var(--color-txt);
   font-weight: 500;
 }
 
-.chipSm { font-size: 0.75rem; padding: 0.125rem 0.375rem; gap: 0.125rem; }
-.chipMd { font-size: 0.75rem; padding: 0.125rem 0.5rem; gap: 0.125rem; }
-.chipLg { font-size: 0.875rem; padding: 0.25rem 0.625rem; gap: 0.25rem; }
+.chipSm { font-size: var(--text-xs); padding: var(--space-0-5) var(--space-1-5); gap: var(--space-0-5); }
+.chipMd { font-size: var(--text-xs); padding: var(--space-0-5) var(--space-2); gap: var(--space-0-5); }
+.chipLg { font-size: var(--text-sm); padding: var(--space-1) var(--space-2-5); gap: var(--space-1); }
 
 /* Remove chip button */
 .chipRemove {
-  border-radius: 0.125rem;
-  padding: 0.125rem;
+  border-radius: var(--radius-marker);
+  padding: var(--space-0-5);
   line-height: 1;
   outline: none;
   background: none;
@@ -192,26 +194,28 @@
 
 .placeholder {
   flex: 1;
-  color: var(--color-txt-disabled);
+  /* Texto de placeholder real (span, no ::placeholder nativo) — visible y con
+     significado, no un estado inactivo. --color-txt-disabled fallaba WCAG AA (2.29:1). */
+  color: var(--color-txt-secondary);
   user-select: none;
 }
 
 /* ─── Trigger right side (clear + chevron) ────────────────────────────────────── */
 
 .triggerRight {
-  margin-left: auto;
+  margin-inline-start: auto;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
   flex-shrink: 0;
-  padding-left: 0.25rem;
+  padding-inline-start: var(--space-1);
 }
 
 /* Clear-all button */
 .clearAll {
-  border-radius: 0.125rem;
-  padding: 0.125rem;
-  transition: background-color 150ms, color 150ms;
+  border-radius: var(--radius-marker);
+  padding: var(--space-0-5);
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   outline: none;
   background: none;
   border: none;
@@ -241,7 +245,7 @@
 
 /* Chevron icon wrapper */
 .chevron {
-  transition: transform 200ms;
+  transition: transform var(--duration-normal);
   pointer-events: none;
   color: var(--color-txt-secondary);
 }
@@ -251,7 +255,7 @@
 }
 
 .chevronError   { color: var(--color-danger); }
-.chevronFocused { color: var(--color-primary); }
+.chevronFocused { color: var(--color-primary-text); }
 
 /* ─── Dropdown ────────────────────────────────────────────────────────────────── */
 
@@ -261,21 +265,21 @@
 
 .dropdown {
   position: absolute;
-  z-index: 50;
+  z-index: var(--z-modal);
   top: 0.25rem;
-  left: 0;
-  right: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
   background-color: var(--color-surface-1);
   border: 1px solid var(--color-surface-3);
-  border-radius: 0.25rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
 /* ─── Search ──────────────────────────────────────────────────────────────────── */
 
 .searchWrapper {
-  padding: 0.5rem;
+  padding: var(--space-2);
   border-bottom: 1px solid var(--color-surface-3);
 }
 
@@ -286,7 +290,7 @@
 .searchIcon {
   pointer-events: none;
   position: absolute;
-  left: 0.625rem;
+  inset-inline-start: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-txt-disabled);
@@ -294,17 +298,17 @@
 
 .searchInput {
   width: 100%;
-  padding: 0.375rem 0.75rem 0.375rem 2rem;
-  font-size: 0.875rem;
+  padding: var(--space-1-5) var(--space-3) var(--space-1-5) var(--space-8);
+  font-size: var(--text-sm);
   border: 1px solid var(--color-surface-3);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   outline: none;
   background-color: var(--color-field);
   color: var(--color-txt);
 }
 
 .searchInput:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 /* ─── Listbox ─────────────────────────────────────────────────────────────────── */
@@ -312,14 +316,14 @@
 .listbox {
   max-height: 12rem; /* 192px = max-h-48 */
   overflow-y: auto;
-  padding: 0.25rem 0;
+  padding: var(--space-1) var(--space-0);
   list-style: none;
-  margin: 0;
+  margin: var(--space-0);
 }
 
 .noResults {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
   color: var(--color-txt-disabled);
   text-align: center;
   user-select: none;
@@ -330,9 +334,9 @@
 .option {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
+  gap: var(--space-2-5);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
   user-select: none;
   outline: none;
   cursor: pointer;
@@ -354,12 +358,12 @@
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 150ms, border-color 150ms;
+  transition: background-color var(--duration-fast), border-color var(--duration-fast);
   background-color: var(--color-surface-1);
 }
 
@@ -383,9 +387,9 @@
   color: var(--color-danger);
 }
 
-.helperSm { font-size: 0.75rem; }
-.helperMd { font-size: 0.75rem; }
-.helperLg { font-size: 0.875rem; }
+.helperSm { font-size: var(--text-xs); }
+.helperMd { font-size: var(--text-xs); }
+.helperLg { font-size: var(--text-sm); }
 
 /* ─── Chip overflow badge (+N más) ───────────────────────────────────────────── */
 
@@ -399,8 +403,8 @@
 /* ─── Group header ────────────────────────────────────────────────────────────── */
 
 .groupHeader {
-  padding: 0.375rem 0.75rem 0.125rem;
-  font-size: 0.6875rem;
+  padding: var(--space-1-5) var(--space-3) var(--space-0-5);
+  font-size: var(--text-2xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -413,7 +417,7 @@
 
 .optionSelectAll {
   border-bottom: 1px solid var(--color-surface-3);
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-1);
   font-weight: 500;
 }
 
@@ -423,9 +427,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  font-size: 0.875rem;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  font-size: var(--text-sm);
   color: var(--color-txt-secondary);
 }
 

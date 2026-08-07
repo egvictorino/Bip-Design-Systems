@@ -3,7 +3,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 /* ─── Row (group) ───────────────────────────────────────────────────────────── */
@@ -11,7 +11,7 @@
 .row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 /* ─── Track ─────────────────────────────────────────────────────────────────── */
@@ -19,9 +19,9 @@
 .track {
   position: relative;
   flex-shrink: 0;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-surface-4);
-  transition: background-color 150ms;
+  transition: background-color var(--duration-fast);
 }
 
 /* Track: checked state */
@@ -30,10 +30,11 @@
 
 /* Track: focus ring */
 .row:has(:focus-visible) .track {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 .row:has(:focus-visible) .trackError {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 .trackError {
@@ -69,12 +70,12 @@
 .thumb {
   position: absolute;
   top: 50%;
-  left: 2px;
+  inset-inline-start: 2px;
   transform: translateY(-50%);
-  border-radius: 9999px;
-  background-color: white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  transition: transform 150ms;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface-1);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-fast);
 }
 
 /* Thumb sizes */
@@ -82,23 +83,24 @@
 .thumbMd { width: 1rem;    height: 1rem; }
 .thumbLg { width: 1.25rem; height: 1.25rem; }
 
-/* Thumb: checked translation */
-.row:has(:checked) .thumbSm { transform: translateY(-50%) translateX(1rem); }
-.row:has(:checked) .thumbMd { transform: translateY(-50%) translateX(1.25rem); }
-.row:has(:checked) .thumbLg { transform: translateY(-50%) translateX(1.5rem); }
+/* Thumb: checked translation — --rtl-x espeja el desplazamiento (el thumb viaja hacia
+   inset-inline-end, que es la derecha física en LTR y la izquierda en RTL) — ver styles/rtl.css. */
+.row:has(:checked) .thumbSm { transform: translateY(-50%) translateX(calc(var(--rtl-x) * 1rem)); }
+.row:has(:checked) .thumbMd { transform: translateY(-50%) translateX(calc(var(--rtl-x) * 1.25rem)); }
+.row:has(:checked) .thumbLg { transform: translateY(-50%) translateX(calc(var(--rtl-x) * 1.5rem)); }
 
 /* ─── Label ─────────────────────────────────────────────────────────────────── */
 
 .label {
   user-select: none;
   font-weight: 500;
-  transition: color 150ms;
+  transition: color var(--duration-fast);
   cursor: pointer;
 }
 
-.labelSm { font-size: 0.75rem;  line-height: 1rem; }
-.labelMd { font-size: 0.875rem; line-height: 1.25rem; }
-.labelLg { font-size: 1rem;     line-height: 1.5rem; }
+.labelSm { font-size: var(--text-xs);  line-height: 1rem; }
+.labelMd { font-size: var(--text-sm); line-height: 1.25rem; }
+.labelLg { font-size: var(--text-base);     line-height: 1.5rem; }
 
 .labelNormal   { color: var(--color-txt); }
 .labelError    { color: var(--color-danger); }
@@ -106,13 +108,13 @@
 
 /* ─── Helper / Error message ────────────────────────────────────────────────── */
 
-.helperSm { font-size: 0.75rem;  line-height: 1rem; }
-.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+.helperSm { font-size: var(--text-xs);  line-height: 1rem; }
+.helperLg { font-size: var(--text-sm); line-height: 1.25rem; }
 
 .helperText { color: var(--color-txt-secondary); }
 .errorText  { color: var(--color-danger); }
 
 /* Indent to align with label (accounts for track width + gap) */
-.indentSm { margin-left: 2.5rem; }  /* 2rem track + 0.5rem gap */
-.indentMd { margin-left: 3rem; }    /* 2.5rem track + 0.5rem gap */
-.indentLg { margin-left: 3.5rem; }  /* 3rem track + 0.5rem gap */
+.indentSm { margin-inline-start: var(--space-10); }  /* 2rem track + 0.5rem gap */
+.indentMd { margin-inline-start: var(--space-12); }    /* 2.5rem track + 0.5rem gap */
+.indentLg { margin-inline-start: var(--space-14); }  /* 3rem track + 0.5rem gap */

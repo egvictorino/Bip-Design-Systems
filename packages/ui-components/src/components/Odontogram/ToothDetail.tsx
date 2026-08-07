@@ -1,22 +1,18 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './ToothDetail.module.css';
-import {
-  CONDITION_LABELS,
-  EMPTY_TOOTH,
-  TOOTH_NAMES,
-  WHOLE_TOOTH_CONDITIONS,
-} from './types';
+import { EMPTY_TOOTH, WHOLE_TOOTH_CONDITIONS } from './types.js';
 import type {
   SurfaceCondition,
   ToothCondition,
   ToothData,
   ToothImage,
   ToothSurface,
-} from './types';
-import { ToothSVG } from './ToothSVG';
-import { NotePopover } from './NotePopover';
-import { ImagePopover } from './ImagePopover';
+} from './types.js';
+import { ToothSVG } from './ToothSVG.js';
+import { NotePopover } from './NotePopover.js';
+import { ImagePopover } from './ImagePopover.js';
 
 export interface ToothDetailProps {
   toothNumber: number;
@@ -29,6 +25,7 @@ export interface ToothDetailProps {
 
 export const ToothDetail = React.memo<ToothDetailProps>(
   ({ toothNumber, arch, data, readOnly, onChange, onClose }) => {
+    const t = useBipLocale();
     const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
 
     // Note popover state
@@ -123,8 +120,8 @@ export const ToothDetail = React.memo<ToothDetailProps>(
       onChangeRef.current(current);
     }, []); // empty deps — reads latest values via refs
 
-    const conditions = Object.entries(CONDITION_LABELS) as [ToothCondition, string][];
-    const toothName = TOOTH_NAMES[toothNumber] ?? '';
+    const conditions = Object.entries(t.odontogram.conditionLabels) as [ToothCondition, string][];
+    const toothName = t.odontogram.toothNames[toothNumber] ?? '';
     const imageCount = data.images?.length ?? 0;
     const hasNote = Boolean(data.notes);
 
@@ -136,7 +133,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
             Diente {toothNumber}
             {toothName && <span className={styles.detailSubtitle}> — {toothName}</span>}
           </span>
-          <button onClick={onClose} aria-label="Cerrar detalle" className={styles.closeButton}>
+          <button onClick={onClose} aria-label={t.odontogram.closeDetail} className={styles.closeButton}>
             ✕
           </button>
         </div>
@@ -160,7 +157,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
           <div className={styles.detailRight}>
             {/* Condition toolbar (edit mode only) */}
             {!readOnly && (
-              <div className={styles.conditionToolbar} role="group" aria-label="Condiciones">
+              <div className={styles.conditionToolbar} role="group" aria-label={t.odontogram.conditions}>
                 {conditions.map(([condition, label]) => (
                   <button
                     key={condition}
@@ -179,7 +176,9 @@ export const ToothDetail = React.memo<ToothDetailProps>(
 
             {/* Condition badge (readOnly) */}
             {readOnly && data.condition && (
-              <span className={styles.conditionBadge}>{CONDITION_LABELS[data.condition]}</span>
+              <span className={styles.conditionBadge}>
+                {t.odontogram.conditionLabels[data.condition]}
+              </span>
             )}
 
             <div className={styles.divider} aria-hidden="true" />
@@ -189,7 +188,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
               <button
                 onClick={handleNoteOpen}
                 className={cn(styles.actionButton, hasNote && styles.actionButtonActive)}
-                aria-label={`Nota del diente ${toothNumber}${hasNote ? ' — tiene nota' : ''}`}
+                aria-label={t.odontogram.noteWithState(toothNumber, hasNote)}
               >
                 {/* Note icon */}
                 <svg
@@ -212,7 +211,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
               <button
                 onClick={handleImageOpen}
                 className={cn(styles.actionButton, imageCount > 0 && styles.actionButtonActive)}
-                aria-label={`Imágenes del diente ${toothNumber}${imageCount > 0 ? ` — ${imageCount} imagen${imageCount > 1 ? 'es' : ''}` : ''}`}
+                aria-label={t.odontogram.imagesWithCount(toothNumber, imageCount)}
               >
                 {/* Camera icon */}
                 <svg

@@ -1,0 +1,102 @@
+/**
+ * Escala cruda de tokens no-color — tipografía, radius. Invariante entre
+ * esquemas claro/oscuro (a diferencia de --shadow-*, que sí depende del
+ * color y vive en tokens.css junto al resto del eje de color).
+ * Hand-owned. Ningún componente debe leer estos tokens directamente:
+ * consumir la capa semántica en themes.css (--radius-field, --radius-control,
+ * etc.) en su lugar.
+ */
+
+:root {
+  /* Typography */
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+
+  --text-3xs:  0.625rem;   /* 10px */
+  --text-2xs:  0.6875rem;  /* 11px — un solo consumidor (Dropdown), fuera de la escala redondeada */
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.875rem;   /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+
+  --leading-tight:   1.25;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
+
+  --font-normal:   400;
+  --font-medium:   500;
+  --font-semibold: 600;
+  --font-bold:     700;
+
+  /* Spacing — grilla de 0.125rem (2px), la que ya dominaba de facto ~78% de los
+     valores de padding/margin/gap antes de esta escala (auditoría: 485 declaraciones,
+     37 valores distintos, mezcla px/rem duplicada). Nomenclatura Tailwind-style
+     (nombre = valor en unidades de 0.25rem/4px) porque ya es la convención que la
+     mayoría de esos literales seguía sin declararla — no una convención nueva impuesta.
+     No todo múltiplo tiene entrada: solo los que un valor real usaba. */
+  --space-0:    0;
+  --space-px:   1px;      /* único caso no-basado-en-rem: ajustes de borde de 1px */
+  --space-0-5:  0.125rem; /* 2px  */
+  --space-1:    0.25rem;  /* 4px  */
+  --space-1-5:  0.375rem; /* 6px  */
+  --space-2:    0.5rem;   /* 8px  */
+  --space-2-5:  0.625rem; /* 10px */
+  --space-3:    0.75rem;  /* 12px */
+  --space-3-5:  0.875rem; /* 14px */
+  --space-4:    1rem;     /* 16px */
+  --space-5:    1.25rem;  /* 20px */
+  --space-6:    1.5rem;   /* 24px */
+  --space-7:    1.75rem;  /* 28px */
+  --space-8:    2rem;     /* 32px */
+  --space-9:    2.25rem;  /* 36px */
+  --space-10:   2.5rem;   /* 40px */
+  --space-12:   3rem;     /* 48px */
+  --space-14:   3.5rem;   /* 56px */
+  --space-16:   4rem;     /* 64px */
+  --space-18:   4.5rem;   /* 72px */
+  --space-22:   5.5rem;   /* 88px */
+
+  /* Radius */
+  --radius-none: 0;
+  --radius-xs:   0.125rem;  /* 2px  */
+  --radius-sm:   0.25rem;   /* 4px  */
+  --radius-md:   0.375rem;  /* 6px  */
+  --radius-lg:   0.5rem;    /* 8px  */
+  --radius-xl:   0.75rem;   /* 12px */
+  --radius-2xl:  1rem;      /* 16px */
+  --radius-3xl:  1.25rem;   /* 20px */
+  --radius-full: 9999px;
+
+  /* Motion — invariante a theme/esquema; --duration-instant queda a 0ms bajo
+     prefers-reduced-motion (ver index.css). */
+  --duration-instant: 100ms;
+  --duration-fast:    150ms;
+  --duration-normal:  200ms;
+  --duration-slow:    300ms;
+
+  --ease-standard: ease-in-out;
+  --ease-out:      ease-out;
+  --ease-in:       ease-in;
+
+  /* Focus ring — reemplaza el patrón repetido a mano
+     `0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary)`.
+     --focus-ring-color se redeclara localmente (p. ej. en variantes danger)
+     para reusar la misma sombra con otro color, sin duplicarla. */
+  --focus-ring-width:  2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color:  var(--color-primary);
+  --focus-ring: 0 0 0 var(--focus-ring-offset) var(--color-surface-1),
+    0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--focus-ring-color);
+
+  /* Z-index — escala compartida a partir de los valores ya en uso (evita
+     números mágicos como el 49 de Navbar .overlay, que solo necesitaba
+     quedar por debajo de .nav: --z-overlay=40 cumple lo mismo que 49). */
+  --z-base:     1;
+  --z-raised:   10;
+  --z-dropdown: 20;
+  --z-overlay:  40;
+  --z-modal:    50;
+  --z-toast:    100;
+}

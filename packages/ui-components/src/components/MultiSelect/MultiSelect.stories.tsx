@@ -162,7 +162,7 @@ export const ManyOptions: Story = {
 export const AllVariants: Story = {
   args: { options: frutas },
   render: () => (
-    <div className="flex flex-col gap-6 w-80">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '320px' }}>
       {(['outlined', 'filled', 'bare'] as const).map((variant) => (
         <ControlledWithInit
           key={variant}
@@ -179,7 +179,7 @@ export const AllVariants: Story = {
 export const AllSizes: Story = {
   args: { options: frutas },
   render: () => (
-    <div className="flex flex-col gap-6 w-80">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '320px' }}>
       {(['sm', 'md', 'lg'] as const).map((size) => (
         <ControlledWithInit
           key={size}

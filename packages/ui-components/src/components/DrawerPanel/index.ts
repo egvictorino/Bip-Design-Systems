@@ -1,2 +1,2 @@
-export { DrawerPanel } from './DrawerPanel';
-export type { DrawerPanelProps } from './DrawerPanel';
+export { DrawerPanel } from './DrawerPanel.js';
+export type { DrawerPanelProps } from './DrawerPanel.js';

@@ -3,24 +3,24 @@
 .wrapper {
   width: 100%;
   overflow-x: auto;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-container);
   border: 1px solid var(--color-edge);
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 /* ─── Caption ────────────────────────────────────────────────────────────────── */
 
 .caption {
   caption-side: top;
-  padding: 0.5rem 0;
-  font-size: 0.875rem;
+  padding: var(--space-2) var(--space-0);
+  font-size: var(--text-sm);
   color: var(--color-txt-secondary);
-  text-align: left;
+  text-align: start;
 }
 
 /* ─── Head ───────────────────────────────────────────────────────────────────── */
@@ -30,7 +30,7 @@
 .theadSticky {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 /* ─── Body ───────────────────────────────────────────────────────────────────── */
@@ -41,7 +41,7 @@
 
 .row {
   border-top: 1px solid var(--color-edge);
-  transition: background-color 150ms;
+  transition: background-color var(--duration-fast);
 }
 
 .row:first-child { border-top: none; }
@@ -61,7 +61,7 @@
 /* ─── Header (th) ────────────────────────────────────────────────────────────── */
 
 .th {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -69,8 +69,8 @@
   color: var(--color-txt-secondary);
 }
 
-.thNormal    { padding: 0.75rem 1rem; }
-.thCompact   { padding: 0.5rem 0.75rem; }
+.thNormal    { padding: var(--space-3) var(--space-4); }
+.thCompact   { padding: var(--space-2) var(--space-3); }
 
 .thSortable {
   cursor: pointer;
@@ -88,7 +88,7 @@
 .sortableInner {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 /* ─── Sort icon ──────────────────────────────────────────────────────────────── */
@@ -106,8 +106,8 @@
 
 .td { color: var(--color-txt); }
 
-.tdNormal  { padding: 0.75rem 1rem; }
-.tdCompact { padding: 0.5rem 0.75rem; }
+.tdNormal  { padding: var(--space-3) var(--space-4); }
+.tdCompact { padding: var(--space-2) var(--space-3); }
 
 /* ─── Empty state ────────────────────────────────────────────────────────────── */
 
@@ -118,6 +118,6 @@
 
 /* ─── Alignment ──────────────────────────────────────────────────────────────── */
 
-.alignLeft   { text-align: left; }
+.alignLeft   { text-align: start; }
 .alignCenter { text-align: center; }
-.alignRight  { text-align: right; }
+.alignRight  { text-align: end; }

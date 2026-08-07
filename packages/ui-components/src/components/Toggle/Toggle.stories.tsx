@@ -67,7 +67,7 @@ export const WithoutLabel: Story = {
 export const AllSizes: Story = {
   args: {},
   render: () => (
-    <div className="flex flex-col gap-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <Toggle size="sm" label="Pequeño" />
       <Toggle size="md" label="Mediano" />
       <Toggle size="lg" label="Grande" />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Badge.module.css';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {

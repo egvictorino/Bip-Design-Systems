@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useContext, useId } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Stepper.module.css';
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -97,12 +98,13 @@ export const Stepper: React.FC<StepperProps> = ({
   className,
   children,
 }) => {
+  const t = useBipLocale();
   const totalSteps = React.Children.count(children);
 
   return (
     <StepperContext.Provider value={{ activeValue: value, onChange, variant, size, orientation, totalSteps }}>
       <ol
-        aria-label="Pasos del proceso"
+        aria-label={t.stepper.nav}
         className={cn(styles.stepper, orientation === 'vertical' && styles.stepperVertical, className)}
       >
         {children}

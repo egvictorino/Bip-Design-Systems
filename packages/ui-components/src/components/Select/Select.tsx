@@ -2,7 +2,7 @@
 
 import { forwardRef, useId, useState } from 'react';
 import type { SelectHTMLAttributes } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Select.module.css';
 
 export interface SelectOption {

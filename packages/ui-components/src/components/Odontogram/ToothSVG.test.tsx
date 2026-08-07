@@ -112,7 +112,10 @@ describe('ToothSVG — interaction', () => {
     const surface = screen.getByRole('img', { name: /Diente 11/ }).querySelector(
       '[aria-label="Oclusal"]'
     );
-    expect(surface).not.toHaveAttribute('role');
+    // role="graphics-symbol" (not "button") keeps the surface's aria-label from being
+    // orphaned — an aria-label on an element with no valid role is an axe violation
+    // (aria-prohibited-attr) — without exposing it as an interactive control when it isn't one.
+    expect(surface).toHaveAttribute('role', 'graphics-symbol');
     expect(surface).not.toHaveAttribute('tabindex');
   });
 

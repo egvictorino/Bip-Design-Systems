@@ -1,0 +1,58 @@
+/**
+ * Capa semántica de temas — square (default) y rounded.
+ *
+ * Los componentes consumen SOLO estos tokens semánticos (--radius-field,
+ * --radius-control, --radius-surface, --radius-container, --font-sans...),
+ * nunca la escala cruda de primitives.css directamente.
+ *
+ * :root y [data-theme='rounded'] tienen la misma especificidad (0,1,0) —
+ * quién gana depende del orden de aparición en este archivo. Por eso
+ * ambos temas viven en UN solo archivo: el build concatena todo el CSS
+ * en dist/style.css y el orden de chunks entre archivos separados no
+ * está garantizado.
+ */
+
+/* ─── Invariantes: idénticas en todo tema, nunca sobrescribir ───
+ * Círculos y píldoras (avatares, spinners, badges, toggles) y los
+ * elementos deliberadamente rectos (.bare, Card radius="none") deben
+ * verse igual sin importar el tema activo.
+ */
+:root {
+  --radius-none:   0;
+  --radius-pill:   var(--radius-full);
+  --radius-circle: 50%;
+}
+
+/* ─── Tema A · square (default) ───
+ * Deliberadamente recto en TODOS los niveles, incluidas superficies y
+ * contenedores grandes (Modal, Card, Dropdown) — decisión de diseño
+ * explícita para que el contraste con `rounded` sea consistente en
+ * toda la escala, no solo en controles pequeños. Antes de esta capa
+ * semántica, Modal/Card/Dropdown ya traían 0.375rem/0.5rem hardcoded;
+ * este tema los endereza a 0 a propósito.
+ */
+:root,
+[data-theme='square'] {
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-letter-spacing: 0;
+
+  --radius-marker:       var(--radius-xs);   /* 0.125rem */
+  --radius-field:        1px;
+  --radius-control:      var(--radius-sm);   /* 0.25rem  */
+  --radius-surface:      var(--radius-none); /* 0 */
+  --radius-container:    var(--radius-none); /* 0 */
+  --radius-container-lg: var(--radius-none); /* 0 */
+}
+
+/* ─── Tema B · rounded ─── */
+[data-theme='rounded'] {
+  --font-sans: 'Figtree Variable', 'Figtree', 'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+  --font-letter-spacing: 0.005em;
+
+  --radius-marker:       var(--radius-sm);   /* 0.25rem  */
+  --radius-field:        var(--radius-lg);   /* 0.5rem   */
+  --radius-control:      var(--radius-lg);   /* 0.5rem   */
+  --radius-surface:      var(--radius-xl);   /* 0.75rem  */
+  --radius-container:    var(--radius-2xl);  /* 1rem     */
+  --radius-container-lg: var(--radius-3xl);  /* 1.25rem  */
+}

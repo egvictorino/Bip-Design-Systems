@@ -2,10 +2,10 @@
 
 .alert {
   display: flex;
-  gap: 0.75rem;
-  border-radius: 1px;
-  border-left: 4px solid;
-  padding: 1rem;
+  gap: var(--space-3);
+  border-radius: var(--radius-surface);
+  border-inline-start: 4px solid;
+  padding: var(--space-4);
 }
 
 /* ─── Variants ──────────────────────────────────────────────────────────────── */
@@ -50,17 +50,17 @@
 }
 
 .title {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.25rem;
   font-weight: 600;
 }
 
 .body {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.25rem;
 }
 
-.bodyWithTitle { margin-top: 0.25rem; }
+.bodyWithTitle { margin-top: var(--space-1); }
 
 /* Title and body colors per variant */
 .info .title, .info .body     { color: var(--color-info-text); }
@@ -73,17 +73,17 @@
 .closeBtn {
   flex-shrink: 0;
   align-self: flex-start;
-  border-radius: 0.25rem;
-  padding: 0.125rem;
+  border-radius: var(--radius-control);
+  padding: var(--space-0-5);
   background: none;
   border: none;
   cursor: pointer;
-  transition: background-color 150ms;
+  transition: background-color var(--duration-fast);
   line-height: 0;
 }
 
 .closeBtn:focus { outline: none; }
-.closeBtn:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor; }
+.closeBtn:focus-visible { --focus-ring-color: currentColor; box-shadow: var(--focus-ring); }
 
 .closeBtnInfo:hover    { background-color: var(--color-info-subtle); color: var(--color-primary); }
 .closeBtnSuccess:hover { background-color: var(--color-success-subtle); color: var(--color-success); }

@@ -6,21 +6,21 @@
 
 .menu {
   position: absolute;
-  z-index: 50;
+  z-index: var(--z-modal);
   min-width: 160px;
-  border-radius: 0.375rem;
+  border-radius: var(--radius-surface);
   border: 1px solid var(--color-edge);
-  background-color: white;
-  padding: 0.25rem 0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface-1);
+  padding: var(--space-1) var(--space-0);
+  box-shadow: var(--shadow-md);
 }
 
 /* ─── Placements ─────────────────────────────────────────────────────────────── */
 
-.bottomStart { top: 100%; left: 0; margin-top: 0.25rem; }
-.bottomEnd   { top: 100%; right: 0; margin-top: 0.25rem; }
-.topStart    { bottom: 100%; left: 0; margin-bottom: 0.25rem; }
-.topEnd      { bottom: 100%; right: 0; margin-bottom: 0.25rem; }
+.bottomStart { top: 100%; inset-inline-start: 0; margin-top: var(--space-1); }
+.bottomEnd   { top: 100%; inset-inline-end: 0; margin-top: var(--space-1); }
+.topStart    { bottom: 100%; inset-inline-start: 0; margin-bottom: var(--space-1); }
+.topEnd      { bottom: 100%; inset-inline-end: 0; margin-bottom: var(--space-1); }
 
 /* ─── Item ───────────────────────────────────────────────────────────────────── */
 
@@ -28,11 +28,11 @@
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  text-align: left;
-  transition: background-color 150ms, color 150ms;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  text-align: start;
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -64,7 +64,7 @@
 /* ─── Divider ────────────────────────────────────────────────────────────────── */
 
 .divider {
-  margin: 0.25rem 0;
+  margin: var(--space-1) var(--space-0);
   border: none;
   border-top: 1px solid var(--color-edge);
 }
@@ -72,7 +72,7 @@
 /* ─── Group ──────────────────────────────────────────────────────────────────── */
 
 .group {
-  padding: 0.25rem 0;
+  padding: var(--space-1) var(--space-0);
 }
 
 .group + .group {
@@ -80,8 +80,8 @@
 }
 
 .groupLabel {
-  padding: 0.375rem 1rem 0.25rem;
-  font-size: 0.6875rem;
+  padding: var(--space-1-5) var(--space-4) var(--space-1);
+  font-size: var(--text-2xs);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -92,18 +92,18 @@
 /* ─── Search ─────────────────────────────────────────────────────────────────── */
 
 .searchContainer {
-  padding: 0.375rem 0.5rem;
+  padding: var(--space-1-5) var(--space-2);
   border-bottom: 1px solid var(--color-edge);
 }
 
 .searchInput {
   width: 100%;
-  padding: 0.375rem 0.5rem;
-  font-size: 0.875rem;
+  padding: var(--space-1-5) var(--space-2);
+  font-size: var(--text-sm);
   color: var(--color-txt);
   background: var(--color-surface-2);
   border: 1px solid var(--color-edge);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   outline: none;
   box-sizing: border-box;
 }
@@ -120,7 +120,7 @@
 /* ─── Item Checkbox ──────────────────────────────────────────────────────────── */
 
 .itemCheckbox {
-  gap: 0.375rem;
+  gap: var(--space-1-5);
 }
 
 .checkIndicator {
@@ -130,7 +130,7 @@
   justify-content: center;
   width: 1rem;
   height: 1rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--color-primary);
 }
 
@@ -149,8 +149,8 @@
 }
 
 .submenuArrow {
-  margin-left: auto;
-  font-size: 1rem;
+  margin-inline-start: auto;
+  font-size: var(--text-base);
   line-height: 1;
   color: var(--color-txt-secondary);
 }
@@ -158,6 +158,6 @@
 .submenu {
   position: absolute;
   top: 0;
-  left: 100%;
-  margin-left: 0.25rem;
+  inset-inline-start: 100%;
+  margin-inline-start: var(--space-1);
 }

@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '../Table';
-import { Pagination } from '../Pagination';
-import { Skeleton } from '../Skeleton';
-import { EmptyState } from '../EmptyState';
-import { SearchInput } from '../SearchInput';
-import { Checkbox } from '../Checkbox';
-import { Button } from '../Button';
-import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../lib/useClickOutside';
+import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '../Table/index.js';
+import { Pagination } from '../Pagination/index.js';
+import { Skeleton } from '../Skeleton/index.js';
+import { EmptyState } from '../EmptyState/index.js';
+import { SearchInput } from '../SearchInput/index.js';
+import { Checkbox } from '../Checkbox/index.js';
+import { Button } from '../Button/index.js';
+import { cn } from '../../lib/cn.js';
+import { useClickOutside } from '../../hooks/useClickOutside.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './DataTable.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -70,14 +71,14 @@ export function DataTable<T = Record<string, unknown>>({
   data,
   pageSize = 10,
   loading = false,
-  emptyMessage = 'No hay datos disponibles',
+  emptyMessage,
   striped = false,
   compact = false,
   onRowClick,
   keyExtractor,
   searchable = false,
   searchKeys,
-  searchPlaceholder = 'Buscar...',
+  searchPlaceholder,
   selectable = false,
   onSelectionChange,
   bulkActions,
@@ -91,6 +92,8 @@ export function DataTable<T = Record<string, unknown>>({
   label,
   className,
 }: DataTableProps<T>) {
+  const t = useBipLocale();
+
   // ─── Sort state ───────────────────────────────────────────────────────────
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
@@ -128,14 +131,22 @@ export function DataTable<T = Record<string, unknown>>({
   }, [data]);
 
   // ─── Notify selection changes ─────────────────────────────────────────────
+  // keyExtractor/onSelectionChange are read via refs (not effect deps) because
+  // consumers commonly pass inline functions; depending on their identity would
+  // re-fire this effect every render and loop forever through onSelectionChange.
+  const keyExtractorRef = useRef(keyExtractor);
+  keyExtractorRef.current = keyExtractor;
+  const onSelectionChangeRef = useRef(onSelectionChange);
+  onSelectionChangeRef.current = onSelectionChange;
+
   useEffect(() => {
-    if (!onSelectionChange) return;
+    if (!onSelectionChangeRef.current) return;
     const selectedRows = data.filter((row, i) => {
-      const k = keyExtractor ? keyExtractor(row, i) : i;
+      const k = keyExtractorRef.current ? keyExtractorRef.current(row, i) : i;
       return selectedKeys.has(k);
     });
-    onSelectionChange(selectedRows);
-  }, [selectedKeys, data, keyExtractor, onSelectionChange]);
+    onSelectionChangeRef.current(selectedRows);
+  }, [selectedKeys, data]);
 
   // ─── Close column panel on outside click ──────────────────────────────────
   useClickOutside(colPanelRef, () => setColPanelOpen(false), colPanelOpen);
@@ -293,7 +304,7 @@ export function DataTable<T = Record<string, unknown>>({
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 onClear={() => handleSearch('')}
-                placeholder={searchPlaceholder}
+                placeholder={searchPlaceholder ?? t.dataTable.searchPlaceholder}
               />
             </div>
           )}
@@ -312,7 +323,7 @@ export function DataTable<T = Record<string, unknown>>({
                 <div
                   id={colPanelId}
                   role="dialog"
-                  aria-label="Visibilidad de columnas"
+                  aria-label={t.dataTable.columnVisibility}
                   className={styles.colPanel}
                 >
                   {columns.map((col) => (
@@ -371,7 +382,7 @@ export function DataTable<T = Record<string, unknown>>({
                   checked={allPageSelected}
                   indeterminate={somePageSelected}
                   onChange={handleHeaderCheckbox}
-                  aria-label="Seleccionar todas las filas de esta página"
+                  aria-label={t.dataTable.selectAllRows}
                 />
               </TableHeader>
             )}
@@ -409,7 +420,7 @@ export function DataTable<T = Record<string, unknown>>({
           ) : paginatedData.length === 0 ? (
             <TableRow>
               <TableCell colSpan={colSpan} align="center" className={styles.emptyCell}>
-                <EmptyState title={emptyMessage} size="sm" />
+                <EmptyState title={emptyMessage ?? t.dataTable.emptyMessage} size="sm" />
               </TableCell>
             </TableRow>
           ) : (
@@ -430,7 +441,7 @@ export function DataTable<T = Record<string, unknown>>({
                       <Checkbox
                         checked={selectedKeys.has(rowKey)}
                         onChange={() => handleRowCheckbox(rowKey)}
-                        aria-label={`Seleccionar fila ${rowIndex + 1}`}
+                        aria-label={t.dataTable.selectRow(rowIndex + 1)}
                         onClick={(e) => e.stopPropagation()}
                       />
                     </TableCell>

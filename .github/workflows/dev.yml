@@ -12,19 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
-      
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Lint ui-components
         run: pnpm --filter @bip-design-systems/ui-components lint
 
@@ -33,24 +33,16 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
-      
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
+
+      - uses: actions/setup-node@v5
         with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-      
+          node-version: '20'
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
@@ -65,7 +57,7 @@ jobs:
           pnpm --filter @bip-design-systems/ui-components build
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: dev-build
           path: packages/*/dist
@@ -78,26 +70,29 @@ jobs:
     if: github.event_name == 'push'
     
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
-      
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Build Storybook
         run: pnpm --filter @bip-design-systems/ui-components build-storybook
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
       
-      - name: Deploy to Netlify (or surge.sh)
-        run: echo "📦 Aquí desplegarías a un ambiente de dev preview"
-        # Ejemplo con Surge.sh (gratis):
-        # - run: npm install -g surge
-        # - run: surge ./packages/ui-components/storybook-static bip-dev.surge.sh --token ${{ secrets.SURGE_TOKEN }}
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@v6
+        with:
+          name: storybook-dev
+          path: packages/ui-components/storybook-static
+          retention-days: 7
+        # Un repo solo tiene un sitio de GitHub Pages, ya usado por production.yml — dev no
+        # tiene URL propia. El artifact es descargable desde la pestaña Actions del run.

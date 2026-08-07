@@ -1,0 +1,44 @@
+/* ─── Size ───────────────────────────────────────────────────────────────── */
+
+.size3xs  { font-size: var(--text-3xs); }
+.size2xs  { font-size: var(--text-2xs); }
+.sizeXs   { font-size: var(--text-xs); }
+.sizeSm   { font-size: var(--text-sm); }
+.sizeBase { font-size: var(--text-base); }
+.sizeLg   { font-size: var(--text-lg); }
+.sizeXl   { font-size: var(--text-xl); }
+.size2xl  { font-size: var(--text-2xl); }
+
+/* ─── Weight ─────────────────────────────────────────────────────────────── */
+
+.weightNormal   { font-weight: var(--font-normal); }
+.weightMedium   { font-weight: var(--font-medium); }
+.weightSemibold { font-weight: var(--font-semibold); }
+.weightBold     { font-weight: var(--font-bold); }
+
+/* ─── Color ──────────────────────────────────────────────────────────────── */
+
+.colorDefault   { color: var(--color-txt); }
+.colorSecondary { color: var(--color-txt-secondary); }
+.colorUtility   { color: var(--color-txt-utility); }
+.colorDisabled  { color: var(--color-txt-disabled); }
+.colorImportant { color: var(--color-txt-important); }
+.colorDanger    { color: var(--color-danger-text); }
+.colorSuccess   { color: var(--color-success-text); }
+.colorWarning   { color: var(--color-warning-text); }
+.colorInfo      { color: var(--color-info-text); }
+.colorLink      { color: var(--color-link); }
+
+/* ─── Align ──────────────────────────────────────────────────────────────── */
+
+.alignStart  { text-align: start; }
+.alignCenter { text-align: center; }
+.alignEnd    { text-align: end; }
+
+/* ─── Truncate ───────────────────────────────────────────────────────────── */
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,2 +1,2 @@
-export { Avatar, AvatarGroup } from './Avatar';
-export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarShape, AvatarStatus } from './Avatar';
+export { Avatar, AvatarGroup } from './Avatar.js';
+export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarShape, AvatarStatus } from './Avatar.js';

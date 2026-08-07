@@ -10,25 +10,25 @@
 .tooltip {
   pointer-events: none;
   position: absolute;
-  z-index: 50;
+  z-index: var(--z-modal);
   max-width: 20rem;
-  border-radius: 0.375rem;
-  --tooltip-bg: var(--color-txt);
-  --tooltip-color: var(--color-txt-white);
+  border-radius: var(--radius-surface);
+  --tooltip-bg: var(--color-surface-inverse);
+  --tooltip-color: var(--color-txt-on-inverse);
   --tooltip-border: transparent;
   background-color: var(--tooltip-bg);
   color: var(--tooltip-color);
   border: 1px solid var(--tooltip-border);
-  padding: 0.375rem 0.625rem;
-  font-size: 0.75rem;
+  padding: var(--space-1-5) var(--space-2-5);
+  font-size: var(--text-xs);
   line-height: 1rem;
   font-weight: 500;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-md);
   visibility: hidden;
   opacity: 0;
-  /* Salida: 100ms ease-in; visibility espera a que opacity termine */
-  transition: opacity 100ms ease-in, transform 100ms ease-in,
-              visibility 0s linear 100ms;
+  /* Salida: var(--duration-instant) var(--ease-in); visibility espera a que opacity termine */
+  transition: opacity var(--duration-instant) var(--ease-in), transform var(--duration-instant) var(--ease-in),
+              visibility 0s linear var(--duration-instant);
   white-space: normal;
 }
 
@@ -36,8 +36,8 @@
 .tooltip[data-open='true'] {
   visibility: visible;
   opacity: 1;
-  /* Entrada: 150ms ease-out; visibility cambia inmediatamente */
-  transition: opacity 150ms ease-out, transform 150ms ease-out, visibility 0s;
+  /* Entrada: var(--duration-fast) var(--ease-out); visibility cambia inmediatamente */
+  transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out), visibility 0s;
 }
 
 /* ─── Arrow ─────────────────────────────────────────────────────────────────── */
@@ -51,13 +51,21 @@
 }
 
 /* ─── Positions (base — align="center" by default) ───────────────────────────── */
+/* `position` (TooltipProps) es un prop físico explícito ('top'|'bottom'|'left'|'right'),
+   igual que DrawerPanel `placement`/Toast `position` — position="left" pide que la
+   burbuja aparezca al lado físico izquierdo del trigger sin importar `dir`. Todo
+   left/right/translateX ligado al position de .left/.right se deja literal a propósito.
+   left: 50% en .top/.bottom SÍ se vuelve inset-inline-start: es el punto medio del eje
+   horizontal, simétrico — no cambia de valor, solo de nombre, y así el resto del
+   bloque (alignStart/alignEnd más abajo, que sí es relativo a inicio/fin de lectura)
+   queda consistente con la misma propiedad. */
 
 /* Top — state cerrado: desplazado hacia abajo */
 .top {
   bottom: 100%;
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) translateY(8px);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
 }
 
 .top[data-open='true'] {
@@ -65,18 +73,18 @@
 }
 
 .top .arrow {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) rotate(45deg);
   top: 100%;
-  margin-top: -0.25rem;
+  margin-top: calc(var(--space-1) * -1);
 }
 
 /* Bottom — state cerrado: desplazado hacia arriba */
 .bottom {
   top: 100%;
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) translateY(-8px);
-  margin-top: 0.5rem;
+  margin-top: var(--space-2);
 }
 
 .bottom[data-open='true'] {
@@ -84,10 +92,10 @@
 }
 
 .bottom .arrow {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) rotate(45deg);
   bottom: 100%;
-  margin-bottom: -0.25rem;
+  margin-bottom: calc(var(--space-1) * -1);
 }
 
 /* Left — state cerrado: desplazado hacia la derecha */
@@ -95,7 +103,7 @@
   right: 100%;
   top: 50%;
   transform: translateX(8px) translateY(-50%);
-  margin-right: 0.5rem;
+  margin-right: var(--space-2);
 }
 
 .left[data-open='true'] {
@@ -106,7 +114,7 @@
   top: 50%;
   transform: translateY(-50%) rotate(45deg);
   left: 100%;
-  margin-left: -0.25rem;
+  margin-left: calc(var(--space-1) * -1);
 }
 
 /* Right — state cerrado: desplazado hacia la izquierda */
@@ -114,7 +122,7 @@
   left: 100%;
   top: 50%;
   transform: translateX(-8px) translateY(-50%);
-  margin-left: 0.5rem;
+  margin-left: var(--space-2);
 }
 
 .right[data-open='true'] {
@@ -125,90 +133,95 @@
   top: 50%;
   transform: translateY(-50%) rotate(45deg);
   right: 100%;
-  margin-right: -0.25rem;
+  margin-right: calc(var(--space-1) * -1);
 }
 
 /* ─── Align overrides ─────────────────────────────────────────────────────────── */
 
+/* `align` (TooltipProps) SÍ es relativo a inicio/fin de lectura — 'start'|'center'|'end',
+   no 'left'|'right' — así que a diferencia de `position` arriba, estos bloques usan
+   inset-inline-start/end: align="start" debe pegar la burbuja al lado de INICIO de
+   lectura (izquierda en LTR, derecha en RTL), no a la izquierda física siempre. */
+
 /* top + alignStart */
 .top.alignStart {
-  left: 0;
+  inset-inline-start: 0;
   transform: translateY(8px);
 }
 .top.alignStart[data-open='true'] {
   transform: translateY(0);
 }
 .top.alignStart .arrow {
-  left: 0.75rem;
+  inset-inline-start: 0.75rem;
   transform: rotate(45deg);
 }
 
 /* top + alignCenter (explicit — same as base .top) */
 .top.alignCenter {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) translateY(8px);
 }
 .top.alignCenter[data-open='true'] {
   transform: translateX(-50%) translateY(0);
 }
 .top.alignCenter .arrow {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) rotate(45deg);
 }
 
 /* top + alignEnd */
 .top.alignEnd {
-  left: auto;
-  right: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
   transform: translateY(8px);
 }
 .top.alignEnd[data-open='true'] {
   transform: translateY(0);
 }
 .top.alignEnd .arrow {
-  left: auto;
-  right: 0.75rem;
+  inset-inline-start: auto;
+  inset-inline-end: 0.75rem;
   transform: rotate(45deg);
 }
 
 /* bottom + alignStart */
 .bottom.alignStart {
-  left: 0;
+  inset-inline-start: 0;
   transform: translateY(-8px);
 }
 .bottom.alignStart[data-open='true'] {
   transform: translateY(0);
 }
 .bottom.alignStart .arrow {
-  left: 0.75rem;
+  inset-inline-start: 0.75rem;
   transform: rotate(45deg);
 }
 
 /* bottom + alignCenter */
 .bottom.alignCenter {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) translateY(-8px);
 }
 .bottom.alignCenter[data-open='true'] {
   transform: translateX(-50%) translateY(0);
 }
 .bottom.alignCenter .arrow {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%) rotate(45deg);
 }
 
 /* bottom + alignEnd */
 .bottom.alignEnd {
-  left: auto;
-  right: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
   transform: translateY(-8px);
 }
 .bottom.alignEnd[data-open='true'] {
   transform: translateY(0);
 }
 .bottom.alignEnd .arrow {
-  left: auto;
-  right: 0.75rem;
+  inset-inline-start: auto;
+  inset-inline-end: 0.75rem;
   transform: rotate(45deg);
 }
 

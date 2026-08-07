@@ -1,5 +1,6 @@
 import React from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Spinner.module.css';
 
 export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -13,14 +14,16 @@ export const Spinner: React.FC<SpinnerProps> = ({
   size = 'md',
   variant = 'primary',
   speed,
-  label = 'Cargando...',
+  label,
   className,
   ...props
 }) => {
+  const t = useBipLocale();
+
   return (
     <span
       role="status"
-      aria-label={label}
+      aria-label={label ?? t.spinner.defaultLabel}
       className={cn(styles.spinner, className)}
       {...props}
     >

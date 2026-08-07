@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './EmptyState.module.css';
 
 export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {

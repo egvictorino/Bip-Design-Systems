@@ -9,8 +9,10 @@ import React, {
   useState,
 } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { addDays, isSameDay } from '../../lib/dateHelpers';
+import { cn } from '../../lib/cn.js';
+import { addDays, isSameDay } from '../../lib/dateHelpers.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Calendar.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -105,38 +107,23 @@ function setTimeFromMinutes(base: Date, minutes: number): Date {
   return r;
 }
 
-const MONTH_FORMATTER = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' });
-const TIME_FORMATTER = new Intl.DateTimeFormat('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false });
-const DAY_LONG_FORMATTER = new Intl.DateTimeFormat('es-MX', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
+function chunk<T>(items: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    result.push(items.slice(i, i + size));
+  }
+  return result;
+}
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const HOUR_HEIGHT = 60; // px per hour
-const DAY_NAMES = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-const VIEWS: { value: CalendarView; label: string }[] = [
-  { value: 'month', label: 'Mes' },
-  { value: 'week', label: 'Semana' },
-  { value: 'day', label: 'Día' },
-  { value: 'agenda', label: 'Agenda' },
-];
 
 const STATUS_CLASSES: Record<CalendarEventStatus, string> = {
   pending: styles.statusPending,
   confirmed: styles.statusConfirmed,
   completed: styles.statusCompleted,
   cancelled: styles.statusCancelled,
-};
-
-const STATUS_LABELS: Record<CalendarEventStatus, string> = {
-  pending: 'Pendiente',
-  confirmed: 'Confirmada',
-  completed: 'Completada',
-  cancelled: 'Cancelada',
 };
 
 // ─── CalendarHeader ───────────────────────────────────────────────────────────
@@ -149,23 +136,49 @@ interface CalendarHeaderProps {
 }
 
 const CalendarHeader: React.FC<CalendarHeaderProps> = ({ view, date, onViewChange, onDateChange }) => {
+  const t = useBipLocale();
+
+  const monthFormatter = useMemo(
+    () => new Intl.DateTimeFormat(t.locale, { month: 'long', year: 'numeric' }),
+    [t.locale]
+  );
+  const dayLongFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(t.locale, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+    [t.locale]
+  );
+
+  const views = useMemo(
+    () =>
+      (['month', 'week', 'day', 'agenda'] as const).map((value) => ({
+        value,
+        label: t.calendar.views[value],
+      })),
+    [t.calendar.views]
+  );
+
   const title = useMemo(() => {
     if (view === 'month') {
-      return MONTH_FORMATTER.format(date).replace(/^\w/, (c) => c.toUpperCase());
+      return monthFormatter.format(date).replace(/^\w/, (c) => c.toUpperCase());
     }
     if (view === 'week') {
       const mon = startOfWeek(date);
       const sun = addDays(mon, 6);
       if (mon.getMonth() === sun.getMonth()) {
-        return `${mon.getDate()} – ${sun.getDate()} ${new Intl.DateTimeFormat('es-MX', { month: 'short', year: 'numeric' }).format(sun)}`;
+        return `${mon.getDate()} – ${sun.getDate()} ${new Intl.DateTimeFormat(t.locale, { month: 'short', year: 'numeric' }).format(sun)}`;
       }
-      return `${mon.getDate()} ${new Intl.DateTimeFormat('es-MX', { month: 'short' }).format(mon)} – ${sun.getDate()} ${new Intl.DateTimeFormat('es-MX', { month: 'short', year: 'numeric' }).format(sun)}`;
+      return `${mon.getDate()} ${new Intl.DateTimeFormat(t.locale, { month: 'short' }).format(mon)} – ${sun.getDate()} ${new Intl.DateTimeFormat(t.locale, { month: 'short', year: 'numeric' }).format(sun)}`;
     }
     if (view === 'day') {
-      return DAY_LONG_FORMATTER.format(date).replace(/^\w/, (c) => c.toUpperCase());
+      return dayLongFormatter.format(date).replace(/^\w/, (c) => c.toUpperCase());
     }
-    return 'Próximos eventos';
-  }, [view, date]);
+    return t.calendar.upcomingEvents;
+  }, [view, date, monthFormatter, dayLongFormatter, t.calendar.upcomingEvents, t.locale]);
 
   const handlePrev = () => {
     if (view === 'month') onDateChange(new Date(date.getFullYear(), date.getMonth() - 1, 1));
@@ -187,7 +200,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({ view, date, onViewChang
       <div className={styles.headerNav}>
         <button
           type="button"
-          aria-label="Período anterior"
+          aria-label={t.calendar.prevPeriod}
           onClick={handlePrev}
           className={styles.headerNavBtn}
         >
@@ -200,11 +213,11 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({ view, date, onViewChang
           onClick={handleToday}
           className={styles.headerTodayBtn}
         >
-          Hoy
+          {t.calendar.today}
         </button>
         <button
           type="button"
-          aria-label="Período siguiente"
+          aria-label={t.calendar.nextPeriod}
           onClick={handleNext}
           className={styles.headerNavBtn}
         >
@@ -219,7 +232,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({ view, date, onViewChang
 
       {/* View switcher */}
       <div className={styles.viewSwitcher}>
-        {VIEWS.map((v) => (
+        {views.map((v) => (
           <button
             key={v.value}
             type="button"
@@ -249,6 +262,11 @@ interface EventChipProps {
 }
 
 const EventChip = React.memo<EventChipProps>(({ event, resources, onClick, onDragStart }) => {
+  const t = useBipLocale();
+  const timeFormatter = useMemo(
+    () => new Intl.DateTimeFormat(t.locale, { hour: '2-digit', minute: '2-digit', hour12: false }),
+    [t.locale]
+  );
   const doctor = resources?.find((r) => r.id === event.doctorId);
   const customStyle = event.color
     ? { borderLeftColor: event.color, backgroundColor: event.color + '26' }
@@ -262,11 +280,11 @@ const EventChip = React.memo<EventChipProps>(({ event, resources, onClick, onDra
       onDragStart={(e) => { e.stopPropagation(); onDragStart(e, event); }}
       onClick={(e) => { e.stopPropagation(); onClick(event); }}
       onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick(event)}
-      aria-label={`${event.title}, ${TIME_FORMATTER.format(event.start)}, ${STATUS_LABELS[event.status]}`}
+      aria-label={`${event.title}, ${timeFormatter.format(event.start)}, ${t.calendar.statusLabels[event.status]}`}
       style={customStyle}
       className={cn(styles.eventChip, !event.color && STATUS_CLASSES[event.status])}
     >
-      <span className={styles.eventChipTime}>{TIME_FORMATTER.format(event.start)}</span>{' '}
+      <span className={styles.eventChipTime}>{timeFormatter.format(event.start)}</span>{' '}
       {event.title}
       {doctor && (
         <span
@@ -298,6 +316,11 @@ const EventBlock = React.memo<EventBlockProps>(({
   event, resources, topPct, heightPct, leftPct, widthPct,
   onClick, onDragStart, onResizeStart,
 }) => {
+  const t = useBipLocale();
+  const timeFormatter = useMemo(
+    () => new Intl.DateTimeFormat(t.locale, { hour: '2-digit', minute: '2-digit', hour12: false }),
+    [t.locale]
+  );
   const doctor = resources?.find((r) => r.id === event.doctorId);
   const durationMin = (event.end.getTime() - event.start.getTime()) / 60000;
   const offsetAtDragStart = useRef(0);
@@ -322,7 +345,7 @@ const EventBlock = React.memo<EventBlockProps>(({
       onDragStart={handleDragStart}
       onClick={() => onClick(event)}
       onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick(event)}
-      aria-label={`${event.title}, ${TIME_FORMATTER.format(event.start)} – ${TIME_FORMATTER.format(event.end)}, ${STATUS_LABELS[event.status]}`}
+      aria-label={`${event.title}, ${timeFormatter.format(event.start)} – ${timeFormatter.format(event.end)}, ${t.calendar.statusLabels[event.status]}`}
       style={{
         position: 'absolute',
         top: `${topPct}%`,
@@ -373,10 +396,12 @@ interface RangePopoverProps {
 }
 
 const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onConfirm, onClose }) => {
+  const t = useBipLocale();
   const displayEnd = addDays(end, -1); // back to inclusive for display
   const fmt = (d: Date) =>
-    d.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
+    d.toLocaleDateString(t.locale, { weekday: 'short', day: 'numeric', month: 'short' });
   const label = isSameDay(start, displayEnd) ? fmt(start) : `${fmt(start)} — ${fmt(displayEnd)}`;
+  const { style: themeStyle, ...themeAttrs } = useThemeAttributes();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -387,12 +412,12 @@ const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onCo
   }, [onClose]);
 
   return ReactDOM.createPortal(
-    <>
+    <div {...themeAttrs} style={{ display: 'contents', ...themeStyle }}>
       <div className={styles.rangeOverlay} aria-hidden="true" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Rango de fechas seleccionado"
+        aria-label={t.calendar.selectedDateRange}
         style={{ top: position.top, left: position.left }}
         className={styles.rangePopover}
       >
@@ -400,7 +425,7 @@ const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onCo
           <span className={styles.rangePopoverLabel}>{label}</span>
           <button
             onClick={onClose}
-            aria-label="Cerrar"
+            aria-label={t.calendar.close}
             className={styles.rangePopoverClose}
           >
             ✕
@@ -413,7 +438,7 @@ const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onCo
           Crear evento
         </button>
       </div>
-    </>,
+    </div>,
     document.body
   );
 });
@@ -436,6 +461,11 @@ interface MonthViewProps {
 const MonthView: React.FC<MonthViewProps> = ({
   events, resources, date, onEventClick, onEventCreate, onRangeSelect, onEventMove, onDateChange, onViewChange,
 }) => {
+  const t = useBipLocale();
+  const monthFormatter = useMemo(
+    () => new Intl.DateTimeFormat(t.locale, { month: 'long', year: 'numeric' }),
+    [t.locale]
+  );
   const today = useMemo(() => startOfDay(new Date()), []);
 
   // ── Range popover state ────────────────────────────────────────────────────
@@ -557,7 +587,7 @@ const MonthView: React.FC<MonthViewProps> = ({
     <div className={styles.monthView}>
       {/* Day headers */}
       <div className={styles.monthDayHeaders}>
-        {DAY_NAMES.map((d) => (
+        {t.calendar.dayNames.map((d) => (
           <div key={d} className={styles.monthDayHeader}>
             {d}
           </div>
@@ -567,7 +597,7 @@ const MonthView: React.FC<MonthViewProps> = ({
       {/* Grid */}
       <div
         role="grid"
-        aria-label={`Mes ${MONTH_FORMATTER.format(date)}`}
+        aria-label={t.calendar.monthLabel(monthFormatter.format(date))}
         tabIndex={0}
         className={styles.monthGrid}
         onMouseMove={(e) => {
@@ -585,89 +615,97 @@ const MonthView: React.FC<MonthViewProps> = ({
           finalizeRange();
         }}
       >
-        {cells.map((cellDate, idx) => {
-          const key = startOfDay(cellDate).toISOString();
-          const dayEvents = eventsByDay.get(key) ?? [];
-          const isCurrentMonth = cellDate.getMonth() === date.getMonth();
-          const isToday = isSameDay(cellDate, today);
-          const visible = dayEvents.slice(0, 3);
-          const overflow = dayEvents.length - 3;
-          const inRange = isInRange(cellDate);
+        {chunk(cells, 7).map((week, weekIdx) => (
+          // display: contents keeps these as direct CSS grid items of .monthGrid (so the
+          // 7-column layout is unaffected) while giving each gridcell the role="row" ARIA
+          // parent it requires — see aria-required-parent under axe.
+          <div role="row" style={{ display: 'contents' }} key={weekIdx}>
+            {week.map((cellDate, i) => {
+              const idx = weekIdx * 7 + i;
+              const key = startOfDay(cellDate).toISOString();
+              const dayEvents = eventsByDay.get(key) ?? [];
+              const isCurrentMonth = cellDate.getMonth() === date.getMonth();
+              const isToday = isSameDay(cellDate, today);
+              const visible = dayEvents.slice(0, 3);
+              const overflow = dayEvents.length - 3;
+              const inRange = isInRange(cellDate);
 
-          const handleCellKeyDown = (e: React.KeyboardEvent) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              onEventCreate?.({ start: startOfDay(cellDate), end: addDays(startOfDay(cellDate), 1) });
-            }
-          };
+              const handleCellKeyDown = (e: React.KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  onEventCreate?.({ start: startOfDay(cellDate), end: addDays(startOfDay(cellDate), 1) });
+                }
+              };
 
-          return (
-            <div
-              key={idx}
-              role="gridcell"
-              tabIndex={0}
-              data-cell-idx={idx}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => handleDrop(e, cellDate)}
-              onMouseDown={(e) => {
-                if (e.button !== 0) return;
-                e.preventDefault();
-                isSelectingRef.current = true;
-                setRangeAnchor(startOfDay(cellDate));
-                setRangeHover(startOfDay(cellDate));
-              }}
-              onMouseEnter={() => {
-                if (!isSelectingRef.current) return;
-                setRangeHover(startOfDay(cellDate));
-              }}
-              onKeyDown={handleCellKeyDown}
-              className={cn(
-                styles.monthCell,
-                inRange
-                  ? styles.monthCellInRange
-                  : cn(
-                      styles.monthCellDefault,
-                      !isCurrentMonth && styles.monthCellOtherMonth,
-                      isToday && styles.monthCellToday
-                    )
-              )}
-            >
-              <div className={styles.monthCellDateRow}>
-                <span
+              return (
+                <div
+                  key={idx}
+                  role="gridcell"
+                  tabIndex={0}
+                  data-cell-idx={idx}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => handleDrop(e, cellDate)}
+                  onMouseDown={(e) => {
+                    if (e.button !== 0) return;
+                    e.preventDefault();
+                    isSelectingRef.current = true;
+                    setRangeAnchor(startOfDay(cellDate));
+                    setRangeHover(startOfDay(cellDate));
+                  }}
+                  onMouseEnter={() => {
+                    if (!isSelectingRef.current) return;
+                    setRangeHover(startOfDay(cellDate));
+                  }}
+                  onKeyDown={handleCellKeyDown}
                   className={cn(
-                    styles.monthCellDateNum,
-                    isToday ? styles.monthCellDateNumToday : undefined
+                    styles.monthCell,
+                    inRange
+                      ? styles.monthCellInRange
+                      : cn(
+                          styles.monthCellDefault,
+                          !isCurrentMonth && styles.monthCellOtherMonth,
+                          isToday && styles.monthCellToday
+                        )
                   )}
                 >
-                  {cellDate.getDate()}
-                </span>
-              </div>
-              <div>
-                {visible.map((ev) => (
-                  <EventChip
-                    key={ev.id}
-                    event={ev}
-                    resources={resources}
-                    onClick={onEventClick}
-                    onDragStart={handleDragStart}
-                  />
-                ))}
-                {overflow > 0 && (
-                  <button
-                    type="button"
-                    className={styles.monthCellOverflow}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDateChange?.(cellDate);
-                      onViewChange?.('day');
-                    }}
-                  >
-                    +{overflow} más
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+                  <div className={styles.monthCellDateRow}>
+                    <span
+                      className={cn(
+                        styles.monthCellDateNum,
+                        isToday ? styles.monthCellDateNumToday : undefined
+                      )}
+                    >
+                      {cellDate.getDate()}
+                    </span>
+                  </div>
+                  <div>
+                    {visible.map((ev) => (
+                      <EventChip
+                        key={ev.id}
+                        event={ev}
+                        resources={resources}
+                        onClick={onEventClick}
+                        onDragStart={handleDragStart}
+                      />
+                    ))}
+                    {overflow > 0 && (
+                      <button
+                        type="button"
+                        className={styles.monthCellOverflow}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDateChange?.(cellDate);
+                          onViewChange?.('day');
+                        }}
+                      >
+                        +{overflow} más
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       {rangePopover && (
@@ -706,6 +744,7 @@ const TimeGrid: React.FC<TimeGridProps> = ({
   days, events, resources, minMinutes, maxMinutes, step,
   onEventClick, onEventCreate, onEventMove, onEventResize,
 }) => {
+  const t = useBipLocale();
   const today = useMemo(() => startOfDay(new Date()), []);
   const rangeMinutes = maxMinutes - minMinutes;
   const totalHeight = (rangeMinutes / 60) * HOUR_HEIGHT;
@@ -865,7 +904,7 @@ const TimeGrid: React.FC<TimeGridProps> = ({
                   )}
                 >
                   <div className={cn(styles.timeColumnHeaderWeekday, isToday && styles.timeColumnHeaderWeekdayToday)}>
-                    {new Intl.DateTimeFormat('es-MX', { weekday: 'short' }).format(col.day).replace('.', '').toUpperCase()}
+                    {new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(col.day).replace('.', '').toUpperCase()}
                   </div>
                   <div
                     className={cn(
@@ -991,20 +1030,6 @@ interface AgendaViewProps {
   onEventClick: (e: CalendarEvent) => void;
 }
 
-const DAY_FULL_FORMATTER = new Intl.DateTimeFormat('es-MX', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
-
-const STATUS_FILTER_CONFIG: { status: CalendarEventStatus; label: string }[] = [
-  { status: 'pending', label: 'Pendiente' },
-  { status: 'confirmed', label: 'Confirmada' },
-  { status: 'completed', label: 'Completada' },
-  { status: 'cancelled', label: 'Cancelada' },
-];
-
 const AGENDA_FILTER_ACTIVE_CLASSES: Record<CalendarEventStatus, string> = {
   pending: styles.agendaFilterActivePending,
   confirmed: styles.agendaFilterActiveConfirmed,
@@ -1013,6 +1038,30 @@ const AGENDA_FILTER_ACTIVE_CLASSES: Record<CalendarEventStatus, string> = {
 };
 
 const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEventClick }) => {
+  const t = useBipLocale();
+  const dayFullFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(t.locale, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+    [t.locale]
+  );
+  const timeFormatter = useMemo(
+    () => new Intl.DateTimeFormat(t.locale, { hour: '2-digit', minute: '2-digit', hour12: false }),
+    [t.locale]
+  );
+  const statusFilterConfig = useMemo(
+    () =>
+      (['pending', 'confirmed', 'completed', 'cancelled'] as const).map((status) => ({
+        status,
+        label: t.calendar.statusLabels[status],
+      })),
+    [t.calendar.statusLabels]
+  );
+
   const [activeStatuses, setActiveStatuses] = useState<Set<CalendarEventStatus>>(
     () => new Set(['pending', 'confirmed', 'completed', 'cancelled'])
   );
@@ -1058,7 +1107,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
     <div className={styles.agendaView}>
       {/* Filter chips */}
       <div className={styles.agendaFilters}>
-        {STATUS_FILTER_CONFIG.map(({ status, label }) => (
+        {statusFilterConfig.map(({ status, label }) => (
           <button
             key={status}
             role="checkbox"
@@ -1110,10 +1159,10 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
                       isToday && styles.agendaDayTitleToday
                     )}
                   >
-                    {DAY_FULL_FORMATTER.format(groupDate)}
+                    {dayFullFormatter.format(groupDate)}
                     {isToday && (
                       <span className={styles.agendaTodayBadge}>
-                        Hoy
+                        {t.calendar.today}
                       </span>
                     )}
                   </h3>
@@ -1128,7 +1177,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
                         tabIndex={0}
                         onClick={() => onEventClick(ev)}
                         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onEventClick(ev)}
-                        aria-label={`${ev.title}, ${TIME_FORMATTER.format(ev.start)}, ${STATUS_LABELS[ev.status]}`}
+                        aria-label={`${ev.title}, ${timeFormatter.format(ev.start)}, ${t.calendar.statusLabels[ev.status]}`}
                         className={cn(
                           styles.agendaEventCard,
                           ev.status === 'cancelled' && styles.agendaEventCardCancelled
@@ -1136,9 +1185,9 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
                       >
                         {/* Time */}
                         <div className={styles.agendaEventTime}>
-                          {TIME_FORMATTER.format(ev.start)}
+                          {timeFormatter.format(ev.start)}
                           <div className={styles.agendaEventTimeEnd}>
-                            {TIME_FORMATTER.format(ev.end)}
+                            {timeFormatter.format(ev.end)}
                           </div>
                         </div>
 
@@ -1187,7 +1236,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
                             [styles.agendaStatusCompleted]: ev.status === 'completed',
                             [styles.agendaStatusCancelled]: ev.status === 'cancelled',
                           })}>
-                            {STATUS_LABELS[ev.status]}
+                            {t.calendar.statusLabels[ev.status]}
                           </span>
                           {doctor && (
                             <div className={styles.agendaDoctorRow}>
@@ -1237,6 +1286,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     },
     ref
   ) => {
+    const t = useBipLocale();
     const [dragging, setDragging] = useState(false);
 
     const minMinutes = useMemo(() => timeToMinutes(minTime), [minTime]);
@@ -1277,7 +1327,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
       <div
         ref={ref}
         role="application"
-        aria-label="Calendario"
+        aria-label={t.calendar.calendarLabel}
         className={cn(styles.calendar, className)}
       >
         <CalendarHeader
