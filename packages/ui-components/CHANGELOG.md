@@ -8,8 +8,31 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ## [Unreleased]
 
+### Added
+
+- `src/styles/contrast-tokens.test.ts` — verifica WCAG AA (4.5:1) contra los valores hex
+  reales de `tokens.css` para las 6 semillas de fill y sus `--color-txt-on-*`, en ambos
+  esquemas de color. Antes solo se probaba la función `contrastRatio` con pares escritos a
+  mano; ahora un cambio a un token real que rompa el contraste falla el build.
+- Visual regression ahora corre en CI (`pr-validation.yml`, job `visual-regression`) contra
+  baselines Linux generadas en `mcr.microsoft.com/playwright:v1.62.1-jammy` — antes solo
+  existían baselines macOS y ningún workflow invocaba `test:visual`. Nuevo
+  `scripts/visual-docker.sh` (raíz del repo, `pnpm test:visual:docker`) corre la misma imagen
+  en local para que verificar o regenerar baselines sea idéntico a lo que corre en CI.
+- `visual/component-matrix.spec.ts` — un screenshot por componente (42 de los 43 directorios
+  de `src/components`; `ThemeProvider` no tiene UI propia) más un subset de 15 en RTL
+  (`Sidebar`, `Toggle`, `Tooltip`, `Calendar`, `NumberInput`, `SearchInput`, `Input`, `Select`,
+  `Dropdown`, `DrawerPanel`, `Tabs`, `Stepper`, `Timeline`, `MultiSelect`, `DatePicker` — los
+  que tienen geometría direccional real). Antes las 8 baselines existentes cubrían solo
+  ThemeProvider/Foundations; una regresión visual en un componente en sí no la detectaba
+  nada. Guard de cobertura igual al de `a11y.test.tsx`: un componente nuevo sin entrada en
+  `component-matrix.ts` falla el build.
+
 ### Fixed
 
+- `playwright.visual.config.ts`: `use.viewport` estaba declarado pero sin efecto — el spread
+  de `devices['Desktop Chrome']` en el project lo pisaba, así que el viewport real siempre fue
+  1280×720, no 960×720. Corregido moviendo el viewport al `use` del project, donde sí aplica.
 - `src/styles/rtl.test.ts`: `ProgressBar.module.css` estaba en `PHYSICAL_BY_DESIGN_ALLOWLIST`
   sin necesitarlo — no tiene ningún `left`/`right` físico, su exención era por un
   `translateX` en `@keyframes` que ninguno de los dos regex del test evalúa. La entrada era

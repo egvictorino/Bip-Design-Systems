@@ -24,7 +24,12 @@ test.describe('theme matrix', () => {
   test('Foundations/Colors — semillas y derivados resueltos, light y dark en paralelo', async ({ page }) => {
     await page.goto('/iframe.html?id=foundations-colors--overview&viewMode=story');
     await page.waitForLoadState('networkidle');
-    await expect(page).toHaveScreenshot('foundations-colors.png', { fullPage: true });
+    // ~128 swatches, cada uno resolviendo su valor vía getComputedStyle() en un useEffect
+    // propio (ver Colors.stories.tsx) — con tantas instancias montando/actualizando por
+    // separado, el layout tarda más de los 5s por defecto en asentarse del todo (crece de
+    // forma acumulativa fila a fila, no es un elemento puntual). Se sube el timeout del
+    // detector de estabilidad de Playwright en vez de adivinar el punto exacto del reflow.
+    await expect(page).toHaveScreenshot('foundations-colors.png', { fullPage: true, timeout: 15_000 });
   });
 
   test('Foundations/Radius — square y rounded en paralelo', async ({ page }) => {
