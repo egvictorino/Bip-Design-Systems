@@ -2,6 +2,7 @@
 
 import { forwardRef, useId, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
+import { useBipLocale } from '../../i18n';
 import styles from './FileUpload.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -90,6 +91,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     },
     ref
   ) => {
+    const t = useBipLocale();
     const [isDragging, setIsDragging] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const dragCounter = useRef(0);
@@ -296,7 +298,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                 <button
                   type="button"
                   onClick={() => removeFile(file)}
-                  aria-label={`Eliminar ${file.name}`}
+                  aria-label={t.fileUpload.remove(file.name)}
                   disabled={disabled}
                   className={styles.removeBtn}
                 >

@@ -4,6 +4,7 @@ import { forwardRef, useId, useState, useEffect, useCallback } from 'react';
 import type { InputHTMLAttributes, ReactNode } from 'react';
 import React from 'react';
 import { cn } from '../../lib/cn';
+import { useBipLocale } from '../../i18n';
 import styles from './NumberInput.module.css';
 
 type Size = 'sm' | 'md' | 'lg';
@@ -128,6 +129,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
     },
     ref
   ) => {
+    const t = useBipLocale();
     const [focused, setFocused] = useState(false);
     const [internalValue, setInternalValue] = useState<string>(() => toRaw(value ?? defaultValue));
     const generatedId = useId();
@@ -263,7 +265,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           {/* Decrement button */}
           <button
             type="button"
-            aria-label="Decrementar"
+            aria-label={t.numberInput.decrement}
             disabled={isDecrementDisabled}
             tabIndex={-1}
             onClick={handleDecrement}
@@ -333,7 +335,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           {/* Increment button */}
           <button
             type="button"
-            aria-label="Incrementar"
+            aria-label={t.numberInput.increment}
             disabled={isIncrementDisabled}
             tabIndex={-1}
             onClick={handleIncrement}

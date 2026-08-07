@@ -1,11 +1,10 @@
 import React from 'react';
 import { cn } from '../../lib/cn';
+import { useBipLocale } from '../../i18n';
 import styles from './Odontogram.module.css';
 import {
   CONDITION_FILL_CLASS,
   TOOTH_SIZE,
-  TOOTH_NAMES,
-  SURFACE_LABELS,
   SURFACES,
   UPPER_POINTS,
   LOWER_POINTS,
@@ -29,6 +28,7 @@ export const ToothSVG = React.memo<ToothSVGProps>(({
   interactive,
   onSurfaceClick,
 }) => {
+  const t = useBipLocale();
   const points = arch === 'upper' ? UPPER_POINTS : LOWER_POINTS;
   const toothSize = TOOTH_SIZE[size];
   const isMissing = data.condition === 'missing';
@@ -40,7 +40,7 @@ export const ToothSVG = React.memo<ToothSVGProps>(({
     return CONDITION_FILL_CLASS[data.surfaces?.[surface] ?? 'healthy'];
   };
 
-  const toothLabel = `Diente ${toothNumber}${isMissing ? ' - Ausente' : ''}: ${TOOTH_NAMES[toothNumber] ?? ''}`;
+  const toothLabel = `Diente ${toothNumber}${isMissing ? ' - Ausente' : ''}: ${t.odontogram.toothNames[toothNumber] ?? ''}`;
 
   return (
     <svg
@@ -68,7 +68,7 @@ export const ToothSVG = React.memo<ToothSVGProps>(({
               canClick && styles.surfaceInteractive
             )}
             strokeWidth="2"
-            aria-label={SURFACE_LABELS[surface]}
+            aria-label={t.odontogram.surfaceLabels[surface]}
             role={interactive ? 'button' : 'graphics-symbol'}
             tabIndex={canClick ? 0 : undefined}
             aria-pressed={interactive ? isActive : undefined}

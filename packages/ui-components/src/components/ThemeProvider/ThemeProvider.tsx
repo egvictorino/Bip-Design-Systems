@@ -10,6 +10,8 @@ import React, {
   useSyncExternalStore,
 } from 'react';
 import { pickReadableText, contrastRatio } from '../../lib/contrast';
+import { LocaleContext, mergeLocale, esMX } from '../../i18n';
+import type { BipLocale, PartialBipLocale } from '../../i18n';
 
 export type BipTheme = 'square' | 'rounded';
 export type BipColorScheme = 'light' | 'dark';
@@ -422,6 +424,13 @@ export interface ThemeProviderProps {
   dir?: BipDirection;
   /** Escape hatch: cualquier custom property, p. ej. { '--color-selected': '#...' }. Gana sobre el resto de ejes. */
   cssVars?: Record<string, string>;
+  /**
+   * Diccionario de textos (aria-label, placeholders, formatos Intl) — ver `src/i18n`.
+   * Acepta el diccionario completo (`enUS`) o un override parcial, que se fusiona sobre
+   * el diccionario del provider padre si lo hay, o sobre `esMX` (default) si no. No
+   * afecta `resolvedVars`/CSS — es contexto de React aparte, vía `LocaleContext`.
+   */
+  locale?: BipLocale | PartialBipLocale;
   children: React.ReactNode;
 }
 
@@ -472,6 +481,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   spacing,
   dir: dirProp,
   cssVars,
+  locale,
   children,
 }) => {
   const [internalTheme, setInternalTheme] = useState<BipTheme>(defaultTheme);
@@ -551,6 +561,16 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     [parentContext, colorScheme, overridesKey]
   );
 
+  const parentLocale = useContext(LocaleContext);
+  const localeKey = JSON.stringify(locale);
+  // mergeLocale funciona tanto para overrides parciales como para un diccionario completo
+  // (p. ej. `locale={enUS}`) — cada clave de un objeto completo pisa la del padre igual.
+  const resolvedLocale = useMemo(
+    () => mergeLocale(parentLocale ?? esMX, locale as PartialBipLocale | undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- localeKey ya cubre `locale` por valor
+    [parentLocale, localeKey]
+  );
+
   const controls = useMemo<ThemeControls>(
     () => ({
       theme,
@@ -565,15 +585,17 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   return (
     <ThemeContext.Provider value={{ theme, colorScheme, density, dir, resolvedVars, controls }}>
-      <div
-        data-theme={theme}
-        data-color-scheme={colorScheme}
-        data-density={density}
-        dir={dir}
-        style={{ display: 'contents', ...THEME_RESET_STYLE, ...resolvedVars }}
-      >
-        {children}
-      </div>
+      <LocaleContext.Provider value={resolvedLocale}>
+        <div
+          data-theme={theme}
+          data-color-scheme={colorScheme}
+          data-density={density}
+          dir={dir}
+          style={{ display: 'contents', ...THEME_RESET_STYLE, ...resolvedVars }}
+        >
+          {children}
+        </div>
+      </LocaleContext.Provider>
     </ThemeContext.Provider>
   );
 };

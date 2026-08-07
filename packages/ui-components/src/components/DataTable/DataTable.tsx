@@ -10,6 +10,7 @@ import { Checkbox } from '../Checkbox';
 import { Button } from '../Button';
 import { cn } from '../../lib/cn';
 import { useClickOutside } from '../../hooks/useClickOutside';
+import { useBipLocale } from '../../i18n';
 import styles from './DataTable.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -70,14 +71,14 @@ export function DataTable<T = Record<string, unknown>>({
   data,
   pageSize = 10,
   loading = false,
-  emptyMessage = 'No hay datos disponibles',
+  emptyMessage,
   striped = false,
   compact = false,
   onRowClick,
   keyExtractor,
   searchable = false,
   searchKeys,
-  searchPlaceholder = 'Buscar...',
+  searchPlaceholder,
   selectable = false,
   onSelectionChange,
   bulkActions,
@@ -91,6 +92,8 @@ export function DataTable<T = Record<string, unknown>>({
   label,
   className,
 }: DataTableProps<T>) {
+  const t = useBipLocale();
+
   // ─── Sort state ───────────────────────────────────────────────────────────
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
@@ -301,7 +304,7 @@ export function DataTable<T = Record<string, unknown>>({
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 onClear={() => handleSearch('')}
-                placeholder={searchPlaceholder}
+                placeholder={searchPlaceholder ?? t.dataTable.searchPlaceholder}
               />
             </div>
           )}
@@ -320,7 +323,7 @@ export function DataTable<T = Record<string, unknown>>({
                 <div
                   id={colPanelId}
                   role="dialog"
-                  aria-label="Visibilidad de columnas"
+                  aria-label={t.dataTable.columnVisibility}
                   className={styles.colPanel}
                 >
                   {columns.map((col) => (
@@ -379,7 +382,7 @@ export function DataTable<T = Record<string, unknown>>({
                   checked={allPageSelected}
                   indeterminate={somePageSelected}
                   onChange={handleHeaderCheckbox}
-                  aria-label="Seleccionar todas las filas de esta página"
+                  aria-label={t.dataTable.selectAllRows}
                 />
               </TableHeader>
             )}
@@ -417,7 +420,7 @@ export function DataTable<T = Record<string, unknown>>({
           ) : paginatedData.length === 0 ? (
             <TableRow>
               <TableCell colSpan={colSpan} align="center" className={styles.emptyCell}>
-                <EmptyState title={emptyMessage} size="sm" />
+                <EmptyState title={emptyMessage ?? t.dataTable.emptyMessage} size="sm" />
               </TableCell>
             </TableRow>
           ) : (
@@ -438,7 +441,7 @@ export function DataTable<T = Record<string, unknown>>({
                       <Checkbox
                         checked={selectedKeys.has(rowKey)}
                         onChange={() => handleRowCheckbox(rowKey)}
-                        aria-label={`Seleccionar fila ${rowIndex + 1}`}
+                        aria-label={t.dataTable.selectRow(rowIndex + 1)}
                         onClick={(e) => e.stopPropagation()}
                       />
                     </TableCell>

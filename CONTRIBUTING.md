@@ -23,6 +23,15 @@ main (producción)  ←  qa (testing)  ←  dev (desarrollo)  ←  feature/xxx
 - `pr-validation.yml`'s `validate-pr` job hace cumplir este flujo automáticamente y rechaza
   PRs con la combinación base/head equivocada.
 
+### Tags de release
+
+Los tags `v2026.MM.DD-N` (p. ej. `v2026.03.20-35`) son de un esquema anterior a Changesets,
+basado en fecha — no reflejan versión semántica y no se generan más. Desde `0.3.0`, cada
+release a `main` emite un tag `v<semver>` (p. ej. `v0.3.0`), calculado por Changesets y
+publicado automáticamente por el job `create-release` de `production.yml`. Los tags viejos se
+dejan tal cual (reescribir historia publicada no vale el riesgo); si corres `git describe`
+contra un commit anterior a `0.3.0` verás el esquema de fecha, y a partir de ahí el semver.
+
 ## Antes de abrir un PR
 
 1. **Tests** — `pnpm test` (ambos paquetes) debe pasar. Nuevo componente o hook ⇒ nuevo

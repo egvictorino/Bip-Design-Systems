@@ -168,13 +168,13 @@ jobs:
 
       - name: Publish @bip-design-systems/ui-components
         if: steps.version-check.outputs.ui_already_published == 'false'
-        run: pnpm --filter @bip-design-systems/ui-components publish --no-git-checks
+        run: pnpm --filter @bip-design-systems/ui-components publish --no-git-checks --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @bip-design-systems/shared-utils
         if: steps.version-check.outputs.utils_already_published == 'false'
-        run: pnpm --filter @bip-design-systems/shared-utils publish --no-git-checks
+        run: pnpm --filter @bip-design-systems/shared-utils publish --no-git-checks --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

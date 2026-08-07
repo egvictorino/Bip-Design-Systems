@@ -3,6 +3,7 @@
 import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn';
 import { useClickOutside } from '../../hooks/useClickOutside';
+import { useBipLocale } from '../../i18n';
 import styles from './MultiSelect.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -109,8 +110,8 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       variant = 'outlined',
       size = 'md',
       label,
-      placeholder = 'Seleccionar...',
-      searchPlaceholder = 'Buscar...',
+      placeholder,
+      searchPlaceholder,
       helperText,
       error = false,
       errorMessage,
@@ -125,6 +126,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
     },
     ref
   ) => {
+    const t = useBipLocale();
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState('');
     const [focused, setFocused] = useState(false);
@@ -411,7 +413,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
     const selectAllLabel =
       query.trim() !== ''
         ? `Seleccionar visibles (${selectableFiltered.length})`
-        : 'Seleccionar todo';
+        : t.multiSelect.selectAll;
 
     return (
       <div
@@ -471,7 +473,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                   {!disabled && (
                     <button
                       type="button"
-                      aria-label={`Eliminar ${opt.label}`}
+                      aria-label={t.multiSelect.remove(opt.label)}
                       onClick={(e) => removeOne(opt.value, e)}
                       className={styles.chipRemove}
                     >
@@ -490,14 +492,16 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
               {hiddenCount > 0 && (
                 <span
                   className={cn(styles.chip, styles.chipOverflow, chipSizeClass[size])}
-                  aria-label={`${hiddenCount} selecciones más`}
+                  aria-label={t.multiSelect.overflow(hiddenCount)}
                 >
                   +{hiddenCount} más
                 </span>
               )}
             </span>
           ) : (
-            <span className={styles.placeholder}>{placeholder}</span>
+            <span className={styles.placeholder}>
+              {placeholder ?? t.multiSelect.placeholder}
+            </span>
           )}
 
           {/* Right side: clear all + chevron */}
@@ -505,7 +509,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
             {selectedOptions.length > 0 && !disabled && (
               <button
                 type="button"
-                aria-label="Eliminar todas las selecciones"
+                aria-label={t.multiSelect.removeAll}
                 onClick={clearAll}
                 className={cn(styles.clearAll, error && styles.clearAllError)}
               >
@@ -567,10 +571,10 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={handleSearchKeyDown}
-                    aria-label="Buscar opciones"
+                    aria-label={t.multiSelect.search}
                     aria-controls={listboxId}
                     aria-autocomplete="list"
-                    placeholder={searchPlaceholder}
+                    placeholder={searchPlaceholder ?? t.multiSelect.searchPlaceholder}
                     className={styles.searchInput}
                   />
                 </div>
@@ -581,7 +585,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                 <div
                   className={styles.loadingWrapper}
                   aria-live="polite"
-                  aria-label="Cargando opciones"
+                  aria-label={t.multiSelect.loading}
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -594,14 +598,14 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                     <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
                     <path d="M12 2a10 10 0 0110 10" strokeLinecap="round" />
                   </svg>
-                  <span>Cargando...</span>
+                  <span>{t.multiSelect.loadingText}</span>
                 </div>
               ) : (
                 <ul
                   id={listboxId}
                   role="listbox"
                   aria-multiselectable="true"
-                  aria-label="Opciones"
+                  aria-label={t.multiSelect.options}
                   onKeyDown={handleListboxKeyDown}
                   className={styles.listbox}
                 >
@@ -643,7 +647,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                   )}
 
                   {filtered.length === 0 ? (
-                    <li className={styles.noResults}>Sin resultados</li>
+                    <li className={styles.noResults}>{t.multiSelect.noResults}</li>
                   ) : (
                     renderOptions()
                   )}

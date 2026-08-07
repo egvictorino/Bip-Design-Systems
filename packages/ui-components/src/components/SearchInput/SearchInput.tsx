@@ -3,6 +3,7 @@
 import React, { forwardRef, useId, useState, useRef, useCallback, useEffect } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
+import { useBipLocale } from '../../i18n';
 import styles from './SearchInput.module.css';
 
 export interface SearchInputProps
@@ -92,6 +93,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     },
     ref
   ) => {
+    const t = useBipLocale();
     const [focused, setFocused] = useState(false);
     const generatedId = useId();
     const inputId = id ?? generatedId;
@@ -274,7 +276,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           {showClear && (
             <button
               type="button"
-              aria-label="Limpiar búsqueda"
+              aria-label={t.searchInput.clear}
               onClick={handleClear}
               className={cn(styles.clearBtn, clearBtnOffsetClass[size])}
             >

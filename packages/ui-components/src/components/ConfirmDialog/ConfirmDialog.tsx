@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../Modal';
 import { Button } from '../Button';
 import { cn } from '../../lib/cn';
+import { useBipLocale } from '../../i18n';
 import styles from './ConfirmDialog.module.css';
 
 export interface ConfirmDialogProps {
@@ -27,29 +28,33 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   title,
   description,
-  confirmLabel = 'Confirmar',
-  cancelLabel = 'Cancelar',
+  confirmLabel,
+  cancelLabel,
   variant = 'info',
-}) => (
-  <Modal isOpen={isOpen} onClose={onClose} size="sm" closeOnBackdrop={false}>
-    <ModalHeader>{title}</ModalHeader>
-    <ModalBody>
-      {description && <p className={styles.description}>{description}</p>}
-    </ModalBody>
-    <ModalFooter>
-      <Button variant="bare" size="sm" onClick={onClose}>
-        {cancelLabel}
-      </Button>
-      <Button
-        variant="primary"
-        size="sm"
-        onClick={onConfirm}
-        className={cn(confirmBtnStyles[variant])}
-      >
-        {confirmLabel}
-      </Button>
-    </ModalFooter>
-  </Modal>
-);
+}) => {
+  const t = useBipLocale();
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="sm" closeOnBackdrop={false}>
+      <ModalHeader>{title}</ModalHeader>
+      <ModalBody>
+        {description && <p className={styles.description}>{description}</p>}
+      </ModalBody>
+      <ModalFooter>
+        <Button variant="bare" size="sm" onClick={onClose}>
+          {cancelLabel ?? t.confirmDialog.cancel}
+        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={onConfirm}
+          className={cn(confirmBtnStyles[variant])}
+        >
+          {confirmLabel ?? t.confirmDialog.confirm}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+};
 
 ConfirmDialog.displayName = 'ConfirmDialog';

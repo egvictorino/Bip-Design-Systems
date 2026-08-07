@@ -1,4 +1,5 @@
 import React from 'react';
+import { useBipLocale } from '../../i18n';
 import styles from './Breadcrumb.module.css';
 
 export interface BreadcrumbItem {
@@ -32,8 +33,10 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
   className,
   ...props
 }) => {
+  const t = useBipLocale();
+
   return (
-    <nav aria-label="Breadcrumb" {...props} className={className}>
+    <nav aria-label={t.breadcrumb.nav} {...props} className={className}>
       <ol className={styles.list}>
         {items.map((item, index) => {
           const isLast = index === items.length - 1;

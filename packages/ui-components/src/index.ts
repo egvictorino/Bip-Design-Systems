@@ -33,6 +33,9 @@ export type {
 
 export { contrastRatio, pickReadableText } from './lib/contrast';
 
+export { esMX, enUS, useBipLocale } from './i18n';
+export type { BipLocale, PartialBipLocale } from './i18n';
+
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/Accordion';
 export type {
   AccordionProps,
@@ -238,7 +241,7 @@ export type { DrawerPanelProps } from './components/DrawerPanel';
 export { DataTable } from './components/DataTable';
 export type { DataTableProps, ColumnDef } from './components/DataTable';
 
-export { Odontogram, CONDITION_LABELS } from './components/Odontogram';
+export { Odontogram } from './components/Odontogram';
 export type {
   OdontogramProps,
   OdontogramValue,

@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn';
 import { useFocusTrap, useScrollLock } from '../../hooks';
 import { useThemeAttributes } from '../ThemeProvider';
+import { useBipLocale } from '../../i18n';
 import styles from './Modal.module.css';
 
 interface ModalContextValue {
@@ -111,6 +112,7 @@ export interface ModalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, ...props }) => {
   const { titleId, onClose } = useModalContext();
+  const t = useBipLocale();
 
   return (
     <div className={cn(styles.header, className)} {...props}>
@@ -120,7 +122,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, .
       <button
         type="button"
         onClick={onClose}
-        aria-label="Cerrar modal"
+        aria-label={t.modal.close}
         className={styles.closeBtn}
       >
         <svg

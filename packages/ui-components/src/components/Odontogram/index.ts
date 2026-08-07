@@ -1,4 +1,4 @@
-export { Odontogram, CONDITION_LABELS } from './Odontogram';
+export { Odontogram } from './Odontogram';
 export type {
   OdontogramProps,
   OdontogramValue,
