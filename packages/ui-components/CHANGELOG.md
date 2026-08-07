@@ -10,6 +10,31 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ### Added
 
+- **Storybook 8.6 → 10.5.** `@storybook/addon-essentials` se disolvió en el core del paquete
+  `storybook` en v9+ — se quitó de `.storybook/main.js`; sus doc blocks (`Meta`, usados en
+  `Introduction.mdx`) ahora viven en `@storybook/addon-docs/blocks`, agregado como addon
+  explícito. `parameters.a11y.config.rules` (usado para deshabilitar `color-contrast` en el
+  panel del addon) no cambió de forma — sigue siendo `axe-core`'s `Spec`. Verificado con
+  `pnpm test:visual:docker`: los 168 tests (theme-matrix, component-matrix, a11y-browser)
+  pasan sin regenerar ningún baseline — cero deriva de IDs de story ni de rendering.
+
+### Fixed
+
+- `eslint-plugin-storybook` se mantiene fijo en `0.12.0` (no en `^10.5.7`) — desde su release
+  que acompaña a Storybook 9+, el paquete es ESM-only sin build CJS
+  (`exports['.'] = { default: './dist/index.js' }`, sin condición `require`), y este repo
+  todavía usa `.eslintrc.json` (ESLint 8 legacy config), cuyo `ConfigArrayFactory` carga
+  plugins vía `require()` síncrono — falla con `ERR_REQUIRE_ESM`. `0.12.0` es la última
+  versión con build CJS; sus reglas (CSF3, forma de `meta`/`title`) siguen aplicando sin
+  cambios sobre Storybook 10 porque el formato CSF3 no cambió entre v8 y v10.
+  `eslint-plugin-playwright@2.11.0` no tiene este problema — publica un `exports.require`
+  (`index.cjs`) real junto al ESM, dual-package.
+- `playwright.visual.config.ts`'s `webServer.command`: `pnpm storybook -- --ci --quiet`
+  reenviaba un `--` literal al CLI de Storybook (`storybook dev -p 6006 -- --ci --quiet`), que
+  el parser de Storybook 8 toleraba pero el de 9+ rechaza ("too many arguments for 'dev'.
+  Expected 0 arguments but got 2") — todo lo posterior al `--` se trata como argumento
+  posicional, no flag. Se quitó el separador redundante.
+
 - **Internacionalización (i18n).** Nuevo sistema de diccionarios (`BipLocale`) resuelto vía
   contexto: los ~100 `aria-label`/placeholders/textos que antes estaban quemados en español
   directamente en el JSX de 28 componentes ahora se resuelven vía `useBipLocale()`, con `es-MX`
