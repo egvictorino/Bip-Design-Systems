@@ -60,10 +60,18 @@ const noop = () => {};
 
 /**
  * axe's color-contrast rule can't be trusted under happy-dom — getComputedStyle doesn't
- * resolve CSS custom properties/color-mix() with real-browser fidelity. Contrast is already
- * covered by src/lib/contrast.ts + contrast.test.ts (WCAG math) and the Foundations/Theming
- * story (live visual check). Disabling it here avoids false positives/negatives that have
- * nothing to do with markup/ARIA correctness, which is what this suite actually verifies.
+ * resolve CSS custom properties/color-mix() with real-browser fidelity. This suite verifies
+ * markup/ARIA correctness; rendered contrast is covered elsewhere, in a real browser:
+ * - src/styles/contrast-tokens.test.ts — WCAG AA on the literal hex values in tokens.css
+ *   (the fill seeds and their --color-txt-on-*), via the same contrastRatio() this rule
+ *   would otherwise duplicate.
+ * - visual/a11y-browser.spec.ts — axe with color-contrast ENABLED, in actual Chromium via
+ *   @axe-core/playwright, against every component in both color schemes. That's the one
+ *   that found the real, previously-undetected violations that motivated this split:
+ *   --color-txt-secondary (light) never cleared AA against any surface in the system,
+ *   --color-primary/--color-active used directly as text (not fill) failed in dark mode,
+ *   --color-success-text/--color-warning-text were marginal, and a few components used
+ *   --color-txt-disabled on text that was never actually in a disabled state.
  */
 const AXE_OPTIONS = { rules: { 'color-contrast': { enabled: false } } };
 

@@ -105,7 +105,9 @@
   margin-bottom: var(--space-0-5);
 }
 
-.trendPositive { color: var(--color-success); }
+/* --color-success (semilla) medía 2.28:1 como texto contra blanco — bajo AA.
+   --color-danger sí pasa en ambos esquemas (5.4:1 light, 6.1:1 dark) y se deja tal cual. */
+.trendPositive { color: var(--color-success-text); }
 .trendNegative { color: var(--color-danger); }
 .trendNeutral  { color: var(--color-txt-secondary); }
 

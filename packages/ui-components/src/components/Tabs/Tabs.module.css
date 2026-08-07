@@ -121,7 +121,7 @@
 
 .tabLineActive {
   border-color: var(--color-primary);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .tabLineInactive { color: var(--color-txt-secondary); }
@@ -144,7 +144,7 @@
 
 .tabLineVerticalActive {
   border-inline-end-color: var(--color-primary);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .tabLineVerticalInactive { color: var(--color-txt-secondary); }

@@ -70,10 +70,38 @@ jobs:
           path: packages/*/dist
           retention-days: 7
 
+  e2e-consumer:
+    name: E2E — Published Package Smoke Test
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      # Builds, pnpm-packs the real tarball, installs it as a standalone (non-workspace)
+      # project in e2e/consumer-app, and asserts on computed styles — catches the class of
+      # bug a `pnpm --filter` workspace link can't (see hotfix/design-tokens-not-bundled).
+      - name: Run consumer smoke test
+        run: pnpm test:e2e
+
   deploy-storybook-qa:
     name: Deploy Storybook QA
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, e2e-consumer]
     if: github.event_name == 'push'
     
     permissions:
