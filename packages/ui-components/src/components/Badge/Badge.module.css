@@ -12,7 +12,7 @@
 
 .primary {
   background-color: var(--color-info-subtle);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .success {

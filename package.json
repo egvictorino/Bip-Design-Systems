@@ -10,6 +10,7 @@
     "build": "pnpm --filter @bip-design-systems/shared-utils build && pnpm --filter @bip-design-systems/ui-components build",
     "test": "pnpm --filter @bip-design-systems/shared-utils test && pnpm --filter @bip-design-systems/ui-components test",
     "test:e2e": "./scripts/e2e-consumer.sh",
+    "test:visual:docker": "./scripts/visual-docker.sh",
     "lint": "pnpm --filter @bip-design-systems/ui-components lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
