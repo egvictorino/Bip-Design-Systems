@@ -14,6 +14,17 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
   reales de `tokens.css` para las 6 semillas de fill y sus `--color-txt-on-*`, en ambos
   esquemas de color. Antes solo se probaba la función `contrastRatio` con pares escritos a
   mano; ahora un cambio a un token real que rompa el contraste falla el build.
+- Visual regression ahora corre en CI (`pr-validation.yml`, job `visual-regression`) contra
+  baselines Linux generadas en `mcr.microsoft.com/playwright:v1.62.1-jammy` — antes solo
+  existían baselines macOS y ningún workflow invocaba `test:visual`. Nuevo
+  `scripts/visual-docker.sh` (raíz del repo, `pnpm test:visual:docker`) corre la misma imagen
+  en local para que verificar o regenerar baselines sea idéntico a lo que corre en CI.
+
+### Fixed
+
+- `playwright.visual.config.ts`: `use.viewport` estaba declarado pero sin efecto — el spread
+  de `devices['Desktop Chrome']` en el project lo pisaba, así que el viewport real siempre fue
+  1280×720, no 960×720. Corregido moviendo el viewport al `use` del project, donde sí aplica.
 
 ## [0.3.0] - 2026-08-06
 
