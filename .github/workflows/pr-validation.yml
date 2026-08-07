@@ -65,18 +65,18 @@ jobs:
     
     steps:
       - uses: actions/checkout@v5
-      
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '20'
-      
+
       - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
-      
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Lint
         run: pnpm --filter @bip-design-systems/ui-components lint
 
@@ -122,13 +122,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '20'
-
       - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -149,13 +149,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '20'
-
       - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
