@@ -1,4 +1,4 @@
-export { Calendar } from './Calendar';
+export { Calendar } from './Calendar.js';
 export type {
   CalendarProps,
   CalendarEvent,
@@ -6,4 +6,4 @@ export type {
   CalendarResource,
   CalendarSlotInfo,
   CalendarView,
-} from './Calendar';
+} from './Calendar.js';

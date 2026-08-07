@@ -8,7 +8,7 @@ export {
   DropdownSearch,
   DropdownItemCheckbox,
   DropdownSubmenu,
-} from './Dropdown';
+} from './Dropdown.js';
 export type {
   DropdownProps,
   DropdownTriggerProps,
@@ -18,4 +18,4 @@ export type {
   DropdownSearchProps,
   DropdownItemCheckboxProps,
   DropdownSubmenuProps,
-} from './Dropdown';
+} from './Dropdown.js';

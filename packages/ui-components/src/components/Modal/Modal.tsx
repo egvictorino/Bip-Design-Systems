@@ -2,10 +2,10 @@
 
 import React, { useEffect, useRef, useContext, useId, createContext, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { useFocusTrap, useScrollLock } from '../../hooks';
-import { useThemeAttributes } from '../ThemeProvider';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useFocusTrap, useScrollLock } from '../../hooks/index.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Modal.module.css';
 
 interface ModalContextValue {

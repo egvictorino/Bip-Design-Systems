@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
-import { esMX } from './es-MX';
-import type { BipLocale, PartialBipLocale } from './types';
+import { esMX } from './es-MX.js';
+import type { BipLocale, PartialBipLocale } from './types.js';
 
 export const LocaleContext = createContext<BipLocale | null>(null);
 

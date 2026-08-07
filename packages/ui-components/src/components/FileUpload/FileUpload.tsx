@@ -1,8 +1,8 @@
 "use client";
 
 import { forwardRef, useId, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './FileUpload.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

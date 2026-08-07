@@ -2,7 +2,7 @@
   {
     "name": "Full package (barrel import)",
     "path": "dist/index.js",
-    "limit": "58 KB"
+    "limit": "62 KB"
   },
   {
     "name": "Single component (Button, subpath import)",

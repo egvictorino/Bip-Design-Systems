@@ -1,5 +1,5 @@
-import type { CalendarEventStatus, CalendarView } from '../components/Calendar/Calendar';
-import type { ToothCondition, ToothImageType, ToothSurface } from '../components/Odontogram/types';
+import type { CalendarEventStatus, CalendarView } from '../components/Calendar/Calendar.js';
+import type { ToothCondition, ToothImageType, ToothSurface } from '../components/Odontogram/types.js';
 
 /**
  * Full locale dictionary consumed by every component via useBipLocale(). `locale` is a

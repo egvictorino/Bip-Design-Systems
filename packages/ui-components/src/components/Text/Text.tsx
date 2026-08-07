@@ -1,5 +1,5 @@
 import React, { type ElementType, type ReactNode } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Text.module.css';
 
 export type TextSize = '3xs' | '2xs' | 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl';

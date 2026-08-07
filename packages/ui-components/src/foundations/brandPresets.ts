@@ -1,4 +1,4 @@
-import type { BipTokenOverrides } from '../components/ThemeProvider';
+import type { BipTokenOverrides } from '../components/ThemeProvider/index.js';
 
 /**
  * Presets de marca para el toolbar de Storybook y la story

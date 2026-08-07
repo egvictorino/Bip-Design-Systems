@@ -1,5 +1,5 @@
 import React, { type ElementType, type ReactNode } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Heading.module.css';
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;

@@ -9,10 +9,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../hooks/useClickOutside';
-import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthIndex } from '../../lib/dateHelpers';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useClickOutside } from '../../hooks/useClickOutside.js';
+import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthIndex } from '../../lib/dateHelpers.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './DateRangePicker.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

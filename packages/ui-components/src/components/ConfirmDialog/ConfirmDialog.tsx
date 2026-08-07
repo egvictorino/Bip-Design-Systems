@@ -1,8 +1,8 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter } from '../Modal';
-import { Button } from '../Button';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from '../Modal/index.js';
+import { Button } from '../Button/index.js';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './ConfirmDialog.module.css';
 
 export interface ConfirmDialogProps {

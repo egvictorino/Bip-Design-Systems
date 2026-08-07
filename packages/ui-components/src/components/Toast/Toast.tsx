@@ -9,12 +9,12 @@ import React, {
   useState,
 } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { useThemeAttributes } from '../ThemeProvider';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Toast.module.css';
-import { Alert } from '../Alert/Alert';
-import type { AlertProps } from '../Alert/Alert';
+import { Alert } from '../Alert/Alert.js';
+import type { AlertProps } from '../Alert/Alert.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../hooks/useClickOutside';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useClickOutside } from '../../hooks/useClickOutside.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Dropdown.module.css';
 
 // ─── Context ─────────────────────────────────────────────────────────────────

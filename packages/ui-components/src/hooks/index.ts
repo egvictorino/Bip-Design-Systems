@@ -1,7 +1,7 @@
-export { useClickOutside } from './useClickOutside';
-export { useDisclosure } from './useDisclosure';
-export type { UseDisclosureReturn } from './useDisclosure';
-export { useFocusTrap } from './useFocusTrap';
-export type { UseFocusTrapOptions } from './useFocusTrap';
-export { useMediaQuery } from './useMediaQuery';
-export { useScrollLock } from './useScrollLock';
+export { useClickOutside } from './useClickOutside.js';
+export { useDisclosure } from './useDisclosure.js';
+export type { UseDisclosureReturn } from './useDisclosure.js';
+export { useFocusTrap } from './useFocusTrap.js';
+export type { UseFocusTrapOptions } from './useFocusTrap.js';
+export { useMediaQuery } from './useMediaQuery.js';
+export { useScrollLock } from './useScrollLock.js';

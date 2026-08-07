@@ -1,6 +1,6 @@
 import React from 'react';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Odontogram.module.css';
 import {
   CONDITION_FILL_CLASS,
@@ -8,8 +8,8 @@ import {
   SURFACES,
   UPPER_POINTS,
   LOWER_POINTS,
-} from './types';
-import type { ToothData, ToothSurface } from './types';
+} from './types.js';
+import type { ToothData, ToothSurface } from './types.js';
 
 export interface ToothSVGProps {
   toothNumber: number;

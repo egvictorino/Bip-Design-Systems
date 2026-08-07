@@ -8,10 +8,10 @@ import React, {
   useId,
   useState,
 } from 'react';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Sidebar.module.css';
-import { Tooltip } from '../Tooltip/Tooltip';
+import { Tooltip } from '../Tooltip/Tooltip.js';
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 

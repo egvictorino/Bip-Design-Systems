@@ -1,8 +1,8 @@
 "use client";
 
 import { forwardRef, useCallback, useId, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Odontogram.module.css';
 import {
   EMPTY_TOOTH,
@@ -15,12 +15,12 @@ import {
   PRIMARY_UPPER_RIGHT,
   UPPER_LEFT,
   UPPER_RIGHT,
-} from './types';
-import type { OdontogramProps, ToothData } from './types';
-import { ToothSVG } from './ToothSVG';
-import { ToothDetail } from './ToothDetail';
+} from './types.js';
+import type { OdontogramProps, ToothData } from './types.js';
+import { ToothSVG } from './ToothSVG.js';
+import { ToothDetail } from './ToothDetail.js';
 
-// Re-export public API so consumers can import from './Odontogram' or from 'index.ts'
+// Re-export public API so consumers can import from './Odontogram.js' or from 'index.ts'
 export type {
   OdontogramProps,
   OdontogramValue,
@@ -31,7 +31,7 @@ export type {
   DentitionMode,
   ToothImageType,
   ToothImage,
-} from './types';
+} from './types.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

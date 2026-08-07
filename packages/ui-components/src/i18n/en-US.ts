@@ -1,4 +1,4 @@
-import type { BipLocale } from './types';
+import type { BipLocale } from './types.js';
 
 export const enUS: BipLocale = {
   locale: 'en-US',

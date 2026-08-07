@@ -2,8 +2,8 @@
 
 import React, { forwardRef, useId, useState } from 'react';
 import type { InputHTMLAttributes } from 'react';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Input.module.css';
 
 export type InputType = 'text' | 'email' | 'password' | 'tel' | 'url';

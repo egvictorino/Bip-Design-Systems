@@ -3,8 +3,8 @@
 import { forwardRef, useId, useState, useEffect, useCallback } from 'react';
 import type { InputHTMLAttributes, ReactNode } from 'react';
 import React from 'react';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './NumberInput.module.css';
 
 type Size = 'sm' | 'md' | 'lg';

@@ -1,18 +1,18 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './ToothDetail.module.css';
-import { EMPTY_TOOTH, WHOLE_TOOTH_CONDITIONS } from './types';
+import { EMPTY_TOOTH, WHOLE_TOOTH_CONDITIONS } from './types.js';
 import type {
   SurfaceCondition,
   ToothCondition,
   ToothData,
   ToothImage,
   ToothSurface,
-} from './types';
-import { ToothSVG } from './ToothSVG';
-import { NotePopover } from './NotePopover';
-import { ImagePopover } from './ImagePopover';
+} from './types.js';
+import { ToothSVG } from './ToothSVG.js';
+import { NotePopover } from './NotePopover.js';
+import { ImagePopover } from './ImagePopover.js';
 
 export interface ToothDetailProps {
   toothNumber: number;

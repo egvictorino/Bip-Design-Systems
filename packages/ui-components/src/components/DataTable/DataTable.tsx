@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '../Table';
-import { Pagination } from '../Pagination';
-import { Skeleton } from '../Skeleton';
-import { EmptyState } from '../EmptyState';
-import { SearchInput } from '../SearchInput';
-import { Checkbox } from '../Checkbox';
-import { Button } from '../Button';
-import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../hooks/useClickOutside';
-import { useBipLocale } from '../../i18n';
+import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '../Table/index.js';
+import { Pagination } from '../Pagination/index.js';
+import { Skeleton } from '../Skeleton/index.js';
+import { EmptyState } from '../EmptyState/index.js';
+import { SearchInput } from '../SearchInput/index.js';
+import { Checkbox } from '../Checkbox/index.js';
+import { Button } from '../Button/index.js';
+import { cn } from '../../lib/cn.js';
+import { useClickOutside } from '../../hooks/useClickOutside.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './DataTable.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

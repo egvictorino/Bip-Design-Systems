@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useContext, useId } from 'react';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Stepper.module.css';
 
 // ─── Context ──────────────────────────────────────────────────────────────────

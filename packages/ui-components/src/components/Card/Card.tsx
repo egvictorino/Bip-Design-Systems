@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
-import { Skeleton } from '../Skeleton';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
+import { Skeleton } from '../Skeleton/index.js';
 import styles from './Card.module.css';
 
 // ─── Types ─────────────────────────────────────────────────────────────────

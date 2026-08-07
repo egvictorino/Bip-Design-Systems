@@ -9,9 +9,9 @@ import React, {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { pickReadableText, contrastRatio } from '../../lib/contrast';
-import { LocaleContext, mergeLocale, esMX } from '../../i18n';
-import type { BipLocale, PartialBipLocale } from '../../i18n';
+import { pickReadableText, contrastRatio } from '../../lib/contrast.js';
+import { LocaleContext, mergeLocale, esMX } from '../../i18n/index.js';
+import type { BipLocale, PartialBipLocale } from '../../i18n/index.js';
 
 export type BipTheme = 'square' | 'rounded';
 export type BipColorScheme = 'light' | 'dark';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Skeleton.module.css';
 
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {

@@ -2,7 +2,7 @@
 
 import { forwardRef, useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Toggle.module.css';
 
 export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {

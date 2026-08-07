@@ -1,4 +1,4 @@
-export { Table, TableHead, TableBody, TableRow, TableHeader, TableCell, TableEmpty } from './Table';
+export { Table, TableHead, TableBody, TableRow, TableHeader, TableCell, TableEmpty } from './Table.js';
 export type {
   TableProps,
   TableHeadProps,
@@ -7,4 +7,4 @@ export type {
   TableHeaderProps,
   TableCellProps,
   TableEmptyProps,
-} from './Table';
+} from './Table.js';

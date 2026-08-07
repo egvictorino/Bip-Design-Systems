@@ -1,4 +1,4 @@
-import type { BipLocale } from './types';
+import type { BipLocale } from './types.js';
 
 /**
  * Default locale — a literal copy of the strings that used to be hardcoded directly in each

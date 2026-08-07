@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { useBipLocale } from '../../i18n';
-import { useFocusTrap } from '../../hooks/useFocusTrap';
-import { useThemeAttributes } from '../ThemeProvider';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
+import { useFocusTrap } from '../../hooks/useFocusTrap.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
 import styles from './Odontogram.module.css';
 
 export interface NotePopoverProps {
