@@ -144,19 +144,46 @@ broken published package blocks the npm release, not just a warning after the fa
 
 ## Versioning
 
-`packages/ui-components` keeps a `CHANGELOG.md` (Keep a Changelog format). No changesets/automated
-versioning — both the bump and the changelog entry are manual.
+`packages/ui-components` keeps a `CHANGELOG.md` (Keep a Changelog format), written and curated
+by hand — that part hasn't changed. What **is** automated now is the version *number* itself:
+[Changesets](https://github.com/changesets/changesets) computes the correct semver bump instead
+of a human guessing it (the original failure mode: `ui-components` sat at `0.2.8` with no
+changelog entry and nobody had noticed).
 
-- Every PR into `dev` that changes `ui-components` behavior (new prop, new component, bug fix,
-  breaking change) adds an entry under `## [Unreleased]` in `CHANGELOG.md`.
-- The version bump in `package.json` happens when the release is cut for `main`, not per-PR:
-  rename `## [Unreleased]` to `## [x.y.z] - YYYY-MM-DD` and add a fresh empty `## [Unreleased]`
-  above it.
+- Every PR into `dev` that touches `packages/*/src` needs a changeset: run `pnpm changeset` (or
+  `pnpm exec changeset`), pick the affected package(s) and bump type (patch/minor/major),
+  write a one-line summary. This writes a small `.changeset/<random-name>.md` file — commit it
+  with the PR. If a change genuinely doesn't warrant a release (docs, CI, tests only),
+  `pnpm exec changeset add --empty` satisfies the gate without bumping anything.
+- **CI gate:** `pr-validation.yml`'s `changeset-check` job (PRs into `dev` only — `dev → qa` and
+  `qa → main` are promotions of code already versioned, not new changes) fails if
+  `packages/*/src` changed but no changeset is present, via `changeset status --since=origin/dev`.
+- **Still fully manual, unchanged:** the `CHANGELOG.md` prose itself. Add the entry under
+  `## [Unreleased]` in the same PR as the changeset, same as before. At release time, rename
+  `## [Unreleased]` to `## [x.y.z] - YYYY-MM-DD` and add a fresh empty `## [Unreleased]` above
+  it — **then** run `pnpm exec changeset version`, which reads all pending `.changeset/*.md`
+  files, computes the highest aggregate bump, writes it to `package.json`, and deletes the
+  consumed changeset files. Do the rename first: `changeset version`'s own changelog writer is
+  disabled (`"changelog": false` in `.changeset/config.json`) specifically because it doesn't
+  compose with this file — tested directly (see PR history): it prepends a `## x.y.z` block
+  (no brackets, `### Patch Changes` instead of `### Added`/`### Fixed`) **above** the `# Changelog`
+  intro paragraph, mangling the document. Changesets here only automates the version-number
+  math; the changelog stays exactly as curated as it's always been.
 - `production.yml`'s `create-release` job extracts that version's section from `CHANGELOG.md` as
   the GitHub release body (via `awk`, matching the `## [x.y.z]` header) — keep entries scoped
-  under their version header so extraction doesn't bleed into the next one.
-- `shared-utils` does not currently have its own CHANGELOG or release tagging; its version in
-  `package.json` is bumped independently when it changes, with no automated release step.
+  under their version header so extraction doesn't bleed into the next one. This still works
+  unmodified because `changelog: false` above keeps `CHANGELOG.md` in the one format the `awk`
+  pattern has always expected.
+- `human-id` (a transitive dep of `@changesets/write`) and `read-yaml-file`'s `js-yaml` are
+  pinned via `pnpm.overrides` in the root `package.json` — `@changesets/cli@2.31.1` pulls
+  `human-id@4.x`, which is ESM-only and breaks `@changesets/write`'s CJS `require()`
+  (`ERR_REQUIRE_ESM`); `read-yaml-file` calls the removed `yaml.safeLoad` against whatever
+  `js-yaml` resolves to, which collided with this repo's own CVE-motivated `js-yaml@^4.3.0`
+  override (`read-yaml-file>js-yaml` scopes a `^3.14.1` override to just that dependency chain,
+  leaving the global pin alone everywhere else).
+- `shared-utils` is versioned by Changesets too (not ignored — it's a real, independently
+  published package, same as before), just without its own `CHANGELOG.md` — unchanged from
+  the prior manual-bump state.
 
 ## Component Patterns (`packages/ui-components`)
 
