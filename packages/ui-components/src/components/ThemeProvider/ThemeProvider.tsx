@@ -562,7 +562,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   );
 
   const parentLocale = useContext(LocaleContext);
-  const localeKey = JSON.stringify(locale);
+  // JSON.stringify por sí solo descarta valores función — un override que cambie solo una
+  // función de interpolación (p. ej. `locale={{ pagination: { page: n => ... } }}`) produciría
+  // la misma clave que la anterior y el merge no se recalcularía. El replacer serializa cada
+  // función vía su propio `.toString()` para que también participe en la clave.
+  const localeKey = JSON.stringify(locale, (_key, value) =>
+    typeof value === 'function' ? value.toString() : value
+  );
   // mergeLocale funciona tanto para overrides parciales como para un diccionario completo
   // (p. ej. `locale={enUS}`) — cada clave de un objeto completo pisa la del padre igual.
   const resolvedLocale = useMemo(

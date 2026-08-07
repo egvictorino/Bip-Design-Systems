@@ -1,0 +1,46 @@
+.link {
+  color: var(--color-link);
+  text-decoration-line: underline;
+  text-underline-offset: var(--space-0-5);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.link:hover {
+  color: var(--color-link-hover);
+}
+
+.link:active {
+  color: var(--color-link-press);
+}
+
+.link:focus-visible {
+  outline: none;
+  border-radius: var(--radius-marker);
+  box-shadow: var(--focus-ring);
+}
+
+.underlineHover {
+  text-decoration-line: none;
+}
+
+.underlineHover:hover {
+  text-decoration-line: underline;
+}
+
+.underlineNone {
+  text-decoration-line: none;
+}
+
+.disabled {
+  color: var(--color-txt-disabled);
+  cursor: not-allowed;
+  text-decoration-line: none;
+  pointer-events: none;
+}
+
+.externalIcon {
+  display: inline-block;
+  margin-inline-start: var(--space-1);
+  vertical-align: -0.125em;
+}

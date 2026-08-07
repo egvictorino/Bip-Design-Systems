@@ -435,7 +435,7 @@ const RangePopover = React.memo<RangePopoverProps>(({ start, end, position, onCo
           onClick={onConfirm}
           className={styles.rangePopoverConfirm}
         >
-          Crear evento
+          {t.calendar.createEvent}
         </button>
       </div>
     </div>,
@@ -697,7 +697,7 @@ const MonthView: React.FC<MonthViewProps> = ({
                           onViewChange?.('day');
                         }}
                       >
-                        +{overflow} más
+                        {t.calendar.overflowCount(overflow)}
                       </button>
                     )}
                   </div>
@@ -1140,9 +1140,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({ events, resources, date, onEven
             <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round" />
           </svg>
           <p className={styles.agendaEmptyText}>
-            {hasEventsInRange
-              ? 'No hay eventos con los filtros seleccionados'
-              : 'No hay eventos en los próximos 30 días'}
+            {hasEventsInRange ? t.calendar.noEventsFiltered : t.calendar.noEventsUpcoming}
           </p>
         </div>
       ) : (

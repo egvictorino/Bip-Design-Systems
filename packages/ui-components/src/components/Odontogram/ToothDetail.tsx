@@ -130,7 +130,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
         {/* Header */}
         <div className={styles.detailHeader}>
           <span className={styles.detailTitle}>
-            Diente {toothNumber}
+            {t.odontogram.tooth(toothNumber)}
             {toothName && <span className={styles.detailSubtitle}> — {toothName}</span>}
           </span>
           <button onClick={onClose} aria-label={t.odontogram.closeDetail} className={styles.closeButton}>
@@ -204,7 +204,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
                   <path d="M13 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z" />
                   <path d="M5 6h6M5 9h6M5 12h3" />
                 </svg>
-                Nota
+                {t.odontogram.noteLabel}
                 {hasNote && <span aria-hidden="true" className={styles.actionDot} />}
               </button>
 
@@ -227,7 +227,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
                   <path d="M1 5.5A1.5 1.5 0 0 1 2.5 4h.535l.707-1.414A1 1 0 0 1 4.638 2h6.724a1 1 0 0 1 .896.553L13 4h.5A1.5 1.5 0 0 1 15 5.5v7A1.5 1.5 0 0 1 13.5 14h-11A1.5 1.5 0 0 1 1 12.5v-7Z" />
                   <circle cx="8" cy="9" r="2.5" />
                 </svg>
-                Imágenes{imageCount > 0 && ` (${imageCount})`}
+                {t.odontogram.imagesLabel(imageCount)}
                 {imageCount > 0 && <span aria-hidden="true" className={styles.actionDot} />}
               </button>
             </div>

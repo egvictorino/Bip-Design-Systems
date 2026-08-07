@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext } from 'react';
 import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Table.module.css';
 
 interface TableContextValue {
@@ -249,13 +250,14 @@ export interface TableEmptyProps {
 
 export const TableEmpty: React.FC<TableEmptyProps> = ({ colSpan, children }) => {
   const { compact } = useTableContext();
+  const t = useBipLocale();
   return (
     <tr>
       <td
         colSpan={colSpan}
         className={cn(styles.tdEmpty, compact ? styles.tdCompact : styles.tdNormal)}
       >
-        {children ?? 'No hay registros que mostrar.'}
+        {children ?? t.table.emptyMessage}
       </td>
     </tr>
   );

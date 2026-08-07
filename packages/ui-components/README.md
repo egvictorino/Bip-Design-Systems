@@ -39,6 +39,11 @@ individually (the build emits one file per component, `preserveModules: true`):
 import { Button } from '@bip-design-systems/ui-components/Button';
 ```
 
+This `./*` wildcard only covers components (`dist/components/*/*.js`) — hooks (`useDisclosure`,
+`useFocusTrap`, ...), `cn`, `contrastRatio`, and the i18n exports (`esMX`, `enUS`,
+`useBipLocale`, `mergeLocale`) don't have their own deep-import subpaths and must be imported
+from the package root instead.
+
 ## Quick Start
 
 ```tsx

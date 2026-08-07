@@ -1,6 +1,6 @@
 /**
  * Manifiesto de cobertura visual por componente — un screenshot canónico por directorio de
- * src/components (48, todos salvo ThemeProvider — ver SKIP_LIST abajo, mismo criterio que
+ * src/components (52, todos salvo ThemeProvider — ver SKIP_LIST abajo, mismo criterio que
  * SKIP_LIST en src/a11y.test.tsx: no renderiza UI propia).
  *
  * `storyId` es la story canónica de cada componente (la primera exportada de su
@@ -12,6 +12,14 @@
  *
  * `rtl: true` marca el subset (~15) con geometría direccional real — el resto no gana nada
  * de un segundo shot en RTL porque no tiene margin/padding/inset direccional que espejar.
+ *
+ * Excepción: las 4 entradas de Link/Popover/Slider/VisuallyHidden se calcularon con el
+ * algoritmo `toId(kind, name)` (título en kebab-case + `--` + nombre de export en
+ * kebab-case) en vez de extraerse de un `index.json` real — Storybook no pudo levantar en
+ * el entorno donde se agregaron (falta un binario nativo de `oxc-parser` para esa
+ * plataforma). Sus títulos/exports son simples y sin colisión, así que el cálculo debería
+ * coincidir, pero conviene verificarlas contra `/index.json` la próxima vez que Storybook
+ * corra limpio (local o en el job de Docker) y quitar esta nota.
  */
 export interface ComponentMatrixEntry {
   dir: string;
@@ -42,18 +50,21 @@ export const COMPONENT_MATRIX: ComponentMatrixEntry[] = [
   { dir: 'Grid', storyId: 'components-grid--responsive', rtl: true },
   { dir: 'Heading', storyId: 'components-heading--default' },
   { dir: 'Input', storyId: 'components-input--outlined', rtl: true },
+  { dir: 'Link', storyId: 'components-link--default' },
   { dir: 'Modal', storyId: 'components-modal--default' },
   { dir: 'MultiSelect', storyId: 'components-multiselect--default', rtl: true },
   { dir: 'Navbar', storyId: 'components-navbar--default' },
   { dir: 'NumberInput', storyId: 'components-numberinput--default', rtl: true },
   { dir: 'Odontogram', storyId: 'components-odontogram--default' },
   { dir: 'Pagination', storyId: 'components-pagination--default' },
+  { dir: 'Popover', storyId: 'components-popover--default' },
   { dir: 'ProgressBar', storyId: 'components-progressbar--default' },
   { dir: 'Radio', storyId: 'components-radio--default' },
   { dir: 'SearchInput', storyId: 'components-searchinput--default', rtl: true },
   { dir: 'Select', storyId: 'components-select--outlined', rtl: true },
   { dir: 'Sidebar', storyId: 'components-sidebar--default', rtl: true },
   { dir: 'Skeleton', storyId: 'components-skeleton--text' },
+  { dir: 'Slider', storyId: 'components-slider--default' },
   { dir: 'Spinner', storyId: 'components-spinner--default' },
   { dir: 'Stack', storyId: 'components-stack--row', rtl: true },
   { dir: 'StatsCard', storyId: 'components-statscard--default' },
@@ -67,6 +78,7 @@ export const COMPONENT_MATRIX: ComponentMatrixEntry[] = [
   { dir: 'Toast', storyId: 'components-toast--default' },
   { dir: 'Toggle', storyId: 'components-toggle--default', rtl: true },
   { dir: 'Tooltip', storyId: 'components-tooltip--default', rtl: true },
+  { dir: 'VisuallyHidden', storyId: 'components-visuallyhidden--default' },
 ];
 
 /** Igual criterio que SKIP_LIST en src/a11y.test.tsx: sin UI propia que capturar. */

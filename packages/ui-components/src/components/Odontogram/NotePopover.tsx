@@ -61,7 +61,7 @@ export const NotePopover = React.memo<NotePopoverProps>(({
           onChange={editable ? (e) => setDraft(e.target.value) : undefined}
           readOnly={!editable}
           rows={4}
-          placeholder={editable ? 'Escribe una nota...' : undefined}
+          placeholder={editable ? t.odontogram.notePlaceholder : undefined}
           className={cn(
             styles.noteTextarea,
             !editable && styles.noteTextareaReadOnly
@@ -73,7 +73,7 @@ export const NotePopover = React.memo<NotePopoverProps>(({
               onClick={() => onSave(draft)}
               className={styles.saveButton}
             >
-              Guardar
+              {t.odontogram.save}
             </button>
           </div>
         )}

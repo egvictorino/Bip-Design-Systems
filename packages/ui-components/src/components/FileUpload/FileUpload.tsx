@@ -259,12 +259,12 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                 error ? styles.dropzoneTitleError : styles.dropzoneTitleNormal
               )}
             >
-              {isDragging ? 'Suelta aquí el archivo' : 'Arrastra tu archivo aquí'}
+              {isDragging ? t.fileUpload.dropHere : t.fileUpload.dragHere}
             </p>
-            <p className={styles.dropzoneSubtitle}>o haz click para seleccionar</p>
-            {accept && <p className={styles.dropzoneHint}>Formatos: {accept}</p>}
+            <p className={styles.dropzoneSubtitle}>{t.fileUpload.clickToSelect}</p>
+            {accept && <p className={styles.dropzoneHint}>{t.fileUpload.formats(accept)}</p>}
             {maxSize !== undefined && (
-              <p className={styles.dropzoneHint}>Máx. {formatFileSize(maxSize)}</p>
+              <p className={styles.dropzoneHint}>{t.fileUpload.maxSize(formatFileSize(maxSize))}</p>
             )}
           </div>
         </label>

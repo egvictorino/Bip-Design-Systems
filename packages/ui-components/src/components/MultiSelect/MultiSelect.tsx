@@ -412,7 +412,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
 
     const selectAllLabel =
       query.trim() !== ''
-        ? `Seleccionar visibles (${selectableFiltered.length})`
+        ? t.multiSelect.selectVisible(selectableFiltered.length)
         : t.multiSelect.selectAll;
 
     return (
@@ -494,7 +494,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
                   className={cn(styles.chip, styles.chipOverflow, chipSizeClass[size])}
                   aria-label={t.multiSelect.overflow(hiddenCount)}
                 >
-                  +{hiddenCount} más
+                  {t.multiSelect.overflowChip(hiddenCount)}
                 </span>
               )}
             </span>

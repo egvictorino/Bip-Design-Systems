@@ -33,8 +33,12 @@ export const esMX: BipLocale = {
     emptyMessage: 'No hay datos disponibles',
     searchPlaceholder: 'Buscar...',
     columnVisibility: 'Visibilidad de columnas',
+    columnVisibilityToggle: 'Columnas',
     selectAllRows: 'Seleccionar todas las filas de esta página',
     selectRow: (rowIndex) => `Seleccionar fila ${rowIndex}`,
+    resultsSummary: (shown, total) => `${shown} de ${total} resultados`,
+    selectedCount: (count) => `${count} seleccionado${count !== 1 ? 's' : ''}`,
+    clearSelection: 'Limpiar',
   },
 
   datePicker: {
@@ -52,6 +56,10 @@ export const esMX: BipLocale = {
     monthNames: [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+    ],
+    monthNamesShort: [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
     ],
     dayLabels: ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'],
   },
@@ -71,6 +79,10 @@ export const esMX: BipLocale = {
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
     ],
+    monthNamesShort: [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
+    ],
     dayLabels: ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'],
   },
 
@@ -85,12 +97,21 @@ export const esMX: BipLocale = {
 
   fileUpload: {
     remove: (fileName) => `Eliminar ${fileName}`,
+    dropHere: 'Suelta aquí el archivo',
+    dragHere: 'Arrastra tu archivo aquí',
+    clickToSelect: 'o haz click para seleccionar',
+    formats: (accept) => `Formatos: ${accept}`,
+    maxSize: (size) => `Máx. ${size}`,
   },
 
   input: {
     clear: 'Limpiar campo',
     showPassword: 'Mostrar contraseña',
     hidePassword: 'Ocultar contraseña',
+  },
+
+  link: {
+    opensInNewTab: '(abre en una pestaña nueva)',
   },
 
   modal: {
@@ -101,8 +122,10 @@ export const esMX: BipLocale = {
     placeholder: 'Seleccionar...',
     searchPlaceholder: 'Buscar...',
     selectAll: 'Seleccionar todo',
+    selectVisible: (count) => `Seleccionar visibles (${count})`,
     remove: (label) => `Eliminar ${label}`,
     overflow: (count) => `${count} selecciones más`,
+    overflowChip: (count) => `+${count} más`,
     removeAll: 'Eliminar todas las selecciones',
     search: 'Buscar opciones',
     loading: 'Cargando opciones',
@@ -224,6 +247,16 @@ export const esMX: BipLocale = {
       `Nota del diente ${toothNumber}${hasNote ? ' — tiene nota' : ''}`,
     imagesWithCount: (toothNumber, count) =>
       `Imágenes del diente ${toothNumber}${count > 0 ? ` — ${count} imagen${count > 1 ? 'es' : ''}` : ''}`,
+    toothLabel: (toothNumber, isMissing, name) =>
+      `Diente ${toothNumber}${isMissing ? ' - Ausente' : ''}: ${name}`,
+    noteLabel: 'Nota',
+    imagesLabel: (count) => `Imágenes${count > 0 ? ` (${count})` : ''}`,
+    notePlaceholder: 'Escribe una nota...',
+    save: 'Guardar',
+    imagesGalleryTitle: (toothNumber) => `Imágenes — Diente ${toothNumber}`,
+    cancel: 'Cancelar',
+    add: 'Agregar',
+    addImage: 'Agregar imagen',
   },
 
   pagination: {
@@ -259,6 +292,10 @@ export const esMX: BipLocale = {
 
   stepper: {
     nav: 'Pasos del proceso',
+  },
+
+  table: {
+    emptyMessage: 'No hay registros que mostrar.',
   },
 
   timePicker: {
@@ -299,5 +336,9 @@ export const esMX: BipLocale = {
     monthLabel: (month) => `Mes ${month}`,
     calendarLabel: 'Calendario',
     today: 'Hoy',
+    createEvent: 'Crear evento',
+    overflowCount: (count) => `+${count} más`,
+    noEventsFiltered: 'No hay eventos con los filtros seleccionados',
+    noEventsUpcoming: 'No hay eventos en los próximos 30 días',
   },
 };
