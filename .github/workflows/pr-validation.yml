@@ -96,6 +96,9 @@ jobs:
       - name: Verify package (exports map, types resolution)
         run: pnpm --filter @bip-design-systems/ui-components lint:package
 
+      - name: Check bundle size budget
+        run: pnpm size
+
       - name: Comment on PR
         uses: actions/github-script@v7
         with:

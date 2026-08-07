@@ -10,7 +10,7 @@ const config = {
     options: {},
   },
   viteFinal: async (config) => {
-    config.css = { postcss: './postcss.config.js' };
+    config.css = { postcss: './postcss.config.cjs' };
     config.optimizeDeps = {
       ...config.optimizeDeps,
       include: ['react', 'react-dom', 'clsx'],

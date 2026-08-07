@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Full package (barrel import)",
+    "path": "dist/index.js",
+    "limit": "58 KB"
+  },
+  {
+    "name": "Single component (Button, subpath import)",
+    "path": "dist/components/Button/Button.js",
+    "limit": "1 KB"
+  },
+  {
+    "name": "style.css (all components + tokens)",
+    "path": "dist/style.css",
+    "limit": "520 KB"
+  }
+]

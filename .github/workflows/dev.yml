@@ -96,8 +96,11 @@ jobs:
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
       
-      - name: Deploy to Netlify (or surge.sh)
-        run: echo "📦 Aquí desplegarías a un ambiente de dev preview"
-        # Ejemplo con Surge.sh (gratis):
-        # - run: npm install -g surge
-        # - run: surge ./packages/ui-components/storybook-static bip-dev.surge.sh --token ${{ secrets.SURGE_TOKEN }}
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-dev
+          path: packages/ui-components/storybook-static
+          retention-days: 7
+        # Un repo solo tiene un sitio de GitHub Pages, ya usado por production.yml — dev no
+        # tiene URL propia. El artifact es descargable desde la pestaña Actions del run.

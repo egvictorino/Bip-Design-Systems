@@ -115,6 +115,33 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 - Focus ring hardcodeado en `Button` `.secondary`, `Alert` `.closeBtn` y `ConfirmDialog`
   `.confirmWarning` — usaban un `box-shadow` escrito a mano en vez de `var(--focus-ring)`, así
   que ignoraban silenciosamente la prop `focusRing` de `ThemeProvider`.
+- **El paquete no declaraba `"type": "module"`** pese a que el build es ESM-only
+  (`formats: ['es']`) — Node interpretaba los `.js` de `dist/` como CommonJS por defecto
+  (`publint` marcaba 45 warnings de este tipo). `postcss.config.js`, el único archivo `.js`
+  del paquete en CommonJS (`module.exports`), se renombró a `postcss.config.cjs` para no
+  romperse bajo la nueva declaración; sus dos referencias (`vite.config.ts`,
+  `.storybook/main.js`) se actualizaron junto con él.
+
+### Added (infraestructura)
+
+- Stories nuevas para los subcomponentes internos de `Odontogram`: `ImagePopover`,
+  `NotePopover`, `ToothDetail`, `ToothSVG` — antes solo tenían tests, sin story propia.
+- `visual/`, `.storybook/` y `e2e/` ahora se lintean (ESLint) y typechequean (`tsc`) — antes no
+  se comprobaban en absoluto. Cero violaciones nuevas: no eran deuda oculta, solo estaban fuera
+  del `include`/scope de los scripts existentes.
+- `eslint-plugin-storybook` (reglas sobre `*.stories.tsx`) y `eslint-plugin-playwright`
+  (reglas sobre `visual/**` y `e2e/**`), vía `overrides` en `.eslintrc.json`.
+- Presupuesto de bundle (`size-limit`, `pnpm size`) sobre `dist/index.js`, un componente
+  representativo (`Button`) y `dist/style.css`, con límites fijados al tamaño actual medido —
+  gate contra regresiones, no una meta aspiracional. Corriendo en `pr-validation.yml`.
+- Workflows de seguridad nuevos: `codeql.yml` (análisis estático JS/TS) y
+  `dependency-review.yml` (bloquea dependencias nuevas con CVEs conocidos en PRs).
+- Los jobs `deploy-storybook-dev`/`deploy-storybook-qa` (antes `echo` stubs que construían
+  Storybook y no publicaban nada) ahora suben la build como artifact de GitHub Actions
+  descargable — un repo solo tiene un sitio de GitHub Pages, ya usado por
+  `deploy-storybook-production`, así que dev/qa no pueden tener URL propia sin reestructurar.
+  Se eliminaron los jobs `notify-qa-team`/`notify-production` (echo sin integración real) y el
+  paso `Add QA badge` (escribía un `qa-banner.html` suelto que nada enlazaba).
 
 ## [0.3.0] - 2026-08-06
 
