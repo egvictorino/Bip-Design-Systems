@@ -8,6 +8,13 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ## [Unreleased]
 
+### Added
+
+- `src/styles/contrast-tokens.test.ts` — verifica WCAG AA (4.5:1) contra los valores hex
+  reales de `tokens.css` para las 6 semillas de fill y sus `--color-txt-on-*`, en ambos
+  esquemas de color. Antes solo se probaba la función `contrastRatio` con pares escritos a
+  mano; ahora un cambio a un token real que rompa el contraste falla el build.
+
 ## [0.3.0] - 2026-08-06
 
 ### Added
