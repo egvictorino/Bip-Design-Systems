@@ -10,6 +10,10 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ### Added
 
+- `src/styles/contrast-tokens.test.ts` — verifica WCAG AA (4.5:1) contra los valores hex
+  reales de `tokens.css` para las 6 semillas de fill y sus `--color-txt-on-*`, en ambos
+  esquemas de color. Antes solo se probaba la función `contrastRatio` con pares escritos a
+  mano; ahora un cambio a un token real que rompa el contraste falla el build.
 - Visual regression ahora corre en CI (`pr-validation.yml`, job `visual-regression`) contra
   baselines Linux generadas en `mcr.microsoft.com/playwright:v1.62.1-jammy` — antes solo
   existían baselines macOS y ningún workflow invocaba `test:visual`. Nuevo
@@ -38,6 +42,10 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 - `playwright.visual.config.ts`: `use.viewport` estaba declarado pero sin efecto — el spread
   de `devices['Desktop Chrome']` en el project lo pisaba, así que el viewport real siempre fue
   1280×720, no 960×720. Corregido moviendo el viewport al `use` del project, donde sí aplica.
+- `src/styles/rtl.test.ts`: `ProgressBar.module.css` estaba en `PHYSICAL_BY_DESIGN_ALLOWLIST`
+  sin necesitarlo — no tiene ningún `left`/`right` físico, su exención era por un
+  `translateX` en `@keyframes` que ninguno de los dos regex del test evalúa. La entrada era
+  inerte y encubriría un `left`/`right` real que alguien agregara ahí después.
 - **Contraste real bajo AA, encontrado por `visual/a11y-browser.spec.ts`** (no un bug de test —
   la paleta en sí no llegaba a 4.5:1 en varios casos):
   - `--color-txt-secondary` (light, `#929292`): nunca alcanzaba AA contra ningún fondo claro
