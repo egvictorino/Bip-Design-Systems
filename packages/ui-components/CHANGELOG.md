@@ -20,6 +20,18 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ### Fixed
 
+- **CI roto por el bump de `actions/setup-node` a v5** (ver entrada de node24 más abajo): v5
+  estrena el input `package-manager-cache`, con default `true` — a diferencia de v4, ahora lee
+  `"packageManager": "pnpm@9.15.9"` de `package.json` e invoca el binario `pnpm` para resolver
+  qué cachear. Los 15 jobs del repo tenían el orden `setup-node` → `pnpm/action-setup`, así que
+  pnpm todavía no estaba en el `PATH` en ese momento: `Error: Unable to locate executable file:
+  pnpm`. Se invirtió el orden en los 15 jobs (`pnpm/action-setup` primero, patrón oficial de
+  pnpm para CI) — con pnpm ya disponible, el auto-caché de v5 funciona sin configuración extra.
+  De paso se encontró que los 3 pasos `actions/cache` manuales ("Setup pnpm cache") apuntaban a
+  `~/.pnpm-store`, el default de pnpm 6/7 — pnpm 9 usa la ruta XDG (`~/.local/share/pnpm/store/v3`
+  en Linux, confirmado con `pnpm store path`), así que llevaban tiempo cacheando una carpeta
+  vacía sin ahorrar nada. Esos 3 pasos se eliminaron: el auto-caché de `setup-node@v5` ya cubre
+  el store, con el path correcto, en los 15 jobs en vez de en 3.
 - `eslint-plugin-storybook` se mantiene fijo en `0.12.0` (no en `^10.5.7`) — desde su release
   que acompaña a Storybook 9+, el paquete es ESM-only sin build CJS
   (`exports['.'] = { default: './dist/index.js' }`, sin condición `require`), y este repo
