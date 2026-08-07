@@ -10,6 +10,12 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ### Added
 
+- E2E smoke test (`e2e/consumer.spec.ts`, `pnpm test:e2e` from the repo root) that installs
+  the actual `pnpm pack` tarball into a standalone Vite app (not a workspace link) and
+  asserts on real computed styles — catches the class of bug where the workspace-link dev
+  loop works but the published package doesn't (design tokens missing from the tarball, ESM
+  resolution failing outside the monorepo). Runs in CI on `qa.yml`/`production.yml` only, as
+  a release gate; `production.yml`'s `publish-npm` now `needs:` it.
 - `src/styles/contrast-tokens.test.ts` — verifica WCAG AA (4.5:1) contra los valores hex
   reales de `tokens.css` para las 6 semillas de fill y sus `--color-txt-on-*`, en ambos
   esquemas de color. Antes solo se probaba la función `contrastRatio` con pares escritos a

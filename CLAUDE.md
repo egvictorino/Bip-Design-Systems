@@ -97,6 +97,29 @@ This runs `scripts/visual-docker.sh`, which pulls `mcr.microsoft.com/playwright:
 
 `pnpm test` runs vitest once and exits (`vitest run`) — use `pnpm test:watch` for interactive watch mode. (Previously `test` ran in watch mode and only terminated in CI because GitHub Actions sets `CI=true`, which vitest respects — that was incidental, not by design.)
 
+### E2E — published package smoke test (`e2e/`)
+
+Everything else (vitest, `theme-matrix.spec.ts`) exercises the **workspace source** via a
+`pnpm --filter` link — none of it would have caught the class of bug in
+`hotfix/design-tokens-not-bundled` (design tokens missing from what actually got published).
+`e2e/consumer.spec.ts` + `scripts/e2e-consumer.sh` close that gap: the script builds
+`ui-components`, runs `pnpm pack` to produce a **real tarball**, installs that tarball (not a
+workspace link) into `e2e/consumer-app` — a plain Vite app that is deliberately **not** a
+member of the pnpm workspace (its own `pnpm-workspace.yaml` with `packages: []` stops pnpm's
+upward workspace-root search, so `pnpm install` there resolves the dependency from the
+tarball like any real consumer would) — builds that app, serves the static output, and runs
+Playwright assertions against real `getComputedStyle()` values: the `Button` background-color
+matches the literal `--color-primary` hex, and `border-radius` differs between
+`theme="square"` and `theme="rounded"` (proving both `tokens.css` and the `ThemeProvider`
+theme axis survived packaging), plus a check that no console/page errors fired (would catch
+an ESM/CJS resolution failure, since `ui-components`' `package.json` `exports` has no
+`require` condition). Run with `pnpm test:e2e`. `pnpm pack` doesn't work through
+`pnpm --filter` (`Unknown option: 'recursive'` — `--filter` puts pnpm in recursive mode,
+which `pack` doesn't support) — the script `cd`s into `packages/ui-components` first.
+`e2e/consumer-app/vendor/*.tgz` and its `pnpm-lock.yaml` are gitignored; both are regenerated
+from whatever's in `packages/ui-components` right now, so committing them would just be a
+stale snapshot.
+
 ## CI/CD
 
 Four workflows, one per environment:
@@ -105,8 +128,14 @@ Four workflows, one per environment:
 |----------|---------|-----------|
 | `pr-validation.yml` | PR to any branch | branch check → lint → **test** → build → **visual regression** (parallel job, own container) |
 | `dev.yml` | push/PR to `dev` | lint → **test** → build → storybook preview |
-| `qa.yml` | push/PR to `qa` | security audit \| lint → **test** → build → storybook QA |
-| `production.yml` | push/PR to `main` | security + lint + **test** + type-check → build → GitHub Pages → release |
+| `qa.yml` | push/PR to `qa` | security audit \| lint → **test** → build → **e2e-consumer** → storybook QA |
+| `production.yml` | push/PR to `main` | security + lint + **test** + type-check → build → **e2e-consumer** → publish/GitHub Pages → release |
+
+`e2e-consumer` (`qa.yml`/`production.yml` only, not `pr-validation.yml`/`dev.yml`) runs
+`pnpm test:e2e` — it's a release gate, not a per-PR check, since it needs its own Playwright
+browser install and a full build+pack+install+build cycle that's too slow to run on every
+`feature/* → dev` PR. `production.yml`'s `publish-npm` job explicitly `needs:` it, so a
+broken published package blocks the npm release, not just a warning after the fact.
 
 **Rules:**
 - All workflows use `pnpm install --frozen-lockfile` — never use `--no-frozen-lockfile` in CI.
