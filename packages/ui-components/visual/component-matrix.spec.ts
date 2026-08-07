@@ -1,7 +1,11 @@
 import { readdirSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { test, expect } from '@playwright/test';
 import { COMPONENT_MATRIX, SKIP_LIST } from './component-matrix';
+
+// __dirname no existe bajo ESM (ver package.json "type": "module") — equivalente vía import.meta.
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
  * Un screenshot canónico por componente — acotado a #storybook-root (no fullPage, como

@@ -22,13 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
       
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
       
@@ -57,13 +57,13 @@ jobs:
     needs: validate
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
 
@@ -85,18 +85,18 @@ jobs:
     needs: validate
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
       
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
       
       - name: Setup pnpm cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-pnpm-prod-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -110,7 +110,7 @@ jobs:
           NODE_ENV=production pnpm --filter @bip-design-systems/ui-components build
 
       - name: Upload production artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: production-build
           path: packages/*/dist
@@ -123,14 +123,14 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
 
@@ -168,13 +168,13 @@ jobs:
 
       - name: Publish @bip-design-systems/ui-components
         if: steps.version-check.outputs.ui_already_published == 'false'
-        run: pnpm --filter @bip-design-systems/ui-components publish --no-git-checks
+        run: pnpm --filter @bip-design-systems/ui-components publish --no-git-checks --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @bip-design-systems/shared-utils
         if: steps.version-check.outputs.utils_already_published == 'false'
-        run: pnpm --filter @bip-design-systems/shared-utils publish --no-git-checks
+        run: pnpm --filter @bip-design-systems/shared-utils publish --no-git-checks --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -189,13 +189,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
       
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
       
@@ -208,13 +208,13 @@ jobs:
           NODE_OPTIONS: "--max_old_space_size=4096"
       
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./packages/ui-components/storybook-static
       
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   create-release:
     name: Create Release Tag
@@ -223,7 +223,7 @@ jobs:
     if: github.event_name == 'push'
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       
@@ -248,27 +248,15 @@ jobs:
             echo ""
             echo "### Recursos"
             echo "- [NPM](https://www.npmjs.com/package/@bip-design-systems/ui-components)"
-            echo "- [Storybook](https://egvictorino.github.io/bip-ui/)"
+            echo "- [Storybook](https://egvictorino.github.io/Bip-Design-Systems/)"
             echo "CHANGELOG_EOF"
           } >> "$GITHUB_OUTPUT"
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ steps.version.outputs.version }}
           name: Release v${{ steps.version.outputs.version }}
           body: ${{ steps.changelog.outputs.body }}
           draft: false
           prerelease: false
-
-  notify-production:
-    name: Notify Production Deploy
-    runs-on: ubuntu-latest
-    needs: [create-release]
-    
-    steps:
-      - name: Success notification
-        run: |
-          echo "✅ Deploy a PRODUCCIÓN completado exitosamente"
-          echo "🔗 Storybook: https://tu-usuario.github.io/bip-ui/"
-          # Integración con Slack/Discord/Email

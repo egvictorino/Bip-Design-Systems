@@ -2,7 +2,7 @@
 
 import React, { forwardRef, useId, useState, useRef, useEffect, useCallback } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Textarea.module.css';
 
 export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {

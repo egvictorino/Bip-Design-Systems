@@ -19,7 +19,12 @@ export default defineConfig({
     toHaveScreenshot: { maxDiffPixelRatio: 0.02 },
   },
   webServer: {
-    command: 'pnpm storybook -- --ci --quiet',
+    // Sin el separador `--` explícito: `pnpm storybook -- --ci --quiet` reenviaba un `--`
+    // literal al CLI de Storybook (`storybook dev -p 6006 -- --ci --quiet`), que el parser
+    // más laxo de Storybook 8 toleraba pero el de 9+ rechaza ("too many arguments for 'dev'.
+    // Expected 0 arguments but got 2") — trata todo lo posterior al `--` como argumentos
+    // posicionales en vez de flags. `pnpm storybook --ci --quiet` reenvía los flags tal cual.
+    command: 'pnpm storybook --ci --quiet',
     url: 'http://localhost:6006',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

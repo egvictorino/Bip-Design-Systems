@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
-import { cn } from '../../lib/cn';
-import { Skeleton } from '../Skeleton';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
+import { Skeleton } from '../Skeleton/index.js';
 import styles from './Card.module.css';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -108,6 +109,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     },
     ref
   ) => {
+    const t = useBipLocale();
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (clickable && (e.key === 'Enter' || e.key === ' ')) {
         e.preventDefault();
@@ -140,7 +142,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         {...props}
       >
         {loading ? (
-          <div className={styles.loadingContainer} aria-busy="true" aria-label="Cargando...">
+          <div className={styles.loadingContainer} aria-busy="true" aria-label={t.card.loading}>
             <Skeleton variant="text" className={styles.skeletonShort} />
             <Skeleton variant="text" lines={3} />
           </div>

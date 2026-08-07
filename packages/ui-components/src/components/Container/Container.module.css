@@ -1,0 +1,12 @@
+.container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+/* max-width en px de la escala BREAKPOINTS (src/styles/breakpoints.ts) */
+.maxWidthSm   { max-width: 640px; }
+.maxWidthMd   { max-width: 768px; }
+.maxWidthLg   { max-width: 1024px; }
+.maxWidthXl   { max-width: 1280px; }
+.maxWidthFull { max-width: none; }

@@ -26,6 +26,12 @@ describe('formatCurrency', () => {
   it('formats decimal amounts', () => {
     expect(formatCurrency(99.99)).toBe(fmt(99.99));
   });
+
+  it('accepts an optional locale/currency override', () => {
+    expect(formatCurrency(1500, { locale: 'en-US', currency: 'USD' })).toBe(
+      new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(1500)
+    );
+  });
 });
 
 // ─── formatDate ──────────────────────────────────────────────────────────────
@@ -51,6 +57,20 @@ describe('formatDate', () => {
   it('formats a leap day', () => {
     const date = new Date(2024, 1, 29); // Feb 29 2024 (leap year)
     expect(formatDate(date)).toBe(fmt(date));
+  });
+
+  it('accepts an optional locale override', () => {
+    const date = new Date(2026, 5, 15);
+    expect(formatDate(date, { locale: 'en-US' })).toBe(
+      new Intl.DateTimeFormat('en-US').format(date)
+    );
+  });
+
+  it('accepts Intl.DateTimeFormatOptions alongside locale', () => {
+    const date = new Date(2026, 5, 15);
+    expect(formatDate(date, { locale: 'en-US', month: 'long', day: 'numeric' })).toBe(
+      new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric' }).format(date)
+    );
   });
 });
 

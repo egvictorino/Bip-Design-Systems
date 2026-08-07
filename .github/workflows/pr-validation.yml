@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       
@@ -64,13 +64,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
       
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
       
@@ -80,18 +80,27 @@ jobs:
       - name: Lint
         run: pnpm --filter @bip-design-systems/ui-components lint
 
+      - name: Typecheck
+        run: pnpm typecheck
+
       - name: Test
         run: |
           pnpm --filter @bip-design-systems/shared-utils test
-          pnpm --filter @bip-design-systems/ui-components test
+          pnpm --filter @bip-design-systems/ui-components test:coverage
 
       - name: Build
         run: |
           pnpm --filter @bip-design-systems/shared-utils build
           pnpm --filter @bip-design-systems/ui-components build
-      
+
+      - name: Verify package (exports map, types resolution)
+        run: pnpm --filter @bip-design-systems/ui-components lint:package
+
+      - name: Check bundle size budget
+        run: pnpm size
+
       - name: Comment on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             github.rest.issues.createComment({
@@ -109,15 +118,15 @@ jobs:
     if: github.base_ref == 'dev'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
 
@@ -138,13 +147,13 @@ jobs:
     if: github.base_ref == 'qa'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
 
@@ -166,14 +175,14 @@ jobs:
     container: mcr.microsoft.com/playwright:v1.62.1-jammy
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9.15.9
 
       - name: Setup pnpm cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           # Store del contenedor Playwright, corre como root — no "~/.local/..." (la cache
           # action no expande ~ de forma confiable dentro de un job `container:`).
@@ -193,7 +202,7 @@ jobs:
 
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report
           path: |

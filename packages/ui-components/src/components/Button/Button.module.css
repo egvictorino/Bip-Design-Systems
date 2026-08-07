@@ -55,7 +55,7 @@
 }
 .secondary:hover:not(:disabled) { background-color: var(--color-secondary-hover); }
 .secondary:active:not(:disabled) { background-color: var(--color-secondary-press); }
-.secondary:focus-visible { box-shadow: 0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-secondary); }
+.secondary:focus-visible { --focus-ring-color: var(--color-secondary); box-shadow: var(--focus-ring); }
 
 .bare {
   background-color: transparent;

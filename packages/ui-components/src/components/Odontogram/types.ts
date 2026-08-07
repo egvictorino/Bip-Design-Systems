@@ -61,18 +61,6 @@ export const CONDITION_FILL_CLASS: Record<ToothCondition, string> = {
   extraction_planned: styles.fillExtractionPlanned,
 };
 
-export const CONDITION_LABELS: Record<ToothCondition, string> = {
-  healthy: 'Sano',
-  caries: 'Caries',
-  restoration: 'Restauración',
-  crown: 'Corona',
-  missing: 'Ausente',
-  implant: 'Implante',
-  fracture: 'Fractura',
-  root_canal: 'Endodoncia',
-  extraction_planned: 'Extracción planeada',
-};
-
 export const TOOTH_SIZE: Record<'sm' | 'md' | 'lg' | 'xl', number> = {
   sm: 24,
   md: 32,
@@ -88,73 +76,6 @@ export const NUMBER_TEXT_SIZE_CLASS: Record<'sm' | 'md' | 'lg', string> = {
 
 /** Conditions that apply to the whole tooth, not per surface */
 export const WHOLE_TOOTH_CONDITIONS = new Set<ToothCondition>(['missing', 'crown', 'implant']);
-
-export const TOOTH_NAMES: Record<number, string> = {
-  11: 'Incisivo central superior derecho',
-  12: 'Incisivo lateral superior derecho',
-  13: 'Canino superior derecho',
-  14: 'Primer premolar superior derecho',
-  15: 'Segundo premolar superior derecho',
-  16: 'Primer molar superior derecho',
-  17: 'Segundo molar superior derecho',
-  18: 'Tercer molar superior derecho',
-  21: 'Incisivo central superior izquierdo',
-  22: 'Incisivo lateral superior izquierdo',
-  23: 'Canino superior izquierdo',
-  24: 'Primer premolar superior izquierdo',
-  25: 'Segundo premolar superior izquierdo',
-  26: 'Primer molar superior izquierdo',
-  27: 'Segundo molar superior izquierdo',
-  28: 'Tercer molar superior izquierdo',
-  31: 'Incisivo central inferior izquierdo',
-  32: 'Incisivo lateral inferior izquierdo',
-  33: 'Canino inferior izquierdo',
-  34: 'Primer premolar inferior izquierdo',
-  35: 'Segundo premolar inferior izquierdo',
-  36: 'Primer molar inferior izquierdo',
-  37: 'Segundo molar inferior izquierdo',
-  38: 'Tercer molar inferior izquierdo',
-  41: 'Incisivo central inferior derecho',
-  42: 'Incisivo lateral inferior derecho',
-  43: 'Canino inferior derecho',
-  44: 'Primer premolar inferior derecho',
-  45: 'Segundo premolar inferior derecho',
-  46: 'Primer molar inferior derecho',
-  47: 'Segundo molar inferior derecho',
-  48: 'Tercer molar inferior derecho',
-  // Cuadrante 5 — Superior derecho primario
-  55: 'Segundo molar temporal superior derecho',
-  54: 'Primer molar temporal superior derecho',
-  53: 'Canino temporal superior derecho',
-  52: 'Incisivo lateral temporal superior derecho',
-  51: 'Incisivo central temporal superior derecho',
-  // Cuadrante 6 — Superior izquierdo primario
-  61: 'Incisivo central temporal superior izquierdo',
-  62: 'Incisivo lateral temporal superior izquierdo',
-  63: 'Canino temporal superior izquierdo',
-  64: 'Primer molar temporal superior izquierdo',
-  65: 'Segundo molar temporal superior izquierdo',
-  // Cuadrante 7 — Inferior izquierdo primario
-  71: 'Incisivo central temporal inferior izquierdo',
-  72: 'Incisivo lateral temporal inferior izquierdo',
-  73: 'Canino temporal inferior izquierdo',
-  74: 'Primer molar temporal inferior izquierdo',
-  75: 'Segundo molar temporal inferior izquierdo',
-  // Cuadrante 8 — Inferior derecho primario
-  81: 'Incisivo central temporal inferior derecho',
-  82: 'Incisivo lateral temporal inferior derecho',
-  83: 'Canino temporal inferior derecho',
-  84: 'Primer molar temporal inferior derecho',
-  85: 'Segundo molar temporal inferior derecho',
-};
-
-export const SURFACE_LABELS: Record<ToothSurface, string> = {
-  occlusal: 'Oclusal',
-  buccal: 'Bucal',
-  lingual: 'Lingual',
-  mesial: 'Mesial',
-  distal: 'Distal',
-};
 
 export const SURFACES: ToothSurface[] = ['buccal', 'lingual', 'mesial', 'distal', 'occlusal'];
 
@@ -196,13 +117,4 @@ export const PRIMARY_UPPER_LEFT = [61, 62, 63, 64, 65];
 export const PRIMARY_LOWER_RIGHT = [85, 84, 83, 82, 81];
 export const PRIMARY_LOWER_LEFT = [71, 72, 73, 74, 75];
 
-export const IMAGE_TYPE_LABELS: Record<ToothImageType, string> = {
-  radiograph: 'Radiografía',
-  photo: 'Fotografía',
-  other: 'Otra',
-};
-
 export const IMAGE_TYPES: ToothImageType[] = ['radiograph', 'photo', 'other'];
-
-export const FOCUSABLE_SELECTOR =
-  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';

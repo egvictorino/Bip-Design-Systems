@@ -37,6 +37,8 @@
   gap: var(--space-8);
 }
 
+/* 900px es un outlier documentado (ver breakpoints.test.ts OUTLIER_ALLOWLIST): esta página
+   de docs de Theming necesita colapsar antes que `lg` (1024px) para este layout concreto. */
 @media (max-width: 900px) {
   .panels {
     grid-template-columns: 1fr;

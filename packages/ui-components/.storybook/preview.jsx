@@ -6,6 +6,11 @@ import { BRAND_PRESETS } from '../src/foundations/brandPresets';
 /** @type { import('@storybook/react').Preview } */
 const preview = {
   parameters: {
+    options: {
+      storySort: {
+        order: ['Introduction', 'Foundations', 'Components'],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

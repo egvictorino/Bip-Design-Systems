@@ -1,9 +1,10 @@
 "use client";
 
 import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../lib/useClickOutside';
-import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthIndex } from '../../lib/dateHelpers';
+import { cn } from '../../lib/cn.js';
+import { useClickOutside } from '../../hooks/useClickOutside.js';
+import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthIndex } from '../../lib/dateHelpers.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './DatePicker.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -49,32 +50,10 @@ const helperSizeClass: Record<NonNullable<DatePickerProps['size']>, string> = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const DAY_LABELS = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'];
-
-const MONTH_NAMES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-];
-
 const MONTH_NAMES_SHORT = [
   'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
 ];
-
-// Module-level formatters — created once, reused across all instances
-const DISPLAY_FORMATTER = new Intl.DateTimeFormat('es-MX', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-});
-
-const DAY_ARIA_LABEL_FORMATTER = new Intl.DateTimeFormat('es-MX', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
-
-const formatDisplay = (date: Date): string => DISPLAY_FORMATTER.format(date);
 
 // ─── CalendarGrid (internal) ──────────────────────────────────────────────────
 
@@ -109,8 +88,19 @@ const CalendarGrid = ({
   onViewDateChange,
   headingId,
 }: CalendarGridProps) => {
+  const t = useBipLocale();
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
+
+  const dayAriaLabelFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(t.locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+    [t.locale]
+  );
 
   const [calendarView, setCalendarView] = useState<'days' | 'months'>('days');
   const [pickerYear, setPickerYear] = useState(year);
@@ -201,7 +191,7 @@ const CalendarGrid = ({
             type="button"
             onClick={() => setPickerYear((y) => y - 1)}
             disabled={!canGoPrevYear}
-            aria-label="Año anterior"
+            aria-label={t.datePicker.prevYear}
             className={styles.monthNavBtn}
           >
             <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
@@ -219,7 +209,7 @@ const CalendarGrid = ({
             type="button"
             onClick={() => setPickerYear((y) => y + 1)}
             disabled={!canGoNextYear}
-            aria-label="Año siguiente"
+            aria-label={t.datePicker.nextYear}
             className={styles.monthNavBtn}
           >
             <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
@@ -233,7 +223,7 @@ const CalendarGrid = ({
         </div>
 
         {/* 4×3 month grid */}
-        <div role="grid" aria-label="Seleccionar mes" className={styles.monthPickerGrid}>
+        <div role="grid" aria-label={t.datePicker.selectMonth} className={styles.monthPickerGrid}>
           {MONTH_NAMES_SHORT.map((name, idx) => {
             const isCurrent = pickerYear === year && idx === month;
             const disabled = isMonthDisabled(idx);
@@ -243,7 +233,7 @@ const CalendarGrid = ({
                   type="button"
                   onClick={() => handleSelectMonth(idx)}
                   disabled={disabled}
-                  aria-label={`${MONTH_NAMES[idx]} ${pickerYear}`}
+                  aria-label={t.datePicker.monthOfYear(t.datePicker.monthNames[idx], pickerYear)}
                   aria-pressed={isCurrent}
                   className={cn(styles.monthPickerBtn, isCurrent && styles.monthPickerBtnCurrent)}
                 >
@@ -267,7 +257,7 @@ const CalendarGrid = ({
           type="button"
           onClick={onPrevMonth}
           disabled={!canGoPrev}
-          aria-label="Mes anterior"
+          aria-label={t.datePicker.prevMonth}
           className={styles.monthNavBtn}
         >
           <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
@@ -284,17 +274,17 @@ const CalendarGrid = ({
           type="button"
           id={headingId}
           onClick={handleShowMonthPicker}
-          aria-label={`${MONTH_NAMES[month]} ${year} — Seleccionar mes y año`}
+          aria-label={t.datePicker.selectMonthAndYear(t.datePicker.monthNames[month], year)}
           className={styles.monthHeadingBtn}
         >
-          {MONTH_NAMES[month]} {year}
+          {t.datePicker.monthNames[month]} {year}
         </button>
 
         <button
           type="button"
           onClick={onNextMonth}
           disabled={!canGoNext}
-          aria-label="Mes siguiente"
+          aria-label={t.datePicker.nextMonth}
           className={styles.monthNavBtn}
         >
           <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
@@ -383,7 +373,7 @@ const CalendarGrid = ({
         }}
       >
         {/* Column headers */}
-        {DAY_LABELS.map((d) => (
+        {t.datePicker.dayLabels.map((d) => (
           <div key={d} role="columnheader" className={styles.columnHeader}>
             {d}
           </div>
@@ -410,7 +400,7 @@ const CalendarGrid = ({
                 tabIndex={isFocused ? 0 : -1}
                 data-date={dateKey(cellDate)}
                 onClick={() => onSelectDay(cellDate)}
-                aria-label={DAY_ARIA_LABEL_FORMATTER.format(cellDate)}
+                aria-label={dayAriaLabelFormatter.format(cellDate)}
                 className={cn(
                   styles.dayBtn,
                   isSelected
@@ -435,7 +425,7 @@ const CalendarGrid = ({
           disabled={isTodayDisabled}
           className={styles.todayBtn}
         >
-          Hoy
+          {t.datePicker.today}
         </button>
       </div>
     </div>
@@ -454,7 +444,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
       min,
       max,
       disabledDates,
-      placeholder = 'DD/MM/AAAA',
+      placeholder,
       label,
       helperText,
       error = false,
@@ -467,6 +457,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     },
     ref
   ) => {
+    const t = useBipLocale();
     const [isOpen, setIsOpen] = useState(false);
     const [focusedDate, setFocusedDate] = useState<Date | null>(null);
     const generatedId = useId();
@@ -485,8 +476,21 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
 
     const [viewDate, setViewDate] = useState<Date>(() => value ?? today);
 
+    const displayFormatter = useMemo(
+      () =>
+        new Intl.DateTimeFormat(t.locale, {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }),
+      [t.locale]
+    );
+
     // Memoize display string — avoids reformatting on every render
-    const displayValue = useMemo(() => (value ? formatDisplay(value) : ''), [value]);
+    const displayValue = useMemo(
+      () => (value ? displayFormatter.format(value) : ''),
+      [value, displayFormatter]
+    );
 
     // Sync viewDate: track value (use today when cleared to null)
     useEffect(() => {
@@ -569,7 +573,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             )}
           >
             <span className={displayValue ? styles.triggerValue : styles.triggerPlaceholder}>
-              {displayValue || placeholder}
+              {displayValue || (placeholder ?? t.datePicker.placeholder)}
             </span>
           </button>
 
@@ -578,7 +582,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             <button
               type="button"
               onClick={handleClear}
-              aria-label="Limpiar fecha"
+              aria-label={t.datePicker.clear}
               className={cn(styles.clearBtn, error && styles.clearBtnError)}
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className={styles.iconMd} aria-hidden="true">
@@ -609,7 +613,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             <div
               role="dialog"
               aria-modal="true"
-              aria-label="Calendario"
+              aria-label={t.datePicker.calendar}
               className={styles.popover}
             >
               <CalendarGrid

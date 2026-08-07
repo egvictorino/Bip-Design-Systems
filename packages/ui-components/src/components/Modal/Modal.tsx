@@ -1,17 +1,11 @@
 "use client";
 
-import React, {
-  useEffect,
-  useRef,
-  useContext,
-  useId,
-  useCallback,
-  createContext,
-  useState,
-} from 'react';
+import React, { useEffect, useRef, useContext, useId, createContext, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { useThemeAttributes } from '../ThemeProvider';
+import { cn } from '../../lib/cn.js';
+import { useFocusTrap, useScrollLock } from '../../hooks/index.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Modal.module.css';
 
 interface ModalContextValue {
@@ -44,9 +38,6 @@ const sizeClass: Record<NonNullable<ModalProps['size']>, string> = {
   xl: styles.xl,
 };
 
-const FOCUSABLE_SELECTORS =
-  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-
 const ANIMATION_DURATION = 150;
 
 export const Modal: React.FC<ModalProps> = ({
@@ -60,7 +51,6 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
-  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
   const { style: themeStyle, ...themeAttrs } = useThemeAttributes();
 
   // Animation state: isVisible keeps the portal in the DOM during exit animation
@@ -78,67 +68,8 @@ export const Modal: React.FC<ModalProps> = ({
     }
   }, [isOpen]);
 
-  // Lock body scroll while open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
-  // Restore focus to the trigger element when modal closes
-  const restoreFocus = useCallback(() => {
-    previouslyFocusedRef.current?.focus();
-    previouslyFocusedRef.current = null;
-  }, []);
-
-  // Escape key + focus trap
-  useEffect(() => {
-    if (!isOpen) return;
-
-    // Save the element that had focus before the modal opened
-    previouslyFocusedRef.current = document.activeElement as HTMLElement;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (closeOnEscape) onClose();
-        return;
-      }
-
-      if (e.key === 'Tab') {
-        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTORS);
-        if (!focusable || focusable.length === 0) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            last.focus();
-            e.preventDefault();
-          }
-        } else {
-          if (document.activeElement === last) {
-            first.focus();
-            e.preventDefault();
-          }
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    // Move focus into modal on open
-    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTORS);
-    (firstFocusable ?? dialogRef.current)?.focus();
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      restoreFocus();
-    };
-  }, [isOpen, onClose, closeOnEscape, restoreFocus]);
+  useScrollLock(isOpen);
+  useFocusTrap(dialogRef, { enabled: isOpen, onEscape: closeOnEscape ? onClose : undefined });
 
   if (!isVisible) return null;
 
@@ -181,6 +112,7 @@ export interface ModalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, ...props }) => {
   const { titleId, onClose } = useModalContext();
+  const t = useBipLocale();
 
   return (
     <div className={cn(styles.header, className)} {...props}>
@@ -190,7 +122,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, .
       <button
         type="button"
         onClick={onClose}
-        aria-label="Cerrar modal"
+        aria-label={t.modal.close}
         className={styles.closeBtn}
       >
         <svg

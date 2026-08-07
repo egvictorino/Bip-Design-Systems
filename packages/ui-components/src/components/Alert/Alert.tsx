@@ -1,5 +1,6 @@
 import React from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Alert.module.css';
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -72,6 +73,8 @@ export const Alert: React.FC<AlertProps> = ({
   children,
   ...props
 }) => {
+  const t = useBipLocale();
+
   return (
     <div
       role={variantRole[variant]}
@@ -89,7 +92,7 @@ export const Alert: React.FC<AlertProps> = ({
         <button
           type="button"
           onClick={onClose}
-          aria-label="Cerrar alerta"
+          aria-label={t.alert.close}
           className={cn(styles.closeBtn, closeBtnClass[variant])}
         >
           <svg viewBox="0 0 20 20" fill="currentColor" className={styles.closeIcon} aria-hidden="true">

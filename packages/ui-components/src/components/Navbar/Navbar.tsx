@@ -10,8 +10,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../lib/useClickOutside';
+import { cn } from '../../lib/cn.js';
+import { useClickOutside } from '../../hooks/useClickOutside.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Navbar.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -67,6 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   className,
   variant = 'default',
 }) => {
+  const t = useBipLocale();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [navChildren, setNavChildren] = useState<React.ReactNode>(null);
   const [actionsChildren, setActionsChildren] = useState<React.ReactNode>(null);
@@ -136,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       <nav
         ref={navRef}
-        aria-label="Navegación principal"
+        aria-label={t.navbar.mainNav}
         className={cn(styles.nav, variantClassMap[variant], className)}
       >
         <div className={styles.container}>
@@ -148,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             type="button"
             aria-expanded={isMobileOpen}
             aria-controls={mobileMenuId}
-            aria-label={isMobileOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-label={isMobileOpen ? t.navbar.closeMenu : t.navbar.openMenu}
             onClick={toggleMobile}
             className={styles.hamburger}
           >

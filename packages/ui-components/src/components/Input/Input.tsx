@@ -2,7 +2,8 @@
 
 import React, { forwardRef, useId, useState } from 'react';
 import type { InputHTMLAttributes } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Input.module.css';
 
 export type InputType = 'text' | 'email' | 'password' | 'tel' | 'url';
@@ -118,6 +119,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const t = useBipLocale();
     const [focused, setFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const generatedId = useId();
@@ -204,7 +206,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                   type="button"
                   className={styles.clearButton}
                   onClick={handleClear}
-                  aria-label="Limpiar campo"
+                  aria-label={t.input.clear}
                   tabIndex={-1}
                 >
                   <XIcon />
@@ -215,7 +217,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                   type="button"
                   className={styles.passwordToggle}
                   onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  aria-label={showPassword ? t.input.hidePassword : t.input.showPassword}
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOffIcon /> : <EyeIcon />}

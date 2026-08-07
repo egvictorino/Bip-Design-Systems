@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { useThemeAttributes } from '../ThemeProvider';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
+import { useFocusTrap } from '../../hooks/useFocusTrap.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
 import styles from './Odontogram.module.css';
-import { FOCUSABLE_SELECTOR } from './types';
 
 export interface NotePopoverProps {
   toothNumber: number;
@@ -14,27 +15,6 @@ export interface NotePopoverProps {
   onSave: (note: string) => void;
 }
 
-function useFocusTrap(ref: React.RefObject<HTMLElement | null>) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const focusables = el.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
-    const first = focusables[0];
-    const last = focusables[focusables.length - 1];
-    const trap = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-      if (focusables.length === 0) { e.preventDefault(); return; }
-      if (e.shiftKey) {
-        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-      } else {
-        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
-      }
-    };
-    document.addEventListener('keydown', trap);
-    return () => document.removeEventListener('keydown', trap);
-  }, [ref]);
-}
-
 export const NotePopover = React.memo<NotePopoverProps>(({
   toothNumber,
   initialNote,
@@ -43,23 +23,16 @@ export const NotePopover = React.memo<NotePopoverProps>(({
   onClose,
   onSave,
 }) => {
+  const t = useBipLocale();
   const [draft, setDraft] = useState(initialNote);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const { style: themeStyle, ...themeAttrs } = useThemeAttributes();
-  useFocusTrap(dialogRef);
+  useFocusTrap(dialogRef, { enabled: true, onEscape: onClose });
 
   useEffect(() => {
     textareaRef.current?.focus();
   }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
 
   return ReactDOM.createPortal(
     <div {...themeAttrs} style={{ display: 'contents', ...themeStyle }}>
@@ -68,15 +41,15 @@ export const NotePopover = React.memo<NotePopoverProps>(({
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label={`Nota del diente ${toothNumber}`}
+        aria-label={t.odontogram.toothNote(toothNumber)}
         style={{ top: position.top, left: position.left }}
         className={styles.notePopover}
       >
         <div className={styles.popoverHeader}>
-          <span className={styles.popoverTitle}>Diente {toothNumber}</span>
+          <span className={styles.popoverTitle}>{t.odontogram.tooth(toothNumber)}</span>
           <button
             onClick={onClose}
-            aria-label="Cerrar nota"
+            aria-label={t.odontogram.closeNote}
             className={styles.popoverClose}
           >
             ✕

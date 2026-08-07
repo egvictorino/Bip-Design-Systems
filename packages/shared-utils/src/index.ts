@@ -1,12 +1,24 @@
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('es-MX', {
+export interface FormatCurrencyOptions {
+  locale?: string;
+  currency?: string;
+}
+
+export const formatCurrency = (
+  amount: number,
+  { locale = 'es-MX', currency = 'MXN' }: FormatCurrencyOptions = {}
+): string => {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'MXN',
+    currency,
   }).format(amount);
 };
 
-export const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('es-MX').format(date);
+export interface FormatDateOptions extends Intl.DateTimeFormatOptions {
+  locale?: string;
+}
+
+export const formatDate = (date: Date, { locale = 'es-MX', ...options }: FormatDateOptions = {}): string => {
+  return new Intl.DateTimeFormat(locale, options).format(date);
 };
 
 export const validateRFC = (rfc: string): boolean => {

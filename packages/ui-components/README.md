@@ -3,14 +3,17 @@
 React component library with full TypeScript support, CSS Modules, and design tokens. Built for the BipUI design system.
 
 [![npm version](https://img.shields.io/npm/v/@bip-design-systems/ui-components)](https://www.npmjs.com/package/@bip-design-systems/ui-components)
-[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/egvictorino/bip-ui/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/egvictorino/Bip-Design-Systems/blob/main/LICENSE)
 
 ---
 
 ## Requirements
 
-- React 18+
+- React `^18.2.0` or `^19.0.0`
 - Node >= 20
+- ESM only — no CommonJS build is shipped (`"type": "module"`, `dist/` is ES modules). Works
+  out of the box with any modern bundler/framework (Vite, Next.js App Router, Remix). If your
+  toolchain requires `require()`, you'll need an ESM-aware bundler or a dynamic `import()` bridge.
 
 ## Installation
 
@@ -27,6 +30,13 @@ Import the compiled CSS in your app entry point. No Tailwind or other CSS toolin
 ```ts
 // src/main.tsx (or index.tsx)
 import '@bip-design-systems/ui-components/style.css';
+```
+
+**Subpath exports.** Besides importing from the package root, every component is importable
+individually (the build emits one file per component, `preserveModules: true`):
+
+```ts
+import { Button } from '@bip-design-systems/ui-components/Button';
 ```
 
 ## Quick Start
@@ -62,6 +72,16 @@ const MyPage = () => {
 ---
 
 ## Components
+
+### Layout & typography
+
+| Component | Description |
+|-----------|-------------|
+| `Stack` | Flexbox layout (row/column) with `gap`, `align`, `justify` — replaces repeated inline styles |
+| `Grid` | CSS grid layout with responsive columns and `gap` |
+| `Container` | Centered max-width wrapper with side padding, for constraining content width |
+| `Text` | Body text with size/weight/color variants driven by tokens |
+| `Heading` | Semantic `h1`–`h6` headings, decoupled from visual size |
 
 ### Form inputs
 
@@ -139,7 +159,63 @@ const MyPage = () => {
 | `Divider` | Horizontal or vertical divider with optional label |
 | `EmptyState` | Empty state with icon, title, description, and primary action |
 | `Odontogram` | Interactive odontogram for recording dental conditions per tooth |
-| `ThemeProvider` | Theme provider — controls shape (`square`/`rounded`), color scheme (`light`/`dark`), and brand (`tokens`). See [Theming](#theming) |
+| `ThemeProvider` | Theme provider — controls shape (`square`/`rounded`), color scheme (`light`/`dark`), brand (`tokens`), and locale (`locale`). See [Theming](#theming) and [Internationalization](#internationalization) |
+
+---
+
+## Hooks
+
+Exported from `@bip-design-systems/ui-components` (previously internal to `src/lib/`):
+
+| Hook | Description |
+|------|-------------|
+| `useClickOutside` | Runs a callback on click outside a ref — used by Dropdown, MultiSelect, DatePicker, etc. |
+| `useDisclosure` | Open/close state with `onOpen`/`onClose`/`onToggle` — shared pattern for overlays |
+| `useFocusTrap` | Traps focus (Tab/Shift+Tab) inside a container, focuses the first element on activation, restores focus on deactivation, and handles Escape — used by Modal, DrawerPanel, Odontogram |
+| `useMediaQuery` | Reactive subscription to a media query (`matchMedia`) |
+| `useScrollLock` | Locks `<body>` scroll while an overlay is open |
+
+```ts
+import { useDisclosure, useMediaQuery, cn } from '@bip-design-systems/ui-components';
+```
+
+`cn()` (a `clsx` wrapper for CSS Module class composition) and `BREAKPOINTS`/`mediaQuery` (the
+single source for the `@media` queries used internally, see `src/styles/breakpoints.ts`) are
+also exported from the package root.
+
+---
+
+## Internationalization
+
+Every `aria-label`, placeholder, and visible string in the components comes from a dictionary
+(`BipLocale`) resolved through context — nothing is hardcoded in Spanish without a way to
+override it. The unconfigured default is `es-MX`, byte-identical to the library's previous
+hardcoded behavior — no visual change for existing consumers.
+
+```tsx
+import { ThemeProvider, enUS } from '@bip-design-systems/ui-components';
+
+<ThemeProvider theme="rounded" locale={enUS}>
+  <App />
+</ThemeProvider>
+
+// Partial override on top of the es-MX default — only what you need to change
+<ThemeProvider locale={{ alert: { close: 'Dismiss' } }}>
+  <App />
+</ThemeProvider>
+```
+
+- `locale` is a sibling prop to `theme`/`tokens`/`radius` on `<ThemeProvider>` — accepts the full
+  dictionary (`esMX`, `enUS`, both exported by the package) or a partial override that merges
+  over the parent `<ThemeProvider>`'s resolved dictionary (if nested), or over `esMX` otherwise.
+- The dictionary carries a BCP-47 tag (`locale: 'es-MX'` / `'en-US'`) that also drives the
+  `Intl.DateTimeFormat` calls used internally by `Calendar`, `DatePicker`, and
+  `DateRangePicker` — changing locale reformats dates/months too, not just labels.
+- Without a `<ThemeProvider>` in the tree (or without the `locale` prop), every component still
+  works, defaulting to `es-MX` via `useBipLocale()`.
+- To write your own dictionary (a full additional language, not just an override), import the
+  `BipLocale` type and use `esMX`/`enUS` as a shape reference.
+- See the `Foundations/I18n` story in Storybook for a live playground.
 
 ---
 
@@ -244,14 +320,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 See the `Components/ThemeProvider` story in Storybook for interactive demos (includes `CustomBrand`, `UncontrolledWithPersistence`, and `SystemColorScheme`).
 
+> `ThemeProvider` declares `"use client"` — safe to render from a Next.js App Router Server
+> Component (import it from a component marked `"use client"`, or let `ThemeProvider` itself be
+> the client/server boundary in your layout).
+
 ---
 
 ## Peer dependencies
 
 ```json
 {
-  "react": ">=18",
-  "react-dom": ">=18"
+  "react": "^18.2.0 || ^19.0.0",
+  "react-dom": "^18.2.0 || ^19.0.0"
 }
 ```
 
@@ -285,11 +365,11 @@ your own font loading strategy.
 
 ## Links
 
-- [Repository](https://github.com/egvictorino/bip-ui)
+- [Repository](https://github.com/egvictorino/Bip-Design-Systems)
 - [shared-utils](https://www.npmjs.com/package/@bip-design-systems/shared-utils) — pure TypeScript utilities (formatCurrency, formatDate, validateRFC)
 
 ---
 
 ## License
 
-[MIT](https://github.com/egvictorino/bip-ui/blob/main/LICENSE) — Copyright (c) 2026 Eduardo Gonzalez
+[MIT](https://github.com/egvictorino/Bip-Design-Systems/blob/main/LICENSE) — Copyright (c) 2026 Eduardo Gonzalez

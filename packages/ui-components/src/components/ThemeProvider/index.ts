@@ -15,7 +15,7 @@ export {
   MOTION_VAR_MAP,
   SPACING_VAR_MAP,
   resolveTokenVars,
-} from './ThemeProvider';
+} from './ThemeProvider.js';
 export type {
   ThemeProviderProps,
   ThemeInitScriptOptions,
@@ -30,4 +30,4 @@ export type {
   BipFocusRingOverrides,
   BipMotionOverrides,
   BipSpacingOverrides,
-} from './ThemeProvider';
+} from './ThemeProvider.js';

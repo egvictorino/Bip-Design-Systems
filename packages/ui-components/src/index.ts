@@ -4,8 +4,8 @@
 import './index.css';
 
 // Componentes
-export { EmptyState } from './components/EmptyState';
-export type { EmptyStateProps } from './components/EmptyState';
+export { EmptyState } from './components/EmptyState/index.js';
+export type { EmptyStateProps } from './components/EmptyState/index.js';
 
 export {
   ThemeProvider,
@@ -17,7 +17,7 @@ export {
   THEME_RESET_STYLE,
   TOKEN_VAR_MAP,
   resolveTokenVars,
-} from './components/ThemeProvider';
+} from './components/ThemeProvider/index.js';
 export type {
   ThemeProviderProps,
   ThemeInitScriptOptions,
@@ -29,63 +29,66 @@ export type {
   BipRadiusOverrides,
   BipFocusRingOverrides,
   BipMotionOverrides,
-} from './components/ThemeProvider';
+} from './components/ThemeProvider/index.js';
 
-export { contrastRatio, pickReadableText } from './lib/contrast';
+export { contrastRatio, pickReadableText } from './lib/contrast.js';
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/Accordion';
+export { esMX, enUS, useBipLocale } from './i18n/index.js';
+export type { BipLocale, PartialBipLocale } from './i18n/index.js';
+
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/Accordion/index.js';
 export type {
   AccordionProps,
   AccordionItemProps,
   AccordionTriggerProps,
   AccordionContentProps,
-} from './components/Accordion';
+} from './components/Accordion/index.js';
 
-export { Button } from './components/Button';
-export type { ButtonProps } from './components/Button';
+export { Button } from './components/Button/index.js';
+export type { ButtonProps } from './components/Button/index.js';
 
-export { Input } from './components/Input';
-export type { InputProps, InputType } from './components/Input';
+export { Input } from './components/Input/index.js';
+export type { InputProps, InputType } from './components/Input/index.js';
 
-export { FileUpload } from './components/FileUpload';
-export type { FileUploadProps, RejectedFile } from './components/FileUpload';
+export { FileUpload } from './components/FileUpload/index.js';
+export type { FileUploadProps, RejectedFile } from './components/FileUpload/index.js';
 
-export { Checkbox } from './components/Checkbox';
-export type { CheckboxProps } from './components/Checkbox';
-export { CheckboxGroup } from './components/Checkbox';
-export type { CheckboxGroupProps } from './components/Checkbox';
+export { Checkbox } from './components/Checkbox/index.js';
+export type { CheckboxProps } from './components/Checkbox/index.js';
+export { CheckboxGroup } from './components/Checkbox/index.js';
+export type { CheckboxGroupProps } from './components/Checkbox/index.js';
 
-export { Radio } from './components/Radio';
-export type { RadioProps } from './components/Radio';
-export { RadioGroup } from './components/Radio';
-export type { RadioGroupProps } from './components/Radio';
+export { Radio } from './components/Radio/index.js';
+export type { RadioProps } from './components/Radio/index.js';
+export { RadioGroup } from './components/Radio/index.js';
+export type { RadioGroupProps } from './components/Radio/index.js';
 
-export { Textarea } from './components/Textarea';
-export type { TextareaProps } from './components/Textarea';
+export { Textarea } from './components/Textarea/index.js';
+export type { TextareaProps } from './components/Textarea/index.js';
 
-export { Badge } from './components/Badge';
-export type { BadgeProps } from './components/Badge';
+export { Badge } from './components/Badge/index.js';
+export type { BadgeProps } from './components/Badge/index.js';
 
-export { Select } from './components/Select';
-export type { SelectProps, SelectOption } from './components/Select';
+export { Select } from './components/Select/index.js';
+export type { SelectProps, SelectOption } from './components/Select/index.js';
 
-export { MultiSelect } from './components/MultiSelect';
-export type { MultiSelectProps, MultiSelectOption } from './components/MultiSelect';
+export { MultiSelect } from './components/MultiSelect/index.js';
+export type { MultiSelectProps, MultiSelectOption } from './components/MultiSelect/index.js';
 
-export { Alert } from './components/Alert';
-export type { AlertProps } from './components/Alert';
+export { Alert } from './components/Alert/index.js';
+export type { AlertProps } from './components/Alert/index.js';
 
-export { ToastProvider, useToast } from './components/Toast';
-export type { ToastProviderProps, ToastConfig, ToastPosition } from './components/Toast';
+export { ToastProvider, useToast } from './components/Toast/index.js';
+export type { ToastProviderProps, ToastConfig, ToastPosition } from './components/Toast/index.js';
 
-export { Spinner } from './components/Spinner';
-export type { SpinnerProps } from './components/Spinner';
+export { Spinner } from './components/Spinner/index.js';
+export type { SpinnerProps } from './components/Spinner/index.js';
 
-export { Card, CardHeader, CardBody, CardFooter, CardMedia } from './components/Card';
-export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps, CardMediaProps } from './components/Card';
+export { Card, CardHeader, CardBody, CardFooter, CardMedia } from './components/Card/index.js';
+export type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps, CardMediaProps } from './components/Card/index.js';
 
-export { Toggle } from './components/Toggle';
-export type { ToggleProps } from './components/Toggle';
+export { Toggle } from './components/Toggle/index.js';
+export type { ToggleProps } from './components/Toggle/index.js';
 
 export {
   Table,
@@ -95,7 +98,7 @@ export {
   TableHeader,
   TableCell,
   TableEmpty,
-} from './components/Table';
+} from './components/Table/index.js';
 export type {
   TableProps,
   TableHeadProps,
@@ -104,30 +107,30 @@ export type {
   TableHeaderProps,
   TableCellProps,
   TableEmptyProps,
-} from './components/Table';
+} from './components/Table/index.js';
 
-export { Pagination } from './components/Pagination';
-export type { PaginationProps } from './components/Pagination';
+export { Pagination } from './components/Pagination/index.js';
+export type { PaginationProps } from './components/Pagination/index.js';
 
-export { ProgressBar } from './components/ProgressBar';
-export type { ProgressBarProps } from './components/ProgressBar';
+export { ProgressBar } from './components/ProgressBar/index.js';
+export type { ProgressBarProps } from './components/ProgressBar/index.js';
 
-export { Tabs, TabList, Tab, TabPanel } from './components/Tabs';
-export type { TabsProps, TabListProps, TabProps, TabPanelProps } from './components/Tabs';
+export { Tabs, TabList, Tab, TabPanel } from './components/Tabs/index.js';
+export type { TabsProps, TabListProps, TabProps, TabPanelProps } from './components/Tabs/index.js';
 
-export { Modal, ModalHeader, ModalBody, ModalFooter } from './components/Modal';
+export { Modal, ModalHeader, ModalBody, ModalFooter } from './components/Modal/index.js';
 export type {
   ModalProps,
   ModalHeaderProps,
   ModalBodyProps,
   ModalFooterProps,
-} from './components/Modal';
+} from './components/Modal/index.js';
 
-export { Tooltip } from './components/Tooltip';
-export type { TooltipProps } from './components/Tooltip';
+export { Tooltip } from './components/Tooltip/index.js';
+export type { TooltipProps } from './components/Tooltip/index.js';
 
-export { Breadcrumb } from './components/Breadcrumb';
-export type { BreadcrumbProps, BreadcrumbItem } from './components/Breadcrumb';
+export { Breadcrumb } from './components/Breadcrumb/index.js';
+export type { BreadcrumbProps, BreadcrumbItem } from './components/Breadcrumb/index.js';
 
 export {
   Dropdown,
@@ -139,7 +142,7 @@ export {
   DropdownSearch,
   DropdownItemCheckbox,
   DropdownSubmenu,
-} from './components/Dropdown';
+} from './components/Dropdown/index.js';
 export type {
   DropdownProps,
   DropdownTriggerProps,
@@ -149,12 +152,12 @@ export type {
   DropdownSearchProps,
   DropdownItemCheckboxProps,
   DropdownSubmenuProps,
-} from './components/Dropdown';
+} from './components/Dropdown/index.js';
 
-export { Skeleton } from './components/Skeleton';
-export type { SkeletonProps } from './components/Skeleton';
+export { Skeleton } from './components/Skeleton/index.js';
+export type { SkeletonProps } from './components/Skeleton/index.js';
 
-export { Navbar, NavbarBrand, NavbarNav, NavbarItem, NavbarActions } from './components/Navbar';
+export { Navbar, NavbarBrand, NavbarNav, NavbarItem, NavbarActions } from './components/Navbar/index.js';
 export type {
   NavbarProps,
   NavbarVariant,
@@ -162,15 +165,15 @@ export type {
   NavbarNavProps,
   NavbarItemProps,
   NavbarActionsProps,
-} from './components/Navbar';
+} from './components/Navbar/index.js';
 
-export { DatePicker } from './components/DatePicker';
-export type { DatePickerProps } from './components/DatePicker';
+export { DatePicker } from './components/DatePicker/index.js';
+export type { DatePickerProps } from './components/DatePicker/index.js';
 
-export { TimePicker } from './components/TimePicker';
-export type { TimePickerProps } from './components/TimePicker';
+export { TimePicker } from './components/TimePicker/index.js';
+export type { TimePickerProps } from './components/TimePicker/index.js';
 
-export { Calendar } from './components/Calendar';
+export { Calendar } from './components/Calendar/index.js';
 export type {
   CalendarProps,
   CalendarEvent,
@@ -178,13 +181,13 @@ export type {
   CalendarResource,
   CalendarSlotInfo,
   CalendarView,
-} from './components/Calendar';
+} from './components/Calendar/index.js';
 
-export { Stepper, StepperStep } from './components/Stepper';
-export type { StepperProps, StepperStepProps } from './components/Stepper';
+export { Stepper, StepperStep } from './components/Stepper/index.js';
+export type { StepperProps, StepperStepProps } from './components/Stepper/index.js';
 
-export { Avatar, AvatarGroup } from './components/Avatar';
-export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarShape, AvatarStatus } from './components/Avatar';
+export { Avatar, AvatarGroup } from './components/Avatar/index.js';
+export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarShape, AvatarStatus } from './components/Avatar/index.js';
 
 export {
   Sidebar,
@@ -197,7 +200,7 @@ export {
   SidebarSubMenu,
   SidebarFooter,
   SidebarTrigger,
-} from './components/Sidebar';
+} from './components/Sidebar/index.js';
 export type {
   SidebarProps,
   SidebarHeaderProps,
@@ -209,36 +212,36 @@ export type {
   SidebarSubMenuProps,
   SidebarFooterProps,
   SidebarTriggerProps,
-} from './components/Sidebar';
+} from './components/Sidebar/index.js';
 
-export { ConfirmDialog } from './components/ConfirmDialog';
-export type { ConfirmDialogProps } from './components/ConfirmDialog';
+export { ConfirmDialog } from './components/ConfirmDialog/index.js';
+export type { ConfirmDialogProps } from './components/ConfirmDialog/index.js';
 
-export { Divider } from './components/Divider';
-export type { DividerProps } from './components/Divider';
+export { Divider } from './components/Divider/index.js';
+export type { DividerProps } from './components/Divider/index.js';
 
-export { StatsCard } from './components/StatsCard';
-export type { StatsCardProps } from './components/StatsCard';
+export { StatsCard } from './components/StatsCard/index.js';
+export type { StatsCardProps } from './components/StatsCard/index.js';
 
-export { SearchInput } from './components/SearchInput';
-export type { SearchInputProps } from './components/SearchInput';
+export { SearchInput } from './components/SearchInput/index.js';
+export type { SearchInputProps } from './components/SearchInput/index.js';
 
-export { NumberInput } from './components/NumberInput';
-export type { NumberInputProps } from './components/NumberInput';
+export { NumberInput } from './components/NumberInput/index.js';
+export type { NumberInputProps } from './components/NumberInput/index.js';
 
-export { DateRangePicker } from './components/DateRangePicker';
-export type { DateRangePickerProps, DateRange } from './components/DateRangePicker';
+export { DateRangePicker } from './components/DateRangePicker/index.js';
+export type { DateRangePickerProps, DateRange } from './components/DateRangePicker/index.js';
 
-export { Timeline, TimelineItem } from './components/Timeline';
-export type { TimelineProps, TimelineItemProps } from './components/Timeline';
+export { Timeline, TimelineItem } from './components/Timeline/index.js';
+export type { TimelineProps, TimelineItemProps } from './components/Timeline/index.js';
 
-export { DrawerPanel } from './components/DrawerPanel';
-export type { DrawerPanelProps } from './components/DrawerPanel';
+export { DrawerPanel } from './components/DrawerPanel/index.js';
+export type { DrawerPanelProps } from './components/DrawerPanel/index.js';
 
-export { DataTable } from './components/DataTable';
-export type { DataTableProps, ColumnDef } from './components/DataTable';
+export { DataTable } from './components/DataTable/index.js';
+export type { DataTableProps, ColumnDef } from './components/DataTable/index.js';
 
-export { Odontogram, CONDITION_LABELS } from './components/Odontogram';
+export { Odontogram } from './components/Odontogram/index.js';
 export type {
   OdontogramProps,
   OdontogramValue,
@@ -247,4 +250,33 @@ export type {
   ToothSurface,
   SurfaceCondition,
   DentitionMode,
-} from './components/Odontogram';
+} from './components/Odontogram/index.js';
+
+export { Stack } from './components/Stack/index.js';
+export type { StackProps, StackGap, StackDirection, StackAlign, StackJustify } from './components/Stack/index.js';
+
+export { Grid } from './components/Grid/index.js';
+export type { GridProps, GridColumns, GridGap } from './components/Grid/index.js';
+
+export { Container } from './components/Container/index.js';
+export type { ContainerProps, ContainerMaxWidth } from './components/Container/index.js';
+
+export { Text } from './components/Text/index.js';
+export type { TextProps, TextSize, TextWeight, TextColor, TextAlign } from './components/Text/index.js';
+
+export { Heading } from './components/Heading/index.js';
+export type { HeadingProps, HeadingLevel, HeadingSize, HeadingWeight } from './components/Heading/index.js';
+
+export { cn } from './lib/cn.js';
+
+export { BREAKPOINTS, mediaQuery } from './styles/breakpoints.js';
+export type { BreakpointKey } from './styles/breakpoints.js';
+
+export {
+  useClickOutside,
+  useDisclosure,
+  useFocusTrap,
+  useMediaQuery,
+  useScrollLock,
+} from './hooks/index.js';
+export type { UseDisclosureReturn, UseFocusTrapOptions } from './hooks/index.js';

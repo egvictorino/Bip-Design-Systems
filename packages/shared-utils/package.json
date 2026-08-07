@@ -5,11 +5,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/egvictorino/bip-ui.git",
+    "url": "https://github.com/egvictorino/Bip-Design-Systems.git",
     "directory": "packages/shared-utils"
   },
   "bugs": {
-    "url": "https://github.com/egvictorino/bip-ui/issues"
+    "url": "https://github.com/egvictorino/Bip-Design-Systems/issues"
   },
   "keywords": [
     "typescript",
@@ -27,17 +27,21 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts"
   },
   "devDependencies": {
     "typescript": "5.3.3",

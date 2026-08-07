@@ -8,9 +8,10 @@ import React, {
   useId,
   useState,
 } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Sidebar.module.css';
-import { Tooltip } from '../Tooltip/Tooltip';
+import { Tooltip } from '../Tooltip/Tooltip.js';
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 
@@ -55,6 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   className,
   children,
 }) => {
+  const t = useBipLocale();
   const instanceId = useId();
   const sidebarId = `${instanceId}-sidebar`;
 
@@ -125,7 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar panel */}
       <aside
         id={sidebarId}
-        aria-label="Navegación lateral"
+        aria-label={t.sidebar.nav}
         className={cn(
           styles.panel,
           variantClass,
@@ -197,11 +199,15 @@ export const SidebarContent: React.FC<SidebarContentProps> = ({
   className,
   children,
   ...props
-}) => (
-  <nav aria-label="Navegación" className={cn(styles.content, className)} {...props}>
-    {children}
-  </nav>
-);
+}) => {
+  const t = useBipLocale();
+
+  return (
+    <nav aria-label={t.sidebar.navLandmark} className={cn(styles.content, className)} {...props}>
+      {children}
+    </nav>
+  );
+};
 
 // ─── SidebarGroup ────────────────────────────────────────────────────────────
 
@@ -523,13 +529,14 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({ className, childre
 export interface SidebarTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export const SidebarTrigger: React.FC<SidebarTriggerProps> = ({ className, ...props }) => {
+  const t = useBipLocale();
   const { isCollapsed, toggleCollapsed, sidebarId } = useSidebar();
 
   return (
     <button
       type="button"
       onClick={toggleCollapsed}
-      aria-label={isCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
+      aria-label={isCollapsed ? t.sidebar.expand : t.sidebar.collapse}
       aria-expanded={!isCollapsed}
       aria-controls={sidebarId}
       className={cn(styles.trigger, className)}
