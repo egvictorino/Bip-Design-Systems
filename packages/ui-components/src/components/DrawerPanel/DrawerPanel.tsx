@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn.js';
 import { useFocusTrap, useScrollLock } from '../../hooks/index.js';
 import { useThemeAttributes } from '../ThemeProvider/index.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './DrawerPanel.module.css';
 
 export interface DrawerPanelProps {
@@ -42,6 +43,7 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
   closeOnBackdrop = true,
   headerActions,
 }) => {
+  const t = useBipLocale();
   const panelRef = useRef<HTMLDivElement>(null);
   const { style: themeStyle, ...themeAttrs } = useThemeAttributes();
 
@@ -100,7 +102,7 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
             <button
               type="button"
               onClick={onClose}
-              aria-label="Cerrar panel"
+              aria-label={t.drawerPanel.close}
               className={styles.closeBtn}
             >
               <svg

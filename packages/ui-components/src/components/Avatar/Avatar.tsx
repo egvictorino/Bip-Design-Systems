@@ -2,6 +2,7 @@
 
 import React, { forwardRef, useState } from 'react';
 import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Avatar.module.css';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -183,6 +184,7 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
   children,
   className,
 }) => {
+  const t = useBipLocale();
   const childArray = React.Children.toArray(children);
   const visible = childArray.slice(0, max);
   const overflow = childArray.length - max;
@@ -207,7 +209,7 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
           <div
             className={cn(styles.overflowInner, sizeStyles[size].text)}
             role="img"
-            aria-label={`${overflow} más`}
+            aria-label={t.avatar.overflow(overflow)}
           >
             <span aria-hidden="true">+{overflow}</span>
           </div>

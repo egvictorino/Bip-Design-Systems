@@ -3,6 +3,7 @@
 import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useClickOutside } from '../../hooks/useClickOutside.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './TimePicker.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -241,10 +242,12 @@ interface PeriodColumnProps {
   onSelect: (period: 'AM' | 'PM') => void;
 }
 
-const PeriodColumn: React.FC<PeriodColumnProps> = ({ selected, onSelect }) => (
+const PeriodColumn: React.FC<PeriodColumnProps> = ({ selected, onSelect }) => {
+  const t = useBipLocale();
+  return (
   <div className={cn(styles.timeColumn, styles.periodColumn)}>
     <div className={styles.timeColumnHeader}>AM/PM</div>
-    <div className={styles.periodList} role="listbox" aria-label="AM/PM">
+    <div className={styles.periodList} role="listbox" aria-label={t.timePicker.amPm}>
       {(['AM', 'PM'] as const).map((period) => (
         <button
           key={period}
@@ -263,7 +266,8 @@ const PeriodColumn: React.FC<PeriodColumnProps> = ({ selected, onSelect }) => (
       ))}
     </div>
   </div>
-);
+  );
+};
 
 PeriodColumn.displayName = 'PeriodColumn';
 
@@ -274,7 +278,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
     {
       value,
       onChange,
-      placeholder = 'HH:MM',
+      placeholder,
       label,
       helperText,
       error = false,
@@ -292,6 +296,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
     },
     ref
   ) => {
+    const t = useBipLocale();
     const [isOpen, setIsOpen] = useState(false);
     const [focusedHourIdx, setFocusedHourIdx] = useState<number | null>(null);
     const [focusedMinuteIdx, setFocusedMinuteIdx] = useState<number | null>(null);
@@ -485,14 +490,14 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       const actualHour = hourCycle === '12' ? to24h(hour, selectedPeriod) : hour;
       const min = selectedMinute ?? 0;
       onChange?.(`${pad2(actualHour)}:${pad2(min)}`);
-      setAnnouncement(`Hora ${pad2(actualHour)} seleccionada`);
+      setAnnouncement(t.timePicker.hourSelectedAnnouncement(pad2(actualHour)));
       // Panel stays open so user can also pick the minute
     };
 
     const handleMinuteSelect = (minute: number) => {
       const actualHour = selectedHour ?? 0;
       onChange?.(`${pad2(actualHour)}:${pad2(minute)}`);
-      setAnnouncement(`${pad2(actualHour)}:${pad2(minute)} seleccionado`);
+      setAnnouncement(t.timePicker.timeSelectedAnnouncement(`${pad2(actualHour)}:${pad2(minute)}`));
       setIsOpen(false);
     };
 
@@ -502,7 +507,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
         const newHour24 = to24h(hour12, period);
         const min = selectedMinute ?? 0;
         onChange?.(`${pad2(newHour24)}:${pad2(min)}`);
-        setAnnouncement(`${period} seleccionado`);
+        setAnnouncement(t.timePicker.periodSelectedAnnouncement(period));
       }
     };
 
@@ -569,7 +574,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
               id={inputId}
               type="text"
               value={textValue}
-              placeholder={placeholder}
+              placeholder={placeholder ?? t.timePicker.placeholder}
               disabled={disabled}
               aria-describedby={messageId}
               aria-invalid={textInputHasError || undefined}
@@ -603,7 +608,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
               )}
             >
               <span className={displayValue ? styles.triggerValue : styles.triggerPlaceholder}>
-                {displayValue || placeholder}
+                {displayValue || (placeholder ?? t.timePicker.placeholder)}
               </span>
             </button>
           )}
@@ -614,7 +619,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
               type="button"
               tabIndex={-1}
               disabled={disabled}
-              aria-label="Abrir selector de hora"
+              aria-label={t.timePicker.openPicker}
               onClick={handleToggle}
               className={cn(
                 styles.clockIconBtn,
@@ -655,13 +660,13 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
               ref={panelRef}
               role="dialog"
               aria-modal="true"
-              aria-label="Seleccionar hora"
+              aria-label={t.timePicker.selectTime}
               tabIndex={-1}
               className={styles.popover}
             >
               <div className={styles.columnsWrapper}>
                 <TimeColumn
-                  label="Horas"
+                  label={t.timePicker.hours}
                   options={hoursOptions}
                   selected={selectedHourDisplay}
                   onSelect={handleHourSelect}
@@ -670,7 +675,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
                   isDisabled={hourCycle === '12' ? isHour12Disabled : isHourDisabled}
                 />
                 <TimeColumn
-                  label="Minutos"
+                  label={t.timePicker.minutes}
                   options={minutes}
                   selected={selectedMinute}
                   onSelect={handleMinuteSelect}

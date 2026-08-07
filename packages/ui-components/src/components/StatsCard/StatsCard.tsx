@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './StatsCard.module.css';
 
 export type StatsCardVariant = 'outlined' | 'filled' | 'elevated';
@@ -28,6 +29,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   loading = false,
   className,
 }) => {
+  const t = useBipLocale();
   const hasTrend = trend !== undefined;
   const isPositive = hasTrend && trend > 0;
   const isNegative = hasTrend && trend < 0;
@@ -38,7 +40,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       <div
         className={cn(styles.card, styles[variant], styles[size], className)}
         role="region"
-        aria-label="Cargando estadística"
+        aria-label={t.statsCard.loading}
         aria-busy="true"
       >
         <div className={styles.header}>
@@ -79,7 +81,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
               isNegative && styles.trendNegative,
               isNeutral && styles.trendNeutral
             )}
-            aria-label={`Tendencia: ${trend > 0 ? '+' : ''}${trend}%`}
+            aria-label={t.statsCard.trend(trend)}
           >
             {isPositive && (
               <svg

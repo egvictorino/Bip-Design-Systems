@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/cn.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './ProgressBar.module.css';
 
 export interface ProgressBarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'id'> {
@@ -52,6 +53,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   id,
   ...props
 }) => {
+  const t = useBipLocale();
   const clampedValue = Math.min(100, Math.max(0, value));
   const descriptionId = helperText && id ? `${id}-description` : undefined;
 
@@ -71,7 +73,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         aria-valuenow={indeterminate ? undefined : clampedValue}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={label || 'Progreso'}
+        aria-label={label || t.progressBar.defaultLabel}
         aria-valuetext={!indeterminate && valueText ? valueText : undefined}
         aria-busy={indeterminate || undefined}
         aria-describedby={descriptionId}

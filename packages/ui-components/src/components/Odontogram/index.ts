@@ -1,4 +1,4 @@
-export { Odontogram, CONDITION_LABELS } from './Odontogram.js';
+export { Odontogram } from './Odontogram.js';
 export type {
   OdontogramProps,
   OdontogramValue,

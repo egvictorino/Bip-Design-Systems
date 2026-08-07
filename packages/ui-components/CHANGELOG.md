@@ -10,6 +10,27 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ### Added
 
+- **Internacionalización (i18n).** Nuevo sistema de diccionarios (`BipLocale`) resuelto vía
+  contexto: los ~100 `aria-label`/placeholders/textos que antes estaban quemados en español
+  directamente en el JSX de 28 componentes ahora se resuelven vía `useBipLocale()`, con `es-MX`
+  como default byte-idéntico al comportamiento anterior. Nueva prop `locale` en
+  `<ThemeProvider>` (sibling de `theme`/`tokens`/`radius`), acepta el diccionario completo
+  (`esMX`, `enUS`, ambos exportados) o un override parcial que se fusiona sobre el diccionario
+  del provider padre. El diccionario también lleva un tag BCP-47 (`locale.locale`) que alimenta
+  los `Intl.DateTimeFormat` de `Calendar`/`DatePicker`/`DateRangePicker`, antes hardcodeados a
+  `'es-MX'` a nivel de módulo. Ver story `Foundations/I18n` en Storybook.
+- `formatCurrency`/`formatDate` (`shared-utils`) aceptan `locale`/`currency` opcionales — los
+  defaults `es-MX`/MXN no cambian.
+- `--provenance` en el publish de npm de ambos paquetes (`production.yml`) — badge de
+  procedencia verificada, aprovechando el `id-token: write` ya declarado a nivel de workflow.
+
+### Fixed
+
+- `Odontogram`'s `ImagePopover`/`NotePopover` duplicaban a mano un `useFocusTrap` local
+  (solo Tab-cycling, sin manejo de Escape ni restauración de foco) — reemplazado por el hook
+  compartido `src/hooks/useFocusTrap.ts`. Comportamiento nuevo: el foco se restaura al elemento
+  que abrió el popover al cerrarse (mejora, no regresión).
+
 - E2E smoke test (`e2e/consumer.spec.ts`, `pnpm test:e2e` from the repo root) that installs
   the actual `pnpm pack` tarball into a standalone Vite app (not a workspace link) and
   asserts on real computed styles — catches the class of bug where the workspace-link dev

@@ -11,6 +11,7 @@ import React, {
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn.js';
 import { useThemeAttributes } from '../ThemeProvider/index.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Toast.module.css';
 import { Alert } from '../Alert/Alert.js';
 import type { AlertProps } from '../Alert/Alert.js';
@@ -310,6 +311,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
   max = DEFAULT_MAX,
   position = 'top-right',
 }) => {
+  const t = useBipLocale();
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const idRef = useRef(0);
   const { style: themeStyle, ...themeAttrs } = useThemeAttributes();
@@ -341,7 +343,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
         ReactDOM.createPortal(
           <div
             role="region"
-            aria-label="Notificaciones"
+            aria-label={t.toast.region}
             {...themeAttrs}
             style={themeStyle}
             className={cn(styles.region, positionClass[position])}

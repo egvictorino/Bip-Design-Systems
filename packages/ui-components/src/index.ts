@@ -33,6 +33,9 @@ export type {
 
 export { contrastRatio, pickReadableText } from './lib/contrast.js';
 
+export { esMX, enUS, useBipLocale } from './i18n/index.js';
+export type { BipLocale, PartialBipLocale } from './i18n/index.js';
+
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/Accordion/index.js';
 export type {
   AccordionProps,
@@ -238,7 +241,7 @@ export type { DrawerPanelProps } from './components/DrawerPanel/index.js';
 export { DataTable } from './components/DataTable/index.js';
 export type { DataTableProps, ColumnDef } from './components/DataTable/index.js';
 
-export { Odontogram, CONDITION_LABELS } from './components/Odontogram/index.js';
+export { Odontogram } from './components/Odontogram/index.js';
 export type {
   OdontogramProps,
   OdontogramValue,

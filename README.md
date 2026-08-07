@@ -13,9 +13,11 @@ Monorepo basado en **pnpm workspaces** que centraliza la librería de componente
 - [Comandos](#comandos)
 - [Componentes UI](#componentes-ui)
 - [Utilidades Compartidas](#utilidades-compartidas)
+- [Hooks](#hooks)
 - [Tokens de Diseño](#tokens-de-diseño)
 - [CSS Modules y Tokens de Diseño](#css-modules-y-tokens-de-diseño)
 - [Theming](#theming)
+- [Internacionalización (i18n)](#internacionalización-i18n)
 - [Estrategia de Branches](#estrategia-de-branches)
 - [CI/CD](#cicd)
 - [Usar en un Proyecto Externo](#usar-en-un-proyecto-externo)
@@ -162,6 +164,16 @@ pnpm dev     # Modo desarrollo paralelo
 |------------|-------------|
 | `Sidebar` | Panel lateral compound: `SidebarHeader`, `SidebarBrand`, `SidebarContent`, `SidebarGroup`, `SidebarGroupLabel`, `SidebarItem`, `SidebarFooter`, `SidebarTrigger` — colapsable (w-60↔w-16), drawer móvil, Tooltip en ítems colapsados |
 
+### Layout y tipografía
+
+| Componente | Descripción |
+|------------|-------------|
+| `Stack` | Layout de flexbox en columna/fila con `gap`, `align`, `justify` — reemplaza estilos inline repetidos |
+| `Grid` | Layout de CSS grid con columnas responsivas y `gap` |
+| `Container` | Envoltorio con `max-width` centrado y padding lateral, para limitar el ancho de contenido |
+| `Text` | Texto de cuerpo con variantes de tamaño/peso/color vía tokens |
+| `Heading` | Encabezados `h1`–`h6` semánticos, desacoplados del tamaño visual |
+
 ### Utilidades y Misceláneos
 
 | Componente | Descripción |
@@ -190,7 +202,33 @@ formatCurrency(1500);           // "$1,500.00"
 formatDate(new Date(2026, 5, 15)); // "15/6/2026"
 validateRFC('ABC800101AA1');    // true
 validateRFC('abc800101AA1');    // false — no acepta minúsculas
+
+// Ambas aceptan locale/currency opcionales — el default es-MX/MXN no cambia
+formatCurrency(1500, { locale: 'en-US', currency: 'USD' }); // "$1,500.00"
+formatDate(new Date(2026, 5, 15), { locale: 'en-US' });     // "6/15/2026"
 ```
+
+---
+
+## Hooks
+
+Exportados desde `@bip-design-systems/ui-components` (antes internos a `src/lib/`):
+
+| Hook | Descripción |
+|------|-------------|
+| `useClickOutside` | Ejecuta un callback al hacer click fuera de un ref — usado por Dropdown, MultiSelect, DatePicker, etc. |
+| `useDisclosure` | Estado open/close con `onOpen`/`onClose`/`onToggle` — patrón compartido por overlays |
+| `useFocusTrap` | Atrapa el foco (Tab/Shift+Tab) dentro de un contenedor, enfoca el primer elemento al activarse, restaura el foco al desactivarse, y maneja Escape — usado por Modal, DrawerPanel, Odontogram |
+| `useMediaQuery` | Suscripción reactiva a un media query (`matchMedia`) |
+| `useScrollLock` | Bloquea el scroll del `<body>` mientras un overlay está abierto |
+
+```ts
+import { useDisclosure, useMediaQuery, cn } from '@bip-design-systems/ui-components';
+```
+
+`cn()` (wrapper de `clsx` para composición de clases de CSS Module) y `BREAKPOINTS`/`mediaQuery`
+(fuente única de los `@media` usados internamente, ver `src/styles/breakpoints.ts`) también se
+exportan desde el paquete.
 
 ---
 
@@ -382,6 +420,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 Ver la story `Components/ThemeProvider` en Storybook para demos interactivas (incluye `CustomBrand`, `UncontrolledWithPersistence` y `SystemColorScheme`).
 
+> `ThemeProvider` declara `"use client"` — es seguro renderizarlo desde un Server Component de
+> Next.js App Router (basta con importarlo en un componente marcado `"use client"`, o dejar que
+> el propio `ThemeProvider` sea el límite cliente/servidor de tu layout).
+
 ### Soporte de navegadores
 
 El eje de marca depende de `color-mix()` nativo — sin bundle de fallback. Mínimo soportado:
@@ -397,6 +439,41 @@ Todos de 2023 en adelante. Declarado en `packages/ui-components/package.json` (`
 ### Fuentes
 
 Inter y Figtree se auto-hospedan (`@fontsource-variable`, `src/styles/fonts.css`) — ya no se cargan desde `fonts.googleapis.com`, así que funcionan bajo CSP estricta sin petición externa. Solo se incluyen los subsets `latin`/`latin-ext` (peso completo 100–900, normal + itálica); Cirílico/Griego/Vietnamita quedan fuera. Esto deja `style.css` en ~800KB — es el tradeoff de auto-hospedar variable fonts completas vs. el subsetting dinámico que hacía el CDN de Google.
+
+---
+
+## Internacionalización (i18n)
+
+Todos los `aria-label`, placeholders y textos visibles de los componentes vienen de un
+diccionario (`BipLocale`) resuelto vía contexto — no hay strings en español quemados en el
+JSX sin forma de sobreescribirlos. El default sin configurar es `es-MX` (idéntico al
+comportamiento anterior a esta sección, cero cambios visuales para consumidores existentes).
+
+```tsx
+import { ThemeProvider, enUS } from '@bip-design-systems/ui-components';
+
+<ThemeProvider theme="rounded" locale={enUS}>
+  <App />
+</ThemeProvider>
+
+// Override parcial sobre el default es-MX — solo lo que necesites cambiar
+<ThemeProvider locale={{ alert: { close: 'Dismiss' } }}>
+  <App />
+</ThemeProvider>
+```
+
+- `locale` es una prop hermana de `theme`/`tokens`/`radius` en `<ThemeProvider>` — acepta el
+  diccionario completo (`esMX`, `enUS`, exportados por el paquete) o un override parcial que se
+  fusiona sobre el diccionario del `ThemeProvider` padre (si hay uno anidado) o sobre `esMX`.
+- El diccionario incluye un tag BCP-47 (`locale: 'es-MX'` / `'en-US'`) que alimenta también los
+  formatos de fecha (`Intl.DateTimeFormat`) usados internamente por `Calendar`, `DatePicker` y
+  `DateRangePicker` — cambiar el locale no es solo textos, también reformatea fechas/meses.
+- Sin `<ThemeProvider>` en el árbol (o sin la prop `locale`), todo componente sigue funcionando
+  con `es-MX` por defecto vía `useBipLocale()`.
+- Para escribir tu propio diccionario (otro idioma completo, no solo un override), importa el
+  tipo `BipLocale` y usa `esMX`/`enUS` como referencia de forma.
+- Ver la story `Foundations/I18n` en Storybook para un playground en vivo con la galería de
+  componentes más cargados de texto (Calendar, DatePicker, MultiSelect, Pagination, DataTable).
 
 ---
 
@@ -490,6 +567,8 @@ pnpm add @bip-design-systems/ui-components @bip-design-systems/shared-utils
 pnpm add react react-dom
 ```
 
+Soporta React `^18.2.0` y `^19.0.0` como peer dependency.
+
 ### 3. Importar los estilos
 
 En el entry point de tu proyecto, importa el CSS compilado de la librería:
@@ -500,6 +579,22 @@ import '@bip-design-systems/ui-components/style.css';
 ```
 
 No se requiere configurar Tailwind ni ningún otro preprocesador CSS.
+
+**Paquete ESM-only** — `dist/` no incluye un build CommonJS (`require()`). Es una decisión
+deliberada, no un hueco: cualquier bundler/framework moderno (Vite, Next.js App Router, Remix)
+resuelve ESM sin configuración extra. Si tu proyecto depende de `require()` para este paquete,
+necesitas un bundler con soporte ESM o un puente como `esm`/dynamic `import()`.
+
+**Subpath exports** — además de importar todo desde la raíz del paquete, cada componente es
+importable individualmente (aprovecha que el build ya emite un archivo por componente,
+`preserveModules: true`):
+
+```ts
+import { Button } from '@bip-design-systems/ui-components/Button';
+```
+
+Útil para tree-shaking manual o para evitar cargar el paquete completo si solo necesitas un
+componente puntual.
 
 ### 4. Usar los componentes
 

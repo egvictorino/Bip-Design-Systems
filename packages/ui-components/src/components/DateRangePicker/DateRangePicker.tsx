@@ -12,6 +12,7 @@ import React, {
 import { cn } from '../../lib/cn.js';
 import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthIndex } from '../../lib/dateHelpers.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './DateRangePicker.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -62,31 +63,10 @@ const helperSizeStyles: Record<NonNullable<DateRangePickerProps['size']>, string
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const DAY_LABELS = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'];
-
-const MONTH_NAMES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-];
-
 const MONTH_NAMES_SHORT = [
   'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
 ];
-
-const DISPLAY_FORMATTER = new Intl.DateTimeFormat('es-MX', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-});
-
-const DAY_ARIA_FORMATTER = new Intl.DateTimeFormat('es-MX', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
-
-const formatDisplay = (date: Date): string => DISPLAY_FORMATTER.format(date);
 
 const isInRange = (date: Date, from: Date | null, to: Date | null): boolean => {
   if (!from || !to) return false;
@@ -130,8 +110,19 @@ const RangeCalendarGrid = ({
   onViewDateChange,
   headingId,
 }: RangeCalendarGridProps) => {
+  const t = useBipLocale();
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
+
+  const dayAriaFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(t.locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+    [t.locale]
+  );
 
   const [calendarView, setCalendarView] = useState<'days' | 'months'>('days');
   const [pickerYear, setPickerYear] = useState(year);
@@ -217,7 +208,7 @@ const RangeCalendarGrid = ({
             type="button"
             onClick={() => setPickerYear((y) => y - 1)}
             disabled={!canGoPrevYear}
-            aria-label="Año anterior"
+            aria-label={t.dateRangePicker.prevYear}
             className={cn(
               styles.navButton,
               canGoPrevYear ? styles.navButtonEnabled : styles.navButtonDisabled
@@ -238,7 +229,7 @@ const RangeCalendarGrid = ({
             type="button"
             onClick={() => setPickerYear((y) => y + 1)}
             disabled={!canGoNextYear}
-            aria-label="Año siguiente"
+            aria-label={t.dateRangePicker.nextYear}
             className={cn(
               styles.navButton,
               canGoNextYear ? styles.navButtonEnabled : styles.navButtonDisabled
@@ -255,7 +246,7 @@ const RangeCalendarGrid = ({
         </div>
 
         {/* 4×3 month grid */}
-        <div role="grid" aria-label="Seleccionar mes" className={styles.monthPickerGrid}>
+        <div role="grid" aria-label={t.dateRangePicker.selectMonth} className={styles.monthPickerGrid}>
           {MONTH_NAMES_SHORT.map((name, idx) => {
             const isCurrent = pickerYear === year && idx === month;
             const disabled = isMonthDisabled(idx);
@@ -265,7 +256,7 @@ const RangeCalendarGrid = ({
                   type="button"
                   onClick={() => handleSelectMonth(idx)}
                   disabled={disabled}
-                  aria-label={`${MONTH_NAMES[idx]} ${pickerYear}`}
+                  aria-label={t.dateRangePicker.monthOfYear(t.dateRangePicker.monthNames[idx], pickerYear)}
                   aria-pressed={isCurrent}
                   className={cn(
                     styles.monthPickerBtn,
@@ -293,7 +284,7 @@ const RangeCalendarGrid = ({
           type="button"
           onClick={onPrevMonth}
           disabled={!canGoPrev}
-          aria-label="Mes anterior"
+          aria-label={t.dateRangePicker.prevMonth}
           className={cn(
             styles.navButton,
             canGoPrev ? styles.navButtonEnabled : styles.navButtonDisabled
@@ -313,17 +304,17 @@ const RangeCalendarGrid = ({
           type="button"
           id={headingId}
           onClick={handleShowMonthPicker}
-          aria-label={`${MONTH_NAMES[month]} ${year} — Seleccionar mes y año`}
+          aria-label={t.dateRangePicker.selectMonthAndYear(t.dateRangePicker.monthNames[month], year)}
           className={styles.monthHeadingBtn}
         >
-          {MONTH_NAMES[month]} {year}
+          {t.dateRangePicker.monthNames[month]} {year}
         </button>
 
         <button
           type="button"
           onClick={onNextMonth}
           disabled={!canGoNext}
-          aria-label="Mes siguiente"
+          aria-label={t.dateRangePicker.nextMonth}
           className={cn(
             styles.navButton,
             canGoNext ? styles.navButtonEnabled : styles.navButtonDisabled
@@ -416,7 +407,7 @@ const RangeCalendarGrid = ({
           }
         }}
       >
-        {DAY_LABELS.map((d) => (
+        {t.dateRangePicker.dayLabels.map((d) => (
           <div key={d} role="columnheader" className={styles.dayHeader}>
             {d}
           </div>
@@ -450,7 +441,7 @@ const RangeCalendarGrid = ({
                 onClick={() => onSelectDay(cellDate)}
                 onMouseEnter={() => onHoverDay(cellDate)}
                 onMouseLeave={() => onHoverDay(null)}
-                aria-label={DAY_ARIA_FORMATTER.format(cellDate)}
+                aria-label={dayAriaFormatter.format(cellDate)}
                 className={cn(
                   styles.dayButton,
                   isDisabled && styles.dayButtonDisabled,
@@ -476,7 +467,7 @@ const RangeCalendarGrid = ({
             onClick={() => onSelectDay(new Date(0))} // sentinel: clear
             className={styles.clearButton}
           >
-            Limpiar selección
+            {t.dateRangePicker.clearSelection}
           </button>
         </div>
       )}
@@ -496,7 +487,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
       min,
       max,
       disabledDates,
-      placeholder = 'DD/MM/AAAA – DD/MM/AAAA',
+      placeholder,
       label,
       helperText,
       error = false,
@@ -509,6 +500,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
     },
     ref
   ) => {
+    const t = useBipLocale();
     const [isOpen, setIsOpen] = useState(false);
     const [hoverDate, setHoverDate] = useState<Date | null>(null);
     const [focusedDate, setFocusedDate] = useState<Date | null>(null);
@@ -539,15 +531,25 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
       if (range.from) setViewDate(range.from);
     }, [range.from]);
 
+    const displayFormatter = useMemo(
+      () =>
+        new Intl.DateTimeFormat(t.locale, {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }),
+      [t.locale]
+    );
+
     const displayValue = useMemo(() => {
       if (range.from && range.to) {
-        return `${formatDisplay(range.from)} – ${formatDisplay(range.to)}`;
+        return `${displayFormatter.format(range.from)} – ${displayFormatter.format(range.to)}`;
       }
       if (range.from) {
-        return `${formatDisplay(range.from)} – ...`;
+        return `${displayFormatter.format(range.from)} – ...`;
       }
       return '';
-    }, [range]);
+    }, [range, displayFormatter]);
 
     // Close on outside click
     useClickOutside(containerRef, () => setIsOpen(false));
@@ -628,7 +630,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
             )}
           >
             <span className={displayValue ? styles.valueText : styles.placeholderText}>
-              {displayValue || placeholder}
+              {displayValue || (placeholder ?? t.dateRangePicker.placeholder)}
             </span>
           </button>
 
@@ -655,7 +657,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
             <div
               role="dialog"
               aria-modal="true"
-              aria-label="Seleccionar rango de fechas"
+              aria-label={t.dateRangePicker.selectRange}
               className={styles.popover}
             >
               <RangeCalendarGrid
