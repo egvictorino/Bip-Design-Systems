@@ -128,7 +128,9 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-txt-disabled);
+  /* Encabezado de sección siempre visible, no un estado inactivo —
+     --color-txt-disabled era un mal uso semántico y fallaba WCAG AA (2.8:1). */
+  color: var(--color-txt-secondary);
 }
 
 .groupList {

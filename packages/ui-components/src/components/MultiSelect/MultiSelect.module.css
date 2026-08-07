@@ -24,7 +24,7 @@
 .labelLg { font-size: var(--text-base); }
 
 .labelError   { color: var(--color-danger); }
-.labelFocused { color: var(--color-primary); }
+.labelFocused { color: var(--color-primary-text); }
 .labelDisabled { opacity: 0.5; }
 
 /* ─── Trigger (combobox) ─────────────────────────────────────────────────────── */
@@ -194,7 +194,9 @@
 
 .placeholder {
   flex: 1;
-  color: var(--color-txt-disabled);
+  /* Texto de placeholder real (span, no ::placeholder nativo) — visible y con
+     significado, no un estado inactivo. --color-txt-disabled fallaba WCAG AA (2.29:1). */
+  color: var(--color-txt-secondary);
   user-select: none;
 }
 
@@ -253,7 +255,7 @@
 }
 
 .chevronError   { color: var(--color-danger); }
-.chevronFocused { color: var(--color-primary); }
+.chevronFocused { color: var(--color-primary-text); }
 
 /* ─── Dropdown ────────────────────────────────────────────────────────────────── */
 

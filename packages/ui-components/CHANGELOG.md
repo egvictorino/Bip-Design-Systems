@@ -27,6 +27,15 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
   ThemeProvider/Foundations; una regresión visual en un componente en sí no la detectaba
   nada. Guard de cobertura igual al de `a11y.test.tsx`: un componente nuevo sin entrada en
   `component-matrix.ts` falla el build.
+- `visual/a11y-browser.spec.ts` — axe con `color-contrast` **activado**, en Chromium real vía
+  `@axe-core/playwright`, contra los 42 componentes en light y dark (84 casos). Cierra el
+  hueco que `a11y.test.tsx` deja explícito: happy-dom no resuelve `color-mix()`/custom
+  properties con fidelidad suficiente para evaluar contraste renderizado. La primera corrida
+  encontró 26 violaciones reales — ver abajo.
+- Nuevo token `--color-primary-text`: `--color-primary`/`--color-active` usados directamente
+  como color de **texto** (no fill) medían 3.3–3.7:1 en dark contra superficies oscuras
+  derivadas — bajo AA. En light es un alias directo a `--color-primary` (ya pasa, 8.2:1); en
+  dark deriva con `color-mix(..., white 20%)`. Mismo mecanismo que `--color-danger-text` etc.
 
 ### Fixed
 
@@ -37,6 +46,26 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
   sin necesitarlo — no tiene ningún `left`/`right` físico, su exención era por un
   `translateX` en `@keyframes` que ninguno de los dos regex del test evalúa. La entrada era
   inerte y encubriría un `left`/`right` real que alguien agregara ahí después.
+- **Contraste real bajo AA, encontrado por `visual/a11y-browser.spec.ts`** (no un bug de test —
+  la paleta en sí no llegaba a 4.5:1 en varios casos):
+  - `--color-txt-secondary` (light, `#929292`): nunca alcanzaba AA contra ningún fondo claro
+    del sistema (2.51–3.11:1). Bajado a `#5c5c5c` (≥5.1:1 contra el peor caso,
+    `--color-secondary`).
+  - `--color-success-text` (light, 30%→38% mezcla con negro) y `--color-warning-text` (light,
+    35%→45%): marginales, 4.05–4.27:1. Ahora ≥4.9:1.
+  - `Badge` `.primary`, `Tabs` tab activo (horizontal y vertical), `MultiSelect`
+    `.labelFocused`/`.chevronFocused`, `Calendar` `.timeColumnHeaderWeekdayToday`: usaban
+    `--color-primary` directo como texto — swap a `--color-primary-text` (ver arriba).
+  - `StatsCard` `.trendPositive`: usaba la semilla `--color-success` directo como texto
+    (2.28:1 contra blanco) — swap a `--color-success-text`.
+  - `Calendar` `.eventBlockMeta`/`.eventBlockDoctor`: `opacity: 0.8`/`0.7` sobre texto ya
+    ajustado al límite lo empujaba bajo AA — quitada, el `font-size` reducido ya carga la
+    jerarquía visual sin sacrificar legibilidad.
+  - `Calendar` `.timeLabelItem` (las horas del eje, "07:00" etc.) y `Sidebar` `.groupLabel`
+    (encabezados de sección): usaban `--color-txt-disabled` para texto siempre visible y
+    funcionalmente importante — no un estado inactivo. Swap a `--color-txt-secondary`.
+  - `MultiSelect` `.placeholder`: mismo caso — es un `<span>` real (no `::placeholder`
+    nativo), `--color-txt-disabled` fallaba 2.29:1. Swap a `--color-txt-secondary`.
 
 ## [0.3.0] - 2026-08-06
 
