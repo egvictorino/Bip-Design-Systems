@@ -2,7 +2,7 @@
 
 import React, { forwardRef, useId, useState, useRef, useCallback, useEffect } from 'react';
 import type { InputHTMLAttributes } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './SearchInput.module.css';
 
 export interface SearchInputProps

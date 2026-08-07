@@ -3,7 +3,7 @@
 import { forwardRef, useId, useState, useEffect, useCallback } from 'react';
 import type { InputHTMLAttributes, ReactNode } from 'react';
 import React from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './NumberInput.module.css';
 
 type Size = 'sm' | 'md' | 'lg';

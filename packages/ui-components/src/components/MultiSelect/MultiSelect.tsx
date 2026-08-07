@@ -1,8 +1,8 @@
 "use client";
 
 import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../hooks/useClickOutside';
+import { cn } from '../../lib/cn.js';
+import { useClickOutside } from '../../hooks/useClickOutside.js';
 import styles from './MultiSelect.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

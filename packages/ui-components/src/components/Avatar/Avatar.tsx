@@ -1,7 +1,7 @@
 "use client";
 
 import React, { forwardRef, useState } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Avatar.module.css';
 
 // ─── Types ───────────────────────────────────────────────────────────────────

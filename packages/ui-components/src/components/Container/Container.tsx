@@ -1,5 +1,5 @@
 import React, { type ElementType, type ReactNode } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Container.module.css';
 
 export type ContainerMaxWidth = 'sm' | 'md' | 'lg' | 'xl' | 'full';

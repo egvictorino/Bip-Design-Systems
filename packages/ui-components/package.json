@@ -64,7 +64,7 @@
     "test:visual": "playwright test --config=playwright.visual.config.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "lint:package": "publint && attw --pack .",
+    "lint:package": "publint && attw --pack . --exclude-entrypoints ./style.css --ignore-rules cjs-resolves-to-esm",
     "size": "size-limit"
   },
   "peerDependencies": {

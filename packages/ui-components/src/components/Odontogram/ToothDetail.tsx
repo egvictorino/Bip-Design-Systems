@@ -1,22 +1,22 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './ToothDetail.module.css';
 import {
   CONDITION_LABELS,
   EMPTY_TOOTH,
   TOOTH_NAMES,
   WHOLE_TOOTH_CONDITIONS,
-} from './types';
+} from './types.js';
 import type {
   SurfaceCondition,
   ToothCondition,
   ToothData,
   ToothImage,
   ToothSurface,
-} from './types';
-import { ToothSVG } from './ToothSVG';
-import { NotePopover } from './NotePopover';
-import { ImagePopover } from './ImagePopover';
+} from './types.js';
+import { ToothSVG } from './ToothSVG.js';
+import { NotePopover } from './NotePopover.js';
+import { ImagePopover } from './ImagePopover.js';
 
 export interface ToothDetailProps {
   toothNumber: number;

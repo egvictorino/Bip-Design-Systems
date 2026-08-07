@@ -1,10 +1,10 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { useThemeAttributes } from '../ThemeProvider';
+import { cn } from '../../lib/cn.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
 import styles from './Odontogram.module.css';
-import { FOCUSABLE_SELECTOR, IMAGE_TYPE_LABELS, IMAGE_TYPES } from './types';
-import type { ToothImage, ToothImageType } from './types';
+import { FOCUSABLE_SELECTOR, IMAGE_TYPE_LABELS, IMAGE_TYPES } from './types.js';
+import type { ToothImage, ToothImageType } from './types.js';
 
 export interface ImagePopoverProps {
   toothNumber: number;

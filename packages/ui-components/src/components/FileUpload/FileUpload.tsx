@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef, useId, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './FileUpload.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

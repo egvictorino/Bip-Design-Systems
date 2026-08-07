@@ -1,5 +1,5 @@
 import React, { type ElementType, type ReactNode } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Stack.module.css';
 
 export type StackGap = '0' | '0-5' | '1' | '1-5' | '2' | '3' | '4' | '5' | '6' | '8' | '10' | '12' | '16';

@@ -2,8 +2,8 @@
 
 import { forwardRef, useId, useRef, useEffect, useCallback, useContext } from 'react';
 import type { InputHTMLAttributes, MutableRefObject } from 'react';
-import { cn } from '../../lib/cn';
-import { CheckboxGroupContext } from './CheckboxGroupContext';
+import { cn } from '../../lib/cn.js';
+import { CheckboxGroupContext } from './CheckboxGroupContext.js';
 import styles from './Checkbox.module.css';
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {

@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
-import { cn } from '../../lib/cn';
-import { Skeleton } from '../Skeleton';
+import { cn } from '../../lib/cn.js';
+import { Skeleton } from '../Skeleton/index.js';
 import styles from './Card.module.css';
 
 // ─── Types ─────────────────────────────────────────────────────────────────

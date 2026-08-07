@@ -2,9 +2,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { useFocusTrap, useScrollLock } from '../../hooks';
-import { useThemeAttributes } from '../ThemeProvider';
+import { cn } from '../../lib/cn.js';
+import { useFocusTrap, useScrollLock } from '../../hooks/index.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
 import styles from './DrawerPanel.module.css';
 
 export interface DrawerPanelProps {

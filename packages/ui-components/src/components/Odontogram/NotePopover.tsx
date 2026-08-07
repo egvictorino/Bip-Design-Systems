@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { useThemeAttributes } from '../ThemeProvider';
+import { cn } from '../../lib/cn.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
 import styles from './Odontogram.module.css';
-import { FOCUSABLE_SELECTOR } from './types';
+import { FOCUSABLE_SELECTOR } from './types.js';
 
 export interface NotePopoverProps {
   toothNumber: number;

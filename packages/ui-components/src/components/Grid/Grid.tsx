@@ -1,5 +1,5 @@
 import React, { type ElementType, type ReactNode } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Grid.module.css';
 
 export type GridColumns = 1 | 2 | 3 | 4 | 5 | 6 | 12;

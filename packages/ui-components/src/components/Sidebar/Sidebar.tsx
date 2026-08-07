@@ -8,9 +8,9 @@ import React, {
   useId,
   useState,
 } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Sidebar.module.css';
-import { Tooltip } from '../Tooltip/Tooltip';
+import { Tooltip } from '../Tooltip/Tooltip.js';
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 

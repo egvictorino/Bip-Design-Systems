@@ -1,2 +1,2 @@
-export { Text } from './Text';
-export type { TextProps, TextSize, TextWeight, TextColor, TextAlign } from './Text';
+export { Text } from './Text.js';
+export type { TextProps, TextSize, TextWeight, TextColor, TextAlign } from './Text.js';

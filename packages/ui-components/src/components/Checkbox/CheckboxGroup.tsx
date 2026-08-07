@@ -1,7 +1,7 @@
 import React, { useId } from 'react';
 import type { ReactNode } from 'react';
-import { cn } from '../../lib/cn';
-import { CheckboxGroupContext } from './CheckboxGroupContext';
+import { cn } from '../../lib/cn.js';
+import { CheckboxGroupContext } from './CheckboxGroupContext.js';
 import styles from './CheckboxGroup.module.css';
 
 export interface CheckboxGroupProps {

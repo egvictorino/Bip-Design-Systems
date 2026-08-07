@@ -9,7 +9,7 @@ import React, {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { pickReadableText, contrastRatio } from '../../lib/contrast';
+import { pickReadableText, contrastRatio } from '../../lib/contrast.js';
 
 export type BipTheme = 'square' | 'rounded';
 export type BipColorScheme = 'light' | 'dark';

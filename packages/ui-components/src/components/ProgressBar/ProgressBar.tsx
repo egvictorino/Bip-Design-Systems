@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './ProgressBar.module.css';
 
 export interface ProgressBarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'id'> {

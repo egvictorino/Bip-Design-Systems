@@ -9,9 +9,9 @@ import React, {
   useState,
 } from 'react';
 import ReactDOM from 'react-dom';
-import { cn } from '../../lib/cn';
-import { addDays, isSameDay } from '../../lib/dateHelpers';
-import { useThemeAttributes } from '../ThemeProvider';
+import { cn } from '../../lib/cn.js';
+import { addDays, isSameDay } from '../../lib/dateHelpers.js';
+import { useThemeAttributes } from '../ThemeProvider/index.js';
 import styles from './Calendar.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

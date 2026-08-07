@@ -2,7 +2,7 @@
 
 import React, { forwardRef, useId, useState } from 'react';
 import type { InputHTMLAttributes } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn.js';
 import styles from './Input.module.css';
 
 export type InputType = 'text' | 'email' | 'password' | 'tel' | 'url';

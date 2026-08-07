@@ -1,7 +1,7 @@
 import React, { useId } from 'react';
 import type { ReactNode } from 'react';
-import { cn } from '../../lib/cn';
-import { RadioGroupContext } from './RadioGroupContext';
+import { cn } from '../../lib/cn.js';
+import { RadioGroupContext } from './RadioGroupContext.js';
 import styles from './RadioGroup.module.css';
 
 export interface RadioGroupProps {
