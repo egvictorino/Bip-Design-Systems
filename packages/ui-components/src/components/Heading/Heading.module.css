@@ -1,0 +1,16 @@
+.heading {
+  color: var(--color-txt);
+  margin: 0;
+  line-height: var(--leading-tight);
+}
+
+.sizeXs  { font-size: var(--text-sm); }
+.sizeSm  { font-size: var(--text-base); }
+.sizeMd  { font-size: var(--text-lg); }
+.sizeLg  { font-size: var(--text-xl); }
+.sizeXl  { font-size: var(--text-2xl); }
+/* --text-2xl es el mayor token disponible en primitives.css — xl y 2xl comparten valor. */
+.size2xl { font-size: var(--text-2xl); }
+
+.weightSemibold { font-weight: var(--font-semibold); }
+.weightBold     { font-weight: var(--font-bold); }

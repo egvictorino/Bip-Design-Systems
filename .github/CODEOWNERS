@@ -1,0 +1,5 @@
+# Ver https://docs.github.com/articles/about-codeowners
+# Requiere que el repo tenga habilitada la protección de rama correspondiente para que
+# GitHub exija esta revisión antes de mergear.
+
+* @egvictorino

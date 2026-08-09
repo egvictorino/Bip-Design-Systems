@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import './styles/fonts.css';
 @import './tokens.css';
+@import './styles/primitives.css';
+@import './styles/themes.css';
+@import './styles/density.css';
+@import './styles/rtl.css';
 
 /* Utilidades globales usadas por componentes */
 .sr-only {
@@ -24,8 +28,21 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
+  letter-spacing: var(--font-letter-spacing);
   color: var(--color-txt);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* Todo componente que anima usa --duration-*/--ease-* (ver primitives.css) —
+   colapsarlos a 0ms aquí desactiva la animación de TODA la librería de una
+   vez, sin tener que auditar cada @keyframes/transition individualmente. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+  }
 }

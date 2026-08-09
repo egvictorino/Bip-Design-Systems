@@ -1,4 +1,4 @@
-export { Navbar, NavbarBrand, NavbarNav, NavbarItem, NavbarActions } from './Navbar';
+export { Navbar, NavbarBrand, NavbarNav, NavbarItem, NavbarActions } from './Navbar.js';
 export type {
   NavbarProps,
   NavbarVariant,
@@ -6,4 +6,4 @@ export type {
   NavbarNavProps,
   NavbarItemProps,
   NavbarActionsProps,
-} from './Navbar';
+} from './Navbar.js';

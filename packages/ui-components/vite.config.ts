@@ -39,6 +39,6 @@ export default defineConfig({
     },
   },
   css: {
-    postcss: './postcss.config.js',
+    postcss: './postcss.config.cjs',
   },
 });

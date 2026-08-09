@@ -52,7 +52,7 @@ export const CustomIcon: Story = {
     title: 'Bandeja de entrada vacía',
     description: 'No tienes notificaciones pendientes.',
     icon: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }} aria-hidden="true">
         <path
           d="M8 30l6-12h20l6 12H8z"
           stroke="currentColor"
@@ -85,10 +85,14 @@ export const TitleOnly: Story = {
 export const AllSizes: Story = {
   args: { title: 'Sin datos' },
   render: () => (
-    <div className="flex flex-col divide-y divide-gray-100">
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <EmptyState size="sm" title="Tamaño pequeño" description="Sin resultados para esta búsqueda." />
-      <EmptyState size="md" title="Tamaño mediano" description="Sin resultados para esta búsqueda." />
-      <EmptyState size="lg" title="Tamaño grande" description="Sin resultados para esta búsqueda." />
+      <div style={{ borderTop: '1px solid var(--color-edge)' }}>
+        <EmptyState size="md" title="Tamaño mediano" description="Sin resultados para esta búsqueda." />
+      </div>
+      <div style={{ borderTop: '1px solid var(--color-edge)' }}>
+        <EmptyState size="lg" title="Tamaño grande" description="Sin resultados para esta búsqueda." />
+      </div>
     </div>
   ),
 };
@@ -107,7 +111,13 @@ export const ErrorState: Story = {
     description: 'Ocurrió un error al obtener los datos. Por favor, intenta de nuevo.',
     action: <Button size="md">Reintentar</Button>,
     icon: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-feedback-error-default" aria-hidden="true">
+      <svg
+        viewBox="0 0 48 48"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ width: '100%', height: '100%', color: 'var(--color-danger)' }}
+        aria-hidden="true"
+      >
         <circle cx="24" cy="24" r="18" stroke="currentColor" strokeWidth="2.5" />
         <path d="M24 14v12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
         <circle cx="24" cy="32" r="1.5" fill="currentColor" />

@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+    groups:
+      storybook:
+        patterns:
+          - '@storybook/*'
+          - 'storybook'
+      playwright:
+        patterns:
+          - '@playwright/*'
+          - 'playwright'
+      testing-library:
+        patterns:
+          - '@testing-library/*'
+      eslint:
+        patterns:
+          - 'eslint*'
+          - '@typescript-eslint/*'
+    # pnpm.overrides en package.json fija ~28 versiones por CVEs puntuales (ver CLAUDE.md
+    # § CI/CD) — Dependabot puede seguir proponiendo bumps sobre esas mismas dependencias;
+    # revisar el override correspondiente antes de mergear, no solo el changelog del PR.
+    ignore:
+      - dependency-name: 'human-id'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'

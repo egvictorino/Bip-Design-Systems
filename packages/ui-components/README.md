@@ -3,14 +3,17 @@
 React component library with full TypeScript support, CSS Modules, and design tokens. Built for the BipUI design system.
 
 [![npm version](https://img.shields.io/npm/v/@bip-design-systems/ui-components)](https://www.npmjs.com/package/@bip-design-systems/ui-components)
-[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/egvictorino/bip-ui/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/egvictorino/Bip-Design-Systems/blob/main/LICENSE)
 
 ---
 
 ## Requirements
 
-- React 18+
+- React `^18.2.0` or `^19.0.0`
 - Node >= 20
+- ESM only — no CommonJS build is shipped (`"type": "module"`, `dist/` is ES modules). Works
+  out of the box with any modern bundler/framework (Vite, Next.js App Router, Remix). If your
+  toolchain requires `require()`, you'll need an ESM-aware bundler or a dynamic `import()` bridge.
 
 ## Installation
 
@@ -29,15 +32,25 @@ Import the compiled CSS in your app entry point. No Tailwind or other CSS toolin
 import '@bip-design-systems/ui-components/style.css';
 ```
 
+**Subpath exports.** Besides importing from the package root, every component is importable
+individually (the build emits one file per component, `preserveModules: true`):
+
+```ts
+import { Button } from '@bip-design-systems/ui-components/Button';
+```
+
 ## Quick Start
 
 ```tsx
-import { Button, Input, ToastProvider, useToast } from '@bip-design-systems/ui-components';
+import { Button, Input, ThemeProvider, ToastProvider, useToast } from '@bip-design-systems/ui-components';
 
+// ThemeProvider is optional — without it, the default theme is square/light.
 export const App = () => (
-  <ToastProvider>
-    <MyPage />
-  </ToastProvider>
+  <ThemeProvider theme="rounded">
+    <ToastProvider>
+      <MyPage />
+    </ToastProvider>
+  </ThemeProvider>
 );
 
 const MyPage = () => {
@@ -59,6 +72,16 @@ const MyPage = () => {
 ---
 
 ## Components
+
+### Layout & typography
+
+| Component | Description |
+|-----------|-------------|
+| `Stack` | Flexbox layout (row/column) with `gap`, `align`, `justify` — replaces repeated inline styles |
+| `Grid` | CSS grid layout with responsive columns and `gap` |
+| `Container` | Centered max-width wrapper with side padding, for constraining content width |
+| `Text` | Body text with size/weight/color variants driven by tokens |
+| `Heading` | Semantic `h1`–`h6` headings, decoupled from visual size |
 
 ### Form inputs
 
@@ -136,6 +159,170 @@ const MyPage = () => {
 | `Divider` | Horizontal or vertical divider with optional label |
 | `EmptyState` | Empty state with icon, title, description, and primary action |
 | `Odontogram` | Interactive odontogram for recording dental conditions per tooth |
+| `ThemeProvider` | Theme provider — controls shape (`square`/`rounded`), color scheme (`light`/`dark`), brand (`tokens`), and locale (`locale`). See [Theming](#theming) and [Internationalization](#internationalization) |
+
+---
+
+## Hooks
+
+Exported from `@bip-design-systems/ui-components` (previously internal to `src/lib/`):
+
+| Hook | Description |
+|------|-------------|
+| `useClickOutside` | Runs a callback on click outside a ref — used by Dropdown, MultiSelect, DatePicker, etc. |
+| `useDisclosure` | Open/close state with `onOpen`/`onClose`/`onToggle` — shared pattern for overlays |
+| `useFocusTrap` | Traps focus (Tab/Shift+Tab) inside a container, focuses the first element on activation, restores focus on deactivation, and handles Escape — used by Modal, DrawerPanel, Odontogram |
+| `useMediaQuery` | Reactive subscription to a media query (`matchMedia`) |
+| `useScrollLock` | Locks `<body>` scroll while an overlay is open |
+
+```ts
+import { useDisclosure, useMediaQuery, cn } from '@bip-design-systems/ui-components';
+```
+
+`cn()` (a `clsx` wrapper for CSS Module class composition) and `BREAKPOINTS`/`mediaQuery` (the
+single source for the `@media` queries used internally, see `src/styles/breakpoints.ts`) are
+also exported from the package root.
+
+---
+
+## Internationalization
+
+Every `aria-label`, placeholder, and visible string in the components comes from a dictionary
+(`BipLocale`) resolved through context — nothing is hardcoded in Spanish without a way to
+override it. The unconfigured default is `es-MX`, byte-identical to the library's previous
+hardcoded behavior — no visual change for existing consumers.
+
+```tsx
+import { ThemeProvider, enUS } from '@bip-design-systems/ui-components';
+
+<ThemeProvider theme="rounded" locale={enUS}>
+  <App />
+</ThemeProvider>
+
+// Partial override on top of the es-MX default — only what you need to change
+<ThemeProvider locale={{ alert: { close: 'Dismiss' } }}>
+  <App />
+</ThemeProvider>
+```
+
+- `locale` is a sibling prop to `theme`/`tokens`/`radius` on `<ThemeProvider>` — accepts the full
+  dictionary (`esMX`, `enUS`, both exported by the package) or a partial override that merges
+  over the parent `<ThemeProvider>`'s resolved dictionary (if nested), or over `esMX` otherwise.
+- The dictionary carries a BCP-47 tag (`locale: 'es-MX'` / `'en-US'`) that also drives the
+  `Intl.DateTimeFormat` calls used internally by `Calendar`, `DatePicker`, and
+  `DateRangePicker` — changing locale reformats dates/months too, not just labels.
+- Without a `<ThemeProvider>` in the tree (or without the `locale` prop), every component still
+  works, defaulting to `es-MX` via `useBipLocale()`.
+- To write your own dictionary (a full additional language, not just an override), import the
+  `BipLocale` type and use `esMX`/`enUS` as a shape reference.
+- See the `Foundations/I18n` story in Storybook for a live playground.
+
+---
+
+## Theming
+
+Three independent axes, all controlled by `<ThemeProvider>` — no build config or Tailwind required.
+
+| Axis | Prop | Values | Affects |
+|------|------|--------|---------|
+| Shape / typography | `theme` | `square` \| `rounded` | `--radius-*`, `--font-sans` |
+| Color scheme | `colorScheme` | `light` \| `dark` (default `light`) | The full `--color-*` palette |
+| Brand | `tokens` | seed overrides (below) | `--color-primary`, `--color-danger`, etc. and their whole derived family |
+
+```tsx
+import { ThemeProvider } from '@bip-design-systems/ui-components';
+
+export const App = () => (
+  <ThemeProvider theme="rounded" colorScheme="dark">
+    <MyApp />
+  </ThemeProvider>
+);
+```
+
+### Custom branding (`tokens`)
+
+Ant Design `ConfigProvider`-style: pass a color and the whole library recolors — hover, press, focus ring, text and light/subtle variants are derived automatically.
+
+```tsx
+<ThemeProvider
+  theme="rounded"
+  tokens={{
+    colorPrimary: '#e2007a',
+    colorDanger: '#d6336c',
+    // optional per-scheme refinement — wins over the flat value
+    dark: { colorPrimary: '#ff4fa8' },
+  }}
+>
+  <MyApp />
+</ThemeProvider>
+```
+
+- Available seeds: `colorPrimary`, `colorSecondary`, `colorDanger`, `colorInfo`, `colorSuccess`, `colorWarning`, `colorUnique`, `colorLink`, `colorTxt`, `colorSurface`, `colorEdge`, `colorField`, `fontFamily`.
+- `cssVars` is the escape hatch for any custom property outside that list: `cssVars={{ '--color-selected': '#...' }}`.
+- Nested `<ThemeProvider>`s merge with their parent — an inner one only overrides what it declares.
+- Portalled components (`Modal`, `Toast`, `DrawerPanel`, `Calendar`, `Odontogram` popovers) correctly inherit the brand even though they render outside the provider's DOM tree.
+
+**Automatic contrast.** Overriding `colorPrimary`, `colorDanger`, `colorSuccess`, `colorWarning`, `colorInfo`, or `colorUnique` also computes WCAG contrast (`src/lib/contrast.ts`) and picks white or dark text automatically — a light `colorPrimary` won't leave the primary button with illegible white text. Migrated components: `Button`, `Avatar`, `Stepper`, `Sidebar` (`variant="primary"`).
+
+**Brand radius.** Besides the `theme` preset, any of the 6 semantic radius tokens can be overridden independently:
+
+```tsx
+<ThemeProvider theme="rounded" radius={{ field: '12px', container: '24px' }}>
+```
+
+Keys: `marker`, `field`, `control`, `surface`, `container`, `containerLg`.
+
+### Uncontrolled mode, `system`, and persistence
+
+Without `theme`/`colorScheme`, `ThemeProvider` manages its own state (`defaultTheme`/`defaultColorScheme`) and exposes controls via `useThemeControls()` — useful for a toggle button without lifting state into your app:
+
+```tsx
+import { ThemeProvider, useThemeControls } from '@bip-design-systems/ui-components';
+
+const ToggleButton = () => {
+  const { resolvedColorScheme, toggleColorScheme } = useThemeControls();
+  return <button onClick={toggleColorScheme}>{resolvedColorScheme === 'dark' ? '🌙' : '☀️'}</button>;
+};
+
+export const App = () => (
+  <ThemeProvider defaultTheme="square" defaultColorScheme="system" storageKey="my-app-theme">
+    <ToggleButton />
+    <MyApp />
+  </ThemeProvider>
+);
+```
+
+- `colorScheme`/`defaultColorScheme` accept `'system'` — follows OS `prefers-color-scheme` live. Never stamped as `'system'` in the DOM, always the resolved value (`light`/`dark`).
+- `storageKey` persists the preference to `localStorage` (best-effort — won't throw in Safari private mode).
+- A controlled axis (`colorScheme` passed as a prop) always wins over internal state and over anything persisted.
+
+**Avoiding the theme flash (FOUC) with SSR.** The server's first paint doesn't know the `localStorage` preference; use `getThemeInitScript()` to stamp `data-theme`/`data-color-scheme` on `<html>` before hydration:
+
+```tsx
+// Next.js App Router — app/layout.tsx
+import { getThemeInitScript } from '@bip-design-systems/ui-components';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: getThemeInitScript({ storageKey: 'my-app-theme' }) }}
+        />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+`storageKey` must match the one passed to `<ThemeProvider>`.
+
+See the `Components/ThemeProvider` story in Storybook for interactive demos (includes `CustomBrand`, `UncontrolledWithPersistence`, and `SystemColorScheme`).
+
+> `ThemeProvider` declares `"use client"` — safe to render from a Next.js App Router Server
+> Component (import it from a component marked `"use client"`, or let `ThemeProvider` itself be
+> the client/server boundary in your layout).
 
 ---
 
@@ -143,20 +330,46 @@ const MyPage = () => {
 
 ```json
 {
-  "react": ">=18",
-  "react-dom": ">=18"
+  "react": "^18.2.0 || ^19.0.0",
+  "react-dom": "^18.2.0 || ^19.0.0"
 }
 ```
 
 ---
 
+## Browser support
+
+The color system is built on native CSS `color-mix()` — no fallback bundle is shipped, so the
+minimum supported browsers are:
+
+| Browser | Minimum version |
+|---|---|
+| Chrome / Edge | 111+ |
+| Safari | 16.2+ |
+| Firefox | 113+ |
+
+All released in 2023 or later. If you need to support older browsers, do not upgrade past
+`@bip-design-systems/ui-components@0.2.x` without verifying `color-mix()` support in your target
+matrix first.
+
+## Fonts
+
+Inter and Figtree ship self-hosted (`@fontsource-variable`) inside `style.css` — no request to
+`fonts.googleapis.com`, so the library works under a strict CSP with no extra network round-trip.
+Only the `latin`/`latin-ext` Unicode subsets are included (full weight axis 100–900, normal +
+italic) — Cyrillic/Greek/Vietnamese are not bundled. `style.css` is ~800KB as a result; if that's
+too heavy for your use case, override `--font-sans` via `ThemeProvider`'s `tokens.fontFamily` with
+your own font loading strategy.
+
+---
+
 ## Links
 
-- [Repository](https://github.com/egvictorino/bip-ui)
+- [Repository](https://github.com/egvictorino/Bip-Design-Systems)
 - [shared-utils](https://www.npmjs.com/package/@bip-design-systems/shared-utils) — pure TypeScript utilities (formatCurrency, formatDate, validateRFC)
 
 ---
 
 ## License
 
-[MIT](https://github.com/egvictorino/bip-ui/blob/main/LICENSE) — Copyright (c) 2026 Eduardo Gonzalez
+[MIT](https://github.com/egvictorino/Bip-Design-Systems/blob/main/LICENSE) — Copyright (c) 2026 Eduardo Gonzalez

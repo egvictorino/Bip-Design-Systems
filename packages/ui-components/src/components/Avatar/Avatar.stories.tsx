@@ -35,10 +35,12 @@ export const WithIcon: Story = {
   args: { size: 'md' },
 };
 
+const statusLabel: React.CSSProperties = { fontSize: '0.75rem', color: 'var(--color-txt-secondary)' };
+
 export const AllSizes: Story = {
   args: {},
   render: () => (
-    <div className="flex items-end gap-4">
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1rem' }}>
       <Avatar size="xs" name="Ana López" />
       <Avatar size="sm" name="Ana López" />
       <Avatar size="md" name="Ana López" />
@@ -51,7 +53,7 @@ export const AllSizes: Story = {
 export const Shapes: Story = {
   args: {},
   render: () => (
-    <div className="flex items-center gap-4">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
       <Avatar shape="circle" name="Ana López" size="lg" />
       <Avatar shape="square" name="Ana López" size="lg" />
     </div>
@@ -61,22 +63,22 @@ export const Shapes: Story = {
 export const WithStatus: Story = {
   args: {},
   render: () => (
-    <div className="flex items-center gap-6">
-      <div className="flex flex-col items-center gap-1">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
         <Avatar name="Ana" status="online" size="md" />
-        <span className="text-xs text-txt-secondary">online</span>
+        <span style={statusLabel}>online</span>
       </div>
-      <div className="flex flex-col items-center gap-1">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
         <Avatar name="Bob" status="offline" size="md" />
-        <span className="text-xs text-txt-secondary">offline</span>
+        <span style={statusLabel}>offline</span>
       </div>
-      <div className="flex flex-col items-center gap-1">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
         <Avatar name="Carlos" status="away" size="md" />
-        <span className="text-xs text-txt-secondary">away</span>
+        <span style={statusLabel}>away</span>
       </div>
-      <div className="flex flex-col items-center gap-1">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
         <Avatar name="Diana" status="busy" size="md" />
-        <span className="text-xs text-txt-secondary">busy</span>
+        <span style={statusLabel}>busy</span>
       </div>
     </div>
   ),
@@ -85,7 +87,7 @@ export const WithStatus: Story = {
 export const InitialsColors: Story = {
   args: {},
   render: () => (
-    <div className="flex flex-wrap gap-3">
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
       {[
         'Ana López',
         'Bob García',

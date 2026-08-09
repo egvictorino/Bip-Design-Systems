@@ -1,8 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
-import { cn } from '../../lib/cn';
-import { useClickOutside } from '../../lib/useClickOutside';
+import { cn } from '../../lib/cn.js';
+import { useClickOutside } from '../../hooks/useClickOutside.js';
+import { useBipLocale } from '../../i18n/index.js';
 import styles from './Dropdown.module.css';
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -271,18 +272,19 @@ export interface DropdownSearchProps {
 }
 
 export const DropdownSearch: React.FC<DropdownSearchProps> = ({
-  placeholder = 'Buscar...',
+  placeholder,
   value,
   onChange,
 }) => {
+  const t = useBipLocale();
   return (
     <div className={styles.searchContainer}>
       <input
         type="text"
         role="searchbox"
-        aria-label="Buscar opciones"
+        aria-label={t.dropdown.search}
         className={styles.searchInput}
-        placeholder={placeholder}
+        placeholder={placeholder ?? t.dropdown.searchPlaceholder}
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         onKeyDown={(e) => {

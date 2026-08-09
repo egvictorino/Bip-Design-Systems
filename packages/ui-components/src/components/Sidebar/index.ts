@@ -9,7 +9,7 @@ export {
   SidebarSubMenu,
   SidebarFooter,
   SidebarTrigger,
-} from './Sidebar';
+} from './Sidebar.js';
 export type {
   SidebarProps,
   SidebarHeaderProps,
@@ -21,4 +21,4 @@ export type {
   SidebarSubMenuProps,
   SidebarFooterProps,
   SidebarTriggerProps,
-} from './Sidebar';
+} from './Sidebar.js';

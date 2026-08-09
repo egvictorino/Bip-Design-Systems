@@ -49,7 +49,9 @@ export const CustomSeparator: Story = {
       { label: 'Reportes', href: '/reportes' },
       { label: 'Ingresos' },
     ],
-    separator: <span className="text-txt-disabled select-none">/</span>,
+    separator: (
+      <span style={{ color: 'var(--color-txt-disabled)', userSelect: 'none' }}>/</span>
+    ),
   },
 };
 

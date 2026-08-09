@@ -1,10 +1,10 @@
 .fieldset {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
   border: 0;
-  padding: 0;
-  margin: 0;
+  padding: var(--space-0);
+  margin: var(--space-0);
 }
 
 .legend {
@@ -13,15 +13,15 @@
 
 /* Size variants — legend */
 .legendSm {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .legendMd {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .legendLg {
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .legendDefault {
@@ -36,20 +36,20 @@
 .items {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 /* Helper / error message */
 .helperSm {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .helperMd {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .helperLg {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .messageError {

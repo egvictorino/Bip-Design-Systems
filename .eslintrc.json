@@ -10,7 +10,8 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:jsx-a11y/recommended"
+    "plugin:jsx-a11y/recommended",
+    "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -31,5 +32,15 @@
       "version": "detect"
     }
   },
-  "ignorePatterns": ["dist", "node_modules", "*.config.js", "*.config.ts", ".storybook"]
+  "overrides": [
+    {
+      "files": ["*.stories.tsx", "*.stories.ts"],
+      "extends": ["plugin:storybook/recommended"]
+    },
+    {
+      "files": ["visual/**", "e2e/**"],
+      "extends": ["plugin:playwright/recommended"]
+    }
+  ],
+  "ignorePatterns": ["dist", "node_modules"]
 }

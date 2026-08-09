@@ -19,13 +19,13 @@ pnpm --filter @bip-design-systems/ui-components build-storybook
 # Lint & test (scoped)
 pnpm --filter @bip-design-systems/ui-components lint
 pnpm --filter @bip-design-systems/shared-utils test
-pnpm --filter @bip-design-systems/ui-components test   # component tests (vitest + happy-dom)
+pnpm --filter @bip-design-systems/ui-components test         # component tests (vitest + happy-dom)
+pnpm test:visual:docker                                       # theme visual regression, in Docker (see § Visual regression) — never run test:visual natively
 
 # All packages at once
 pnpm build
 pnpm lint
 pnpm dev   # parallel dev mode
-pnpm sync:tokens  # Regenerates src/tokens.css from Figma
 ```
 
 ## Branch Strategy
@@ -78,21 +78,112 @@ Test files live alongside components: `ComponentName.test.tsx`. Configured with:
 - `vite-plugin-dts` excludes `**/*.test.tsx` so test files never appear in `dist/`
 - `tsconfig.json` keeps test files **included** (no exclude) so the IDE resolves test imports correctly; `"types": ["vitest/globals", "@testing-library/jest-dom"]` provides global types
 
+### Visual regression (`packages/ui-components/visual/`)
+
+Separate from the vitest suite — `theme-matrix.spec.ts` uses `@playwright/test` against a running Storybook, not happy-dom, because it screenshots the theme system end-to-end: square/rounded × light/dark, custom brand (which is also rounded, so that combination has a baseline too), Foundations/Colors, Foundations/Radius, `SideBySide`, `PortalTheming` (Modal via `createPortal` inheriting the active theme), `SystemColorScheme`, and `SideBySide` again under the `dir:rtl` Storybook global (passed via URL — `&globals=dir:rtl` — see the `RTL` test) to confirm logical properties/flex order actually mirror. `UncontrolledWithPersistence` is deliberately not screenshotted — it depends on `localStorage` state from a prior visit, which isn't reproducible pixel-for-pixel. `playwright.visual.config.ts` auto-starts `pnpm storybook` if one isn't already running on :6006.
+
+**Baselines are Linux-only, generated in Docker — never natively on macOS/Windows.** They live in `visual/theme-matrix.spec.ts-snapshots/`, suffixed `-chromium-linux.png` by Playwright's default `snapshotPathTemplate` (deliberately left at the default, not overridden to drop the platform suffix: running `pnpm --filter ui-components test:visual` natively on macOS should fail loudly with "snapshot missing" rather than silently generate a `-darwin.png` set that would diverge from what CI checks). The only supported way to generate or verify them is:
+```bash
+pnpm test:visual:docker                    # verify against committed baselines
+pnpm test:visual:docker --update-snapshots # regenerate after a deliberate visual change
+```
+This runs `scripts/visual-docker.sh`, which pulls `mcr.microsoft.com/playwright:v1.62.1-jammy` — pinned to the exact `@playwright/test` version in `packages/ui-components/package.json`, and the script refuses to run if they drift apart — with `--platform linux/amd64` (so it's identical on Apple Silicon, just emulated/slower) and mounts the repo with `node_modules` excluded via anonymous volumes (mounting the host's `node_modules` would leak macOS/arm64 native binaries — esbuild, rollup — into the Linux container and break the install). `pr-validation.yml`'s `visual-regression` job runs the same image directly as its `container:`, so local Docker runs and CI are the same environment, not just "similar."
+
+**Storybook's `Foundations/Colors` page needs an unusually long stability timeout** (`{ timeout: 15_000 }` on that one `toHaveScreenshot` call, vs. the 5s default): ~128 color swatches each resolve their value via `getComputedStyle()` in their own `useEffect` (see `Colors.stories.tsx`), and that many components settling independently makes the page's layout keep shifting for several seconds after `networkidle` — Playwright's built-in "wait for two consecutive stable screenshots" needs the extra runway, not a fixed sleep (a `waitForTimeout` was tried first and didn't reliably converge).
+
+**`visual/component-matrix.ts` + `component-matrix.spec.ts`** is the per-component visual suite — separate from `theme-matrix.spec.ts`, which only ever covered ThemeProvider/Foundations. One screenshot per component (`#storybook-root`, not `fullPage`, so files stay small and a diff is about the component, not the canvas) plus a second one under `&globals=dir:rtl` for the ~15 entries with real directional geometry (`rtl: true` in the manifest). `storyId` values were pulled from Storybook's own `/index.json` while it was running (`curl http://localhost:6006/index.json`), not computed by hand — don't try to derive a story ID from `toId(kind, name)` yourself when adding an entry; look it up the same way. Same coverage-guard pattern as `a11y.test.tsx`: a new `src/components/*` directory with no manifest entry (and not in `SKIP_LIST`, which only has `ThemeProvider`) fails `component-matrix.spec.ts`'s guard test.
+
+**`visual/a11y-browser.spec.ts`** reuses that same `component-matrix.ts` manifest — one source of truth for "what components exist," not a second list that can drift from the first — but instead of a screenshot, runs `@axe-core/playwright`'s `AxeBuilder` with **default rules** (`color-contrast` included) against each component in both `light` and `dark` (`&globals=colorScheme:X`). This is the counterpart to `a11y.test.tsx`'s `AXE_OPTIONS`, which disables `color-contrast` because happy-dom can't resolve `color-mix()`/custom properties with browser fidelity — this suite is what actually evaluates rendered contrast, in a real Chromium, and needs the Docker infra (`pnpm test:visual:docker`) since it's part of the `visual/` Playwright suite, not vitest. The first real run found genuine palette bugs (not test bugs) — see the `Fixed` entries under the relevant `CHANGELOG.md` version for the token/component changes that came out of it. When it fails, read the violation's `fgColor`/`bgColor`/`contrastRatio` from the assertion output and trace which token or component produced that exact hex before assuming the fix is "just disable the rule here too."
+
+`pnpm test` runs vitest once and exits (`vitest run`) — use `pnpm test:watch` for interactive watch mode. (Previously `test` ran in watch mode and only terminated in CI because GitHub Actions sets `CI=true`, which vitest respects — that was incidental, not by design.)
+
+### E2E — published package smoke test (`e2e/`)
+
+Everything else (vitest, `theme-matrix.spec.ts`) exercises the **workspace source** via a
+`pnpm --filter` link — none of it would have caught the class of bug in
+`hotfix/design-tokens-not-bundled` (design tokens missing from what actually got published).
+`e2e/consumer.spec.ts` + `scripts/e2e-consumer.sh` close that gap: the script builds
+`ui-components`, runs `pnpm pack` to produce a **real tarball**, installs that tarball (not a
+workspace link) into `e2e/consumer-app` — a plain Vite app that is deliberately **not** a
+member of the pnpm workspace (its own `pnpm-workspace.yaml` with `packages: []` stops pnpm's
+upward workspace-root search, so `pnpm install` there resolves the dependency from the
+tarball like any real consumer would) — builds that app, serves the static output, and runs
+Playwright assertions against real `getComputedStyle()` values: the `Button` background-color
+matches the literal `--color-primary` hex, and `border-radius` differs between
+`theme="square"` and `theme="rounded"` (proving both `tokens.css` and the `ThemeProvider`
+theme axis survived packaging), plus a check that no console/page errors fired (would catch
+an ESM/CJS resolution failure, since `ui-components`' `package.json` `exports` has no
+`require` condition). Run with `pnpm test:e2e`. `pnpm pack` doesn't work through
+`pnpm --filter` (`Unknown option: 'recursive'` — `--filter` puts pnpm in recursive mode,
+which `pack` doesn't support) — the script `cd`s into `packages/ui-components` first.
+`e2e/consumer-app/vendor/*.tgz` and its `pnpm-lock.yaml` are gitignored; both are regenerated
+from whatever's in `packages/ui-components` right now, so committing them would just be a
+stale snapshot.
+
 ## CI/CD
 
 Four workflows, one per environment:
 
 | Workflow | Trigger | Key steps |
 |----------|---------|-----------|
-| `pr-validation.yml` | PR to any branch | branch check → lint → **test** → build |
+| `pr-validation.yml` | PR to any branch | branch check → lint → **test** → build → **visual regression** (parallel job, own container) |
 | `dev.yml` | push/PR to `dev` | lint → **test** → build → storybook preview |
-| `qa.yml` | push/PR to `qa` | security audit \| lint → **test** → build → storybook QA |
-| `production.yml` | push/PR to `main` | security + lint + **test** + type-check → build → GitHub Pages → release |
+| `qa.yml` | push/PR to `qa` | security audit \| lint → **test** → build → **e2e-consumer** → storybook QA |
+| `production.yml` | push/PR to `main` | security + lint + **test** + type-check → build → **e2e-consumer** → publish/GitHub Pages → release |
+
+`e2e-consumer` (`qa.yml`/`production.yml` only, not `pr-validation.yml`/`dev.yml`) runs
+`pnpm test:e2e` — it's a release gate, not a per-PR check, since it needs its own Playwright
+browser install and a full build+pack+install+build cycle that's too slow to run on every
+`feature/* → dev` PR. `production.yml`'s `publish-npm` job explicitly `needs:` it, so a
+broken published package blocks the npm release, not just a warning after the fact.
 
 **Rules:**
 - All workflows use `pnpm install --frozen-lockfile` — never use `--no-frozen-lockfile` in CI.
 - Tests for **both** packages always run **before** build (fail-fast): `pnpm --filter @bip-design-systems/shared-utils test` then `pnpm --filter @bip-design-systems/ui-components test`.
 - Build order in every pipeline: `shared-utils → ui-components`.
+
+## Versioning
+
+`packages/ui-components` keeps a `CHANGELOG.md` (Keep a Changelog format), written and curated
+by hand — that part hasn't changed. What **is** automated now is the version *number* itself:
+[Changesets](https://github.com/changesets/changesets) computes the correct semver bump instead
+of a human guessing it (the original failure mode: `ui-components` sat at `0.2.8` with no
+changelog entry and nobody had noticed).
+
+- Every PR into `dev` that touches `packages/*/src` needs a changeset: run `pnpm changeset` (or
+  `pnpm exec changeset`), pick the affected package(s) and bump type (patch/minor/major),
+  write a one-line summary. This writes a small `.changeset/<random-name>.md` file — commit it
+  with the PR. If a change genuinely doesn't warrant a release (docs, CI, tests only),
+  `pnpm exec changeset add --empty` satisfies the gate without bumping anything.
+- **CI gate:** `pr-validation.yml`'s `changeset-check` job (PRs into `dev` only — `dev → qa` and
+  `qa → main` are promotions of code already versioned, not new changes) fails if
+  `packages/*/src` changed but no changeset is present, via `changeset status --since=origin/dev`.
+- **Still fully manual, unchanged:** the `CHANGELOG.md` prose itself. Add the entry under
+  `## [Unreleased]` in the same PR as the changeset, same as before. At release time, rename
+  `## [Unreleased]` to `## [x.y.z] - YYYY-MM-DD` and add a fresh empty `## [Unreleased]` above
+  it — **then** run `pnpm exec changeset version`, which reads all pending `.changeset/*.md`
+  files, computes the highest aggregate bump, writes it to `package.json`, and deletes the
+  consumed changeset files. Do the rename first: `changeset version`'s own changelog writer is
+  disabled (`"changelog": false` in `.changeset/config.json`) specifically because it doesn't
+  compose with this file — tested directly (see PR history): it prepends a `## x.y.z` block
+  (no brackets, `### Patch Changes` instead of `### Added`/`### Fixed`) **above** the `# Changelog`
+  intro paragraph, mangling the document. Changesets here only automates the version-number
+  math; the changelog stays exactly as curated as it's always been.
+- `production.yml`'s `create-release` job extracts that version's section from `CHANGELOG.md` as
+  the GitHub release body (via `awk`, matching the `## [x.y.z]` header) — keep entries scoped
+  under their version header so extraction doesn't bleed into the next one. This still works
+  unmodified because `changelog: false` above keeps `CHANGELOG.md` in the one format the `awk`
+  pattern has always expected.
+- `human-id` (a transitive dep of `@changesets/write`) and `read-yaml-file`'s `js-yaml` are
+  pinned via `pnpm.overrides` in the root `package.json` — `@changesets/cli@2.31.1` pulls
+  `human-id@4.x`, which is ESM-only and breaks `@changesets/write`'s CJS `require()`
+  (`ERR_REQUIRE_ESM`); `read-yaml-file` calls the removed `yaml.safeLoad` against whatever
+  `js-yaml` resolves to, which collided with this repo's own CVE-motivated `js-yaml@^4.3.0`
+  override (`read-yaml-file>js-yaml` scopes a `^3.14.1` override to just that dependency chain,
+  leaving the global pin alone everywhere else).
+- `shared-utils` is versioned by Changesets too (not ignored — it's a real, independently
+  published package, same as before), just without its own `CHANGELOG.md` — unchanged from
+  the prior manual-bump state.
 
 ## Component Patterns (`packages/ui-components`)
 
@@ -185,7 +276,7 @@ Export all sub-components from both `index.ts` and `src/index.ts`.
 
 ### Design tokens
 
-Single source of truth: `src/tokens.css` — defines all design tokens as CSS custom properties under `:root`. Auto-generated by `pnpm sync:tokens`. Do not edit manually.
+Single source of truth: `src/tokens.css` — defines all design tokens as CSS custom properties. **Hand-authored, edit directly.** Contains both the `:root` (light) values and the `[data-color-scheme='dark']` overrides for the color-scheme axis (see `ThemeProvider`). Both schemes live in this one file because the build concatenates every CSS Module into a single `dist/style.css`, and chunk order between separate files is not guaranteed.
 
 ```css
 /* Interaction */
@@ -213,7 +304,88 @@ Single source of truth: `src/tokens.css` — defines all design tokens as CSS cu
 
 To use in a `.module.css` file: `background-color: var(--color-primary);`
 
-To add a token: edit `tokens.css` directly (or run `pnpm sync:tokens` to regenerate from Figma). No registration in `cn.ts` required.
+To add a token: edit `tokens.css` directly — add the light value under `:root, [data-color-scheme='light']` and, if it should differ in dark mode, a matching override under `:root[data-color-scheme='dark'], [data-color-scheme='dark']`. **Both selectors are double** (`:root` + attribute-only) — `:root` alone only matches `<html>`, never a nested `<ThemeProvider>` wrapper `<div>`, so a bare `:root` block would silently fail to re-resolve derived `var()` references inside a nested provider. No registration in `cn.ts` required.
+
+**Non-color primitives** (`src/styles/primitives.css` — invariant to `data-theme`/`data-color-scheme`, consumed directly by components, no `[data-theme=...]` layer needed):
+```css
+/* Typography */
+--text-3xs, --text-2xs, --text-xs, --text-sm, --text-base, --text-lg, --text-xl, --text-2xl
+--leading-tight, --leading-normal, --leading-relaxed
+--font-normal, --font-medium, --font-semibold, --font-bold
+
+/* Motion — overridable via ThemeProvider `motion` prop */
+--duration-instant, --duration-fast, --duration-normal, --duration-slow
+--ease-standard, --ease-out, --ease-in
+
+/* Focus ring — overridable via ThemeProvider `focusRing` prop */
+--focus-ring-width, --focus-ring-offset, --focus-ring-color, --focus-ring
+
+/* Spacing — raw scale, see below */
+--space-0, --space-px, --space-0-5, --space-1, --space-1-5, --space-2, --space-2-5,
+--space-3, --space-3-5, --space-4, --space-5, --space-6, --space-7, --space-8, --space-9,
+--space-10, --space-12, --space-14, --space-16, --space-18, --space-22
+
+/* Z-index — not exposed on ThemeProvider (app-wide stacking, not a brand concern) */
+--z-base, --z-raised, --z-dropdown, --z-overlay, --z-modal, --z-toast
+```
+`--focus-ring` is a compound token (`0 0 0 var(--focus-ring-offset) var(--color-surface-1), 0 0 0 calc(...) var(--focus-ring-color)`) — components use `box-shadow: var(--focus-ring);` directly; a danger-variant focus ring redeclares only `--focus-ring-color: var(--color-danger);` in the same rule instead of duplicating the shadow. `prefers-reduced-motion: reduce` collapses all four `--duration-*` tokens to `0ms` globally in `index.css` — components don't need their own media query as long as their transitions reference `var(--duration-*)`.
+
+**Spacing** (`--space-*`, `src/styles/primitives.css`). All `padding`/`margin`/`gap` declarations in `.module.css` files use these tokens — **never a literal length**. The scale is Tailwind-style (name = value in units of 0.25rem/4px: `--space-3` = 0.75rem = 12px), derived from an audit of the values already in use, not invented — `src/styles/spacing.test.ts` enforces this the same way `on-text.test.ts` enforces the color rule, failing the build on any unmapped literal. Negation uses `calc(var(--space-n) * -1)` (see `Avatar`/`Calendar`/`Tooltip` for examples), never a separate negative token. A handful of true outliers (off the 2px grid, or one-off optical nudges) stay as literal values with an inline comment explaining why — `spacing.test.ts`'s `OUTLIER_VALUES` is the exhaustive list; a new outlier needs both the code comment and that entry, not a silent literal.
+
+**Density** (`--space-control-x/-y-{sm,md,lg}`, `src/styles/density.css`) — a semantic layer *inside* the spacing scale, same two-file mechanic as `theme` (`:root`/`[data-density='comfortable']` vs `[data-density='compact']`, both in one file for the same dist/style.css chunk-order reason as `themes.css`). It only covers the control-padding horquilla that `Button`/`Input`/`Textarea` share exactly and that `Select` partially shares — the rest of `--space-*` (gaps, surface padding) is intentionally invariant to density. `ThemeProvider`'s `density` prop stamps `data-density` on the wrapper (like `theme`); unlike `theme`/`colorScheme` it's **not** controlled/uncontrolled with its own persistence — it's a direct value, resolved the same way as `radius`/`focusRing`/`motion` (see `spacing` prop below). See `Foundations/Spacing` and the Storybook toolbar's `density` global.
+
+**Seed vs. derived tokens.** Within each color-scheme block, tokens are either:
+- **Seeds** — hex literals, one per color family (`--color-primary`, `--color-secondary`, `--color-danger`, `--color-info`, `--color-success`, `--color-warning`, `--color-unique`, `--color-link`, `--color-txt`, `--color-surface-1`, `--color-edge`, `--color-field`). These are the tokens a consumer overrides for brand theming.
+- **Derived** — everything else in that family (`-hover`, `-press`, `-light`, `-subtle`, `-text`, etc.), computed from the seed with `color-mix(in srgb, var(--color-x), black|white N%)`. Light derives toward `black`; dark derives toward `white`. Overriding a seed automatically recolors its whole family.
+- **Computed defaults** — `--color-txt-on-primary`, `-danger`, `-success`, `-warning`, `-info`, `-unique`: static hex fallback in `tokens.css` (can't be a `color-mix()` formula — WCAG contrast isn't expressible in CSS), but re-computed in JS by `ThemeProvider` via `src/lib/contrast.ts`'s `pickReadableText()` whenever the matching seed is overridden. See below.
+
+When adding a token, decide first which seed it derives from — don't add a new hex literal unless it genuinely doesn't belong to any existing family (e.g. `--color-selected`).
+
+**`Foundations/Colors` and `Foundations/Radius`** (Storybook, `src/foundations/`) document every token live — `tokens.data.ts` parses `tokens.css` at build time via `?raw` import (see `src/vite-env.d.ts`) and classifies each token as seed/derived, so the docs page cannot drift from the actual file. Never hand-maintain a duplicate token list for documentation purposes again (a prior `tailwind.tokens.js` doing exactly that was deleted for this reason).
+
+**`Foundations/Theming`** (`src/foundations/Theming.stories.tsx`) is a live playground, not a static doc page: `<input type="color">` per fill seed, a computed-contrast panel (ratio + AA pass/fail via `contrastRatio()`), a copy-to-clipboard `<ThemeProvider>` snippet, and a gallery of the components most likely to paint text over a fill (Button, Avatar, Tabs, Pagination). It's also how you manually verify a change to `ON_TEXT_VAR_MAP`/`--color-txt-on-*` didn't regress — try `colorPrimary: '#ffe066'` (a light yellow) and confirm every gallery item keeps readable text. The Storybook toolbar's `brand` global (`src/foundations/brandPresets.ts`) applies the same presets to *every* story, not just this one — `canary` (`#ffe066`) is the one to reach for when eyeballing any component under a light-override brand.
+
+**Brand theming via `ThemeProvider`.** `ThemeProvider` accepts a `tokens` prop (Ant Design `ConfigProvider`-style) to override seeds at runtime, no CSS build step required:
+
+```tsx
+<ThemeProvider theme="rounded" tokens={{ colorPrimary: '#e2007a', dark: { colorPrimary: '#ff4fa8' } }}>
+  <App />
+</ThemeProvider>
+```
+
+- Flat keys (`colorPrimary`, `colorDanger`, ..., `fontFamily`) apply to both schemes; nested `light`/`dark` keys refine per scheme and win over the flat value for the active `colorScheme`.
+- `radius` (sibling prop, not inside `tokens`) overrides the 6 semantic radius tokens independently of `theme`: `{ marker, field, control, surface, container, containerLg }`.
+- `cssVars` is the escape hatch for anything not in `TOKEN_VAR_MAP` (e.g. `{ '--color-selected': '#...' }`) — it wins over both `tokens` and `radius`.
+- Values are applied as inline CSS custom properties on the provider's wrapper `<div>`, so specificity always beats `tokens.css`.
+- Nested `<ThemeProvider>`s merge with their parent — a nested provider only overrides the seeds it declares.
+- Portalled components (Modal, Toast, DrawerPanel, Calendar, Odontogram popovers) read the resolved vars via `useThemeAttributes()` (returns `{ 'data-theme', 'data-color-scheme', 'data-density'?, style }` — `data-density` is only present when the provider fixes it) since `createPortal` moves them outside the provider's DOM subtree and they'd otherwise fall back to the default palette.
+- Adding a new seed: add it to `tokens.css` (both schemes) **and** to `TOKEN_VAR_MAP` in `ThemeProvider.tsx` — `tokens.test.ts` asserts every `TOKEN_VAR_MAP` entry points to a real token.
+- `focusRing` (sibling prop) overrides `{ width, offset, color }` against `--focus-ring-*` in `primitives.css` — the double box-shadow ring every focusable component uses (`box-shadow: var(--focus-ring)`), instead of the hand-written `0 0 0 2px var(--color-surface-1), 0 0 0 4px var(--color-primary)` that used to be duplicated per component.
+- `motion` (sibling prop) overrides `{ durationInstant, durationFast, durationNormal, durationSlow, easeStandard, easeOut, easeIn }` against `--duration-*`/`--ease-*` in `primitives.css`.
+- `spacing` (sibling prop) overrides `{ controlXSm, controlYSm, controlXMd, controlYMd, controlXLg, controlYLg }` against `--space-control-x/-y-*` in `density.css` (see § Spacing above). `density` (sibling prop, `'comfortable' | 'compact'`) stamps `data-density` directly — it isn't controlled/uncontrolled with its own persistence like `theme`, and a nested provider without its own `density` inherits the parent's rather than falling back to the CSS default.
+- All five "flat override" axes (`radius`, `focusRing`, `motion`, `spacing`, and the non-scoped keys of `tokens`) share one resolver — `resolveVarMap(overrides, VAR_MAP)` in `ThemeProvider.tsx` — so adding a sixth axis means adding one `*_VAR_MAP` constant and one `resolveVarMap()` call, not a new bespoke resolver.
+
+**Automatic contrast on fill seeds.** Overriding `colorPrimary`, `colorDanger`, `colorSuccess`, `colorWarning`, `colorInfo`, or `colorUnique` also recomputes the matching `--color-txt-on-*` token via `pickReadableText()` (WCAG relative luminance, picks white or `--color-txt`'s dark value against the override) — a light `colorPrimary` won't leave white text stranded on a light button. Components painting text over one of these fills must consume `--color-txt-on-*`, **never** `--color-txt-white`, which is reserved for a short, explicit allowlist of fixed-neutral surfaces that aren't brand seeds (`Sidebar` `.variantDark` on `--color-surface-4`, `Spinner`'s `.white` variant, `Avatar`'s non-brand `bg*` fallbacks) — see `Button`, `Avatar` (`bgPrimary`/`bgDanger`/`bgViolet`), `Stepper`, `Sidebar` (`variant="primary"`) for the `--color-txt-on-*` pattern. `src/styles/on-text.test.ts` fails the build if `--color-txt-white` shows up anywhere outside that allowlist. Dev builds also get a `console.warn` from `resolveTokenVars()` when an override's computed contrast falls below WCAG AA (4.5:1) against both text options.
+
+Two fixed-neutral surfaces that deliberately invert relative to the page — `--color-surface-inverse` / `--color-txt-on-inverse` (used by `Tooltip`'s default bubble) — follow the same seed/derived split as color but are **not** brand-overridable via `tokens`; they exist so a component can flip light↔dark independent of the active `colorScheme`.
+
+**`src/styles/contrast-tokens.test.ts`** checks the *default* AA contrast — `contrastRatio()` (`src/lib/contrast.ts`) applied to the actual hex values in `tokens.css` for each fill seed against its `--color-txt-on-*`, in both color schemes. This is separate from the `console.warn` above, which only fires for a runtime *override*: this test guards the shipped defaults themselves. Scope is deliberately narrow — only pairs that resolve to a literal hex in `tokens.css` (the 6 fill seeds + the base `--color-txt`/`--color-surface-1` pair). Derived tokens (`color-mix()` results — hover/press/light/subtle/text variants) can't be resolved to a concrete hex without a real CSS engine; their rendered contrast is covered instead by `@axe-core/playwright` with `color-contrast` enabled in `visual/a11y-browser.spec.ts` (see § Visual regression), which runs in an actual browser.
+
+**`system`, uncontrolled mode, persistence, SSR.** `theme`/`colorScheme` are controlled-or-uncontrolled (React standard pattern: prop wins if passed, else internal state seeded by `defaultTheme`/`defaultColorScheme`). `colorScheme` additionally accepts `'system'`, resolved live via `useSyncExternalStore` over `matchMedia('(prefers-color-scheme: dark)')` — **never stamped as `'system'` in the DOM**, always the resolved `light`/`dark`. `useThemeControls()` exposes `{ theme, colorScheme, resolvedColorScheme, setTheme, setColorScheme, toggleColorScheme }` for building a toggle without lifting state (no-op outside a provider or on a controlled axis). `storageKey` persists the uncontrolled preference to `localStorage` (best-effort, wrapped in `try/catch`) — the write effect skips whichever axis is controlled by a prop, symmetric with hydration already skipping it on read. `getThemeInitScript({ storageKey })` returns a plain-JS IIFE string to inline in `<head>` before hydration — the only way to avoid a FOUC, since it must run before React mounts.
+
+### RTL support
+
+Components use CSS logical properties (`margin-inline-start`/`-end`, `padding-inline-*`, `border-inline-*`, `inset-inline-*`, `text-align: start`/`end`) instead of physical `left`/`right` — these resolve automatically against the nearest `dir` attribute, no `[dir='rtl']` override block needed per component. `src/styles/rtl.test.ts` fails the build on a new physical property outside the documented exceptions, same enforcement pattern as `on-text.test.ts`/`spacing.test.ts`.
+
+**Two categories of `left`/`right` are deliberately *not* converted** — a handful of components expose an explicit physical placement as part of their public API, and mirroring it by `dir` would fight the consumer's choice, not honor it:
+- `DrawerPanel`'s `placement` (`'left' | 'right'`) and `Toast`'s `position` (`topLeft`/`topRight`/etc.) — a consumer asking for a right-side drawer or top-right toast wants that physical corner regardless of document direction.
+- `Tooltip`'s `position` (`'top' | 'bottom' | 'left' | 'right'`) is the same kind of physical choice — **but** `Tooltip`'s `align` (`'start' | 'center' | 'end'`) is a *different*, already-logical prop in the same component, and its CSS correctly uses `inset-inline-start`/`-end`. Don't conflate the two when touching `Tooltip.module.css`.
+
+Each of these files documents the exception inline; `rtl.test.ts`'s `PHYSICAL_BY_DESIGN_ALLOWLIST` is the authoritative list — a new physical `left`/`right` needs both the code comment and that entry, not a silent literal.
+
+**`transform: translateX(...)` has no logical equivalent** — CSS doesn't resolve it against `dir` the way it does `inset-inline-*`. `styles/rtl.css` defines `--rtl-x` (`1` in `:root`, `-1` under `[dir='rtl']`); a directionally-meaningful `translateX(Npx)` becomes `translateX(calc(var(--rtl-x) * Npx))` — see `Sidebar` (`.panelMobileClosed`, the mobile overlay sliding in from the inline-start edge) and `Toggle` (the checked-state thumb travel). Most `translateX` usages *don't* need this: a `translateX(-50%)` centering trick is symmetric, and `translateX` tied to one of the physical-placement props above (`DrawerPanel`, `Toast`) stays literal for the same reason those `left`/`right` values do. `ProgressBar`'s indeterminate loading animation is purely decorative (no directional meaning to convey) and is left physical too.
+
+`ThemeProvider`'s `dir` prop (`'ltr' | 'rtl'`) stamps the native `dir` HTML attribute on the wrapper — same mechanic as `density` (direct value, not controlled/uncontrolled with its own persistence; a nested provider without its own `dir` inherits the parent's). `useThemeAttributes()` includes `dir` only when set, for the same portal reasons as `data-density`. See the `dir` Storybook toolbar global and `visual/theme-matrix.spec.ts`'s `RTL` test for a live/screenshotted example — flex and grid layouts reverse visual order under `dir='rtl'` automatically; nothing component-specific is needed for that part.
 
 ### `displayName` requirement
 
@@ -231,6 +403,19 @@ CardHeader.displayName = 'CardHeader';
 ```
 
 ### Accessibility requirements
+
+**Automated a11y gate:** `src/a11y.test.tsx` renders one canonical instance of every component
+in `src/components/*` (plus its important interactive state — Modal/ConfirmDialog/DrawerPanel
+open, Dropdown menu open, Toast visible) and runs `jest-axe` against it as part of the normal
+`pnpm test` run — no separate command, no browser. A coverage guard in the same file fails the
+suite if a new component directory has no entry in the registry, so new components can't skip
+the check. `color-contrast` is disabled in the ruleset (`AXE_OPTIONS` in that file) — happy-dom
+can't resolve `color-mix()`/custom-property-based contrast with browser fidelity, and it's
+already covered by `src/lib/contrast.ts` + `contrast.test.ts` + the `Foundations/Theming` story.
+Portal-based components (Modal, ConfirmDialog, DrawerPanel, Toast) must be scanned via RTL's
+`baseElement`, not `container`, since `createPortal` renders them into `document.body`.
+`.storybook/preview.jsx`'s `parameters.a11y` mirrors the same rule config for the manual
+`addon-a11y` panel, so the two don't disagree.
 
 **Form components** must include:
 - `aria-invalid={error || undefined}` (not `aria-invalid="false"`) — valid on `<input type="checkbox">`, `<input type="text">`, `<textarea>`, `<select>`. **Do NOT add to `<input type="radio">`** — the `radio` role does not support `aria-invalid` per WAI-ARIA spec (jsx-a11y `role-supports-aria-props` will error). For radio, error state is communicated exclusively via `aria-describedby` → `role="alert"` span at the group level.
@@ -317,6 +502,8 @@ export const MyStory: Story = {
   ),
 };
 ```
+
+**No Tailwind classes.** The project migrated off Tailwind entirely — `className="flex gap-4 w-80"` etc. silently does nothing (no such classes exist in any built CSS) and was a real bug found across ~20 story files (dead classNames, layouts rendering unstyled). For one-off story layout, use inline `style={{ display: 'flex', gap: '1rem', width: '320px' }}`; for anything reused many times in one file, hoist a `const` style object. Only real design tokens (`.module.css` + `var(--color-*)`) belong in components themselves.
 
 ## TypeScript
 

@@ -1,2 +1,2 @@
-export { FileUpload } from './FileUpload';
-export type { FileUploadProps, RejectedFile } from './FileUpload';
+export { FileUpload } from './FileUpload.js';
+export type { FileUploadProps, RejectedFile } from './FileUpload.js';

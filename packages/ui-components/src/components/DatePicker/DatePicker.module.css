@@ -3,7 +3,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .containerFullWidth {
@@ -14,12 +14,12 @@
 
 .label {
   font-weight: 500;
-  transition: color 150ms;
+  transition: color var(--duration-fast);
 }
 
-.labelSm { font-size: 0.75rem; }
-.labelMd { font-size: 0.875rem; }
-.labelLg { font-size: 1rem; }
+.labelSm { font-size: var(--text-xs); }
+.labelMd { font-size: var(--text-sm); }
+.labelLg { font-size: var(--text-base); }
 
 .labelNormal  { color: var(--color-txt); }
 .labelError   { color: var(--color-danger); }
@@ -39,13 +39,13 @@
 
 .trigger {
   width: 100%;
-  text-align: left;
-  border-radius: 1px;
-  transition: background-color 150ms, color 150ms, border-color 150ms;
+  text-align: start;
+  border-radius: var(--radius-field);
+  transition: background-color var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
   border: 1px solid var(--color-primary);
   background-color: var(--color-field);
   /* extra right padding to leave room for the calendar icon */
-  padding-right: 2.25rem;
+  padding-inline-end: var(--space-9);
   outline: none;
   cursor: pointer;
 }
@@ -55,7 +55,7 @@
 }
 
 .trigger:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .triggerError {
@@ -63,7 +63,8 @@
 }
 
 .triggerError:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger);
+  --focus-ring-color: var(--color-danger);
+  box-shadow: var(--focus-ring);
 }
 
 .triggerError:hover:not(:disabled) {
@@ -77,9 +78,9 @@
 }
 
 /* Sizes */
-.triggerSm { padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; font-size: 0.75rem; }
-.triggerMd { padding-top: 0.625rem; padding-bottom: 0.625rem; padding-left: 1.25rem; font-size: 0.875rem; }
-.triggerLg { padding-top: 0.75rem;  padding-bottom: 0.75rem;  padding-left: 1.5rem;  font-size: 1.125rem; }
+.triggerSm { padding-top: var(--space-1-5); padding-bottom: var(--space-1-5); padding-inline-start: var(--space-3); font-size: var(--text-xs); }
+.triggerMd { padding-top: var(--space-2-5); padding-bottom: var(--space-2-5); padding-inline-start: var(--space-5); font-size: var(--text-sm); }
+.triggerLg { padding-top: var(--space-3);  padding-bottom: var(--space-3);  padding-inline-start: var(--space-6);  font-size: var(--text-lg); }
 
 /* ─── Trigger text span ───────────────────────────────────────────────────────── */
 
@@ -96,7 +97,7 @@
 .calendarIcon {
   pointer-events: none;
   position: absolute;
-  right: 0.625rem;
+  inset-inline-end: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-txt-secondary);
@@ -119,14 +120,14 @@
 
 .popover {
   position: absolute;
-  z-index: 50;
-  margin-top: 0.25rem;
+  z-index: var(--z-modal);
+  margin-top: var(--space-1);
   top: 100%;
-  left: 0;
-  border-radius: 0.5rem;
+  inset-inline-start: 0;
+  border-radius: var(--radius-surface);
   border: 1px solid var(--color-surface-3);
   background-color: var(--color-surface-1);
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ─── CalendarGrid ────────────────────────────────────────────────────────────── */
@@ -134,8 +135,8 @@
 .calendarGrid {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.75rem;
+  gap: var(--space-3);
+  padding: var(--space-3);
   width: 280px;
 }
 
@@ -148,10 +149,10 @@
 }
 
 .monthNavBtn {
-  padding: 0.25rem;
-  border-radius: 0.25rem;
+  padding: var(--space-1);
+  border-radius: var(--radius-control);
   color: var(--color-txt-secondary);
-  transition: background-color 150ms, color 150ms;
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -167,7 +168,7 @@
 }
 
 .monthNavBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .monthNavBtn:disabled {
@@ -176,22 +177,22 @@
 }
 
 .monthHeading {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-txt);
 }
 
 /* Heading button — opens month/year picker */
 .monthHeadingBtn {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-txt);
   background: none;
   border: none;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-control);
   cursor: pointer;
-  padding: 0.125rem 0.375rem;
-  transition: background-color 150ms, color 150ms;
+  padding: var(--space-0-5) var(--space-1-5);
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   outline: none;
 }
 
@@ -200,7 +201,7 @@
 }
 
 .monthHeadingBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 /* ─── Day grid ────────────────────────────────────────────────────────────────── */
@@ -208,15 +209,15 @@
 .dayGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.125rem;
+  gap: var(--space-0-5);
 }
 
 .columnHeader {
   text-align: center;
-  font-size: 0.625rem; /* 10px */
+  font-size: var(--text-3xs); /* 10px */
   font-weight: 600;
   color: var(--color-txt-secondary);
-  padding: 0.25rem 0;
+  padding: var(--space-1) var(--space-0);
 }
 
 /* ─── Day cell / button ───────────────────────────────────────────────────────── */
@@ -231,9 +232,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  transition: background-color 150ms, color 150ms;
+  border-radius: var(--radius-control);
+  font-size: var(--text-sm);
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -246,7 +247,7 @@
 }
 
 .dayBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .dayBtn:disabled {
@@ -256,7 +257,7 @@
 
 .dayBtnSelected {
   background-color: var(--color-primary);
-  color: var(--color-txt-white);
+  color: var(--color-txt-on-primary);
   font-weight: 600;
 }
 
@@ -278,13 +279,13 @@
 .monthPickerGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .monthPickerBtn {
   width: 100%;
-  padding: 0.5rem 0.25rem;
-  border-radius: 0.25rem;
+  padding: var(--space-2) var(--space-1);
+  border-radius: var(--radius-control);
   font-size: 0.8125rem;
   font-weight: 500;
   text-align: center;
@@ -292,7 +293,7 @@
   border: none;
   cursor: pointer;
   color: var(--color-txt);
-  transition: background-color 150ms, color 150ms;
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   outline: none;
 }
 
@@ -301,7 +302,7 @@
 }
 
 .monthPickerBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .monthPickerBtn:disabled {
@@ -324,7 +325,7 @@
 .clearBtn {
   pointer-events: auto;
   position: absolute;
-  right: 0.625rem;
+  inset-inline-end: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
@@ -333,10 +334,10 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.125rem;
-  border-radius: 0.25rem;
+  padding: var(--space-0-5);
+  border-radius: var(--radius-control);
   color: var(--color-txt-secondary);
-  transition: color 150ms, background-color 150ms;
+  transition: color var(--duration-fast), background-color var(--duration-fast);
   outline: none;
 }
 
@@ -346,7 +347,7 @@
 }
 
 .clearBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .clearBtnError {
@@ -362,16 +363,16 @@
 
 .todaySection {
   border-top: 1px solid var(--color-surface-3);
-  padding-top: 0.5rem;
+  padding-top: var(--space-2);
 }
 
 .todayBtn {
   width: 100%;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 500;
-  padding: 0.375rem 0;
-  border-radius: 0.25rem;
-  transition: background-color 150ms, color 150ms;
+  padding: var(--space-1-5) var(--space-0);
+  border-radius: var(--radius-control);
+  transition: background-color var(--duration-fast), color var(--duration-fast);
   background: none;
   border: none;
   cursor: pointer;
@@ -384,7 +385,7 @@
 }
 
 .todayBtn:focus-visible {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .todayBtn:disabled {
@@ -402,6 +403,6 @@
   color: var(--color-danger);
 }
 
-.helperSm { font-size: 0.75rem; }
-.helperMd { font-size: 0.75rem; }
-.helperLg { font-size: 0.875rem; }
+.helperSm { font-size: var(--text-xs); }
+.helperMd { font-size: var(--text-xs); }
+.helperLg { font-size: var(--text-sm); }

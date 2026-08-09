@@ -2,8 +2,8 @@
 
 import { forwardRef, useId, useContext } from 'react';
 import type { InputHTMLAttributes } from 'react';
-import { cn } from '../../lib/cn';
-import { RadioGroupContext } from './RadioGroupContext';
+import { cn } from '../../lib/cn.js';
+import { RadioGroupContext } from './RadioGroupContext.js';
 import styles from './Radio.module.css';
 
 export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {

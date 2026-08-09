@@ -3,7 +3,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .fullWidth { width: 100%; }
@@ -12,19 +12,19 @@
 
 .label {
   font-weight: 500;
-  transition: color 150ms;
+  transition: color var(--duration-fast);
 }
 
-.labelSm   { font-size: 0.75rem;  line-height: 1rem; }
-.labelMd   { font-size: 0.875rem; line-height: 1.25rem; }
-.labelLg   { font-size: 1rem;     line-height: 1.5rem; }
+.labelSm   { font-size: var(--text-xs);  line-height: 1rem; }
+.labelMd   { font-size: var(--text-sm); line-height: 1.25rem; }
+.labelLg   { font-size: var(--text-base);     line-height: 1.5rem; }
 
 .labelNormal  { color: var(--color-txt); }
 .labelFocused { color: var(--color-primary); }
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
-.required { color: var(--color-danger); margin-left: 0.125rem; }
+.required { color: var(--color-danger); margin-inline-start: var(--space-0-5); }
 
 /* ─── Select wrapper (for icon) ─────────────────────────────────────────────── */
 
@@ -36,9 +36,9 @@
 
 .select {
   appearance: none;
-  border-radius: 1px;
-  padding-right: 2rem;
-  transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+  border-radius: var(--radius-field);
+  padding-inline-end: var(--space-8);
+  transition: border-color var(--duration-fast), background-color var(--duration-fast), box-shadow var(--duration-fast);
   width: 100%;
 }
 
@@ -57,9 +57,13 @@
 
 /* ─── Sizes ─────────────────────────────────────────────────────────────────── */
 
-.sm { padding: 6px 2rem 6px 12px;  font-size: 0.75rem;  line-height: 1rem; }
-.md { padding: 10px 2rem 10px 16px; font-size: 0.875rem; line-height: 1.25rem; }
-.lg { padding: 12px 2rem 12px 24px; font-size: 1.125rem; line-height: 1.75rem; }
+/* Vertical padding y el left de sm/lg comparten la horquilla de densidad con
+   Button/Input/Textarea; el left de md (16px) es un valor propio de Select, no
+   --space-control-x-md (20px) — se deja en la escala cruda a propósito. El right
+   (--space-8) es el hueco fijo para el chevron, ajeno a densidad. */
+.sm { padding: var(--space-control-y-sm) var(--space-8) var(--space-control-y-sm) var(--space-control-x-sm);  font-size: var(--text-xs);  line-height: 1rem; }
+.md { padding: var(--space-control-y-md) var(--space-8) var(--space-control-y-md) var(--space-4); font-size: var(--text-sm); line-height: 1.25rem; }
+.lg { padding: var(--space-control-y-lg) var(--space-8) var(--space-control-y-lg) var(--space-control-x-lg); font-size: var(--text-lg); line-height: 1.75rem; }
 
 /* ─── Variant: outlined ─────────────────────────────────────────────────────── */
 
@@ -68,9 +72,9 @@
   background-color: var(--color-field);
 }
 .outlined:hover:not(:disabled) { border-color: var(--color-primary); }
-.outlined:focus-visible { border-color: var(--color-primary); box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.outlined:focus-visible { border-color: var(--color-primary); box-shadow: var(--focus-ring); }
 .outlined.error { border-color: var(--color-danger); }
-.outlined.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+.outlined.error:focus-visible  { --focus-ring-color: var(--color-danger); box-shadow: var(--focus-ring); }
 
 /* ─── Variant: filled ───────────────────────────────────────────────────────── */
 
@@ -79,9 +83,9 @@
   background-color: var(--color-secondary);
 }
 .filled:hover:not(:disabled) { background-color: var(--color-secondary-hover); }
-.filled:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary); }
+.filled:focus-visible { box-shadow: var(--focus-ring); }
 .filled.error { background-color: var(--color-danger-light); }
-.filled.error:focus-visible { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-danger); }
+.filled.error:focus-visible  { --focus-ring-color: var(--color-danger); box-shadow: var(--focus-ring); }
 
 /* ─── Variant: bare ─────────────────────────────────────────────────────────── */
 
@@ -89,7 +93,7 @@
   border: none;
   border-bottom: 2px solid var(--color-primary);
   background-color: transparent;
-  border-radius: 0;
+  border-radius: var(--radius-none);
 }
 .bare:hover:not(:disabled) { border-bottom-color: var(--color-primary-hover); }
 .bare:focus-visible { box-shadow: none; border-bottom-color: var(--color-primary-hover); }
@@ -101,10 +105,10 @@
 .chevron {
   pointer-events: none;
   position: absolute;
-  right: 0.625rem;
+  inset-inline-end: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
-  transition: color 150ms, transform 150ms;
+  transition: color var(--duration-fast), transform var(--duration-fast);
 }
 
 .chevronNormal   { color: var(--color-txt-secondary); }
@@ -119,9 +123,9 @@
 
 /* ─── Helper / Error message ────────────────────────────────────────────────── */
 
-.helperSm { font-size: 0.75rem;  line-height: 1rem; }
-.helperMd { font-size: 0.75rem;  line-height: 1rem; }
-.helperLg { font-size: 0.875rem; line-height: 1.25rem; }
+.helperSm { font-size: var(--text-xs);  line-height: 1rem; }
+.helperMd { font-size: var(--text-xs);  line-height: 1rem; }
+.helperLg { font-size: var(--text-sm); line-height: 1.25rem; }
 
 .helperText { color: var(--color-txt-secondary); }
 .errorText  { color: var(--color-danger); }

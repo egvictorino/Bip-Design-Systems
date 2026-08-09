@@ -1,2 +1,2 @@
-export { EmptyState } from './EmptyState';
-export type { EmptyStateProps } from './EmptyState';
+export { EmptyState } from './EmptyState.js';
+export type { EmptyStateProps } from './EmptyState.js';
