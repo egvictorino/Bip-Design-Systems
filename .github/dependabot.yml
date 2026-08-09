@@ -4,6 +4,12 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+    # Sin esto Dependabot apunta a la rama default (main), y el guard `validate-pr` de
+    # pr-validation.yml rechaza todo PR hacia main que no venga de `qa` o `hotfix/*` — el
+    # prefijo `dependabot/` de sus ramas es fijo, así que fallaban antes de evaluar nada.
+    # Además `dev` es el punto de entrada del flujo documentado (feature → dev → qa → main),
+    # y así cada bump pasa por el gate `e2e-consumer` de qa antes de llegar a producción.
+    target-branch: 'dev'
     open-pull-requests-limit: 10
     groups:
       storybook:
@@ -26,8 +32,32 @@ updates:
     # revisar el override correspondiente antes de mergear, no solo el changelog del PR.
     ignore:
       - dependency-name: 'human-id'
+      # Los siguientes majors están diferidos a propósito. Se ignoran SOLO en
+      # `semver-major`: minor y patch (incluidos parches de seguridad) siguen llegando.
+      #
+      # ESLint 9+ eliminó el soporte de `.eslintrc.json`, que es lo que usa este repo —
+      # subir implica migrar a flat config, proyecto aparte. Subir el grupo también
+      # desanclaría el pin de eslint-plugin-storybook@0.12.0 que CLAUDE.md documenta como
+      # deliberado (las versiones nuevas son ESM-only y rompen con .eslintrc).
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@typescript-eslint/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'eslint-plugin-storybook'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'eslint-plugin-react-hooks'
+        update-types: ['version-update:semver-major']
+      # @types/react 19 tipa `inert` como boolean y rechaza el `inert={''}` de Navbar.tsx,
+      # que existe por el augment en src/react-inert.d.ts (bajo React 18 en runtime un
+      # `true` se descarta silenciosamente). Necesita una solución válida para 18 y 19.
+      - dependency-name: '@types/react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/react-dom'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'weekly'
+    # Mismo motivo que en el ecosistema npm de arriba.
+    target-branch: 'dev'
