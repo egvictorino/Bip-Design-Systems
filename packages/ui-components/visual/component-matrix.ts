@@ -12,14 +12,6 @@
  *
  * `rtl: true` marca el subset (~15) con geometría direccional real — el resto no gana nada
  * de un segundo shot en RTL porque no tiene margin/padding/inset direccional que espejar.
- *
- * Excepción: las 4 entradas de Link/Popover/Slider/VisuallyHidden se calcularon con el
- * algoritmo `toId(kind, name)` (título en kebab-case + `--` + nombre de export en
- * kebab-case) en vez de extraerse de un `index.json` real — Storybook no pudo levantar en
- * el entorno donde se agregaron (falta un binario nativo de `oxc-parser` para esa
- * plataforma). Sus títulos/exports son simples y sin colisión, así que el cálculo debería
- * coincidir, pero conviene verificarlas contra `/index.json` la próxima vez que Storybook
- * corra limpio (local o en el job de Docker) y quitar esta nota.
  */
 export interface ComponentMatrixEntry {
   dir: string;
