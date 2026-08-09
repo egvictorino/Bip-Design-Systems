@@ -105,7 +105,7 @@
     "postcss": "^8.5.12",
     "publint": "^0.3.23",
     "rollup-plugin-preserve-directives": "^0.4.0",
-    "size-limit": "^11.2.0",
+    "size-limit": "^13.0.3",
     "storybook": "^10.5.7",
     "typescript": "^5.3.3",
     "vite": "^6.4.3",
