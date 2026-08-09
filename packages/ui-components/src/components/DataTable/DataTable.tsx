@@ -292,7 +292,7 @@ export function DataTable<T = Record<string, unknown>>({
     >
       {/* Screen reader live region — announces result count changes */}
       <span className="sr-only" aria-live="polite" aria-atomic="true">
-        {!loading && `${paginatedData.length} de ${sortedData.length} resultados`}
+        {!loading && t.dataTable.resultsSummary(paginatedData.length, sortedData.length)}
       </span>
 
       {/* Toolbar: Search + Column visibility */}
@@ -317,7 +317,7 @@ export function DataTable<T = Record<string, unknown>>({
                 aria-expanded={colPanelOpen}
                 aria-controls={colPanelId}
               >
-                Columnas
+                {t.dataTable.columnVisibilityToggle}
               </Button>
               {colPanelOpen && (
                 <div
@@ -353,7 +353,7 @@ export function DataTable<T = Record<string, unknown>>({
       {selectable && selectedKeys.size > 0 && (
         <div className={styles.bulkBar}>
           <span className={styles.bulkCount}>
-            {selectedKeys.size} seleccionado{selectedKeys.size !== 1 ? 's' : ''}
+            {t.dataTable.selectedCount(selectedKeys.size)}
           </span>
           <div className={styles.bulkActions}>
             {bulkActions?.map((action, i) => (
@@ -367,7 +367,7 @@ export function DataTable<T = Record<string, unknown>>({
               </Button>
             ))}
             <Button size="sm" variant="secondary" onClick={() => setSelectedKeys(new Set())}>
-              Limpiar
+              {t.dataTable.clearSelection}
             </Button>
           </div>
         </div>

@@ -35,8 +35,12 @@ export interface BipLocale {
     emptyMessage: string;
     searchPlaceholder: string;
     columnVisibility: string;
+    columnVisibilityToggle: string;
     selectAllRows: string;
     selectRow: (rowIndex: number) => string;
+    resultsSummary: (shown: number, total: number) => string;
+    selectedCount: (count: number) => string;
+    clearSelection: string;
   };
 
   datePicker: {
@@ -52,6 +56,7 @@ export interface BipLocale {
     calendar: string;
     today: string;
     monthNames: string[];
+    monthNamesShort: string[];
     dayLabels: string[];
   };
 
@@ -67,6 +72,7 @@ export interface BipLocale {
     selectRange: string;
     clearSelection: string;
     monthNames: string[];
+    monthNamesShort: string[];
     dayLabels: string[];
   };
 
@@ -81,12 +87,21 @@ export interface BipLocale {
 
   fileUpload: {
     remove: (fileName: string) => string;
+    dropHere: string;
+    dragHere: string;
+    clickToSelect: string;
+    formats: (accept: string) => string;
+    maxSize: (size: string) => string;
   };
 
   input: {
     clear: string;
     showPassword: string;
     hidePassword: string;
+  };
+
+  link: {
+    opensInNewTab: string;
   };
 
   modal: {
@@ -97,8 +112,10 @@ export interface BipLocale {
     placeholder: string;
     searchPlaceholder: string;
     selectAll: string;
+    selectVisible: (count: number) => string;
     remove: (label: string) => string;
     overflow: (count: number) => string;
+    overflowChip: (count: number) => string;
     removeAll: string;
     search: string;
     loading: string;
@@ -144,6 +161,15 @@ export interface BipLocale {
     conditions: string;
     noteWithState: (toothNumber: number, hasNote: boolean) => string;
     imagesWithCount: (toothNumber: number, count: number) => string;
+    toothLabel: (toothNumber: number, isMissing: boolean, name: string) => string;
+    noteLabel: string;
+    imagesLabel: (count: number) => string;
+    notePlaceholder: string;
+    save: string;
+    imagesGalleryTitle: (toothNumber: number) => string;
+    cancel: string;
+    add: string;
+    addImage: string;
   };
 
   pagination: {
@@ -181,6 +207,10 @@ export interface BipLocale {
     nav: string;
   };
 
+  table: {
+    emptyMessage: string;
+  };
+
   timePicker: {
     placeholder: string;
     openPicker: string;
@@ -209,6 +239,10 @@ export interface BipLocale {
     monthLabel: (month: string) => string;
     calendarLabel: string;
     today: string;
+    createEvent: string;
+    overflowCount: (count: number) => string;
+    noEventsFiltered: string;
+    noEventsUpcoming: string;
   };
 }
 

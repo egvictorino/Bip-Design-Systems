@@ -40,7 +40,11 @@ export const ToothSVG = React.memo<ToothSVGProps>(({
     return CONDITION_FILL_CLASS[data.surfaces?.[surface] ?? 'healthy'];
   };
 
-  const toothLabel = `Diente ${toothNumber}${isMissing ? ' - Ausente' : ''}: ${t.odontogram.toothNames[toothNumber] ?? ''}`;
+  const toothLabel = t.odontogram.toothLabel(
+    toothNumber,
+    isMissing,
+    t.odontogram.toothNames[toothNumber] ?? ''
+  );
 
   return (
     <svg

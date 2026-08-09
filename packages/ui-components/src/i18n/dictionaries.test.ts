@@ -24,6 +24,27 @@ function callEveryFunction(locale: BipLocale, path = ''): void {
   }
 }
 
+/**
+ * Recursively collects a leaf path for every value in the dictionary — nested keys sorted at
+ * each level, arrays/functions/primitives marked distinctly (`section.key[]`, `section.key()`,
+ * `section.key`) so a missing/extra *nested* key (e.g. one `BipLocale` section present in
+ * esMX but not in enUS) fails the shape comparison below. The old version only compared
+ * `Object.keys()` at the top level, which would not catch that class of drift.
+ */
+function collectShape(value: unknown, path: string, out: string[]): void {
+  if (Array.isArray(value)) {
+    out.push(`${path}[]`);
+  } else if (typeof value === 'function') {
+    out.push(`${path}()`);
+  } else if (value && typeof value === 'object') {
+    for (const key of Object.keys(value as Record<string, unknown>).sort()) {
+      collectShape((value as Record<string, unknown>)[key], path ? `${path}.${key}` : key, out);
+    }
+  } else {
+    out.push(path);
+  }
+}
+
 describe('esMX dictionary', () => {
   it('every interpolation function returns a non-empty string', () => {
     callEveryFunction(esMX);
@@ -35,7 +56,11 @@ describe('enUS dictionary', () => {
     callEveryFunction(enUS);
   });
 
-  it('matches the shape of esMX (same section/key set)', () => {
-    expect(Object.keys(enUS).sort()).toEqual(Object.keys(esMX).sort());
+  it('matches the shape of esMX (same section/key set, recursively)', () => {
+    const esShape: string[] = [];
+    const enShape: string[] = [];
+    collectShape(esMX, '', esShape);
+    collectShape(enUS, '', enShape);
+    expect(enShape.sort()).toEqual(esShape.sort());
   });
 });

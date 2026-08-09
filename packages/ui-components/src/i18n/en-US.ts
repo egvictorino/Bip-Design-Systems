@@ -28,8 +28,12 @@ export const enUS: BipLocale = {
     emptyMessage: 'No data available',
     searchPlaceholder: 'Search...',
     columnVisibility: 'Column visibility',
+    columnVisibilityToggle: 'Columns',
     selectAllRows: 'Select all rows on this page',
     selectRow: (rowIndex) => `Select row ${rowIndex}`,
+    resultsSummary: (shown, total) => `${shown} of ${total} results`,
+    selectedCount: (count) => `${count} selected`,
+    clearSelection: 'Clear',
   },
 
   datePicker: {
@@ -47,6 +51,10 @@ export const enUS: BipLocale = {
     monthNames: [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December',
+    ],
+    monthNamesShort: [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ],
     dayLabels: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
   },
@@ -66,6 +74,10 @@ export const enUS: BipLocale = {
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December',
     ],
+    monthNamesShort: [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ],
     dayLabels: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
   },
 
@@ -80,12 +92,21 @@ export const enUS: BipLocale = {
 
   fileUpload: {
     remove: (fileName) => `Remove ${fileName}`,
+    dropHere: 'Drop the file here',
+    dragHere: 'Drag your file here',
+    clickToSelect: 'or click to select',
+    formats: (accept) => `Formats: ${accept}`,
+    maxSize: (size) => `Max. ${size}`,
   },
 
   input: {
     clear: 'Clear field',
     showPassword: 'Show password',
     hidePassword: 'Hide password',
+  },
+
+  link: {
+    opensInNewTab: '(opens in a new tab)',
   },
 
   modal: {
@@ -96,8 +117,10 @@ export const enUS: BipLocale = {
     placeholder: 'Select...',
     searchPlaceholder: 'Search...',
     selectAll: 'Select all',
+    selectVisible: (count) => `Select visible (${count})`,
     remove: (label) => `Remove ${label}`,
     overflow: (count) => `+${count} more`,
+    overflowChip: (count) => `+${count} more`,
     removeAll: 'Remove all selections',
     search: 'Search options',
     loading: 'Loading options',
@@ -219,6 +242,16 @@ export const enUS: BipLocale = {
       `Tooth ${toothNumber} note${hasNote ? ' — has note' : ''}`,
     imagesWithCount: (toothNumber, count) =>
       `Tooth ${toothNumber} images${count > 0 ? ` — ${count} image${count > 1 ? 's' : ''}` : ''}`,
+    toothLabel: (toothNumber, isMissing, name) =>
+      `Tooth ${toothNumber}${isMissing ? ' - Missing' : ''}: ${name}`,
+    noteLabel: 'Note',
+    imagesLabel: (count) => `Images${count > 0 ? ` (${count})` : ''}`,
+    notePlaceholder: 'Write a note...',
+    save: 'Save',
+    imagesGalleryTitle: (toothNumber) => `Images — Tooth ${toothNumber}`,
+    cancel: 'Cancel',
+    add: 'Add',
+    addImage: 'Add image',
   },
 
   pagination: {
@@ -254,6 +287,10 @@ export const enUS: BipLocale = {
 
   stepper: {
     nav: 'Process steps',
+  },
+
+  table: {
+    emptyMessage: 'No records to show.',
   },
 
   timePicker: {
@@ -294,5 +331,9 @@ export const enUS: BipLocale = {
     monthLabel: (month) => `Month ${month}`,
     calendarLabel: 'Calendar',
     today: 'Today',
+    createEvent: 'Create event',
+    overflowCount: (count) => `+${count} more`,
+    noEventsFiltered: 'No events with the selected filters',
+    noEventsUpcoming: 'No events in the next 30 days',
   },
 };

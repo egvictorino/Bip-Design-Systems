@@ -1,0 +1,38 @@
+name: Feature Request
+description: Proponer un componente, utilidad, o mejora nueva
+labels: ['enhancement']
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Paquete afectado
+      options:
+        - '@bip-design-systems/ui-components'
+        - '@bip-design-systems/shared-utils'
+        - Otro / infraestructura del repo
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema que resuelve
+      description: Qué caso de uso no está cubierto hoy.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Propuesta
+      description: Cómo te imaginas la API o el comportamiento (props, variantes, ejemplo de uso).
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Otras formas de resolverlo que descartaste, y por qué.
+    validations:
+      required: false
