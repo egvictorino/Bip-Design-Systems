@@ -36,10 +36,13 @@ jobs:
             exit 1
           fi
 
-          if [[ "$TARGET" == "dev" ]] && [[ "$SOURCE" != "feature/"* ]] && [[ "$SOURCE" != "hotfix/"* ]] && [[ "$SOURCE" != "main" ]]; then
-            echo "❌ ERROR: Solo se puede mergear a 'dev' desde 'feature/*', 'hotfix/*' o 'main'"
+          # `dependabot/*` entra aquí porque .github/dependabot.yml apunta a dev — el prefijo
+          # de esas ramas lo genera Dependabot y no es configurable, así que el guard tiene
+          # que reconocerlo explícitamente o sus PRs nunca podrían pasar.
+          if [[ "$TARGET" == "dev" ]] && [[ "$SOURCE" != "feature/"* ]] && [[ "$SOURCE" != "hotfix/"* ]] && [[ "$SOURCE" != "dependabot/"* ]] && [[ "$SOURCE" != "main" ]]; then
+            echo "❌ ERROR: Solo se puede mergear a 'dev' desde 'feature/*', 'hotfix/*', 'dependabot/*' o 'main'"
             echo "Tu PR es: $SOURCE → $TARGET"
-            echo "Debe ser: feature/* → dev  |  hotfix/* → dev  |  main → dev"
+            echo "Debe ser: feature/* → dev  |  hotfix/* → dev  |  dependabot/* → dev  |  main → dev"
             exit 1
           fi
 
