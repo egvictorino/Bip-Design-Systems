@@ -63,11 +63,6 @@ const helperSizeStyles: Record<NonNullable<DateRangePickerProps['size']>, string
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const MONTH_NAMES_SHORT = [
-  'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-  'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
-];
-
 const isInRange = (date: Date, from: Date | null, to: Date | null): boolean => {
   if (!from || !to) return false;
   return date > from && date < to;
@@ -247,7 +242,7 @@ const RangeCalendarGrid = ({
 
         {/* 4×3 month grid */}
         <div role="grid" aria-label={t.dateRangePicker.selectMonth} className={styles.monthPickerGrid}>
-          {MONTH_NAMES_SHORT.map((name, idx) => {
+          {t.dateRangePicker.monthNamesShort.map((name, idx) => {
             const isCurrent = pickerYear === year && idx === month;
             const disabled = isMonthDisabled(idx);
             return (

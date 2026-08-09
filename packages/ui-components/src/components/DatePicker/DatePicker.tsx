@@ -50,11 +50,6 @@ const helperSizeClass: Record<NonNullable<DatePickerProps['size']>, string> = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const MONTH_NAMES_SHORT = [
-  'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-  'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
-];
-
 // ─── CalendarGrid (internal) ──────────────────────────────────────────────────
 
 interface CalendarGridProps {
@@ -224,7 +219,7 @@ const CalendarGrid = ({
 
         {/* 4×3 month grid */}
         <div role="grid" aria-label={t.datePicker.selectMonth} className={styles.monthPickerGrid}>
-          {MONTH_NAMES_SHORT.map((name, idx) => {
+          {t.datePicker.monthNamesShort.map((name, idx) => {
             const isCurrent = pickerYear === year && idx === month;
             const disabled = isMonthDisabled(idx);
             return (

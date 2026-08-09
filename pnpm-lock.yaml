@@ -83,6 +83,15 @@ importers:
 
   packages/shared-utils:
     devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.18.5
+        version: 0.18.5
+      '@vitest/coverage-v8':
+        specifier: ^3.2.7
+        version: 3.2.7(vitest@3.2.7(@types/node@20.19.33)(happy-dom@20.8.9)(jiti@2.7.0)(jsdom@28.1.0))
+      publint:
+        specifier: ^0.3.23
+        version: 0.3.23
       typescript:
         specifier: 5.3.3
         version: 5.3.3

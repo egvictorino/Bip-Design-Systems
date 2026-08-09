@@ -108,6 +108,7 @@ pnpm dev     # Modo desarrollo paralelo
 | `Checkbox` | Checkbox accesible con soporte para estado indeterminado |
 | `Radio` | Radio button con label y helper text |
 | `Toggle` | Interruptor on/off con label integrado |
+| `Slider` | `<input type="range">` estilizado, con label, helper text, `error` y valor visible opcional |
 | `DatePicker` | Selector de fecha con calendario, rangos min/max y accesibilidad completa |
 | `TimePicker` | Selector de hora con columnas H/M scrollables y `step` configurable |
 | `DateRangePicker` | Selector de rango de fechas (inicio + fin) con dos calendarios |
@@ -148,6 +149,7 @@ pnpm dev     # Modo desarrollo paralelo
 | `Pagination` | Paginador con salto a primera/última página |
 | `Dropdown` | Menú desplegable compound: `DropdownTrigger`, `DropdownMenu`, `DropdownItem`, `DropdownDivider` — navegación por teclado completa |
 | `Accordion` | Panel expandible compound: `AccordionItem`, `AccordionTrigger`, `AccordionContent` |
+| `Link` | Ancla estilizada · `underline` (`always`/`hover`/`none`), `disabled`, `external` (agrega `target="_blank"`, `rel="noopener noreferrer"` y un hint accesible de "abre en pestaña nueva") |
 
 ### Overlay
 
@@ -157,6 +159,7 @@ pnpm dev     # Modo desarrollo paralelo
 | `ConfirmDialog` | Diálogo de confirmación con acciones positiva/negativa |
 | `DrawerPanel` | Panel deslizable lateral con overlay de fondo |
 | `Tooltip` | Tooltip posicionable con delay configurable |
+| `Popover` | Overlay genérico compound: `PopoverTrigger`, `PopoverContent` (`placement`: `bottom-start`/`bottom-end`/`top-start`/`top-end`) — cierra con click afuera o Escape |
 
 ### Navegación lateral
 
@@ -181,7 +184,8 @@ pnpm dev     # Modo desarrollo paralelo
 | `Divider` | Línea separadora horizontal o vertical con etiqueta opcional |
 | `EmptyState` | Estado vacío con icono, título, descripción y acción principal |
 | `Odontogram` | Odontograma interactivo para registrar condiciones dentales por pieza |
-| `ThemeProvider` | Provider de tema — controla forma (`square`/`rounded`), esquema de color (`light`/`dark`) y marca (`tokens`). Ver [Theming](#theming) |
+| `VisuallyHidden` | Renderiza contenido en el DOM, accesible para lectores de pantalla, pero visualmente oculto |
+| `ThemeProvider` | Provider de tema — controla forma (`square`/`rounded`), esquema de color (`light`/`dark`), marca (`tokens`) e idioma (`locale`). Ver [Theming](#theming) e [Internacionalización](#internacionalización-i18n) |
 
 ---
 
@@ -472,6 +476,9 @@ import { ThemeProvider, enUS } from '@bip-design-systems/ui-components';
   con `es-MX` por defecto vía `useBipLocale()`.
 - Para escribir tu propio diccionario (otro idioma completo, no solo un override), importa el
   tipo `BipLocale` y usa `esMX`/`enUS` como referencia de forma.
+- `mergeLocale(base, override?)` — el mismo merge de un nivel que usa `<ThemeProvider>`
+  internamente — también se exporta desde el root del paquete, para componer un
+  `PartialBipLocale` por fuera de `<ThemeProvider>` si lo necesitas.
 - Ver la story `Foundations/I18n` en Storybook para un playground en vivo con la galería de
   componentes más cargados de texto (Calendar, DatePicker, MultiSelect, Pagination, DataTable).
 
@@ -594,7 +601,10 @@ import { Button } from '@bip-design-systems/ui-components/Button';
 ```
 
 Útil para tree-shaking manual o para evitar cargar el paquete completo si solo necesitas un
-componente puntual.
+componente puntual. Este wildcard `./*` solo cubre componentes (`dist/components/*/*.js`) — los
+hooks (`useDisclosure`, `useFocusTrap`, ...), `cn`, `contrastRatio` y los exports de i18n (`esMX`,
+`enUS`, `useBipLocale`, `mergeLocale`) no tienen subpath propio y deben importarse desde la raíz
+del paquete.
 
 ### 4. Usar los componentes
 

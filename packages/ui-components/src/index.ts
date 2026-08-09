@@ -33,7 +33,7 @@ export type {
 
 export { contrastRatio, pickReadableText } from './lib/contrast.js';
 
-export { esMX, enUS, useBipLocale } from './i18n/index.js';
+export { esMX, enUS, useBipLocale, mergeLocale } from './i18n/index.js';
 export type { BipLocale, PartialBipLocale } from './i18n/index.js';
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/Accordion/index.js';
@@ -266,6 +266,22 @@ export type { TextProps, TextSize, TextWeight, TextColor, TextAlign } from './co
 
 export { Heading } from './components/Heading/index.js';
 export type { HeadingProps, HeadingLevel, HeadingSize, HeadingWeight } from './components/Heading/index.js';
+
+export { Slider } from './components/Slider/index.js';
+export type { SliderProps } from './components/Slider/index.js';
+
+export { Popover, PopoverTrigger, PopoverContent } from './components/Popover/index.js';
+export type {
+  PopoverProps,
+  PopoverTriggerProps,
+  PopoverContentProps,
+} from './components/Popover/index.js';
+
+export { Link } from './components/Link/index.js';
+export type { LinkProps } from './components/Link/index.js';
+
+export { VisuallyHidden } from './components/VisuallyHidden/index.js';
+export type { VisuallyHiddenProps } from './components/VisuallyHidden/index.js';
 
 export { cn } from './lib/cn.js';
 

@@ -1,0 +1,52 @@
+name: Bug Report
+description: Reportar un error en algún paquete del monorepo
+labels: ['bug']
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Paquete afectado
+      options:
+        - '@bip-design-systems/ui-components'
+        - '@bip-design-systems/shared-utils'
+        - Otro / infraestructura del repo
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Versión
+      placeholder: 'ej. 0.3.0'
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del bug
+      description: Qué esperabas que pasara y qué pasó en realidad.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Pasos para reproducir
+      description: Idealmente un enlace a un repro mínimo (CodeSandbox, StackBlitz) o un fragmento de código.
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno
+      placeholder: |
+        - React: 18.2.0
+        - Navegador/Node: ...
+        - SO: ...
+    validations:
+      required: false

@@ -105,7 +105,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
         {/* Header */}
         <div className={styles.popoverHeader}>
           <span className={styles.popoverTitle}>
-            Imágenes — Diente {toothNumber}
+            {t.odontogram.imagesGalleryTitle(toothNumber)}
             {images.length > 0 && (
               <span className={styles.thumbnailCount}>
                 ({images.length})
@@ -235,7 +235,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
                   onClick={handleAddCancel}
                   className={styles.cancelButton}
                 >
-                  Cancelar
+                  {t.odontogram.cancel}
                 </button>
               )}
               <button
@@ -243,7 +243,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
                 disabled={!addUrl}
                 className={styles.confirmButton}
               >
-                Agregar
+                {t.odontogram.add}
               </button>
             </div>
           </div>
@@ -267,7 +267,7 @@ export const ImagePopover = React.memo<ImagePopoverProps>(({
               <line x1="8" y1="2" x2="8" y2="14" />
               <line x1="2" y1="8" x2="14" y2="8" />
             </svg>
-            Agregar imagen
+            {t.odontogram.addImage}
           </button>
         )}
       </div>

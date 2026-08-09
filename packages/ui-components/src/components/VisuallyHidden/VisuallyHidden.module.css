@@ -1,0 +1,13 @@
+.hidden {
+  position: absolute;
+  width: var(--space-px);
+  height: var(--space-px);
+  padding: var(--space-0);
+  /* Debe negar exactamente el width/height de 1px de arriba para que el elemento
+     quede completamente fuera del flujo visual sin afectar el layout circundante. */
+  margin: calc(var(--space-px) * -1);
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

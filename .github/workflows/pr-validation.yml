@@ -94,7 +94,9 @@ jobs:
           pnpm --filter @bip-design-systems/ui-components build
 
       - name: Verify package (exports map, types resolution)
-        run: pnpm --filter @bip-design-systems/ui-components lint:package
+        run: |
+          pnpm --filter @bip-design-systems/shared-utils lint:package
+          pnpm --filter @bip-design-systems/ui-components lint:package
 
       - name: Check bundle size budget
         run: pnpm size
