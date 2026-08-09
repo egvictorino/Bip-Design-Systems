@@ -2,9 +2,12 @@
 node_modules/
 .pnp
 .pnp.js
+.pnpm-store/
 
 # Testing
 coverage/
+test-results/
+playwright-report/
 
 # Production
 dist/
