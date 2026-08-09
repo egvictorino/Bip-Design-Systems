@@ -57,7 +57,7 @@ jobs:
           pnpm --filter @bip-design-systems/ui-components build
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: dev-build
           path: packages/*/dist
@@ -89,7 +89,7 @@ jobs:
           NODE_OPTIONS: "--max_old_space_size=4096"
       
       - name: Upload Storybook build
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: storybook-dev
           path: packages/ui-components/storybook-static

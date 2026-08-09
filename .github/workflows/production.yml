@@ -104,7 +104,7 @@ jobs:
           NODE_ENV=production pnpm --filter @bip-design-systems/ui-components build
 
       - name: Upload production artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: production-build
           path: packages/*/dist
