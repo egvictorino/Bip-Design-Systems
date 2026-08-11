@@ -7,7 +7,7 @@ const meta = {
   parameters: { layout: 'centered' },
   tags: ['autodocs'],
   argTypes: {
-    variant: { control: 'select', options: ['primary', 'success', 'warning', 'error', 'neutral'] },
+    variant: { control: 'select', options: ['primary', 'success', 'warning', 'danger', 'neutral'] },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
     dot: { control: 'boolean' },
   },
@@ -39,7 +39,7 @@ export const Warning: Story = {
 
 export const Error: Story = {
   args: {
-    variant: 'error',
+    variant: 'danger',
     children: 'Rechazado',
   },
 };
@@ -82,7 +82,7 @@ export const AllVariants: Story = {
       <Badge variant="primary">Activo</Badge>
       <Badge variant="success">Completado</Badge>
       <Badge variant="warning">Pendiente</Badge>
-      <Badge variant="error">Rechazado</Badge>
+      <Badge variant="danger">Rechazado</Badge>
       <Badge variant="neutral">Borrador</Badge>
     </div>
   ),
@@ -95,7 +95,7 @@ export const AllWithDot: Story = {
       <Badge variant="primary" dot>Activo</Badge>
       <Badge variant="success" dot>Completado</Badge>
       <Badge variant="warning" dot>Pendiente</Badge>
-      <Badge variant="error" dot>Rechazado</Badge>
+      <Badge variant="danger" dot>Rechazado</Badge>
       <Badge variant="neutral" dot>Borrador</Badge>
     </div>
   ),

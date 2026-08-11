@@ -1,6 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
+import React, {
+  createContext,
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import { cn } from '../../lib/cn.js';
 import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { useBipLocale } from '../../i18n/index.js';
@@ -44,32 +53,52 @@ function getDirectItems(menu: HTMLElement): HTMLElement[] {
 export interface DropdownProps {
   children: React.ReactNode;
   className?: string;
+  /** Controlado. Si se omite, el componente maneja su propio estado (ver `defaultOpen`). */
+  open?: boolean;
+  /** Valor inicial en modo no-controlado. @default false */
+  defaultOpen?: boolean;
+  /** Se invoca en cada cambio de apertura/cierre, tanto en modo controlado como no-controlado. */
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({ children, className }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const Dropdown: React.FC<DropdownProps> = ({
+  children,
+  className,
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+}) => {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const containerRef = useRef<HTMLDivElement>(null);
   const id = useId();
   const menuId = `${id}menu`;
   const triggerId = `${id}trigger`;
 
-  const toggle = () => setIsOpen((v) => !v);
-  const close = () => setIsOpen(false);
+  const isOpen = openProp ?? internalOpen;
+
+  const setOpen = (next: boolean) => {
+    if (openProp === undefined) setInternalOpen(next);
+    onOpenChange?.(next);
+  };
+
+  const toggle = () => setOpen(!isOpen);
+  const close = () => setOpen(false);
 
   // Close on outside click
-  useClickOutside(containerRef, () => setIsOpen(false));
+  useClickOutside(containerRef, () => setOpen(false));
 
   // Close on Escape and return focus to trigger
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsOpen(false);
+        setOpen(false);
         document.getElementById(triggerId)?.focus();
       }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, triggerId]);
 
   return (
@@ -83,41 +112,60 @@ export const Dropdown: React.FC<DropdownProps> = ({ children, className }) => {
 
 // ─── DropdownTrigger ─────────────────────────────────────────────────────────
 
-export interface DropdownTriggerProps {
+export interface DropdownTriggerProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
 }
 
-export const DropdownTrigger: React.FC<DropdownTriggerProps> = ({ children }) => {
-  const { isOpen, toggle, menuId, triggerId } = useDropdown();
+export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
+  ({ children, ...rest }, ref) => {
+    const { isOpen, toggle, menuId, triggerId } = useDropdown();
 
-  if (!React.isValidElement(children)) {
-    return (
-      <button
-        type="button"
-        id={triggerId}
-        aria-haspopup="true"
-        aria-expanded={isOpen}
-        aria-controls={menuId}
-        onClick={toggle}
-      >
-        {children}
-      </button>
+    if (!React.isValidElement(children)) {
+      return (
+        <button
+          ref={ref as React.Ref<HTMLButtonElement>}
+          type="button"
+          id={triggerId}
+          aria-haspopup="true"
+          aria-expanded={isOpen}
+          aria-controls={menuId}
+          onClick={toggle}
+          {...rest}
+        >
+          {children}
+        </button>
+      );
+    }
+
+    const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>> & {
+      ref?: React.Ref<HTMLElement>;
+    };
+    const childRef = child.ref;
+
+    const combinedRef = (node: HTMLElement | null) => {
+      if (typeof childRef === 'function') childRef(node);
+      else if (childRef) (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+    };
+
+    return React.cloneElement(
+      child,
+      {
+        ref: combinedRef,
+        id: triggerId,
+        'aria-haspopup': 'true' as const,
+        'aria-expanded': isOpen,
+        'aria-controls': menuId,
+        ...rest,
+        onClick: (e: React.MouseEvent<HTMLElement>) => {
+          toggle();
+          child.props.onClick?.(e);
+        },
+      } as Partial<React.HTMLAttributes<HTMLElement>> & { ref?: React.Ref<HTMLElement> }
     );
   }
-
-  const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>>;
-
-  return React.cloneElement(child, {
-    id: triggerId,
-    'aria-haspopup': 'true' as const,
-    'aria-expanded': isOpen,
-    'aria-controls': menuId,
-    onClick: (e: React.MouseEvent<HTMLElement>) => {
-      toggle();
-      child.props.onClick?.(e);
-    },
-  });
-};
+);
 
 // ─── DropdownMenu ─────────────────────────────────────────────────────────────
 
@@ -134,13 +182,19 @@ const placementClass: Record<NonNullable<DropdownMenuProps['placement']>, string
   'top-end': styles.topEnd,
 };
 
-export const DropdownMenu: React.FC<DropdownMenuProps> = ({
-  children,
-  placement = 'bottom-start',
-  className,
-}) => {
+export const DropdownMenu = forwardRef<HTMLDivElement, DropdownMenuProps>(
+  ({ children, placement = 'bottom-start', className }, ref) => {
   const { isOpen, menuId, triggerId, close } = useDropdown();
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const combinedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      (menuRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    },
+    [ref]
+  );
 
   // Focus first item when menu opens
   useEffect(() => {
@@ -177,7 +231,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
   return (
     <div
-      ref={menuRef}
+      ref={combinedRef}
       id={menuId}
       role="menu"
       aria-orientation="vertical"
@@ -189,50 +243,46 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
       {children}
     </div>
   );
-};
+  }
+);
 
 // ─── DropdownItem ─────────────────────────────────────────────────────────────
 
 export interface DropdownItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  danger?: boolean;
+  variant?: 'default' | 'danger';
   icon?: React.ReactNode;
   children: React.ReactNode;
 }
 
-export const DropdownItem: React.FC<DropdownItemProps> = ({
-  danger = false,
-  icon,
-  children,
-  onClick,
-  disabled = false,
-  className,
-  ...props
-}) => {
-  const { close } = useDropdown();
+export const DropdownItem = forwardRef<HTMLButtonElement, DropdownItemProps>(
+  ({ variant = 'default', icon, children, onClick, disabled = false, className, ...props }, ref) => {
+    const { close } = useDropdown();
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onClick?.(e);
-    close();
-  };
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      onClick?.(e);
+      close();
+    };
 
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={handleClick}
-      className={cn(styles.item, danger && styles.itemDanger, className)}
-      {...props}
-      role="menuitem"
-    >
-      {icon && (
-        <span className={styles.icon} aria-hidden="true">
-          {icon}
-        </span>
-      )}
-      {children}
-    </button>
-  );
-};
+    return (
+      <button
+        ref={ref}
+        type="button"
+        disabled={disabled}
+        onClick={handleClick}
+        className={cn(styles.item, variant === 'danger' && styles.itemDanger, className)}
+        {...props}
+        role="menuitem"
+      >
+        {icon && (
+          <span className={styles.icon} aria-hidden="true">
+            {icon}
+          </span>
+        )}
+        {children}
+      </button>
+    );
+  }
+);
 
 // ─── DropdownDivider ──────────────────────────────────────────────────────────
 
@@ -246,55 +296,62 @@ export const DropdownDivider: React.FC = () => (
 
 // ─── DropdownGroup ────────────────────────────────────────────────────────────
 
-export interface DropdownGroupProps {
+export interface DropdownGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
   children: React.ReactNode;
 }
 
-export const DropdownGroup: React.FC<DropdownGroupProps> = ({ label, children }) => {
-  const labelId = useId();
-  return (
-    <div role="group" aria-labelledby={labelId} className={styles.group}>
-      <div id={labelId} className={styles.groupLabel}>
-        {label}
+export const DropdownGroup = forwardRef<HTMLDivElement, DropdownGroupProps>(
+  ({ label, children, className, ...rest }, ref) => {
+    const labelId = useId();
+    return (
+      <div
+        ref={ref}
+        role="group"
+        aria-labelledby={labelId}
+        className={cn(styles.group, className)}
+        {...rest}
+      >
+        <div id={labelId} className={styles.groupLabel}>
+          {label}
+        </div>
+        {children}
       </div>
-      {children}
-    </div>
-  );
-};
+    );
+  }
+);
 
 // ─── DropdownSearch ───────────────────────────────────────────────────────────
 
-export interface DropdownSearchProps {
+export interface DropdownSearchProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
 }
 
-export const DropdownSearch: React.FC<DropdownSearchProps> = ({
-  placeholder,
-  value,
-  onChange,
-}) => {
-  const t = useBipLocale();
-  return (
-    <div className={styles.searchContainer}>
-      <input
-        type="text"
-        role="searchbox"
-        aria-label={t.dropdown.search}
-        className={styles.searchInput}
-        placeholder={placeholder ?? t.dropdown.searchPlaceholder}
-        value={value}
-        onChange={(e) => onChange?.(e.target.value)}
-        onKeyDown={(e) => {
-          // Let Escape propagate so the root Dropdown can close; block all other keys
-          if (e.key !== 'Escape') e.stopPropagation();
-        }}
-      />
-    </div>
-  );
-};
+export const DropdownSearch = forwardRef<HTMLDivElement, DropdownSearchProps>(
+  ({ placeholder, value, onChange, className, ...rest }, ref) => {
+    const t = useBipLocale();
+    return (
+      <div ref={ref} className={cn(styles.searchContainer, className)} {...rest}>
+        <input
+          type="text"
+          role="searchbox"
+          aria-label={t.dropdown.search}
+          className={styles.searchInput}
+          placeholder={placeholder ?? t.dropdown.searchPlaceholder}
+          value={value}
+          onChange={(e) => onChange?.(e.target.value)}
+          onKeyDown={(e) => {
+            // Let Escape propagate so the root Dropdown can close; block all other keys
+            if (e.key !== 'Escape') e.stopPropagation();
+          }}
+        />
+      </div>
+    );
+  }
+);
 
 // ─── DropdownItemCheckbox ─────────────────────────────────────────────────────
 
@@ -307,51 +364,43 @@ export interface DropdownItemCheckboxProps {
   className?: string;
 }
 
-export const DropdownItemCheckbox: React.FC<DropdownItemCheckboxProps> = ({
-  checked = false,
-  onChange,
-  icon,
-  disabled = false,
-  children,
-  className,
-}) => {
-  return (
-    <button
-      type="button"
-      role="menuitemcheckbox"
-      aria-checked={checked}
-      disabled={disabled}
-      onClick={() => !disabled && onChange?.(!checked)}
-      className={cn(styles.item, styles.itemCheckbox, className)}
-    >
-      <span className={styles.checkIndicator} aria-hidden="true">
-        {checked ? '✓' : ''}
-      </span>
-      {icon && (
-        <span className={styles.icon} aria-hidden="true">
-          {icon}
+export const DropdownItemCheckbox = forwardRef<HTMLButtonElement, DropdownItemCheckboxProps>(
+  ({ checked = false, onChange, icon, disabled = false, children, className }, ref) => {
+    return (
+      <button
+        ref={ref}
+        type="button"
+        role="menuitemcheckbox"
+        aria-checked={checked}
+        disabled={disabled}
+        onClick={() => !disabled && onChange?.(!checked)}
+        className={cn(styles.item, styles.itemCheckbox, className)}
+      >
+        <span className={styles.checkIndicator} aria-hidden="true">
+          {checked ? '✓' : ''}
         </span>
-      )}
-      {children}
-    </button>
-  );
-};
+        {icon && (
+          <span className={styles.icon} aria-hidden="true">
+            {icon}
+          </span>
+        )}
+        {children}
+      </button>
+    );
+  }
+);
 
 // ─── DropdownSubmenu ──────────────────────────────────────────────────────────
 
-export interface DropdownSubmenuProps {
+export interface DropdownSubmenuProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
   icon?: React.ReactNode;
   disabled?: boolean;
   children: React.ReactNode;
 }
 
-export const DropdownSubmenu: React.FC<DropdownSubmenuProps> = ({
-  label,
-  icon,
-  disabled = false,
-  children,
-}) => {
+export const DropdownSubmenu = forwardRef<HTMLDivElement, DropdownSubmenuProps>(
+  ({ label, icon, disabled = false, children, className, ...rest }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const submenuId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -413,9 +462,11 @@ export const DropdownSubmenu: React.FC<DropdownSubmenuProps> = ({
 
   return (
     <div
-      className={styles.submenuContainer}
+      ref={ref}
+      className={cn(styles.submenuContainer, className)}
       onMouseEnter={openSubmenu}
       onMouseLeave={closeSubmenu}
+      {...rest}
     >
       <button
         ref={triggerRef}
@@ -454,7 +505,8 @@ export const DropdownSubmenu: React.FC<DropdownSubmenuProps> = ({
       )}
     </div>
   );
-};
+  }
+);
 
 // ─── displayNames ─────────────────────────────────────────────────────────────
 

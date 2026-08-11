@@ -6,7 +6,7 @@ import styles from './Tooltip.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface TooltipProps {
+export interface TooltipProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'content'> {
   content: React.ReactNode;
   position?: 'top' | 'bottom' | 'left' | 'right';
   /** Secondary-axis alignment (default: 'center') */
@@ -19,10 +19,11 @@ export interface TooltipProps {
   closeDelay?: number;
   /** Controlled open state. When provided, hover/focus no longer toggle internally. */
   open?: boolean;
+  /** Initial open state when uncontrolled (default: false) */
+  defaultOpen?: boolean;
   /** Callback fired when the internal open state would change */
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
-  className?: string;
 }
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
@@ -52,12 +53,14 @@ export const Tooltip: React.FC<TooltipProps> = ({
   delay = 0,
   closeDelay = 0,
   open,
+  defaultOpen = false,
   onOpenChange,
   children,
   className,
+  ...rest
 }) => {
   const id = useId();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -185,6 +188,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     <span className={cn(styles.wrapper, className)}>
       {trigger}
       <span
+        {...rest}
         id={id}
         role="tooltip"
         data-open={isVisible}

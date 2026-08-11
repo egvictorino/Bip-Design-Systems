@@ -215,7 +215,7 @@ const ConServerSideRender = () => {
       searchable
       searchKeys={['nombre', 'rfc']}
       searchPlaceholder="Buscar (server-side)..."
-      onSearchChange={(q) => {
+      onSearch={(q) => {
         setQuery(q);
         setPage(1);
       }}
@@ -225,7 +225,7 @@ const ConServerSideRender = () => {
         setPage(1);
       }}
       onPageChange={(p) => setPage(p)}
-      label="Tabla server-side"
+      aria-label="Tabla server-side"
     />
   );
 };
@@ -247,7 +247,7 @@ export const ConVisibilidadColumnas: Story = {
       searchKeys={['nombre', 'rfc']}
       columnVisibility
       defaultHiddenColumns={['telefono']}
-      label="Pacientes con visibilidad de columnas"
+      aria-label="Pacientes con visibilidad de columnas"
     />
   ),
 };

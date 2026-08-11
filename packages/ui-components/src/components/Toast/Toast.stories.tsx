@@ -65,7 +65,7 @@ export const Default: Story = {
         />
         <ToastButton
           label="Error"
-          config={{ variant: 'error', title: 'Error', message: 'No se pudo procesar la solicitud.' }}
+          config={{ variant: 'danger', title: 'Error', message: 'No se pudo procesar la solicitud.' }}
         />
         <ToastButton
           label="Advertencia"
@@ -91,7 +91,7 @@ export const Persistent: Story = {
         <ToastButton
           label="Toast persistente (error)"
           config={{
-            variant: 'error',
+            variant: 'danger',
             title: 'Sesión expirada',
             message: 'Tu sesión ha expirado. Vuelve a iniciar sesión.',
             duration: 0,
@@ -128,7 +128,7 @@ export const BottomRight: Story = {
       <div style={stack}>
         <p style={helperText}>Estilo Sonner — notificaciones en la esquina inferior derecha.</p>
         <ToastButton label="Éxito" config={{ variant: 'success', message: '¡Cambios guardados!' }} />
-        <ToastButton label="Error" config={{ variant: 'error', message: 'Ocurrió un error inesperado.' }} />
+        <ToastButton label="Error" config={{ variant: 'danger', message: 'Ocurrió un error inesperado.' }} />
         <ToastButton label="Info" config={{ variant: 'info', message: 'Sincronización completada.' }} />
       </div>
     </ToastProvider>
@@ -158,7 +158,7 @@ export const TopLeft: Story = {
       <div style={stack}>
         <p style={helperText}>Notificaciones en la esquina superior izquierda.</p>
         <ToastButton label="Éxito" config={{ variant: 'success', message: 'Operación completada.' }} />
-        <ToastButton label="Error" config={{ variant: 'error', message: 'No se pudo conectar.' }} />
+        <ToastButton label="Error" config={{ variant: 'danger', message: 'No se pudo conectar.' }} />
       </div>
     </ToastProvider>
   ),
@@ -197,7 +197,7 @@ export const Stacking: Story = {
           />
           <ToastButton
             label="+ Error"
-            config={{ variant: 'error', title: 'Error', message: 'No se pudo procesar la solicitud.' }}
+            config={{ variant: 'danger', title: 'Error', message: 'No se pudo procesar la solicitud.' }}
           />
           <ToastButton
             label="+ Warning"

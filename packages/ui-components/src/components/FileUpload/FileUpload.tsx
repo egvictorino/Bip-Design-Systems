@@ -1,9 +1,11 @@
 "use client";
 
-import { forwardRef, useId, useRef, useState } from 'react';
+import React, { forwardRef, useId, useRef, useState } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
+import { Spinner } from '../Spinner/index.js';
 import styles from './FileUpload.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -12,9 +14,12 @@ export interface RejectedFile {
   reason: 'size' | 'count';
 }
 
-export interface FileUploadProps {
+export interface FileUploadProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   /** Controlled list of selected files */
   value?: File[];
+  /** Initial list of selected files when uncontrolled (ignored if `value` is provided) */
+  defaultValue?: File[];
   /** Called with the complete updated file array */
   onChange?: (files: File[]) => void;
   /** Called with files that were rejected (oversized or over maxFiles limit) */
@@ -32,7 +37,9 @@ export interface FileUploadProps {
   error?: boolean;
   errorMessage?: string;
   disabled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  /** Shows a progress indicator and disables the drop-zone/input while an upload is in flight */
+  loading?: boolean;
+  size?: BipSize;
   /** Visual layout variant */
   variant?: 'default' | 'compact';
   id?: string;
@@ -69,7 +76,8 @@ const formatFileSize = (bytes: number): string => {
 export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
   (
     {
-      value = [],
+      value,
+      defaultValue,
       onChange,
       onReject,
       multiple = false,
@@ -81,6 +89,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       error = false,
       errorMessage,
       disabled = false,
+      loading = false,
       size = 'md',
       variant = 'default',
       id,
@@ -88,17 +97,28 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       required,
       fullWidth = false,
       className,
+      ...rest
     },
     ref
   ) => {
     const t = useBipLocale();
     const [isDragging, setIsDragging] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
+    const [internalFiles, setInternalFiles] = useState<File[]>(defaultValue ?? []);
+    const files = value !== undefined ? value : internalFiles;
     const dragCounter = useRef(0);
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const hasMessage = (error && errorMessage) || helperText;
     const messageId = hasMessage ? `${inputId}-message` : undefined;
+    const isDisabled = disabled || loading;
+
+    const commitFiles = (next: File[]) => {
+      if (value === undefined) {
+        setInternalFiles(next);
+      }
+      onChange?.(next);
+    };
 
     const processFiles = (incoming: FileList | null) => {
       if (!incoming || incoming.length === 0) return;
@@ -115,7 +135,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
 
       // Filter by maxFiles (only in multiple mode)
       if (multiple && maxFiles !== undefined) {
-        const available = maxFiles - value.length;
+        const available = maxFiles - files.length;
         if (available <= 0) {
           newFiles.forEach((f) => rejected.push({ file: f, reason: 'count' }));
           newFiles = [];
@@ -128,17 +148,17 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       if (rejected.length > 0) onReject?.(rejected);
       if (newFiles.length === 0) return;
 
-      const merged = multiple ? [...value, ...newFiles] : [newFiles[0]];
-      onChange?.(merged);
+      const merged = multiple ? [...files, ...newFiles] : [newFiles[0]];
+      commitFiles(merged);
     };
 
     const removeFile = (file: File) => {
-      onChange?.(value.filter((f) => f !== file));
+      commitFiles(files.filter((f) => f !== file));
     };
 
     const handleDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
       e.preventDefault();
-      if (disabled) return;
+      if (isDisabled) return;
       dragCounter.current += 1;
       if (dragCounter.current === 1) setIsDragging(true);
     };
@@ -157,7 +177,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       e.preventDefault();
       dragCounter.current = 0;
       setIsDragging(false);
-      if (!disabled) processFiles(e.dataTransfer.files);
+      if (!isDisabled) processFiles(e.dataTransfer.files);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,7 +187,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     };
 
     // Dropzone state class
-    const dropzoneStateClass = disabled
+    const dropzoneStateClass = isDisabled
       ? styles.dropzoneDisabled
       : error
         ? isDragging
@@ -178,7 +198,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
           : styles.dropzoneDefault;
 
     return (
-      <div className={cn(styles.wrapper, fullWidth && styles.wrapperFull)}>
+      <div {...rest} className={cn(styles.wrapper, fullWidth && styles.wrapperFull)}>
         {/* Outer label text */}
         {label && (
           <span
@@ -186,7 +206,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
               styles.outerLabel,
               outerLabelSizeClass[size],
               error ? styles.outerLabelError : styles.outerLabelNormal,
-              disabled && styles.outerLabelDisabled
+              isDisabled && styles.outerLabelDisabled
             )}
           >
             {label}
@@ -217,62 +237,83 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             name={name}
             multiple={multiple}
             accept={accept}
-            disabled={disabled}
+            disabled={isDisabled}
             required={required}
             aria-invalid={error || undefined}
             aria-describedby={messageId}
+            aria-busy={loading || undefined}
             onChange={handleInputChange}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             className="sr-only"
           />
 
-          {/* Upload icon */}
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            className={cn(
-              styles.uploadIcon,
-              variant === 'compact' && styles.uploadIconCompact,
-              error ? styles.uploadIconError : styles.uploadIconNormal
-            )}
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-            />
-          </svg>
+          {loading ? (
+            <>
+              <Spinner size="md" aria-hidden="true" />
+              <div
+                className={cn(
+                  styles.dropzoneText,
+                  variant === 'compact' && styles.dropzoneTextCompact
+                )}
+              >
+                <p className={cn(styles.dropzoneTitle, styles.dropzoneTitleNormal)}>
+                  {t.fileUpload.uploading}
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Upload icon */}
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                className={cn(
+                  styles.uploadIcon,
+                  variant === 'compact' && styles.uploadIconCompact,
+                  error ? styles.uploadIconError : styles.uploadIconNormal
+                )}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                />
+              </svg>
 
-          <div
-            className={cn(
-              styles.dropzoneText,
-              variant === 'compact' && styles.dropzoneTextCompact
-            )}
-          >
-            <p
-              className={cn(
-                styles.dropzoneTitle,
-                error ? styles.dropzoneTitleError : styles.dropzoneTitleNormal
-              )}
-            >
-              {isDragging ? t.fileUpload.dropHere : t.fileUpload.dragHere}
-            </p>
-            <p className={styles.dropzoneSubtitle}>{t.fileUpload.clickToSelect}</p>
-            {accept && <p className={styles.dropzoneHint}>{t.fileUpload.formats(accept)}</p>}
-            {maxSize !== undefined && (
-              <p className={styles.dropzoneHint}>{t.fileUpload.maxSize(formatFileSize(maxSize))}</p>
-            )}
-          </div>
+              <div
+                className={cn(
+                  styles.dropzoneText,
+                  variant === 'compact' && styles.dropzoneTextCompact
+                )}
+              >
+                <p
+                  className={cn(
+                    styles.dropzoneTitle,
+                    error ? styles.dropzoneTitleError : styles.dropzoneTitleNormal
+                  )}
+                >
+                  {isDragging ? t.fileUpload.dropHere : t.fileUpload.dragHere}
+                </p>
+                <p className={styles.dropzoneSubtitle}>{t.fileUpload.clickToSelect}</p>
+                {accept && <p className={styles.dropzoneHint}>{t.fileUpload.formats(accept)}</p>}
+                {maxSize !== undefined && (
+                  <p className={styles.dropzoneHint}>
+                    {t.fileUpload.maxSize(formatFileSize(maxSize))}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
         </label>
 
         {/* File list */}
-        {value.length > 0 && (
+        {files.length > 0 && (
           <ul className={styles.fileList}>
-            {value.map((file) => (
+            {files.map((file) => (
               <li
                 key={`${file.name}-${file.size}-${file.lastModified}`}
                 className={styles.fileItem}
@@ -299,7 +340,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                   type="button"
                   onClick={() => removeFile(file)}
                   aria-label={t.fileUpload.remove(file.name)}
-                  disabled={disabled}
+                  disabled={isDisabled}
                   className={styles.removeBtn}
                 >
                   <svg

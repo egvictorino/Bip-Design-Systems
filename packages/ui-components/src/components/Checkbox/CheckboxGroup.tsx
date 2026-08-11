@@ -3,16 +3,15 @@ import type { ReactNode } from 'react';
 import { cn } from '../../lib/cn.js';
 import { CheckboxGroupContext } from './CheckboxGroupContext.js';
 import styles from './CheckboxGroup.module.css';
+import type { BipSize } from '../../types/size.js';
 
-export interface CheckboxGroupProps {
+export interface CheckboxGroupProps extends React.FieldsetHTMLAttributes<HTMLFieldSetElement> {
   label?: string;
   helperText?: string;
   error?: boolean;
   errorMessage?: string;
-  disabled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   children: ReactNode;
-  className?: string;
 }
 
 type GroupSizeTokens = { legend: string; helper: string };
@@ -32,6 +31,7 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   size = 'md',
   children,
   className,
+  ...rest
 }) => {
   const generatedId = useId();
   const hasMessage = (error && errorMessage) || helperText;
@@ -39,10 +39,7 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
 
   return (
     <CheckboxGroupContext.Provider value={{ error, disabled, size }}>
-      <fieldset
-        className={cn(styles.fieldset, className)}
-        aria-describedby={messageId}
-      >
+      <fieldset {...rest} className={cn(styles.fieldset, className)} aria-describedby={messageId}>
         {label && (
           <legend
             className={cn(

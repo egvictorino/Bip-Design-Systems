@@ -2,10 +2,11 @@ import { forwardRef } from 'react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Button.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'bare' | 'soul' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   loading?: boolean;
   fullWidth?: boolean;
   children: ReactNode;

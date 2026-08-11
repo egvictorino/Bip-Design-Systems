@@ -100,6 +100,7 @@ const MyPage = () => {
 | `Checkbox` | Accessible checkbox with indeterminate state support |
 | `CheckboxGroup` | Group of related checkboxes |
 | `Radio` | Radio button with label and helper text |
+| `RadioGroup` | Group of related radio buttons |
 | `Toggle` | On/off switch with integrated label |
 | `Slider` | `<input type="range">` with label, helper text, `error`, and an optional live value display |
 | `DatePicker` | Date picker with calendar, min/max range, and full accessibility |
@@ -191,6 +192,10 @@ import { useDisclosure, useMediaQuery, cn } from '@bip-design-systems/ui-compone
 `cn()` (a `clsx` wrapper for CSS Module class composition) and `BREAKPOINTS`/`mediaQuery` (the
 single source for the `@media` queries used internally, see `src/styles/breakpoints.ts`) are
 also exported from the package root.
+
+`BipSize` (`'sm' | 'md' | 'lg'`) and `BipSizeExtended` (`'xs' | 'sm' | 'md' | 'lg' | 'xl'`) are
+also exported — the shared `size` scale used by most components with a `size` prop, useful for
+typing a wrapper component (`size: BipSize` instead of retyping the union).
 
 ---
 
@@ -284,6 +289,36 @@ Ant Design `ConfigProvider`-style: pass a color and the whole library recolors �
 
 Keys: `marker`, `field`, `control`, `surface`, `container`, `containerLg`.
 
+**Focus ring, motion, and density/direction.** Three more sibling props on `<ThemeProvider>`,
+independent of `theme`:
+
+```tsx
+<ThemeProvider
+  focusRing={{ width: '3px', color: '#e2007a' }}
+  motion={{ durationFast: '100ms', easeStandard: 'ease-in-out' }}
+  density="compact"
+  dir="rtl"
+>
+```
+
+- `focusRing` overrides `{ width, offset, color }` against the `box-shadow` every focusable
+  component uses.
+- `motion` overrides `{ durationInstant, durationFast, durationNormal, durationSlow, easeStandard,
+  easeOut, easeIn }`.
+- `spacing` overrides the control-padding tokens shared by `Button`/`Input`/`Textarea`/`Select`:
+  `{ controlXSm, controlYSm, controlXMd, controlYMd, controlXLg, controlYLg }`.
+- `density` (`'comfortable'` default | `'compact'`) stamps `data-density` and switches the
+  control-padding scale in one step — use `spacing` instead for finer, one-off control. Unlike
+  `theme`/`colorScheme`, it's a direct value, not controlled/uncontrolled with its own
+  persistence; a nested `<ThemeProvider>` without its own `density` inherits the parent's.
+  `useDensity()` reads the resolved value.
+- `dir` (`'ltr'` | `'rtl'`) stamps the native `dir` attribute — components use CSS logical
+  properties (`margin-inline-start`, `text-align: start`, etc.), so layouts mirror automatically
+  with no per-component work. Same non-controlled mechanic as `density`. `useDir()` reads the
+  resolved value.
+- Portalled components (`Modal`, `Toast`, `DrawerPanel`, `Calendar`, `Odontogram` popovers) pick up
+  `data-density`/`dir` the same way they already do brand tokens — via `useThemeAttributes()`.
+
 ### Uncontrolled mode, `system`, and persistence
 
 Without `theme`/`colorScheme`, `ThemeProvider` manages its own state (`defaultTheme`/`defaultColorScheme`) and exposes controls via `useThemeControls()` — useful for a toggle button without lifting state into your app:
@@ -372,6 +407,37 @@ Only the `latin`/`latin-ext` Unicode subsets are included (full weight axis 100�
 italic) — Cyrillic/Greek/Vietnamese are not bundled. `style.css` is ~800KB as a result; if that's
 too heavy for your use case, override `--font-sans` via `ThemeProvider`'s `tokens.fontFamily` with
 your own font loading strategy.
+
+---
+
+## Migration 0.4.x → 0.5.0
+
+`0.5.0` unifies inconsistent prop names/values across sibling components ahead of a `1.0.0` API
+freeze. All changes below are breaking; see `CHANGELOG.md` for the full list including additive
+(non-breaking) changes.
+
+| Component | Before | After |
+|---|---|---|
+| `Alert`, `Toast`, `Badge`, `ProgressBar`, `Timeline`, `Tooltip` | `variant="error"` | `variant="danger"` |
+| `Stepper`'s `StepperStep` | `status="error"` (and `status="success"` etc.) | `variant="danger"` (and `variant="success"` etc.) |
+| `Dropdown`'s `DropdownItem` | `danger` (boolean) | `variant="danger"` |
+| `Spinner` | `variant="white"` | `variant="inverse"` |
+| `Modal`, `ConfirmDialog`, `Sidebar` (mobile drawer) | `isOpen` | `open` (`onClose` unchanged) |
+| `NumberInput` | `onChange={(value, event) => ...}` | `onChange={(value) => ...}` |
+| `Pagination` | `currentPage` | `page` |
+| `DataTable` | `onPageChange={(page, pageSize) => ...}` | `onPageChange={(page) => ...}` + `onPageSizeChange={(pageSize) => ...}` |
+| `DataTable` | `onSearchChange` | `onSearch` |
+| `DataTable` | `label` (was actually an accessible name) | `aria-label` |
+| `Calendar` | `onRangeSelect={(start, end) => ...}` | `onRangeSelect={(range: DateRange) => ...}` |
+| `Text` | `size="base"` | `size="md"` |
+| `StatsCard` | `variant="filled"` | `variant="flat"` |
+| `Odontogram` | `readOnly` | `disabled` |
+
+`Dropdown` and `Popover` gain optional `open`/`defaultOpen`/`onOpenChange` (additive — existing
+uncontrolled usage keeps working unchanged). `DrawerPanel` and `Tooltip` gain `onOpenChange`.
+`Sidebar` gains `collapsed`/`onCollapsedChange` alongside the existing `defaultCollapsed`. `Modal`
+gains a convenience `title` prop and now forwards `style`/`id`/`data-*`/`aria-*`; `ConfirmDialog`
+now accepts `className` and other `HTMLAttributes`.
 
 ---
 

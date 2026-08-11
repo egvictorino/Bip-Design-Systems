@@ -103,7 +103,7 @@
 
 /* State variants — texto vía --color-txt-on-* (contraste automático sobre
    la semilla de relleno; ver ThemeProvider `tokens` y tokens.css). */
-.circleError {
+.circleDanger {
   background-color: var(--color-danger);
   color: var(--color-txt-on-danger);
 }
@@ -170,7 +170,7 @@
 }
 
 /* State variants */
-.dotError {
+.dotDanger {
   background-color: var(--color-danger);
 }
 
@@ -231,7 +231,7 @@
   white-space: nowrap;
 }
 
-.labelError {
+.labelDanger {
   color: var(--color-danger);
 }
 

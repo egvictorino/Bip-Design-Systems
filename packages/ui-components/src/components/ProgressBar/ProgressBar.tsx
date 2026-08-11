@@ -1,14 +1,15 @@
 "use client";
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './ProgressBar.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface ProgressBarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'id'> {
   value?: number;
-  variant?: 'default' | 'success' | 'warning' | 'error';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'success' | 'warning' | 'danger';
+  size?: BipSize;
   label?: string;
   showValue?: boolean;
   indeterminate?: boolean;
@@ -31,7 +32,7 @@ const fillVariantClass: Record<NonNullable<ProgressBarProps['variant']>, string>
   default: styles.default,
   success: styles.success,
   warning: styles.warning,
-  error:   styles.error,
+  danger:  styles.danger,
 };
 
 const trackSizeClass: Record<NonNullable<ProgressBarProps['size']>, string> = {
@@ -40,27 +41,31 @@ const trackSizeClass: Record<NonNullable<ProgressBarProps['size']>, string> = {
   lg: styles.lg,
 };
 
-export const ProgressBar: React.FC<ProgressBarProps> = ({
-  value = 0,
-  variant = 'default',
-  size = 'md',
-  label,
-  showValue = false,
-  indeterminate = false,
-  helperText,
-  valueText,
-  striped = false,
-  animated = false,
-  className,
-  id,
-  ...props
-}) => {
+export const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(
+  (
+    {
+      value = 0,
+      variant = 'default',
+      size = 'md',
+      label,
+      showValue = false,
+      indeterminate = false,
+      helperText,
+      valueText,
+      striped = false,
+      animated = false,
+      className,
+      id,
+      ...props
+    },
+    ref
+  ) => {
   const t = useBipLocale();
   const clampedValue = Math.min(100, Math.max(0, value));
   const descriptionId = helperText && id ? `${id}-description` : undefined;
 
   return (
-    <div className={cn(styles.wrapper, className)} {...props}>
+    <div ref={ref} className={cn(styles.wrapper, className)} {...props}>
       {(label || showValue) && (
         <div className={styles.header}>
           {label && <span className={styles.label}>{label}</span>}
@@ -106,6 +111,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       )}
     </div>
   );
-};
+  }
+);
 
 ProgressBar.displayName = 'ProgressBar';

@@ -15,7 +15,7 @@
   padding: var(--space-5);
 }
 
-.filled {
+.flat {
   background-color: var(--color-surface-2);
   border: none;
   padding: var(--space-5);

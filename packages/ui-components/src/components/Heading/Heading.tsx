@@ -1,4 +1,4 @@
-import React, { type ElementType, type ReactNode } from 'react';
+import React, { forwardRef, type ElementType, type ReactNode } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Heading.module.css';
 
@@ -41,27 +41,22 @@ const weightClass: Record<HeadingWeight, string> = {
 };
 
 /** Semantic heading with a visual size independent of document level — see `Text` for body copy. */
-export const Heading: React.FC<HeadingProps> = ({
-  level,
-  size,
-  weight = 'semibold',
-  as,
-  className,
-  children,
-  ...props
-}) => {
-  const Component = as ?? (`h${level}` as ElementType);
-  const resolvedSize = size ?? DEFAULT_SIZE_BY_LEVEL[level];
+export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
+  ({ level, size, weight = 'semibold', as, className, children, ...props }, ref) => {
+    const Component = as ?? (`h${level}` as ElementType);
+    const resolvedSize = size ?? DEFAULT_SIZE_BY_LEVEL[level];
 
-  return (
-    <Component
-      className={cn(styles.heading, sizeClass[resolvedSize], weightClass[weight], className)}
-      {...(as ? { role: 'heading', 'aria-level': level } : {})}
-      {...props}
-    >
-      {children}
-    </Component>
-  );
-};
+    return (
+      <Component
+        ref={ref}
+        className={cn(styles.heading, sizeClass[resolvedSize], weightClass[weight], className)}
+        {...(as ? { role: 'heading', 'aria-level': level } : {})}
+        {...props}
+      >
+        {children}
+      </Component>
+    );
+  }
+);
 
 Heading.displayName = 'Heading';

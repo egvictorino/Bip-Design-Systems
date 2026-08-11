@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    currentPage: 5,
+    page: 5,
     totalPages: 10,
     onPageChange: () => {},
   },
@@ -22,7 +22,7 @@ export const Default: Story = {
 
 export const FirstPage: Story = {
   args: {
-    currentPage: 1,
+    page: 1,
     totalPages: 10,
     onPageChange: () => {},
   },
@@ -30,7 +30,7 @@ export const FirstPage: Story = {
 
 export const LastPage: Story = {
   args: {
-    currentPage: 10,
+    page: 10,
     totalPages: 10,
     onPageChange: () => {},
   },
@@ -38,7 +38,7 @@ export const LastPage: Story = {
 
 export const NearStart: Story = {
   args: {
-    currentPage: 2,
+    page: 2,
     totalPages: 15,
     onPageChange: () => {},
   },
@@ -46,7 +46,7 @@ export const NearStart: Story = {
 
 export const NearEnd: Story = {
   args: {
-    currentPage: 14,
+    page: 14,
     totalPages: 15,
     onPageChange: () => {},
   },
@@ -54,9 +54,18 @@ export const NearEnd: Story = {
 
 export const FewPages: Story = {
   args: {
-    currentPage: 2,
+    page: 2,
     totalPages: 5,
     onPageChange: () => {},
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    page: 3,
+    totalPages: 10,
+    onPageChange: () => {},
+    disabled: true,
   },
 };
 
@@ -67,14 +76,14 @@ const InteractivePaginationStory = () => {
       <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
         Página <span style={{ fontWeight: 600, color: 'var(--color-txt)' }}>{page}</span> de 10
       </p>
-      <Pagination currentPage={page} totalPages={10} onPageChange={setPage} />
+      <Pagination page={page} totalPages={10} onPageChange={setPage} />
     </div>
   );
 };
 
 export const Interactive: Story = {
   args: {
-    currentPage: 1,
+    page: 1,
     totalPages: 10,
     onPageChange: () => {},
   },
@@ -89,14 +98,14 @@ const WithTablePaginationStory = () => {
         <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>Mostrando 5 de 40 registros</p>
         <p style={{ fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>Página {page} de 8</p>
       </div>
-      <Pagination currentPage={page} totalPages={8} onPageChange={setPage} />
+      <Pagination page={page} totalPages={8} onPageChange={setPage} />
     </div>
   );
 };
 
 export const WithTable: Story = {
   args: {
-    currentPage: 1,
+    page: 1,
     totalPages: 8,
     onPageChange: () => {},
   },

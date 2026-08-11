@@ -5,16 +5,16 @@ import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './Pagination.module.css';
 
-export interface PaginationProps {
-  currentPage: number;
+export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
+  page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
   siblingCount?: number;
-  className?: string;
+  disabled?: boolean;
 }
 
 function getPageRange(
-  currentPage: number,
+  page: number,
   totalPages: number,
   siblingCount: number
 ): (number | '...')[] {
@@ -24,8 +24,8 @@ function getPageRange(
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
-  const leftIndex = Math.max(currentPage - siblingCount, 1);
-  const rightIndex = Math.min(currentPage + siblingCount, totalPages);
+  const leftIndex = Math.max(page - siblingCount, 1);
+  const rightIndex = Math.min(page + siblingCount, totalPages);
 
   const showLeftDots = leftIndex > 2;
   const showRightDots = rightIndex < totalPages - 1;
@@ -51,27 +51,29 @@ function getPageRange(
 }
 
 export const Pagination: React.FC<PaginationProps> = ({
-  currentPage,
+  page,
   totalPages,
   onPageChange,
   siblingCount = 1,
   className,
+  disabled = false,
+  ...rest
 }) => {
   const t = useBipLocale();
 
   if (totalPages <= 1) return null;
 
-  const pageRange = getPageRange(currentPage, totalPages, siblingCount);
+  const pageRange = getPageRange(page, totalPages, siblingCount);
 
   return (
-    <nav aria-label={t.pagination.nav} className={cn(styles.nav, className)}>
+    <nav aria-label={t.pagination.nav} className={cn(styles.nav, className)} {...rest}>
       {/* Previous */}
       <button
         type="button"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
+        onClick={() => onPageChange(page - 1)}
+        disabled={disabled || page === 1}
         aria-label={t.pagination.prevPage}
-        className={cn(styles.btn, currentPage === 1 ? styles.btnDisabled : styles.btnDefault)}
+        className={cn(styles.btn, disabled || page === 1 ? styles.btnDisabled : styles.btnDefault)}
       >
         <svg viewBox="0 0 16 16" fill="none" className={styles.arrowIcon} aria-hidden="true">
           <path
@@ -85,21 +87,25 @@ export const Pagination: React.FC<PaginationProps> = ({
       </button>
 
       {/* Pages */}
-      {pageRange.map((page, index) =>
-        page === '...' ? (
+      {pageRange.map((pageNum, index) =>
+        pageNum === '...' ? (
           <span key={`ellipsis-${index}`} className={styles.ellipsis} aria-hidden="true">
             &hellip;
           </span>
         ) : (
           <button
-            key={page}
+            key={pageNum}
             type="button"
-            onClick={() => onPageChange(page as number)}
-            aria-label={t.pagination.page(page)}
-            aria-current={currentPage === page ? 'page' : undefined}
-            className={cn(styles.btn, currentPage === page ? styles.btnActive : styles.btnDefault)}
+            onClick={() => onPageChange(pageNum as number)}
+            disabled={disabled}
+            aria-label={t.pagination.page(pageNum)}
+            aria-current={page === pageNum ? 'page' : undefined}
+            className={cn(
+              styles.btn,
+              disabled ? styles.btnDisabled : page === pageNum ? styles.btnActive : styles.btnDefault
+            )}
           >
-            {page}
+            {pageNum}
           </button>
         )
       )}
@@ -107,12 +113,12 @@ export const Pagination: React.FC<PaginationProps> = ({
       {/* Next */}
       <button
         type="button"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        onClick={() => onPageChange(page + 1)}
+        disabled={disabled || page === totalPages}
         aria-label={t.pagination.nextPage}
         className={cn(
           styles.btn,
-          currentPage === totalPages ? styles.btnDisabled : styles.btnDefault
+          disabled || page === totalPages ? styles.btnDisabled : styles.btnDefault
         )}
       >
         <svg viewBox="0 0 16 16" fill="none" className={styles.arrowIcon} aria-hidden="true">

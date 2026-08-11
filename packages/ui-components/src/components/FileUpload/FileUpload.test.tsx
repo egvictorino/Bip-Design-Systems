@@ -397,6 +397,84 @@ describe('FileUpload', () => {
     expect(document.querySelector('label')).not.toHaveClass('dropzoneCompact');
   });
 
+  // ── Uncontrolled (defaultValue) ───────────────────────────────────────────
+
+  it('renders files from defaultValue when uncontrolled', () => {
+    const file = makeFile('initial.pdf');
+    render(<FileUpload defaultValue={[file]} />);
+    expect(screen.getByText('initial.pdf')).toBeInTheDocument();
+  });
+
+  it('updates its own displayed files when uncontrolled and a file is dropped', () => {
+    render(<FileUpload multiple defaultValue={[]} />);
+    const file = makeFile('dropped.pdf');
+    const dropzone = screen.getByText('Arrastra tu archivo aquí').closest('label')!;
+    fireEvent.drop(dropzone, {
+      preventDefault: () => {},
+      dataTransfer: { files: makeFileList([file]) },
+    });
+    expect(screen.getByText('dropped.pdf')).toBeInTheDocument();
+  });
+
+  it('still calls onChange when uncontrolled', () => {
+    const onChange = vi.fn();
+    render(<FileUpload defaultValue={[]} onChange={onChange} />);
+    const file = makeFile('dropped.pdf');
+    const dropzone = screen.getByText('Arrastra tu archivo aquí').closest('label')!;
+    fireEvent.drop(dropzone, {
+      preventDefault: () => {},
+      dataTransfer: { files: makeFileList([file]) },
+    });
+    expect(onChange).toHaveBeenCalledOnce();
+  });
+
+  it('removing a file updates internal state when uncontrolled', () => {
+    const file = makeFile('a.pdf');
+    render(<FileUpload defaultValue={[file]} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar a.pdf' }));
+    expect(screen.queryByText('a.pdf')).not.toBeInTheDocument();
+  });
+
+  it('value prop takes precedence over defaultValue when both are provided', () => {
+    const controlled = makeFile('controlled.pdf');
+    const initial = makeFile('initial.pdf');
+    render(<FileUpload value={[controlled]} defaultValue={[initial]} />);
+    expect(screen.getByText('controlled.pdf')).toBeInTheDocument();
+    expect(screen.queryByText('initial.pdf')).not.toBeInTheDocument();
+  });
+
+  // ── Loading ────────────────────────────────────────────────────────────────
+
+  it('shows uploading text and hides dropzone prompt when loading=true', () => {
+    render(<FileUpload loading />);
+    expect(screen.getByText('Subiendo…')).toBeInTheDocument();
+    expect(screen.queryByText('Arrastra tu archivo aquí')).not.toBeInTheDocument();
+  });
+
+  it('disables the input when loading=true', () => {
+    render(<FileUpload loading />);
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(input).toBeDisabled();
+  });
+
+  it('sets aria-busy on the input when loading=true', () => {
+    render(<FileUpload loading />);
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(input).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('ignores drop when loading=true', () => {
+    const onChange = vi.fn();
+    render(<FileUpload loading onChange={onChange} />);
+    const dropzone = document.querySelector('label')!;
+    const file = makeFile('doc.pdf');
+    fireEvent.drop(dropzone, {
+      preventDefault: () => {},
+      dataTransfer: { files: makeFileList([file]) },
+    });
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   // ── Focus ring ─────────────────────────────────────────────────────────────
 
   it('applies dropzoneFocused class when input receives focus', () => {

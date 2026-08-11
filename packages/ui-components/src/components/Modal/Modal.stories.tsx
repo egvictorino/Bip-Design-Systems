@@ -26,7 +26,7 @@ const DefaultModalStory = () => {
       <Button variant="primary" onClick={() => setOpen(true)}>
         Abrir modal
       </Button>
-      <Modal isOpen={open} onClose={() => setOpen(false)} size="md">
+      <Modal open={open} onClose={() => setOpen(false)} size="md">
         <ModalHeader>Información importante</ModalHeader>
         <ModalBody>
           <p style={{ color: 'var(--color-txt-secondary)', fontSize: '0.875rem' }}>
@@ -47,7 +47,7 @@ const DefaultModalStory = () => {
 };
 
 export const Default: Story = {
-  args: { isOpen: false, onClose: () => {}, children: null },
+  args: { open: false, onClose: () => {}, children: null },
   render: () => <DefaultModalStory />,
 };
 
@@ -58,7 +58,7 @@ const ConfirmationModalStory = () => {
       <Button variant="primary" onClick={() => setOpen(true)}>
         Eliminar registro
       </Button>
-      <Modal isOpen={open} onClose={() => setOpen(false)} size="sm">
+      <Modal open={open} onClose={() => setOpen(false)} size="sm">
         <ModalHeader>Confirmar eliminación</ModalHeader>
         <ModalBody>
           <p style={{ color: 'var(--color-txt-secondary)', fontSize: '0.875rem' }}>
@@ -79,7 +79,7 @@ const ConfirmationModalStory = () => {
 };
 
 export const Confirmation: Story = {
-  args: { isOpen: false, onClose: () => {}, children: null },
+  args: { open: false, onClose: () => {}, children: null },
   render: () => <ConfirmationModalStory />,
 };
 
@@ -90,7 +90,7 @@ const WithFormModalStory = () => {
       <Button variant="primary" onClick={() => setOpen(true)}>
         Agregar cliente
       </Button>
-      <Modal isOpen={open} onClose={() => setOpen(false)} size="md">
+      <Modal open={open} onClose={() => setOpen(false)} size="md">
         <ModalHeader>Nuevo cliente</ModalHeader>
         <ModalBody>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -113,7 +113,7 @@ const WithFormModalStory = () => {
 };
 
 export const WithForm: Story = {
-  args: { isOpen: false, onClose: () => {}, children: null },
+  args: { open: false, onClose: () => {}, children: null },
   render: () => <WithFormModalStory />,
 };
 
@@ -124,7 +124,7 @@ const LargeModalStory = () => {
       <Button variant="primary" onClick={() => setOpen(true)}>
         Ver términos
       </Button>
-      <Modal isOpen={open} onClose={() => setOpen(false)} size="lg">
+      <Modal open={open} onClose={() => setOpen(false)} size="lg">
         <ModalHeader>Términos y condiciones</ModalHeader>
         <ModalBody>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem', color: 'var(--color-txt-secondary)' }}>
@@ -156,7 +156,7 @@ const LargeModalStory = () => {
 };
 
 export const Large: Story = {
-  args: { isOpen: false, onClose: () => {}, children: null },
+  args: { open: false, onClose: () => {}, children: null },
   render: () => <LargeModalStory />,
 };
 
@@ -168,7 +168,7 @@ const NoBackdropCloseModalStory = () => {
         Abrir (sin cerrar al dar clic fuera ni con Escape)
       </Button>
       <Modal
-        isOpen={open}
+        open={open}
         onClose={() => setOpen(false)}
         size="sm"
         closeOnBackdrop={false}
@@ -192,7 +192,7 @@ const NoBackdropCloseModalStory = () => {
 };
 
 export const NoBackdropClose: Story = {
-  args: { isOpen: false, onClose: () => {}, children: null },
+  args: { open: false, onClose: () => {}, children: null },
   render: () => <NoBackdropCloseModalStory />,
 };
 
@@ -213,7 +213,7 @@ const FooterAlignStory = () => {
           </Button>
         ))}
       </div>
-      <Modal isOpen={open} onClose={() => setOpen(false)} size="sm">
+      <Modal open={open} onClose={() => setOpen(false)} size="sm">
         <ModalHeader>Alineación del footer</ModalHeader>
         <ModalBody>
           <p style={{ color: 'var(--color-txt-secondary)', fontSize: '0.875rem' }}>
@@ -234,7 +234,7 @@ const FooterAlignStory = () => {
 };
 
 export const FooterAlign: Story = {
-  args: { isOpen: false, onClose: () => {}, children: null },
+  args: { open: false, onClose: () => {}, children: null },
   render: () => <FooterAlignStory />,
 };
 
@@ -245,7 +245,7 @@ const LongContentStory = () => {
       <Button variant="primary" onClick={() => setOpen(true)}>
         Contenido largo (body scrollable)
       </Button>
-      <Modal isOpen={open} onClose={() => setOpen(false)} size="md">
+      <Modal open={open} onClose={() => setOpen(false)} size="md">
         <ModalHeader>Historial de actividad</ModalHeader>
         <ModalBody>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -276,6 +276,6 @@ const LongContentStory = () => {
 };
 
 export const LongContent: Story = {
-  args: { isOpen: false, onClose: () => {}, children: null },
+  args: { open: false, onClose: () => {}, children: null },
   render: () => <LongContentStory />,
 };

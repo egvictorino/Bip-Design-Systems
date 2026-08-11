@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './EmptyState.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Icono o ilustración personalizada. Si se omite, se muestra un icono genérico. */
@@ -12,7 +13,7 @@ export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   /** CTA opcional — típicamente un `<Button>`. */
   action?: React.ReactNode;
   /** Controla el espaciado y tamaños de tipografía. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
 }
 
 type SizeKey = NonNullable<EmptyStateProps['size']>;
@@ -64,19 +65,13 @@ const DefaultIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-export const EmptyState: React.FC<EmptyStateProps> = ({
-  icon,
-  title,
-  description,
-  action,
-  size = 'md',
-  className,
-  ...props
-}) => {
+export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(
+  ({ icon, title, description, action, size = 'md', className, ...props }, ref) => {
   const sz = sizeClasses[size];
 
   return (
     <div
+      ref={ref}
       className={cn(styles.emptyState, sz.wrapper, className)}
       {...props}
     >
@@ -93,6 +88,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {action && <div className={sz.action}>{action}</div>}
     </div>
   );
-};
+  }
+);
 
 EmptyState.displayName = 'EmptyState';

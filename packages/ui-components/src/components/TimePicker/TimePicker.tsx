@@ -4,13 +4,18 @@ import React, { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useS
 import { cn } from '../../lib/cn.js';
 import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { useBipLocale } from '../../i18n/index.js';
+import { Spinner } from '../Spinner/index.js';
 import styles from './TimePicker.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface TimePickerProps {
+export interface TimePickerProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'inputMode'> {
   /** Time in "HH:mm" 24-hour format */
   value?: string;
+  /** Valor inicial en modo no-controlado (ignorado si `value` está definido). */
+  defaultValue?: string;
   onChange?: (time: string) => void;
   placeholder?: string;
   label?: string;
@@ -18,12 +23,14 @@ export interface TimePickerProps {
   error?: boolean;
   errorMessage?: string;
   disabled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  /** Deshabilita la interacción y muestra un spinner (ej. mientras se resuelven horarios ocupados async). */
+  loading?: boolean;
+  required?: boolean;
+  size?: BipSize;
   /** Minute step interval (default: 5) */
   step?: 5 | 10 | 15 | 30;
   id?: string;
   fullWidth?: boolean;
-  className?: string;
   /** Earliest selectable time in "HH:mm" 24-hour format */
   minTime?: string;
   /** Latest selectable time in "HH:mm" 24-hour format */
@@ -276,7 +283,8 @@ PeriodColumn.displayName = 'PeriodColumn';
 export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
   (
     {
-      value,
+      value: valueProp,
+      defaultValue,
       onChange,
       placeholder,
       label,
@@ -284,6 +292,8 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       error = false,
       errorMessage,
       disabled = false,
+      loading = false,
+      required = false,
       size = 'md',
       step = 5,
       id,
@@ -293,6 +303,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       maxTime,
       inputMode = 'picker',
       hourCycle = '24',
+      ...rest
     },
     ref
   ) => {
@@ -301,6 +312,20 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
     const [focusedHourIdx, setFocusedHourIdx] = useState<number | null>(null);
     const [focusedMinuteIdx, setFocusedMinuteIdx] = useState<number | null>(null);
     const [announcement, setAnnouncement] = useState('');
+    const [internalValue, setInternalValue] = useState<string | undefined>(defaultValue);
+
+    // Controlled (`value` prop wins) / uncontrolled (falls back to internal state) —
+    // `value !== undefined` is the check, not truthiness.
+    const value = valueProp !== undefined ? valueProp : internalValue;
+
+    const emitChange = useCallback(
+      (next: string) => {
+        if (valueProp === undefined) setInternalValue(next);
+        onChange?.(next);
+      },
+      [valueProp, onChange]
+    );
+
     // Text input mode state
     const [textValue, setTextValue] = useState(value ?? '');
     const [textValid, setTextValid] = useState(true);
@@ -367,7 +392,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
     // ── Auto-adjust value when outside min/max ──────────────────────────────
 
     useEffect(() => {
-      if (value === undefined || !onChange) return;
+      if (value === undefined) return;
       const { hour, minute } = parseTime(value);
       if (hour === null || minute === null) return;
 
@@ -397,9 +422,9 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       }
 
       if (adjH !== hour || adjM !== minute) {
-        onChange(`${pad2(adjH)}:${pad2(adjM)}`);
+        emitChange(`${pad2(adjH)}:${pad2(adjM)}`);
       }
-    }, [value, minHour, minMinute, maxHour, maxMinute, step, onChange]);
+    }, [value, minHour, minMinute, maxHour, maxMinute, step, emitChange]);
 
     // ── Disabled predicates ─────────────────────────────────────────────────
 
@@ -489,14 +514,14 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       // hour is a display value from hoursOptions; convert to 24h when in 12h mode
       const actualHour = hourCycle === '12' ? to24h(hour, selectedPeriod) : hour;
       const min = selectedMinute ?? 0;
-      onChange?.(`${pad2(actualHour)}:${pad2(min)}`);
+      emitChange(`${pad2(actualHour)}:${pad2(min)}`);
       setAnnouncement(t.timePicker.hourSelectedAnnouncement(pad2(actualHour)));
       // Panel stays open so user can also pick the minute
     };
 
     const handleMinuteSelect = (minute: number) => {
       const actualHour = selectedHour ?? 0;
-      onChange?.(`${pad2(actualHour)}:${pad2(minute)}`);
+      emitChange(`${pad2(actualHour)}:${pad2(minute)}`);
       setAnnouncement(t.timePicker.timeSelectedAnnouncement(`${pad2(actualHour)}:${pad2(minute)}`));
       setIsOpen(false);
     };
@@ -506,7 +531,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
         const { hour12 } = to12h(selectedHour);
         const newHour24 = to24h(hour12, period);
         const min = selectedMinute ?? 0;
-        onChange?.(`${pad2(newHour24)}:${pad2(min)}`);
+        emitChange(`${pad2(newHour24)}:${pad2(min)}`);
         setAnnouncement(t.timePicker.periodSelectedAnnouncement(period));
       }
     };
@@ -515,7 +540,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       const now = new Date();
       const h = now.getHours();
       const m = Math.floor(now.getMinutes() / step) * step;
-      onChange?.(`${pad2(h)}:${pad2(m)}`);
+      emitChange(`${pad2(h)}:${pad2(m)}`);
       setIsOpen(false);
     };
 
@@ -526,7 +551,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       if (TEXT_TIME_RE.test(raw)) {
         const [h, m] = raw.split(':').map(Number);
         setTextValid(true);
-        onChange?.(`${pad2(h)}:${pad2(m)}`);
+        emitChange(`${pad2(h)}:${pad2(m)}`);
       } else {
         setTextValid(raw === '');
       }
@@ -552,6 +577,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       <div
         ref={containerRef}
         className={cn(styles.container, fullWidth && styles.containerFullWidth)}
+        {...rest}
       >
         {label && (
           <label
@@ -564,6 +590,12 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
             )}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className={styles.requiredMark}>
+                {' '}
+                *
+              </span>
+            )}
           </label>
         )}
 
@@ -575,7 +607,8 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
               type="text"
               value={textValue}
               placeholder={placeholder ?? t.timePicker.placeholder}
-              disabled={disabled}
+              disabled={disabled || loading}
+              required={required}
               aria-describedby={messageId}
               aria-invalid={textInputHasError || undefined}
               onChange={handleTextChange}
@@ -594,7 +627,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
               ref={setTriggerRef}
               id={inputId}
               type="button"
-              disabled={disabled}
+              disabled={disabled || loading}
               aria-haspopup="dialog"
               aria-expanded={isOpen}
               aria-describedby={messageId}
@@ -613,8 +646,12 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
             </button>
           )}
 
-          {/* Clock icon — clickable in text mode to toggle the picker */}
-          {inputMode === 'text' ? (
+          {/* Clock icon — clickable in text mode to toggle the picker; replaced by a spinner while loading */}
+          {loading ? (
+            <span className={styles.clockIcon} aria-hidden="true">
+              <Spinner size="sm" />
+            </span>
+          ) : inputMode === 'text' ? (
             <button
               type="button"
               tabIndex={-1}

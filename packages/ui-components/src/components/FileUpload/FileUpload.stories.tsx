@@ -101,6 +101,27 @@ export const Disabled: Story = {
   render: () => <ControlledFileUpload label="Archivo" disabled />,
 };
 
+export const Uncontrolled: Story = {
+  render: () => (
+    <div style={{ maxWidth: '28rem' }}>
+      <FileUpload
+        label="Adjuntar documento (no controlado)"
+        defaultValue={[]}
+        multiple
+        helperText="El estado de los archivos vive dentro del componente"
+      />
+    </div>
+  ),
+};
+
+export const Loading: Story = {
+  render: () => (
+    <div style={{ maxWidth: '28rem' }}>
+      <FileUpload label="Subiendo archivo" loading helperText="Subiendo, por favor espera..." />
+    </div>
+  ),
+};
+
 export const FullWidth: Story = {
   render: () => (
     <div style={{ width: '100%' }}>

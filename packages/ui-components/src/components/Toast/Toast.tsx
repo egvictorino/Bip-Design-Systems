@@ -44,7 +44,7 @@ interface ToastItem extends ToastConfig {
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
-interface ToastContextValue {
+export interface ToastContextValue {
   addToast: (config: ToastConfig) => void;
 }
 
@@ -93,7 +93,7 @@ const progressBarClass: Record<NonNullable<ToastConfig['variant']>, string> = {
   info:    styles.progressInfo,
   success: styles.progressSuccess,
   warning: styles.progressWarning,
-  error:   styles.progressError,
+  danger:  styles.progressDanger,
 };
 
 // ─── ToastItemComponent (internal) ────────────────────────────────────────────

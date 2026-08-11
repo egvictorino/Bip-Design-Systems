@@ -5,14 +5,14 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from './Modal';
 // ─── Fixture ──────────────────────────────────────────────────────────────────
 
 const DefaultModal = ({
-  isOpen = true,
+  open = true,
   onClose = vi.fn(),
   closeOnBackdrop = true,
   closeOnEscape,
   size,
   className,
 }: {
-  isOpen?: boolean;
+  open?: boolean;
   onClose?: () => void;
   closeOnBackdrop?: boolean;
   closeOnEscape?: boolean;
@@ -20,7 +20,7 @@ const DefaultModal = ({
   className?: string;
 }) => (
   <Modal
-    isOpen={isOpen}
+    open={open}
     onClose={onClose}
     closeOnBackdrop={closeOnBackdrop}
     closeOnEscape={closeOnEscape}
@@ -40,12 +40,12 @@ const DefaultModal = ({
 describe('Modal', () => {
   // ── Visibility ──────────────────────────────────────────────────────────────
 
-  it('renders nothing when isOpen=false', () => {
-    render(<DefaultModal isOpen={false} />);
+  it('renders nothing when open=false', () => {
+    render(<DefaultModal open={false} />);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('renders dialog when isOpen=true', () => {
+  it('renders dialog when open=true', () => {
     render(<DefaultModal />);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
@@ -113,9 +113,9 @@ describe('Modal', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it('pressing Escape does NOT call onClose when isOpen=false', () => {
+  it('pressing Escape does NOT call onClose when open=false', () => {
     const onClose = vi.fn();
-    render(<DefaultModal isOpen={false} onClose={onClose} />);
+    render(<DefaultModal open={false} onClose={onClose} />);
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onClose).not.toHaveBeenCalled();
   });
@@ -164,7 +164,7 @@ describe('Modal', () => {
 
     const onClose = vi.fn();
     const { rerender } = render(
-      <Modal isOpen onClose={onClose}>
+      <Modal open onClose={onClose}>
         <ModalHeader>T</ModalHeader>
         <ModalBody>content</ModalBody>
       </Modal>
@@ -172,7 +172,7 @@ describe('Modal', () => {
     // modal is now open — focus moved inside modal
 
     rerender(
-      <Modal isOpen={false} onClose={onClose}>
+      <Modal open={false} onClose={onClose}>
         <ModalHeader>T</ModalHeader>
         <ModalBody>content</ModalBody>
       </Modal>
@@ -191,9 +191,9 @@ describe('Modal', () => {
 
   it('unlocks body scroll when closed', () => {
     const onClose = vi.fn();
-    const { rerender } = render(<DefaultModal isOpen onClose={onClose} />);
+    const { rerender } = render(<DefaultModal open onClose={onClose} />);
     expect(document.body.style.overflow).toBe('hidden');
-    rerender(<DefaultModal isOpen={false} onClose={onClose} />);
+    rerender(<DefaultModal open={false} onClose={onClose} />);
     expect(document.body.style.overflow).toBe('');
   });
 
@@ -233,7 +233,7 @@ describe('Modal', () => {
     'ModalFooter align="%s" applies correct class',
     (align) => {
       render(
-        <Modal isOpen onClose={vi.fn()}>
+        <Modal open onClose={vi.fn()}>
           <ModalHeader>T</ModalHeader>
           <ModalBody>body</ModalBody>
           <ModalFooter align={align}>
@@ -248,13 +248,13 @@ describe('Modal', () => {
 
   // ── Animation ────────────────────────────────────────────────────────────────
 
-  it('modal stays in DOM during exit animation after isOpen changes to false', () => {
+  it('modal stays in DOM during exit animation after open changes to false', () => {
     vi.useFakeTimers();
     const onClose = vi.fn();
-    const { rerender } = render(<DefaultModal isOpen onClose={onClose} />);
+    const { rerender } = render(<DefaultModal open onClose={onClose} />);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
-    rerender(<DefaultModal isOpen={false} onClose={onClose} />);
+    rerender(<DefaultModal open={false} onClose={onClose} />);
     // Still in DOM — animation timeout has not fired yet
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 

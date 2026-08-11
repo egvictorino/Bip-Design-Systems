@@ -173,14 +173,14 @@ describe('TimelineItem', () => {
     expect(dot).toHaveClass('variantSuccess');
   });
 
-  it('applies error variant dot', () => {
+  it('applies danger variant dot', () => {
     const { container } = render(
       <Timeline>
-        <TimelineItem title="Item" variant="error" />
+        <TimelineItem title="Item" variant="danger" />
       </Timeline>
     );
     const dot = container.querySelector('[aria-hidden="true"]');
-    expect(dot).toHaveClass('variantError');
+    expect(dot).toHaveClass('variantDanger');
   });
 
   it('applies warning variant dot', () => {

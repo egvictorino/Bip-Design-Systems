@@ -5,10 +5,10 @@ import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './StatsCard.module.css';
 
-export type StatsCardVariant = 'outlined' | 'filled' | 'elevated';
+export type StatsCardVariant = 'elevated' | 'outlined' | 'flat';
 export type StatsCardSize = 'sm' | 'md' | 'lg';
 
-export interface StatsCardProps {
+export interface StatsCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   value: string | number;
   trend?: number;
@@ -17,7 +17,6 @@ export interface StatsCardProps {
   variant?: StatsCardVariant;
   size?: StatsCardSize;
   loading?: boolean;
-  className?: string;
 }
 
 export const StatsCard: React.FC<StatsCardProps> = ({
@@ -30,6 +29,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   size = 'md',
   loading = false,
   className,
+  ...rest
 }) => {
   const t = useBipLocale();
   const hasTrend = trend !== undefined;
@@ -44,6 +44,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
         role="region"
         aria-label={t.statsCard.loading}
         aria-busy="true"
+        {...rest}
       >
         <div className={styles.header}>
           <span className={cn(styles.loadingBar, styles.loadingTitle)} />
@@ -62,6 +63,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       className={cn(styles.card, styles[variant], styles[size], className)}
       role="region"
       aria-label={title || undefined}
+      {...rest}
     >
       <div className={styles.header}>
         <span className={styles.title}>{title}</span>

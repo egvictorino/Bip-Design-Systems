@@ -21,7 +21,7 @@ describe('Alert', () => {
   });
 
   it('error variant renders with role="alert" (assertive live region)', () => {
-    render(<Alert variant="error">Mensaje</Alert>);
+    render(<Alert variant="danger">Mensaje</Alert>);
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
@@ -88,7 +88,7 @@ describe('Alert', () => {
 
   // ── All variants render ───────────────────────────────────────────────────
 
-  it.each(['info', 'success', 'warning', 'error'] as const)('renders variant %s', (variant) => {
+  it.each(['info', 'success', 'warning', 'danger'] as const)('renders variant %s', (variant) => {
     render(<Alert variant={variant}>Mensaje {variant}</Alert>);
     expect(screen.getByText(`Mensaje ${variant}`)).toBeInTheDocument();
   });

@@ -8,7 +8,7 @@ const SRC_DIR = resolve(__dirname, '..');
  * Módulos donde --color-txt-white es intencional (fondo fijo, no una semilla
  * de marca overrideable) — ver el comentario en el propio archivo:
  * - Sidebar.module.css .variantDark: --color-surface-4 es un neutro fijo.
- * - Spinner.module.css: variante .white explícita, no un fill de estado.
+ * - Spinner.module.css: variante .inverse explícita, no un fill de estado.
  * - Avatar.module.css .initials (default): fallback para variantes bg* que
  *   no son semillas de marca (bgSecondary/bgSlate/-text) — las que sí lo son
  *   (bgPrimary/bgDanger/bgViolet) ya sobrescriben con --color-txt-on-*.

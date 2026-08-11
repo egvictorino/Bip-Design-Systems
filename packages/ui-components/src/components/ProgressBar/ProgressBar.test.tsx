@@ -75,7 +75,7 @@ describe('ProgressBar', () => {
 
   // ── Variants ───────────────────────────────────────────────────────────────
 
-  it.each(['default', 'success', 'warning', 'error'] as const)(
+  it.each(['default', 'success', 'warning', 'danger'] as const)(
     'variant %s applies correct fill color class',
     (variant) => {
       const { container } = render(<ProgressBar value={50} variant={variant} />);
@@ -265,7 +265,7 @@ describe('ProgressBar', () => {
 
   // ── Record maps — regresión de variantes ───────────────────────────────────
 
-  it.each(['default', 'success', 'warning', 'error'] as const)(
+  it.each(['default', 'success', 'warning', 'danger'] as const)(
     'variant %s fill class resolves via Record map',
     (variant) => {
       const { container } = render(<ProgressBar value={50} variant={variant} />);

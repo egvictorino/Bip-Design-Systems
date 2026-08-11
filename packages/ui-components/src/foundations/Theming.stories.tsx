@@ -61,7 +61,7 @@ const Gallery = () => {
         <TabPanel value="a">Panel A</TabPanel>
         <TabPanel value="b">Panel B</TabPanel>
       </Tabs>
-      <Pagination currentPage={page} totalPages={8} onPageChange={setPage} />
+      <Pagination page={page} totalPages={8} onPageChange={setPage} />
       <Alert variant="info">Alert informativo — no pinta sobre fill sólido, referencia de control.</Alert>
     </div>
   );
