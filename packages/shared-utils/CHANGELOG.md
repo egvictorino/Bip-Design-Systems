@@ -8,6 +8,8 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-11
+
 ### Added
 
 - `formatCurrency`/`formatDate` accept optional `locale`/`currency` overrides — the `es-MX`/MXN
