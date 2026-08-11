@@ -3,10 +3,17 @@
 Todos los cambios notables de este paquete se documentan en este archivo.
 
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
-y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de la línea 0.x
-(cambios `minor` pueden ser incompatibles hasta llegar a 1.0.0).
+y este proyecto usa versionado [SemVer](https://semver.org/lang/es/). Desde `1.0.0`, un cambio
+`major` es la única vía para romper compatibilidad — antes de esa versión, un `minor` podía
+hacerlo (ver el historial 0.x más abajo para el detalle de qué cambió en cada uno).
 
 ## [Unreleased]
+
+## [1.0.0] - 2026-08-11
+
+La API pública queda declarada estable. `0.5.0` (más abajo) unificó el vocabulario inconsistente
+entre componentes hermanos como preparación para este corte — no hay cambios de código en esta
+versión, es la declaración formal de compromiso de compatibilidad de SemVer a partir de aquí.
 
 ## [0.5.0] - 2026-08-11
 
