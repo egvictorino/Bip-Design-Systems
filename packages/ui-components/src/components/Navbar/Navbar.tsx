@@ -77,7 +77,21 @@ export const Navbar: React.FC<NavbarProps> = ({
   const mobileMenuId = `${instanceId}-mobile-menu`;
   const toggleButtonId = `${instanceId}-toggle`;
   const navRef = useRef<HTMLElement>(null);
+  const mobilePanelRef = useRef<HTMLDivElement>(null);
   const prevMobileOpenRef = useRef(false);
+
+  // `inert` set imperatively via the DOM IDL property, not the JSX attribute: React 18 has
+  // no attribute-config entry for `inert` and silently drops a boolean prop value (only a
+  // string reaches the DOM), while React 19 added one and, for a non-boolean value like an
+  // empty string, logs "Received an empty string for a boolean attribute `inert`" and treats
+  // it as false. No single JSX prop value satisfies both peer versions at once; assigning
+  // `element.inert` directly is the native DOM API (Baseline since 2023) and bypasses
+  // React's attribute translation — and therefore this cross-version inconsistency —
+  // entirely.
+  useLayoutEffect(() => {
+    const panel = mobilePanelRef.current;
+    if (panel) panel.inert = !isMobileOpen;
+  }, [isMobileOpen]);
 
   const toggleMobile = useCallback(() => setIsMobileOpen((prev) => !prev), []);
   const closeMobile = useCallback(() => setIsMobileOpen(false), []);
@@ -194,10 +208,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             aria-hidden container may not contain focusable descendants) without unmounting
             the panel and breaking the open/close transition. */}
         <div
+          ref={mobilePanelRef}
           id={mobileMenuId}
           className={cn(styles.mobilePanel, isMobileOpen && styles.mobilePanelOpen)}
           aria-hidden={!isMobileOpen}
-          inert={isMobileOpen ? undefined : ''}
         >
           <ul className={styles.mobileNavList}>{navChildren}</ul>
           {actionsChildren && (
