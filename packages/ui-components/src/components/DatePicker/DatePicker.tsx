@@ -7,10 +7,12 @@ import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthInde
 import { useBipLocale } from '../../i18n/index.js';
 import { Spinner } from '../Spinner/index.js';
 import styles from './DatePicker.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface DatePickerProps {
+export interface DatePickerProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   value?: Date | null;
   /** Valor inicial en modo no-controlado (ignorado si `value` está definido). */
   defaultValue?: Date | null;
@@ -28,7 +30,7 @@ export interface DatePickerProps {
   /** Deshabilita la interacción y muestra un spinner (ej. mientras se resuelven fechas ocupadas async). */
   loading?: boolean;
   required?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   id?: string;
   fullWidth?: boolean;
   className?: string;
@@ -458,6 +460,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
       id,
       fullWidth = false,
       className,
+      ...rest
     },
     ref
   ) => {
@@ -556,6 +559,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
 
     return (
       <div
+        {...rest}
         ref={containerRef}
         className={cn(styles.container, fullWidth && styles.containerFullWidth)}
       >

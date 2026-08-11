@@ -5,11 +5,12 @@ import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './SearchInput.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface SearchInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   variant?: 'outlined' | 'filled' | 'bare';
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   helperText?: string;
   error?: boolean;

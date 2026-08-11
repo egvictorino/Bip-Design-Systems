@@ -6,7 +6,7 @@ import styles from './Tooltip.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface TooltipProps {
+export interface TooltipProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'content'> {
   content: React.ReactNode;
   position?: 'top' | 'bottom' | 'left' | 'right';
   /** Secondary-axis alignment (default: 'center') */
@@ -24,7 +24,6 @@ export interface TooltipProps {
   /** Callback fired when the internal open state would change */
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
-  className?: string;
 }
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
@@ -58,6 +57,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   onOpenChange,
   children,
   className,
+  ...rest
 }) => {
   const id = useId();
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -188,6 +188,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     <span className={cn(styles.wrapper, className)}>
       {trigger}
       <span
+        {...rest}
         id={id}
         role="tooltip"
         data-open={isVisible}

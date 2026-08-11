@@ -213,38 +213,45 @@ Navbar.displayName = 'Navbar';
 
 // ─── NavbarBrand ──────────────────────────────────────────────────────────────
 
-export interface NavbarBrandProps {
+export interface NavbarBrandProps extends React.HTMLAttributes<HTMLAnchorElement> {
   children: React.ReactNode;
   href?: string;
-  className?: string;
 }
 
-export const NavbarBrand: React.FC<NavbarBrandProps> = ({ children, href, className }) => {
+export const NavbarBrand: React.FC<NavbarBrandProps> = ({
+  children,
+  href,
+  className,
+  ...rest
+}) => {
   const { closeMobile } = useNavbar();
 
   const brandClass = cn(styles.brand, className);
 
   if (href) {
     return (
-      <a href={href} onClick={closeMobile} className={brandClass}>
+      <a href={href} onClick={closeMobile} className={brandClass} {...rest}>
         {children}
       </a>
     );
   }
 
-  return <span className={brandClass}>{children}</span>;
+  return (
+    <span className={brandClass} {...rest}>
+      {children}
+    </span>
+  );
 };
 
 NavbarBrand.displayName = 'NavbarBrand';
 
 // ─── NavbarNav ────────────────────────────────────────────────────────────────
 
-export interface NavbarNavProps {
+export interface NavbarNavProps extends React.HTMLAttributes<HTMLUListElement> {
   children: React.ReactNode;
-  className?: string;
 }
 
-export const NavbarNav: React.FC<NavbarNavProps> = ({ children, className }) => {
+export const NavbarNav: React.FC<NavbarNavProps> = ({ children, className, ...rest }) => {
   const { setNavChildren } = useNavbar();
 
   // Register children for the mobile panel rendered by Navbar root
@@ -254,7 +261,7 @@ export const NavbarNav: React.FC<NavbarNavProps> = ({ children, className }) => 
   }, [children, setNavChildren]);
 
   return (
-    <ul className={cn(styles.desktopNav, className)}>
+    <ul className={cn(styles.desktopNav, className)} {...rest}>
       {children}
     </ul>
   );
@@ -264,13 +271,12 @@ NavbarNav.displayName = 'NavbarNav';
 
 // ─── NavbarItem ───────────────────────────────────────────────────────────────
 
-export interface NavbarItemProps {
+export interface NavbarItemProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onClick'> {
   children?: React.ReactNode;
   icon?: React.ReactNode;
   href?: string;
   active?: boolean;
   disabled?: boolean;
-  className?: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>;
   'aria-label'?: string;
 }
@@ -284,6 +290,7 @@ export const NavbarItem: React.FC<NavbarItemProps> = ({
   className,
   onClick,
   'aria-label': ariaLabel,
+  ...rest
 }) => {
   const { closeMobile } = useNavbar();
 
@@ -357,6 +364,7 @@ export const NavbarItem: React.FC<NavbarItemProps> = ({
     return (
       <li style={{ display: 'contents' }}>
         <a
+          {...rest}
           href={href}
           data-navbar-item=""
           aria-current={active ? 'page' : undefined}
@@ -377,6 +385,7 @@ export const NavbarItem: React.FC<NavbarItemProps> = ({
   return (
     <li style={{ display: 'contents' }}>
       <button
+        {...rest}
         type="button"
         data-navbar-item=""
         aria-current={active ? 'page' : undefined}
@@ -397,12 +406,11 @@ NavbarItem.displayName = 'NavbarItem';
 
 // ─── NavbarActions ────────────────────────────────────────────────────────────
 
-export interface NavbarActionsProps {
+export interface NavbarActionsProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  className?: string;
 }
 
-export const NavbarActions: React.FC<NavbarActionsProps> = ({ children, className }) => {
+export const NavbarActions: React.FC<NavbarActionsProps> = ({ children, className, ...rest }) => {
   const { setActionsChildren } = useNavbar();
 
   // Register children for the mobile panel rendered by Navbar root
@@ -411,7 +419,11 @@ export const NavbarActions: React.FC<NavbarActionsProps> = ({ children, classNam
     return () => setActionsChildren(null);
   }, [children, setActionsChildren]);
 
-  return <div className={cn(styles.actions, className)}>{children}</div>;
+  return (
+    <div className={cn(styles.actions, className)} {...rest}>
+      {children}
+    </div>
+  );
 };
 
 NavbarActions.displayName = 'NavbarActions';

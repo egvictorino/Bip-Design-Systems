@@ -5,12 +5,11 @@ import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './Pagination.module.css';
 
-export interface PaginationProps {
+export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
   siblingCount?: number;
-  className?: string;
   disabled?: boolean;
 }
 
@@ -58,6 +57,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   siblingCount = 1,
   className,
   disabled = false,
+  ...rest
 }) => {
   const t = useBipLocale();
 
@@ -66,7 +66,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   const pageRange = getPageRange(page, totalPages, siblingCount);
 
   return (
-    <nav aria-label={t.pagination.nav} className={cn(styles.nav, className)}>
+    <nav aria-label={t.pagination.nav} className={cn(styles.nav, className)} {...rest}>
       {/* Previous */}
       <button
         type="button"

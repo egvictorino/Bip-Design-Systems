@@ -2,10 +2,12 @@
 
 import React, {
   createContext,
+  forwardRef,
   useCallback,
   useContext,
   useEffect,
   useId,
+  useRef,
   useState,
 } from 'react';
 import { cn } from '../../lib/cn.js';
@@ -166,22 +168,25 @@ export interface SidebarHeaderProps extends React.HTMLAttributes<HTMLDivElement>
   children: React.ReactNode;
 }
 
-export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ className, children, ...props }) => {
-  const { isCollapsed } = useSidebar();
+export const SidebarHeader = forwardRef<HTMLDivElement, SidebarHeaderProps>(
+  ({ className, children, ...props }, ref) => {
+    const { isCollapsed } = useSidebar();
 
-  return (
-    <div
-      className={cn(
-        styles.header,
-        isCollapsed ? styles.headerCollapsed : styles.headerExpanded,
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          styles.header,
+          isCollapsed ? styles.headerCollapsed : styles.headerExpanded,
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
+);
 
 // ─── SidebarBrand ────────────────────────────────────────────────────────────
 
@@ -213,19 +218,22 @@ export interface SidebarContentProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
 }
 
-export const SidebarContent: React.FC<SidebarContentProps> = ({
-  className,
-  children,
-  ...props
-}) => {
-  const t = useBipLocale();
+export const SidebarContent = forwardRef<HTMLElement, SidebarContentProps>(
+  ({ className, children, ...props }, ref) => {
+    const t = useBipLocale();
 
-  return (
-    <nav aria-label={t.sidebar.navLandmark} className={cn(styles.content, className)} {...props}>
-      {children}
-    </nav>
-  );
-};
+    return (
+      <nav
+        ref={ref}
+        aria-label={t.sidebar.navLandmark}
+        className={cn(styles.content, className)}
+        {...props}
+      >
+        {children}
+      </nav>
+    );
+  }
+);
 
 // ─── SidebarGroup ────────────────────────────────────────────────────────────
 
@@ -234,21 +242,18 @@ export interface SidebarGroupProps extends React.HTMLAttributes<HTMLDivElement> 
   children: React.ReactNode;
 }
 
-export const SidebarGroup: React.FC<SidebarGroupProps> = ({
-  label,
-  className,
-  children,
-  ...props
-}) => {
-  const { isCollapsed } = useSidebar();
+export const SidebarGroup = forwardRef<HTMLDivElement, SidebarGroupProps>(
+  ({ label, className, children, ...props }, ref) => {
+    const { isCollapsed } = useSidebar();
 
-  return (
-    <div className={cn(styles.group, className)} {...props}>
-      {label && !isCollapsed && <p className={styles.groupLabel}>{label}</p>}
-      <ul className={styles.groupList}>{children}</ul>
-    </div>
-  );
-};
+    return (
+      <div ref={ref} className={cn(styles.group, className)} {...props}>
+        {label && !isCollapsed && <p className={styles.groupLabel}>{label}</p>}
+        <ul className={styles.groupList}>{children}</ul>
+      </div>
+    );
+  }
+);
 
 // ─── SidebarGroupLabel ───────────────────────────────────────────────────────
 
@@ -256,21 +261,19 @@ export interface SidebarGroupLabelProps extends React.HTMLAttributes<HTMLParagra
   children: React.ReactNode;
 }
 
-export const SidebarGroupLabel: React.FC<SidebarGroupLabelProps> = ({
-  className,
-  children,
-  ...props
-}) => {
-  const { isCollapsed } = useSidebar();
+export const SidebarGroupLabel = forwardRef<HTMLParagraphElement, SidebarGroupLabelProps>(
+  ({ className, children, ...props }, ref) => {
+    const { isCollapsed } = useSidebar();
 
-  if (isCollapsed) return null;
+    if (isCollapsed) return null;
 
-  return (
-    <p className={cn(styles.groupLabel, className)} {...props}>
-      {children}
-    </p>
-  );
-};
+    return (
+      <p ref={ref} className={cn(styles.groupLabel, className)} {...props}>
+        {children}
+      </p>
+    );
+  }
+);
 
 // ─── Shared arrow-key navigation helper ──────────────────────────────────────
 
@@ -293,7 +296,8 @@ function navigateSidebarItems(e: React.KeyboardEvent, sidebarId: string) {
 
 // ─── SidebarItem ─────────────────────────────────────────────────────────────
 
-export interface SidebarItemProps {
+export interface SidebarItemProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'onClick'> {
   href?: string;
   active?: boolean;
   disabled?: boolean;
@@ -304,106 +308,106 @@ export interface SidebarItemProps {
   children: React.ReactNode;
 }
 
-export const SidebarItem: React.FC<SidebarItemProps> = ({
-  href,
-  active = false,
-  disabled = false,
-  icon,
-  badge,
-  className,
-  onClick,
-  children,
-}) => {
-  const { isCollapsed, closeMobile, sidebarId } = useSidebar();
+export const SidebarItem = forwardRef<HTMLAnchorElement | HTMLButtonElement, SidebarItemProps>(
+  (
+    { href, active = false, disabled = false, icon, badge, className, onClick, children, ...rest },
+    ref
+  ) => {
+    const { isCollapsed, closeMobile, sidebarId } = useSidebar();
 
-  const handleClick: React.MouseEventHandler = (e) => {
-    if (disabled) return;
-    closeMobile();
-    onClick?.(e);
-  };
+    const handleClick: React.MouseEventHandler = (e) => {
+      if (disabled) return;
+      closeMobile();
+      onClick?.(e);
+    };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    navigateSidebarItems(e, sidebarId);
-  };
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      navigateSidebarItems(e, sidebarId);
+    };
 
-  const itemClass = cn(
-    styles.item,
-    isCollapsed ? styles.itemCollapsed : styles.itemExpanded,
-    active ? styles.itemActive : styles.itemDefault,
-    disabled && styles.itemDisabled,
-    className
-  );
-
-  const badgeLabel =
-    badge !== undefined && typeof badge === 'number' && badge > 0
-      ? ` (${badge > 99 ? '99+' : badge} notificaciones)`
-      : '';
-
-  // When collapsed, provide an accessible name since the text is visually hidden
-  const collapsedLabel =
-    isCollapsed && typeof children === 'string' ? `${children}${badgeLabel}` : undefined;
-
-  const badgeEl =
-    badge !== undefined && !isCollapsed ? (
-      <span className={styles.badge} aria-hidden="true">
-        {typeof badge === 'number' && badge > 99 ? '99+' : badge}
-      </span>
-    ) : null;
-
-  const content = isCollapsed ? (
-    icon ?? null
-  ) : (
-    <>
-      {icon}
-      <span>{children}</span>
-      {badgeEl}
-    </>
-  );
-
-  const itemElement = href ? (
-    <a
-      href={href}
-      aria-label={collapsedLabel}
-      aria-current={active ? 'page' : undefined}
-      aria-disabled={disabled || undefined}
-      tabIndex={disabled ? -1 : undefined}
-      className={itemClass}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      data-sidebar-item
-    >
-      {content}
-    </a>
-  ) : (
-    <button
-      type="button"
-      aria-label={collapsedLabel}
-      aria-current={active ? 'page' : undefined}
-      disabled={disabled}
-      className={itemClass}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      data-sidebar-item
-    >
-      {content}
-    </button>
-  );
-
-  const wrappedItem =
-    isCollapsed && icon ? (
-      <Tooltip content={children} position="right">
-        {itemElement}
-      </Tooltip>
-    ) : (
-      itemElement
+    const itemClass = cn(
+      styles.item,
+      isCollapsed ? styles.itemCollapsed : styles.itemExpanded,
+      active ? styles.itemActive : styles.itemDefault,
+      disabled && styles.itemDisabled,
+      className
     );
 
-  return <li style={{ display: 'contents' }}>{wrappedItem}</li>;
-};
+    const badgeLabel =
+      badge !== undefined && typeof badge === 'number' && badge > 0
+        ? ` (${badge > 99 ? '99+' : badge} notificaciones)`
+        : '';
+
+    // When collapsed, provide an accessible name since the text is visually hidden
+    const collapsedLabel =
+      isCollapsed && typeof children === 'string' ? `${children}${badgeLabel}` : undefined;
+
+    const badgeEl =
+      badge !== undefined && !isCollapsed ? (
+        <span className={styles.badge} aria-hidden="true">
+          {typeof badge === 'number' && badge > 99 ? '99+' : badge}
+        </span>
+      ) : null;
+
+    const content = isCollapsed ? (
+      icon ?? null
+    ) : (
+      <>
+        {icon}
+        <span>{children}</span>
+        {badgeEl}
+      </>
+    );
+
+    const itemElement = href ? (
+      <a
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        href={href}
+        aria-label={collapsedLabel}
+        aria-current={active ? 'page' : undefined}
+        aria-disabled={disabled || undefined}
+        tabIndex={disabled ? -1 : undefined}
+        className={itemClass}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        data-sidebar-item
+        {...rest}
+      >
+        {content}
+      </a>
+    ) : (
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type="button"
+        aria-label={collapsedLabel}
+        aria-current={active ? 'page' : undefined}
+        disabled={disabled}
+        className={itemClass}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        data-sidebar-item
+        {...rest}
+      >
+        {content}
+      </button>
+    );
+
+    const wrappedItem =
+      isCollapsed && icon ? (
+        <Tooltip content={children} position="right">
+          {itemElement}
+        </Tooltip>
+      ) : (
+        itemElement
+      );
+
+    return <li style={{ display: 'contents' }}>{wrappedItem}</li>;
+  }
+);
 
 // ─── SidebarSubMenu ──────────────────────────────────────────────────────────
 
-export interface SidebarSubMenuProps {
+export interface SidebarSubMenuProps extends React.HTMLAttributes<HTMLButtonElement> {
   label: React.ReactNode;
   icon?: React.ReactNode;
   defaultOpen?: boolean;
@@ -412,20 +416,22 @@ export interface SidebarSubMenuProps {
   children: React.ReactNode;
 }
 
-export const SidebarSubMenu: React.FC<SidebarSubMenuProps> = ({
-  label,
-  icon,
-  defaultOpen = false,
-  badge,
-  className,
-  children,
-}) => {
+export const SidebarSubMenu = forwardRef<HTMLButtonElement, SidebarSubMenuProps>(
+  ({ label, icon, defaultOpen = false, badge, className, children, ...rest }, ref) => {
   const { isCollapsed, sidebarId } = useSidebar();
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const subMenuId = useId();
 
   // Escape closes the sub-menu and returns focus to the trigger
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const combinedRef = useCallback(
+    (node: HTMLButtonElement | null) => {
+      (triggerRef as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+    },
+    [ref]
+  );
   useEffect(() => {
     if (isCollapsed) return;
     const handleKey = (e: KeyboardEvent) => {
@@ -466,12 +472,13 @@ export const SidebarSubMenu: React.FC<SidebarSubMenuProps> = ({
   if (isCollapsed) {
     const iconEl = (
       <button
-        ref={triggerRef}
+        ref={combinedRef}
         type="button"
         aria-label={collapsedLabel ?? (typeof label === 'string' ? label : undefined)}
         className={cn(styles.item, styles.itemCollapsed, styles.itemDefault, className)}
         onKeyDown={handleKeyDown}
         data-sidebar-item
+        {...rest}
       >
         {icon ?? null}
       </button>
@@ -493,7 +500,7 @@ export const SidebarSubMenu: React.FC<SidebarSubMenuProps> = ({
   return (
     <li style={{ display: 'contents' }}>
       <button
-        ref={triggerRef}
+        ref={combinedRef}
         type="button"
         aria-expanded={isOpen}
         aria-controls={subMenuId}
@@ -501,6 +508,7 @@ export const SidebarSubMenu: React.FC<SidebarSubMenuProps> = ({
         onClick={() => setIsOpen((prev) => !prev)}
         onKeyDown={handleKeyDown}
         data-sidebar-item
+        {...rest}
       >
         {icon}
         <span>{label}</span>
@@ -528,7 +536,8 @@ export const SidebarSubMenu: React.FC<SidebarSubMenuProps> = ({
       </ul>
     </li>
   );
-};
+  }
+);
 
 // ─── SidebarFooter ───────────────────────────────────────────────────────────
 
@@ -536,56 +545,61 @@ export interface SidebarFooterProps extends React.HTMLAttributes<HTMLDivElement>
   children: React.ReactNode;
 }
 
-export const SidebarFooter: React.FC<SidebarFooterProps> = ({ className, children, ...props }) => (
-  <div className={cn(styles.footer, className)} {...props}>
-    {children}
-  </div>
+export const SidebarFooter = forwardRef<HTMLDivElement, SidebarFooterProps>(
+  ({ className, children, ...props }, ref) => (
+    <div ref={ref} className={cn(styles.footer, className)} {...props}>
+      {children}
+    </div>
+  )
 );
 
 // ─── SidebarTrigger ──────────────────────────────────────────────────────────
 
 export interface SidebarTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
-export const SidebarTrigger: React.FC<SidebarTriggerProps> = ({ className, ...props }) => {
-  const t = useBipLocale();
-  const { isCollapsed, toggleCollapsed, sidebarId } = useSidebar();
+export const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
+  ({ className, ...props }, ref) => {
+    const t = useBipLocale();
+    const { isCollapsed, toggleCollapsed, sidebarId } = useSidebar();
 
-  return (
-    <button
-      type="button"
-      onClick={toggleCollapsed}
-      aria-label={isCollapsed ? t.sidebar.expand : t.sidebar.collapse}
-      aria-expanded={!isCollapsed}
-      aria-controls={sidebarId}
-      className={cn(styles.trigger, className)}
-      {...props}
-    >
-      {isCollapsed ? (
-        // Chevron right (expand)
-        <svg viewBox="0 0 16 16" fill="none" className={styles.triggerIcon} aria-hidden="true">
-          <path
-            d="M6 4l4 4-4 4"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ) : (
-        // Chevron left (collapse)
-        <svg viewBox="0 0 16 16" fill="none" className={styles.triggerIcon} aria-hidden="true">
-          <path
-            d="M10 12L6 8l4-4"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      )}
-    </button>
-  );
-};
+    return (
+      <button
+        ref={ref}
+        type="button"
+        onClick={toggleCollapsed}
+        aria-label={isCollapsed ? t.sidebar.expand : t.sidebar.collapse}
+        aria-expanded={!isCollapsed}
+        aria-controls={sidebarId}
+        className={cn(styles.trigger, className)}
+        {...props}
+      >
+        {isCollapsed ? (
+          // Chevron right (expand)
+          <svg viewBox="0 0 16 16" fill="none" className={styles.triggerIcon} aria-hidden="true">
+            <path
+              d="M6 4l4 4-4 4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        ) : (
+          // Chevron left (collapse)
+          <svg viewBox="0 0 16 16" fill="none" className={styles.triggerIcon} aria-hidden="true">
+            <path
+              d="M10 12L6 8l4-4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </button>
+    );
+  }
+);
 
 // ─── Display names ────────────────────────────────────────────────────────────
 

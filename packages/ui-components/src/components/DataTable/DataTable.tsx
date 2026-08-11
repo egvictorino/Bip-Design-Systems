@@ -32,7 +32,8 @@ export interface BulkAction<T = Record<string, unknown>> {
   variant?: 'primary' | 'secondary' | 'danger';
 }
 
-export interface DataTableProps<T = Record<string, unknown>> {
+export interface DataTableProps<T = Record<string, unknown>>
+  extends React.HTMLAttributes<HTMLDivElement> {
   columns: ColumnDef<T>[];
   data: T[];
   pageSize?: number;
@@ -60,9 +61,6 @@ export interface DataTableProps<T = Record<string, unknown>> {
   // Column visibility
   columnVisibility?: boolean;
   defaultHiddenColumns?: string[];
-  // ARIA / layout
-  'aria-label'?: string;
-  className?: string;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -92,6 +90,7 @@ export function DataTable<T = Record<string, unknown>>({
   defaultHiddenColumns,
   'aria-label': ariaLabel,
   className,
+  ...rest
 }: DataTableProps<T>) {
   const t = useBipLocale();
 
@@ -287,6 +286,7 @@ export function DataTable<T = Record<string, unknown>>({
 
   return (
     <div
+      {...rest}
       aria-label={ariaLabel || undefined}
       role={ariaLabel ? 'region' : undefined}
       className={cn(styles.root, className)}

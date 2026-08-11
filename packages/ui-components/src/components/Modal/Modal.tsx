@@ -1,6 +1,14 @@
 "use client";
 
-import React, { useEffect, useRef, useContext, useId, createContext, useState } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useContext,
+  useId,
+  createContext,
+  useState,
+  forwardRef,
+} from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn.js';
 import { useFocusTrap, useScrollLock } from '../../hooks/index.js';
@@ -124,42 +132,46 @@ export interface ModalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export const ModalHeader: React.FC<ModalHeaderProps> = ({ className, children, ...props }) => {
-  const { titleId, onClose } = useModalContext();
-  const t = useBipLocale();
+export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(
+  ({ className, children, ...props }, ref) => {
+    const { titleId, onClose } = useModalContext();
+    const t = useBipLocale();
 
-  return (
-    <div className={cn(styles.header, className)} {...props}>
-      <h2 id={titleId} className={styles.title}>
-        {children}
-      </h2>
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label={t.modal.close}
-        className={styles.closeBtn}
-      >
-        <svg
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          className={styles.closeBtnIcon}
-          aria-hidden="true"
+    return (
+      <div ref={ref} className={cn(styles.header, className)} {...props}>
+        <h2 id={titleId} className={styles.title}>
+          {children}
+        </h2>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={t.modal.close}
+          className={styles.closeBtn}
         >
-          <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-        </svg>
-      </button>
-    </div>
-  );
-};
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className={styles.closeBtnIcon}
+            aria-hidden="true"
+          >
+            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+          </svg>
+        </button>
+      </div>
+    );
+  }
+);
 
 export interface ModalBodyProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export const ModalBody: React.FC<ModalBodyProps> = ({ className, children, ...props }) => (
-  <div className={cn(styles.body, className)} {...props}>
-    {children}
-  </div>
+export const ModalBody = forwardRef<HTMLDivElement, ModalBodyProps>(
+  ({ className, children, ...props }, ref) => (
+    <div ref={ref} className={cn(styles.body, className)} {...props}>
+      {children}
+    </div>
+  )
 );
 
 export interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -173,15 +185,12 @@ const footerAlignClass: Record<NonNullable<ModalFooterProps['align']>, string> =
   right: styles.footerRight,
 };
 
-export const ModalFooter: React.FC<ModalFooterProps> = ({
-  className,
-  children,
-  align = 'right',
-  ...props
-}) => (
-  <div className={cn(styles.footer, footerAlignClass[align], className)} {...props}>
-    {children}
-  </div>
+export const ModalFooter = forwardRef<HTMLDivElement, ModalFooterProps>(
+  ({ className, children, align = 'right', ...props }, ref) => (
+    <div ref={ref} className={cn(styles.footer, footerAlignClass[align], className)} {...props}>
+      {children}
+    </div>
+  )
 );
 
 Modal.displayName = 'Modal';

@@ -1,3 +1,4 @@
+import type React from 'react';
 import styles from './Odontogram.module.css';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -36,7 +37,7 @@ export interface ToothData {
 
 export type OdontogramValue = Record<number, ToothData>;
 
-export interface OdontogramProps {
+export interface OdontogramProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   value?: OdontogramValue;
   onChange?: (value: OdontogramValue) => void;
   disabled?: boolean;
@@ -44,7 +45,6 @@ export interface OdontogramProps {
   dentition?: DentitionMode;
   label?: string;
   size?: 'sm' | 'md' | 'lg';
-  className?: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────

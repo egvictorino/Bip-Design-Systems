@@ -4,9 +4,10 @@ import { forwardRef, useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Toggle.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   helperText?: string;
   error?: boolean;

@@ -1,10 +1,11 @@
 "use client";
 
-import { forwardRef, useId, useRef, useState } from 'react';
+import React, { forwardRef, useId, useRef, useState } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import { Spinner } from '../Spinner/index.js';
 import styles from './FileUpload.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -13,7 +14,8 @@ export interface RejectedFile {
   reason: 'size' | 'count';
 }
 
-export interface FileUploadProps {
+export interface FileUploadProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   /** Controlled list of selected files */
   value?: File[];
   /** Initial list of selected files when uncontrolled (ignored if `value` is provided) */
@@ -37,7 +39,7 @@ export interface FileUploadProps {
   disabled?: boolean;
   /** Shows a progress indicator and disables the drop-zone/input while an upload is in flight */
   loading?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   /** Visual layout variant */
   variant?: 'default' | 'compact';
   id?: string;
@@ -95,6 +97,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       required,
       fullWidth = false,
       className,
+      ...rest
     },
     ref
   ) => {
@@ -195,7 +198,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
           : styles.dropzoneDefault;
 
     return (
-      <div className={cn(styles.wrapper, fullWidth && styles.wrapperFull)}>
+      <div {...rest} className={cn(styles.wrapper, fullWidth && styles.wrapperFull)}>
         {/* Outer label text */}
         {label && (
           <span

@@ -10,7 +10,7 @@ export type TimelineVariant = 'default' | 'success' | 'warning' | 'danger';
 export type TimelineSize = 'sm' | 'md' | 'lg';
 export type TimelineOrientation = 'vertical' | 'horizontal';
 
-export interface TimelineItemProps {
+export interface TimelineItemProps extends React.HTMLAttributes<HTMLDivElement> {
   date?: string;
   title: string;
   description?: string;
@@ -18,14 +18,11 @@ export interface TimelineItemProps {
   variant?: TimelineVariant;
   size?: TimelineSize;
   children?: React.ReactNode;
-  className?: string;
 }
 
-export interface TimelineProps {
+export interface TimelineProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  className?: string;
   orientation?: TimelineOrientation;
-  'aria-label'?: string;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -68,6 +65,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
   size = 'md',
   children,
   className,
+  ...rest
 }) => {
   const { orientation } = useTimelineContext();
   const isHorizontal = orientation === 'horizontal';
@@ -81,6 +79,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
         isHorizontal && styles.itemHorizontal,
         className
       )}
+      {...rest}
     >
       {/* Left column: dot + connecting line */}
       <div className={cn(styles.leftCol, isHorizontal && styles.leftColHorizontal)}>
@@ -128,6 +127,7 @@ export const Timeline: React.FC<TimelineProps> = ({
   className,
   orientation = 'vertical',
   'aria-label': ariaLabel,
+  ...rest
 }) => (
   <TimelineContext.Provider value={{ orientation }}>
     <div
@@ -138,6 +138,7 @@ export const Timeline: React.FC<TimelineProps> = ({
         orientation === 'horizontal' && styles.timelineHorizontal,
         className
       )}
+      {...rest}
     >
       {children}
     </div>

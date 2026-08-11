@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './Alert.module.css';
@@ -67,18 +67,13 @@ const icons: Record<NonNullable<AlertProps['variant']>, React.ReactNode> = {
   ),
 };
 
-export const Alert: React.FC<AlertProps> = ({
-  variant = 'info',
-  title,
-  onClose,
-  className,
-  children,
-  ...props
-}) => {
+export const Alert = forwardRef<HTMLDivElement, AlertProps>(
+  ({ variant = 'info', title, onClose, className, children, ...props }, ref) => {
   const t = useBipLocale();
 
   return (
     <div
+      ref={ref}
       role={variantRole[variant]}
       className={cn(styles.alert, styles[variant], className)}
       {...props}
@@ -104,6 +99,7 @@ export const Alert: React.FC<AlertProps> = ({
       )}
     </div>
   );
-};
+  }
+);
 
 Alert.displayName = 'Alert';

@@ -4,6 +4,7 @@ import React, { useContext, useId } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './Stepper.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -79,13 +80,12 @@ const LoadingSpinner = () => <div aria-hidden="true" className={styles.spinner} 
 
 // ─── Stepper ──────────────────────────────────────────────────────────────────
 
-export interface StepperProps {
+export interface StepperProps extends Omit<React.HTMLAttributes<HTMLOListElement>, 'onChange'> {
   value: number;
   onChange: (value: number) => void;
   variant?: 'circle' | 'dot';
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   orientation?: 'horizontal' | 'vertical';
-  className?: string;
   children: React.ReactNode;
 }
 
@@ -97,6 +97,7 @@ export const Stepper: React.FC<StepperProps> = ({
   orientation = 'horizontal',
   className,
   children,
+  ...rest
 }) => {
   const t = useBipLocale();
   const totalSteps = React.Children.count(children);
@@ -106,6 +107,7 @@ export const Stepper: React.FC<StepperProps> = ({
       <ol
         aria-label={t.stepper.nav}
         className={cn(styles.stepper, orientation === 'vertical' && styles.stepperVertical, className)}
+        {...rest}
       >
         {children}
       </ol>
@@ -117,13 +119,12 @@ Stepper.displayName = 'Stepper';
 
 // ─── StepperStep ──────────────────────────────────────────────────────────────
 
-export interface StepperStepProps {
+export interface StepperStepProps extends React.HTMLAttributes<HTMLLIElement> {
   value: number;
   label: string;
   description?: string;
   variant?: 'danger' | 'success' | 'warning' | 'loading';
   disabled?: boolean;
-  className?: string;
 }
 
 export const StepperStep: React.FC<StepperStepProps> = ({
@@ -133,6 +134,7 @@ export const StepperStep: React.FC<StepperStepProps> = ({
   variant: stepVariant,
   disabled = false,
   className,
+  ...rest
 }) => {
   const { activeValue, onChange, variant, size, orientation, totalSteps } = useStepperContext();
   const uid = useId();
@@ -251,6 +253,7 @@ export const StepperStep: React.FC<StepperStepProps> = ({
         className={cn(styles.stepItem, styles.stepItemVertical, className)}
         aria-current={isActive ? 'step' : undefined}
         aria-describedby={descId}
+        {...rest}
       >
         <div className={styles.indicatorCol}>
           {isActive ? (
@@ -300,7 +303,7 @@ export const StepperStep: React.FC<StepperStepProps> = ({
   );
 
   return (
-    <li className={cn(styles.stepItem, !isLast && styles.stepItemFlex, className)}>
+    <li className={cn(styles.stepItem, !isLast && styles.stepItemFlex, className)} {...rest}>
       {isActive ? (
         <div
           aria-current="step"

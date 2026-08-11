@@ -329,6 +329,8 @@ export { cn } from './lib/cn.js';
 export { BREAKPOINTS, mediaQuery } from './styles/breakpoints.js';
 export type { BreakpointKey } from './styles/breakpoints.js';
 
+export type { BipSize, BipSizeExtended } from './types/size.js';
+
 export {
   useClickOutside,
   useDisclosure,

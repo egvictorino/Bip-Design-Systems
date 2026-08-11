@@ -5,6 +5,7 @@ import { cn } from '../../lib/cn.js';
 import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './MultiSelect.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -15,14 +16,14 @@ export interface MultiSelectOption {
   group?: string;
 }
 
-export interface MultiSelectProps {
+export interface MultiSelectProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   options: MultiSelectOption[];
   value?: string[];
   /** Valores iniciales en modo no-controlado (ignorado si `value` está definido). */
   defaultValue?: string[];
   onChange?: (values: string[]) => void;
   variant?: 'outlined' | 'filled' | 'bare';
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   placeholder?: string;
   searchPlaceholder?: string;
@@ -128,6 +129,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       showSelectAll = false,
       loading = false,
       onSearch,
+      ...rest
     },
     ref
   ) => {
@@ -435,6 +437,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
 
     return (
       <div
+        {...rest}
         ref={containerRef}
         className={cn(styles.container, fullWidth && styles.containerFullWidth)}
       >

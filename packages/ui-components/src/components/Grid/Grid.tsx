@@ -1,4 +1,4 @@
-import React, { type ElementType, type ReactNode } from 'react';
+import React, { forwardRef, type ElementType, type ReactNode } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Grid.module.css';
 
@@ -39,20 +39,16 @@ const gapClass: Record<GridGap, string> = {
 };
 
 /** Two-dimensional layout primitive. Fixed `columns` is 1 column below `md` (768px, mobile-first) — see `src/styles/breakpoints.ts`. */
-export const Grid: React.FC<GridProps> = ({
-  as: Component = 'div',
-  columns = 'responsive',
-  gap = '4',
-  className,
-  children,
-  ...props
-}) => (
-  <Component
-    className={cn(styles.grid, columnsClass[columns], gapClass[gap], className)}
-    {...props}
-  >
-    {children}
-  </Component>
+export const Grid = forwardRef<HTMLElement, GridProps>(
+  ({ as: Component = 'div', columns = 'responsive', gap = '4', className, children, ...props }, ref) => (
+    <Component
+      ref={ref}
+      className={cn(styles.grid, columnsClass[columns], gapClass[gap], className)}
+      {...props}
+    >
+      {children}
+    </Component>
+  )
 );
 
 Grid.displayName = 'Grid';

@@ -53,6 +53,7 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
       label,
       size = 'md',
       className,
+      ...rest
     },
     ref
   ) => {
@@ -163,7 +164,13 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
     );
 
     return (
-      <div ref={ref} role="group" aria-labelledby={labelId} className={cn(styles.root, className)}>
+      <div
+        ref={ref}
+        role="group"
+        aria-labelledby={labelId}
+        className={cn(styles.root, className)}
+        {...rest}
+      >
         {label && (
           <span id={labelId} className={styles.label}>
             {label}

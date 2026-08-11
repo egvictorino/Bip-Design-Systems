@@ -26,9 +26,8 @@ const usePopover = (): PopoverContextValue => {
 
 // ─── Popover ─────────────────────────────────────────────────────────────────
 
-export interface PopoverProps {
+export interface PopoverProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  className?: string;
   /** Controlado. Si se omite, el componente maneja su propio estado (ver `defaultOpen`). */
   open?: boolean;
   /** Valor inicial en modo no-controlado. @default false */
@@ -43,6 +42,7 @@ export const Popover: React.FC<PopoverProps> = ({
   open: openProp,
   defaultOpen = false,
   onOpenChange,
+  ...rest
 }) => {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,7 +64,7 @@ export const Popover: React.FC<PopoverProps> = ({
 
   return (
     <PopoverContext.Provider value={{ isOpen, toggle, close, contentId, triggerId }}>
-      <div ref={containerRef} className={cn(styles.container, className)}>
+      <div ref={containerRef} className={cn(styles.container, className)} {...rest}>
         {children}
       </div>
     </PopoverContext.Provider>
@@ -111,10 +111,9 @@ export const PopoverTrigger: React.FC<PopoverTriggerProps> = ({ children }) => {
 
 // ─── PopoverContent ──────────────────────────────────────────────────────────
 
-export interface PopoverContentProps {
+export interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
-  className?: string;
 }
 
 const placementClass: Record<NonNullable<PopoverContentProps['placement']>, string> = {
@@ -128,6 +127,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
   children,
   placement = 'bottom-start',
   className,
+  ...rest
 }) => {
   const { isOpen, contentId, triggerId, close } = usePopover();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -139,6 +139,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
   return (
     <div
       ref={contentRef}
+      {...rest}
       id={contentId}
       role="dialog"
       aria-labelledby={triggerId}

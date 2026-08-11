@@ -60,7 +60,41 @@ breaking pero aceptados dentro del versionado 0.x; cada uno tiene un equivalente
   `TimelineOrientation`, `ToastContextValue`.
 - `package.json`'s `exports` gana `"./package.json"` (esperado por varias herramientas de bundling)
   y subpaths explícitos `"./CheckboxGroup"` / `"./RadioGroup"`, antes inalcanzables por deep import
-  porque el wildcard `"./*"` solo resuelve `<dir>/<dir>.js`.
+  porque el wildcard `"./*"` solo resuelve `<dir>/<dir>.js`. Se agregan stubs físicos
+  `CheckboxGroup.js`/`.d.ts` y `RadioGroup.js`/`.d.ts` en la raíz del paquete para que esos dos
+  subpaths también resuelvan bajo el algoritmo clásico `node10` (que ignora el mapa `exports`),
+  igual que el resto de la superficie pública.
+- **`forwardRef` en ~35 componentes** que extendían props nativas de HTML pero descartaban el
+  `ref` recibido (declarados como `React.FC` en vez de `forwardRef`), lo que rompía anclar un
+  `Tooltip`/`Popover` a ellos o usarlos con `react-hook-form`. Incluye tanto componentes atómicos
+  (`Alert`, `Badge`, `Text`, `Heading`, `Stack`, `Container`, `Grid`, `Skeleton`, `Spinner`,
+  `ProgressBar`, `EmptyState`, `Breadcrumb`, `VisuallyHidden`) como subcomponentes de familias
+  compuestas (`Table`, `Tabs`, `Modal`, `Sidebar`, `Dropdown`).
+- **`style`/`id`/`data-*`/`aria-*` habilitados** (vía `extends React.HTMLAttributes<...>` +
+  spread) en ~24 componentes que antes solo aceptaban `className` a mano: `Accordion` (+3
+  subcomponentes), `Calendar`, `CheckboxGroup`, `RadioGroup`, `DataTable`, `DatePicker`,
+  `DateRangePicker`, `Divider`, `DrawerPanel`, `FileUpload`, `MultiSelect`, `Odontogram`,
+  `Pagination`, `Popover` (+`PopoverContent`), `StatsCard`, `Stepper` (+`StepperStep`), `Tabs`,
+  `TimePicker`, `Timeline` (+`TimelineItem`), `Tooltip`, `AvatarGroup`, `CardMedia`, y varios
+  subcomponentes de `Sidebar`/`Dropdown`/`Navbar`. Donde una prop propia colisionaba en nombre
+  con un atributo nativo del mismo nombre pero tipo distinto (`onChange`, `defaultValue`,
+  `content`, `inputMode`), se usó `Omit<HTMLAttributes<...>, 'prop'>` para evitar el conflicto de
+  tipos. **`ThemeProvider` se dejó fuera deliberadamente**: su `dir` propio colisiona en nombre
+  con el atributo nativo `dir`, y su `style` calculado (tokens de marca resueltos) es demasiado
+  crítico para arriesgar un spread genérico sin una revisión dedicada.
+- Tipos compartidos `BipSize` (`'sm' | 'md' | 'lg'`) y `BipSizeExtended` (`'xs' | 'sm' | 'md' |
+  'lg' | 'xl'`) en `src/types/size.ts`, exportados desde el barrel raíz — reemplazan 21 unions
+  `'sm' | 'md' | 'lg'` inline duplicadas (`Button`, `Badge`, `Checkbox`, `Radio`, `DatePicker`,
+  `DateRangePicker`, `DrawerPanel`, `EmptyState`, `FileUpload`, `Input`, `MultiSelect`,
+  `SearchInput`, `ProgressBar`, `Stepper`, `Select`, `Skeleton`, `Toggle`, `Textarea`,
+  `TimePicker`, `CheckboxGroup`, `RadioGroup`) y el tipo `Size` no exportado de `NumberInput`.
+  `Spinner` (`'xs'..'xl'`) migra a `BipSizeExtended`. `Modal` (`'sm'|'md'|'lg'|'xl'`, sin `'xs'`)
+  y `Avatar` (ya exporta su propio `AvatarSize` con nombre público) se dejan con su unión propia
+  a propósito — forzarlos a `BipSize`/`BipSizeExtended` aceptaría o excluiría un valor sin
+  respaldo real en su CSS.
+- `.size-limit.json`: el límite del bundle barrel sube de 62 KB a 64 KB (medido: 62.52 KB) para
+  reflejar el crecimiento real por `forwardRef`+`HTMLAttributes` en ~35 componentes — no es una
+  regresión de tamaño accidental, es la nueva base legítima tras esta adición.
 
 ## [0.4.0] - 2026-08-07
 

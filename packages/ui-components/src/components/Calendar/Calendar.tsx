@@ -47,7 +47,7 @@ export interface CalendarSlotInfo {
   doctorId?: string;
 }
 
-export interface CalendarProps {
+export interface CalendarProps extends React.HTMLAttributes<HTMLDivElement> {
   events: CalendarEvent[];
   resources?: CalendarResource[];
   view: CalendarView;
@@ -62,7 +62,6 @@ export interface CalendarProps {
   minTime?: string;
   maxTime?: string;
   step?: 15 | 30 | 60;
-  className?: string;
   disabled?: boolean;
 }
 
@@ -1284,6 +1283,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
       step = 30,
       className,
       disabled = false,
+      ...rest
     },
     ref
   ) => {
@@ -1367,6 +1367,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
 
     return (
       <div
+        {...rest}
         ref={ref}
         role="application"
         aria-label={t.calendar.calendarLabel}

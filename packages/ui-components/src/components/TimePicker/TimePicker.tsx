@@ -6,10 +6,12 @@ import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { useBipLocale } from '../../i18n/index.js';
 import { Spinner } from '../Spinner/index.js';
 import styles from './TimePicker.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface TimePickerProps {
+export interface TimePickerProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'inputMode'> {
   /** Time in "HH:mm" 24-hour format */
   value?: string;
   /** Valor inicial en modo no-controlado (ignorado si `value` está definido). */
@@ -24,12 +26,11 @@ export interface TimePickerProps {
   /** Deshabilita la interacción y muestra un spinner (ej. mientras se resuelven horarios ocupados async). */
   loading?: boolean;
   required?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   /** Minute step interval (default: 5) */
   step?: 5 | 10 | 15 | 30;
   id?: string;
   fullWidth?: boolean;
-  className?: string;
   /** Earliest selectable time in "HH:mm" 24-hour format */
   minTime?: string;
   /** Latest selectable time in "HH:mm" 24-hour format */
@@ -302,6 +303,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       maxTime,
       inputMode = 'picker',
       hourCycle = '24',
+      ...rest
     },
     ref
   ) => {
@@ -575,6 +577,7 @@ export const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
       <div
         ref={containerRef}
         className={cn(styles.container, fullWidth && styles.containerFullWidth)}
+        {...rest}
       >
         {label && (
           <label

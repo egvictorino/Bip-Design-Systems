@@ -14,6 +14,7 @@ import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthIndex } from '../../lib/dateHelpers.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './DateRangePicker.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,7 +23,8 @@ export interface DateRange {
   to: Date | null;
 }
 
-export interface DateRangePickerProps {
+export interface DateRangePickerProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   value?: DateRange;
   /** Initial range when uncontrolled (ignored if `value` is provided) */
   defaultValue?: DateRange;
@@ -38,7 +40,7 @@ export interface DateRangePickerProps {
   errorMessage?: string;
   disabled?: boolean;
   required?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   id?: string;
   fullWidth?: boolean;
   className?: string;
@@ -497,6 +499,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
       id,
       fullWidth = false,
       className,
+      ...rest
     },
     ref
   ) => {
@@ -609,7 +612,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
     };
 
     return (
-      <div ref={containerRef} className={cn(styles.wrapper, fullWidth && styles.fullWidth)}>
+      <div {...rest} ref={containerRef} className={cn(styles.wrapper, fullWidth && styles.fullWidth)}>
         {label && (
           <label
             htmlFor={inputId}

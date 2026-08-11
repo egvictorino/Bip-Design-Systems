@@ -1,4 +1,4 @@
-import React, { type ElementType, type ReactNode } from 'react';
+import React, { forwardRef, type ElementType, type ReactNode } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Text.module.css';
 
@@ -66,30 +66,36 @@ const alignClass: Record<TextAlign, string> = {
 };
 
 /** Typography primitive for body text — see `Heading` for semantic headings with independent visual size. */
-export const Text: React.FC<TextProps> = ({
-  as: Component = 'p',
-  size = 'md',
-  weight = 'normal',
-  color = 'default',
-  align,
-  truncate = false,
-  className,
-  children,
-  ...props
-}) => (
-  <Component
-    className={cn(
-      sizeClass[size],
-      weightClass[weight],
-      colorClass[color],
-      align && alignClass[align],
-      truncate && styles.truncate,
-      className
-    )}
-    {...props}
-  >
-    {children}
-  </Component>
+export const Text = forwardRef<HTMLElement, TextProps>(
+  (
+    {
+      as: Component = 'p',
+      size = 'md',
+      weight = 'normal',
+      color = 'default',
+      align,
+      truncate = false,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => (
+    <Component
+      ref={ref}
+      className={cn(
+        sizeClass[size],
+        weightClass[weight],
+        colorClass[color],
+        align && alignClass[align],
+        truncate && styles.truncate,
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Component>
+  )
 );
 
 Text.displayName = 'Text';

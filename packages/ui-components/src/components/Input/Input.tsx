@@ -5,12 +5,13 @@ import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './Input.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export type InputType = 'text' | 'email' | 'password' | 'tel' | 'url';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   variant?: 'outlined' | 'filled' | 'bare';
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   type?: InputType;
   label?: string;
   helperText?: string;
