@@ -49,14 +49,13 @@ const useAccordionItemContext = (): AccordionItemContextValue => {
 
 // ─── Accordion (root) ─────────────────────────────────────────────────────────
 
-export interface AccordionProps {
+export interface AccordionProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   type?: 'single' | 'multiple';
   collapsible?: boolean;
   variant?: AccordionVariant;
   defaultValue?: string | string[];
   value?: string | string[];
   onChange?: (value: string | string[]) => void;
-  className?: string;
   children: React.ReactNode;
 }
 
@@ -80,6 +79,7 @@ export const Accordion: React.FC<AccordionProps> = ({
   onChange,
   className,
   children,
+  ...rest
 }) => {
   const instanceId = useId();
   const [internalOpen, setInternalOpen] = useState<Set<string>>(() => toSet(defaultValue));
@@ -116,17 +116,18 @@ export const Accordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionContext.Provider value={{ openItems, toggleItem, instanceId, variant }}>
-      <div className={cn(styles.root, rootVariantClass[variant], className)}>{children}</div>
+      <div className={cn(styles.root, rootVariantClass[variant], className)} {...rest}>
+        {children}
+      </div>
     </AccordionContext.Provider>
   );
 };
 
 // ─── AccordionItem ────────────────────────────────────────────────────────────
 
-export interface AccordionItemProps {
+export interface AccordionItemProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string;
   disabled?: boolean;
-  className?: string;
   children: React.ReactNode;
 }
 
@@ -141,6 +142,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   disabled = false,
   className,
   children,
+  ...rest
 }) => {
   const { openItems, instanceId, variant } = useAccordionContext();
   const isOpen = openItems.has(value);
@@ -149,15 +151,17 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
 
   return (
     <AccordionItemContext.Provider value={{ value, isOpen, disabled, triggerId, contentId }}>
-      <div className={cn(styles.item, itemVariantClass[variant], className)}>{children}</div>
+      <div className={cn(styles.item, itemVariantClass[variant], className)} {...rest}>
+        {children}
+      </div>
     </AccordionItemContext.Provider>
   );
 };
 
 // ─── AccordionTrigger ─────────────────────────────────────────────────────────
 
-export interface AccordionTriggerProps {
-  className?: string;
+export interface AccordionTriggerProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'type'> {
   children: React.ReactNode;
 }
 
@@ -167,12 +171,17 @@ const triggerVariantClass: Record<AccordionVariant, string> = {
   ghost: styles.triggerGhost,
 };
 
-export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({ className, children }) => {
+export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({
+  className,
+  children,
+  ...rest
+}) => {
   const { toggleItem, variant } = useAccordionContext();
   const { value, isOpen, disabled, triggerId, contentId } = useAccordionItemContext();
 
   return (
     <button
+      {...rest}
       id={triggerId}
       type="button"
       aria-expanded={isOpen}
@@ -204,8 +213,7 @@ export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({ className, c
 
 // ─── AccordionContent ─────────────────────────────────────────────────────────
 
-export interface AccordionContentProps {
-  className?: string;
+export interface AccordionContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
@@ -215,12 +223,17 @@ const contentVariantClass: Record<AccordionVariant, string> = {
   ghost: styles.contentGhost,
 };
 
-export const AccordionContent: React.FC<AccordionContentProps> = ({ className, children }) => {
+export const AccordionContent: React.FC<AccordionContentProps> = ({
+  className,
+  children,
+  ...rest
+}) => {
   const { variant } = useAccordionContext();
   const { isOpen, triggerId, contentId } = useAccordionItemContext();
 
   return (
     <div
+      {...rest}
       role="region"
       id={contentId}
       aria-labelledby={triggerId}

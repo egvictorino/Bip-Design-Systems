@@ -69,4 +69,20 @@ describe('Slider', () => {
     expect(handleChange).toHaveBeenCalledTimes(1);
     expect(slider.value).toBe('70');
   });
+
+  it('shows a required asterisk next to the label when required is true', () => {
+    render(<Slider label="Volume" required defaultValue={30} />);
+    expect(screen.getByText('*')).toBeInTheDocument();
+  });
+
+  it('does not show a required asterisk when required is not set', () => {
+    render(<Slider label="Volume" defaultValue={30} />);
+    expect(screen.queryByText('*')).not.toBeInTheDocument();
+  });
+
+  it('sets required on the underlying input when required is true', () => {
+    render(<Slider label="Volume" required defaultValue={30} />);
+    // type="range" is not in jest-dom's toBeRequired() supported list, so assert the attribute directly.
+    expect(screen.getByRole('slider')).toHaveAttribute('required');
+  });
 });

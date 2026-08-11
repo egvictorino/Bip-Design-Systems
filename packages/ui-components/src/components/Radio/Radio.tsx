@@ -5,9 +5,10 @@ import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn.js';
 import { RadioGroupContext } from './RadioGroupContext.js';
 import styles from './Radio.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   helperText?: string;
   error?: boolean;

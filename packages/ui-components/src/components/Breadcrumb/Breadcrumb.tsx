@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { forwardRef } from 'react';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './Breadcrumb.module.css';
 
@@ -27,16 +29,12 @@ const ChevronIcon = () => (
   </svg>
 );
 
-export const Breadcrumb: React.FC<BreadcrumbProps> = ({
-  items,
-  separator,
-  className,
-  ...props
-}) => {
+export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
+  ({ items, separator, className, ...props }, ref) => {
   const t = useBipLocale();
 
   return (
-    <nav aria-label={t.breadcrumb.nav} {...props} className={className}>
+    <nav ref={ref} aria-label={t.breadcrumb.nav} {...props} className={className}>
       <ol className={styles.list}>
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
@@ -60,6 +58,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
       </ol>
     </nav>
   );
-};
+  }
+);
 
 Breadcrumb.displayName = 'Breadcrumb';

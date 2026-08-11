@@ -5,9 +5,10 @@ import type { InputHTMLAttributes, MutableRefObject } from 'react';
 import { cn } from '../../lib/cn.js';
 import { CheckboxGroupContext } from './CheckboxGroupContext.js';
 import styles from './Checkbox.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   helperText?: string;
   error?: boolean;

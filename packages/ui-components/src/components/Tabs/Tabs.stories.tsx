@@ -313,7 +313,7 @@ export const WithBadge: Story = {
         <Tab value="cancelados">
           <span style={tabBadgeStyle}>
             Cancelados
-            <Badge variant="error" size="sm">3</Badge>
+            <Badge variant="danger" size="sm">3</Badge>
           </span>
         </Tab>
       </TabList>

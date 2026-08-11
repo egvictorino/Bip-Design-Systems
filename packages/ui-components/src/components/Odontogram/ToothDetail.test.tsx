@@ -10,7 +10,7 @@ describe('ToothDetail — render', () => {
         toothNumber={11}
         arch="upper"
         data={{}}
-        readOnly={false}
+        disabled={false}
         onChange={vi.fn()}
         onClose={vi.fn()}
       />
@@ -26,7 +26,7 @@ describe('ToothDetail — render', () => {
         toothNumber={11}
         arch="upper"
         data={{}}
-        readOnly={false}
+        disabled={false}
         onChange={vi.fn()}
         onClose={vi.fn()}
       />
@@ -41,7 +41,7 @@ describe('ToothDetail — render', () => {
         toothNumber={11}
         arch="upper"
         data={{}}
-        readOnly
+        disabled
         onChange={vi.fn()}
         onClose={vi.fn()}
       />
@@ -55,7 +55,7 @@ describe('ToothDetail — render', () => {
         toothNumber={11}
         arch="upper"
         data={{ condition: 'missing' }}
-        readOnly
+        disabled
         onChange={vi.fn()}
         onClose={vi.fn()}
       />
@@ -73,7 +73,7 @@ describe('ToothDetail — interaction', () => {
         toothNumber={11}
         arch="upper"
         data={{}}
-        readOnly={false}
+        disabled={false}
         onChange={vi.fn()}
         onClose={onClose}
       />
@@ -90,7 +90,7 @@ describe('ToothDetail — interaction', () => {
         toothNumber={11}
         arch="upper"
         data={{}}
-        readOnly={false}
+        disabled={false}
         onChange={onChange}
         onClose={vi.fn()}
       />
@@ -115,7 +115,7 @@ describe('ToothDetail — interaction', () => {
         toothNumber={11}
         arch="upper"
         data={data}
-        readOnly={false}
+        disabled={false}
         onChange={onChange}
         onClose={vi.fn()}
       />
@@ -136,7 +136,7 @@ describe('ToothDetail — interaction', () => {
         toothNumber={11}
         arch="upper"
         data={{}}
-        readOnly={false}
+        disabled={false}
         onChange={onChange}
         onClose={vi.fn()}
       />
@@ -158,7 +158,7 @@ describe('ToothDetail — interaction', () => {
         toothNumber={11}
         arch="upper"
         data={{}}
-        readOnly={false}
+        disabled={false}
         onChange={vi.fn()}
         onClose={vi.fn()}
       />

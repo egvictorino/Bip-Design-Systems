@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Badge.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'primary' | 'success' | 'warning' | 'error' | 'neutral';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+  size?: BipSize;
   dot?: boolean;
   children: React.ReactNode;
 }
@@ -13,7 +14,7 @@ const dotVariantClasses: Record<NonNullable<BadgeProps['variant']>, string> = {
   primary: styles.dotPrimary,
   success: styles.dotSuccess,
   warning: styles.dotWarning,
-  error:   styles.dotError,
+  danger:  styles.dotDanger,
   neutral: styles.dotNeutral,
 };
 
@@ -23,16 +24,11 @@ const dotSizeClasses: Record<NonNullable<BadgeProps['size']>, string> = {
   lg: styles.dotLg,
 };
 
-export const Badge: React.FC<BadgeProps> = ({
-  variant = 'neutral',
-  size = 'md',
-  dot = false,
-  className,
-  children,
-  ...props
-}) => {
+export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
+  ({ variant = 'neutral', size = 'md', dot = false, className, children, ...props }, ref) => {
   return (
     <span
+      ref={ref}
       className={cn(styles.badge, styles[variant], styles[size], className)}
       {...props}
     >
@@ -45,6 +41,7 @@ export const Badge: React.FC<BadgeProps> = ({
       {children}
     </span>
   );
-};
+  }
+);
 
 Badge.displayName = 'Badge';

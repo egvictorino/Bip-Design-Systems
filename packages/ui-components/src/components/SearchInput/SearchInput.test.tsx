@@ -179,4 +179,21 @@ describe('SearchInput', () => {
       expect(screen.getByRole('searchbox')).not.toHaveAttribute('aria-busy');
     });
   });
+
+  describe('required', () => {
+    it('shows a required asterisk next to the label when required is true', () => {
+      render(<SearchInput label="Buscar" required />);
+      expect(screen.getByText('*')).toBeInTheDocument();
+    });
+
+    it('does not show a required asterisk when required is not set', () => {
+      render(<SearchInput label="Buscar" />);
+      expect(screen.queryByText('*')).not.toBeInTheDocument();
+    });
+
+    it('sets required on the underlying input when required is true', () => {
+      render(<SearchInput label="Buscar" required />);
+      expect(screen.getByRole('searchbox')).toBeRequired();
+    });
+  });
 });

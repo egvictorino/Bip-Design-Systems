@@ -35,7 +35,7 @@ describe('Badge', () => {
 
   // ── Variants ───────────────────────────────────────────────────────────────
 
-  it.each(['primary', 'success', 'warning', 'error', 'neutral'] as const)(
+  it.each(['primary', 'success', 'warning', 'danger', 'neutral'] as const)(
     'renders variant %s with the correct text color class',
     (variant) => {
       const { container } = render(<Badge variant={variant}>{variant}</Badge>);

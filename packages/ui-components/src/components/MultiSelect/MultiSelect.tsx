@@ -5,6 +5,7 @@ import { cn } from '../../lib/cn.js';
 import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './MultiSelect.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -15,12 +16,14 @@ export interface MultiSelectOption {
   group?: string;
 }
 
-export interface MultiSelectProps {
+export interface MultiSelectProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   options: MultiSelectOption[];
   value?: string[];
+  /** Valores iniciales en modo no-controlado (ignorado si `value` está definido). */
+  defaultValue?: string[];
   onChange?: (values: string[]) => void;
   variant?: 'outlined' | 'filled' | 'bare';
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   placeholder?: string;
   searchPlaceholder?: string;
@@ -29,6 +32,7 @@ export interface MultiSelectProps {
   errorMessage?: string;
   disabled?: boolean;
   fullWidth?: boolean;
+  required?: boolean;
   id?: string;
   className?: string;
   /** Número máximo de chips visibles en el trigger. Los restantes se muestran como "+N más". */
@@ -105,7 +109,8 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
   (
     {
       options,
-      value = [],
+      value: valueProp,
+      defaultValue,
       onChange,
       variant = 'outlined',
       size = 'md',
@@ -117,12 +122,14 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
       errorMessage,
       disabled = false,
       fullWidth = false,
+      required = false,
       id,
       className,
       maxVisibleChips,
       showSelectAll = false,
       loading = false,
       onSearch,
+      ...rest
     },
     ref
   ) => {
@@ -130,6 +137,19 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState('');
     const [focused, setFocused] = useState(false);
+    const [internalValue, setInternalValue] = useState<string[]>(() => defaultValue ?? []);
+
+    // Controlled (`value` prop wins) / uncontrolled (falls back to internal state) —
+    // `value !== undefined` is the check, not truthiness, since `[]` is a valid controlled value.
+    const value = valueProp !== undefined ? valueProp : internalValue;
+
+    const emitChange = useCallback(
+      (next: string[]) => {
+        if (valueProp === undefined) setInternalValue(next);
+        onChange?.(next);
+      },
+      [valueProp, onChange]
+    );
 
     const containerRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLDivElement | null>(null);
@@ -208,44 +228,44 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
 
     const toggle = useCallback(
       (optionValue: string) => {
-        onChange?.(
+        emitChange(
           value.includes(optionValue)
             ? value.filter((v) => v !== optionValue)
             : [...value, optionValue]
         );
       },
-      [value, onChange]
+      [value, emitChange]
     );
 
     const removeOne = useCallback(
       (optionValue: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        onChange?.(value.filter((v) => v !== optionValue));
+        emitChange(value.filter((v) => v !== optionValue));
       },
-      [value, onChange]
+      [value, emitChange]
     );
 
     const clearAll = useCallback(
       (e: React.MouseEvent) => {
         e.stopPropagation();
-        onChange?.([]);
+        emitChange([]);
       },
-      [onChange]
+      [emitChange]
     );
 
     const handleSelectAll = useCallback(() => {
       if (allFilteredSelected) {
         // Deseleccionar las visibles/filtradas
         const toRemove = new Set(selectableFiltered.map((o) => o.value));
-        onChange?.(value.filter((v) => !toRemove.has(v)));
+        emitChange(value.filter((v) => !toRemove.has(v)));
       } else {
         // Agregar todas las visibles no seleccionadas
         const toAdd = selectableFiltered
           .filter((o) => !valueSet.has(o.value))
           .map((o) => o.value);
-        onChange?.([...value, ...toAdd]);
+        emitChange([...value, ...toAdd]);
       }
-    }, [allFilteredSelected, selectableFiltered, value, valueSet, onChange]);
+    }, [allFilteredSelected, selectableFiltered, value, valueSet, emitChange]);
 
     // ─── Effects ─────────────────────────────────────────────────────────────
 
@@ -417,6 +437,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
 
     return (
       <div
+        {...rest}
         ref={containerRef}
         className={cn(styles.container, fullWidth && styles.containerFullWidth)}
       >
@@ -436,6 +457,11 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
             )}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className={styles.required}>
+                {' *'}
+              </span>
+            )}
           </label>
         )}
 
@@ -450,6 +476,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(
           aria-controls={listboxId}
           aria-labelledby={label ? labelId : undefined}
           aria-invalid={error || undefined}
+          aria-required={required || undefined}
           aria-describedby={messageId}
           aria-disabled={disabled || undefined}
           onClick={open}

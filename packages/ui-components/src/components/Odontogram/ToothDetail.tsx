@@ -18,13 +18,13 @@ export interface ToothDetailProps {
   toothNumber: number;
   arch: 'upper' | 'lower';
   data: ToothData;
-  readOnly: boolean;
+  disabled: boolean;
   onChange: (data: ToothData) => void;
   onClose: () => void;
 }
 
 export const ToothDetail = React.memo<ToothDetailProps>(
-  ({ toothNumber, arch, data, readOnly, onChange, onClose }) => {
+  ({ toothNumber, arch, data, disabled, onChange, onClose }) => {
     const t = useBipLocale();
     const [activeTool, setActiveTool] = useState<ToothCondition>('caries');
 
@@ -147,7 +147,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
               arch={arch}
               data={data}
               size="xl"
-              interactive={!readOnly}
+              interactive={!disabled}
               onSurfaceClick={handleSurfaceClick}
             />
             <span className={styles.detailToothLabel}>{toothNumber}</span>
@@ -156,7 +156,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
           {/* Right: controls */}
           <div className={styles.detailRight}>
             {/* Condition toolbar (edit mode only) */}
-            {!readOnly && (
+            {!disabled && (
               <div className={styles.conditionToolbar} role="group" aria-label={t.odontogram.conditions}>
                 {conditions.map(([condition, label]) => (
                   <button
@@ -174,8 +174,8 @@ export const ToothDetail = React.memo<ToothDetailProps>(
               </div>
             )}
 
-            {/* Condition badge (readOnly) */}
-            {readOnly && data.condition && (
+            {/* Condition badge (disabled) */}
+            {disabled && data.condition && (
               <span className={styles.conditionBadge}>
                 {t.odontogram.conditionLabels[data.condition]}
               </span>
@@ -239,7 +239,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
           <NotePopover
             toothNumber={toothNumber}
             initialNote={data.notes ?? ''}
-            editable={!readOnly}
+            editable={!disabled}
             position={notePos}
             onClose={handleNoteClose}
             onSave={handleNoteSave}
@@ -251,7 +251,7 @@ export const ToothDetail = React.memo<ToothDetailProps>(
           <ImagePopover
             toothNumber={toothNumber}
             initialImages={data.images ?? []}
-            editable={!readOnly}
+            editable={!disabled}
             position={imagePos}
             onClose={handleImageClose}
             onSave={handleImageSave}

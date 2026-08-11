@@ -8,7 +8,7 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'] },
-    variant: { control: 'select', options: ['primary', 'secondary', 'white', 'danger', 'success', 'info'] },
+    variant: { control: 'select', options: ['primary', 'secondary', 'inverse', 'danger', 'success', 'info'] },
     speed: { control: 'select', options: ['slow', 'normal', 'fast'] },
   },
 } satisfies Meta<typeof Spinner>;
@@ -43,8 +43,8 @@ export const Secondary: Story = {
   args: { size: 'md', variant: 'secondary' },
 };
 
-export const White: Story = {
-  args: { size: 'md', variant: 'white' },
+export const Inverse: Story = {
+  args: { size: 'md', variant: 'inverse' },
   parameters: {
     backgrounds: { default: 'dark' },
   },
@@ -102,7 +102,7 @@ export const AllVariants: Story = {
           padding: '1rem',
         }}
       >
-        <Spinner size="md" variant="white" />
+        <Spinner size="md" variant="inverse" />
       </div>
     </div>
   ),

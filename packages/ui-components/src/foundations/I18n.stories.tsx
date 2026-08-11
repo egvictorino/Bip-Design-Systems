@@ -64,7 +64,7 @@ const Gallery = () => {
           onChange={setSelected}
         />
       </div>
-      <Pagination currentPage={page} totalPages={6} onPageChange={setPage} />
+      <Pagination page={page} totalPages={6} onPageChange={setPage} />
       <DataTable data={PATIENTS} columns={COLUMNS} />
     </div>
   );

@@ -8,7 +8,7 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     value:    { control: { type: 'range', min: 0, max: 100, step: 1 } },
-    variant:  { control: 'select', options: ['default', 'success', 'warning', 'error'] },
+    variant:  { control: 'select', options: ['default', 'success', 'warning', 'danger'] },
     size:     { control: 'select', options: ['sm', 'md', 'lg'] },
     striped:  { control: 'boolean' },
     animated: { control: 'boolean' },
@@ -54,7 +54,7 @@ export const Variants: Story = {
       <ProgressBar value={70} variant="default" label="Default"     showValue />
       <ProgressBar value={85} variant="success" label="Éxito"       showValue />
       <ProgressBar value={45} variant="warning" label="Advertencia" showValue />
-      <ProgressBar value={30} variant="error"   label="Error"       showValue />
+      <ProgressBar value={30} variant="danger"   label="Error"       showValue />
     </div>
   ),
 };
@@ -79,7 +79,7 @@ export const Striped: Story = {
       <ProgressBar value={70} variant="default" label="Default striped"    striped showValue />
       <ProgressBar value={85} variant="success" label="Success striped"    striped showValue />
       <ProgressBar value={45} variant="warning" label="Warning striped"    striped showValue />
-      <ProgressBar value={30} variant="error"   label="Error striped"      striped showValue />
+      <ProgressBar value={30} variant="danger"   label="Error striped"      striped showValue />
     </div>
   ),
 };

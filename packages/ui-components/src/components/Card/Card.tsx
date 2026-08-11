@@ -1,3 +1,5 @@
+"use client";
+
 import React, { forwardRef } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
@@ -28,11 +30,10 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export interface CardMediaProps {
+export interface CardMediaProps extends React.HTMLAttributes<HTMLDivElement> {
   src: string;
   alt: string;
   aspectRatio?: 'video' | 'square' | 'wide';
-  className?: string;
 }
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
@@ -83,8 +84,9 @@ export const CardMedia: React.FC<CardMediaProps> = ({
   alt,
   aspectRatio = 'video',
   className,
+  ...rest
 }) => (
-  <div className={cn(styles.cardMedia, aspectClass[aspectRatio], className)}>
+  <div className={cn(styles.cardMedia, aspectClass[aspectRatio], className)} {...rest}>
     <img src={src} alt={alt} className={styles.mediaImg} />
   </div>
 );

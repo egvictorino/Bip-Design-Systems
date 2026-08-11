@@ -62,14 +62,14 @@ describe('NumberInput', () => {
     const onChange = vi.fn();
     render(<NumberInput value={5} step={1} onChange={onChange} />);
     await userEvent.click(screen.getByLabelText('Incrementar'));
-    expect(onChange).toHaveBeenCalledWith(6, undefined);
+    expect(onChange).toHaveBeenCalledWith(6);
   });
 
   it('decrement button decreases value by step', async () => {
     const onChange = vi.fn();
     render(<NumberInput value={5} step={1} onChange={onChange} />);
     await userEvent.click(screen.getByLabelText('Decrementar'));
-    expect(onChange).toHaveBeenCalledWith(4, undefined);
+    expect(onChange).toHaveBeenCalledWith(4);
   });
 
   it('increment button is disabled when value equals max', () => {
@@ -86,28 +86,28 @@ describe('NumberInput', () => {
     const onChange = vi.fn();
     render(<NumberInput value={9} max={10} step={5} onChange={onChange} />);
     await userEvent.click(screen.getByLabelText('Incrementar'));
-    expect(onChange).toHaveBeenCalledWith(10, undefined);
+    expect(onChange).toHaveBeenCalledWith(10);
   });
 
   it('decrement clamps to min', async () => {
     const onChange = vi.fn();
     render(<NumberInput value={1} min={0} step={5} onChange={onChange} />);
     await userEvent.click(screen.getByLabelText('Decrementar'));
-    expect(onChange).toHaveBeenCalledWith(0, undefined);
+    expect(onChange).toHaveBeenCalledWith(0);
   });
 
   it('increment starts from min when field is empty', async () => {
     const onChange = vi.fn();
     render(<NumberInput min={5} step={1} onChange={onChange} />);
     await userEvent.click(screen.getByLabelText('Incrementar'));
-    expect(onChange).toHaveBeenCalledWith(6, undefined);
+    expect(onChange).toHaveBeenCalledWith(6);
   });
 
   it('decrement starts from 0 when field is empty and no max', async () => {
     const onChange = vi.fn();
     render(<NumberInput step={1} onChange={onChange} />);
     await userEvent.click(screen.getByLabelText('Decrementar'));
-    expect(onChange).toHaveBeenCalledWith(-1, undefined);
+    expect(onChange).toHaveBeenCalledWith(-1);
   });
 
   // ── Keyboard navigation ────────────────────────────────────────────────────
@@ -117,7 +117,7 @@ describe('NumberInput', () => {
     render(<NumberInput value={3} step={1} onChange={onChange} />);
     const input = screen.getByRole('spinbutton');
     fireEvent.keyDown(input, { key: 'ArrowUp' });
-    expect(onChange).toHaveBeenCalledWith(4, undefined);
+    expect(onChange).toHaveBeenCalledWith(4);
   });
 
   it('ArrowDown decrements value', async () => {
@@ -125,7 +125,7 @@ describe('NumberInput', () => {
     render(<NumberInput value={3} step={1} onChange={onChange} />);
     const input = screen.getByRole('spinbutton');
     fireEvent.keyDown(input, { key: 'ArrowDown' });
-    expect(onChange).toHaveBeenCalledWith(2, undefined);
+    expect(onChange).toHaveBeenCalledWith(2);
   });
 
   // ── onChange callback ──────────────────────────────────────────────────────
@@ -145,7 +145,7 @@ describe('NumberInput', () => {
     render(<NumberInput value={5} onChange={onChange} />);
     const input = screen.getByRole('spinbutton');
     await userEvent.clear(input);
-    expect(onChange).toHaveBeenCalledWith(null, expect.anything());
+    expect(onChange).toHaveBeenCalledWith(null);
   });
 
   // ── ARIA attributes ────────────────────────────────────────────────────────
@@ -385,7 +385,7 @@ describe('NumberInput', () => {
     const input = screen.getByRole('spinbutton');
     fireEvent.focus(input);
     fireEvent.blur(input);
-    expect(onChange).toHaveBeenCalledWith(3, expect.anything());
+    expect(onChange).toHaveBeenCalledWith(3);
   });
 
   it('prevents typing more decimals than allowed', async () => {

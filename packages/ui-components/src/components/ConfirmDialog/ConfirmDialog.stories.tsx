@@ -24,7 +24,7 @@ const ConfirmStory = ({ variant }: { variant?: 'info' | 'danger' | 'warning' }) 
         Abrir diálogo
       </Button>
       <ConfirmDialog
-        isOpen={open}
+        open={open}
         onClose={() => setOpen(false)}
         onConfirm={() => setOpen(false)}
         title="Confirmar acción"
@@ -37,7 +37,7 @@ const ConfirmStory = ({ variant }: { variant?: 'info' | 'danger' | 'warning' }) 
 
 export const Info: Story = {
   args: {
-    isOpen: false,
+    open: false,
     onClose: () => {},
     onConfirm: () => {},
     title: 'Confirmar acción',
@@ -48,7 +48,7 @@ export const Info: Story = {
 
 export const Danger: Story = {
   args: {
-    isOpen: false,
+    open: false,
     onClose: () => {},
     onConfirm: () => {},
     title: 'Eliminar registro',
@@ -61,7 +61,7 @@ export const Danger: Story = {
 
 export const Warning: Story = {
   args: {
-    isOpen: false,
+    open: false,
     onClose: () => {},
     onConfirm: () => {},
     title: 'Advertencia',
@@ -72,7 +72,7 @@ export const Warning: Story = {
 
 export const SinDescripcion: Story = {
   args: {
-    isOpen: false,
+    open: false,
     onClose: () => {},
     onConfirm: () => {},
     title: '¿Cerrar sesión?',
@@ -87,7 +87,7 @@ export const SinDescripcion: Story = {
             Cerrar sesión
           </Button>
           <ConfirmDialog
-            isOpen={open}
+            open={open}
             onClose={() => setOpen(false)}
             onConfirm={() => setOpen(false)}
             title="¿Cerrar sesión?"

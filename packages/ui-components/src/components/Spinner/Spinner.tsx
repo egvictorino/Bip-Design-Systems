@@ -1,27 +1,25 @@
-import React from 'react';
+"use client";
+
+import React, { forwardRef } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
+import type { BipSizeExtended } from '../../types/size.js';
 import styles from './Spinner.module.css';
 
 export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  variant?: 'primary' | 'secondary' | 'white' | 'danger' | 'success' | 'info';
+  size?: BipSizeExtended;
+  variant?: 'primary' | 'secondary' | 'inverse' | 'danger' | 'success' | 'info';
   speed?: 'slow' | 'normal' | 'fast';
   label?: string;
 }
 
-export const Spinner: React.FC<SpinnerProps> = ({
-  size = 'md',
-  variant = 'primary',
-  speed,
-  label,
-  className,
-  ...props
-}) => {
+export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(
+  ({ size = 'md', variant = 'primary', speed, label, className, ...props }, ref) => {
   const t = useBipLocale();
 
   return (
     <span
+      ref={ref}
       role="status"
       aria-label={label ?? t.spinner.defaultLabel}
       className={cn(styles.spinner, className)}
@@ -49,6 +47,7 @@ export const Spinner: React.FC<SpinnerProps> = ({
       </svg>
     </span>
   );
-};
+  }
+);
 
 Spinner.displayName = 'Spinner';

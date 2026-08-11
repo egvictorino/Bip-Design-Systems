@@ -5,12 +5,17 @@ import { cn } from '../../lib/cn.js';
 import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { addDays, dateKey, getDaysInMonth, getMondayOffset, isSameDay, monthIndex } from '../../lib/dateHelpers.js';
 import { useBipLocale } from '../../i18n/index.js';
+import { Spinner } from '../Spinner/index.js';
 import styles from './DatePicker.module.css';
+import type { BipSize } from '../../types/size.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface DatePickerProps {
+export interface DatePickerProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   value?: Date | null;
+  /** Valor inicial en modo no-controlado (ignorado si `value` está definido). */
+  defaultValue?: Date | null;
   onChange?: (date: Date | null) => void;
   min?: Date;
   max?: Date;
@@ -22,7 +27,10 @@ export interface DatePickerProps {
   error?: boolean;
   errorMessage?: string;
   disabled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  /** Deshabilita la interacción y muestra un spinner (ej. mientras se resuelven fechas ocupadas async). */
+  loading?: boolean;
+  required?: boolean;
+  size?: BipSize;
   id?: string;
   fullWidth?: boolean;
   className?: string;
@@ -434,7 +442,8 @@ CalendarGrid.displayName = 'CalendarGrid';
 export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
   (
     {
-      value = null,
+      value: valueProp,
+      defaultValue,
       onChange,
       min,
       max,
@@ -445,16 +454,33 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
       error = false,
       errorMessage,
       disabled = false,
+      loading = false,
+      required = false,
       size = 'md',
       id,
       fullWidth = false,
       className,
+      ...rest
     },
     ref
   ) => {
     const t = useBipLocale();
     const [isOpen, setIsOpen] = useState(false);
     const [focusedDate, setFocusedDate] = useState<Date | null>(null);
+    const [internalValue, setInternalValue] = useState<Date | null>(() => defaultValue ?? null);
+
+    // Controlled (`value` prop wins) / uncontrolled (falls back to internal state) —
+    // `value !== undefined` is the check, not truthiness, since a controlled `null` is valid.
+    const value = valueProp !== undefined ? valueProp : internalValue;
+
+    const emitChange = useCallback(
+      (next: Date | null) => {
+        if (valueProp === undefined) setInternalValue(next);
+        onChange?.(next);
+      },
+      [valueProp, onChange]
+    );
+
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const headingId = `${inputId}-heading`;
@@ -506,6 +532,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     }, [isOpen]);
 
     const handleToggle = () => {
+      if (disabled || loading) return;
       if (!isOpen) {
         // Initialize focused date when opening
         setFocusedDate(value ?? today);
@@ -514,12 +541,12 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     };
 
     const handleSelectDay = (date: Date) => {
-      onChange?.(date);
+      emitChange(date);
       setIsOpen(false);
     };
 
     const handleClear = () => {
-      onChange?.(null);
+      emitChange(null);
     };
 
     const handlePrevMonth = () => {
@@ -532,6 +559,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
 
     return (
       <div
+        {...rest}
         ref={containerRef}
         className={cn(styles.container, fullWidth && styles.containerFullWidth)}
       >
@@ -546,6 +574,11 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             )}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className={styles.required}>
+                {' *'}
+              </span>
+            )}
           </label>
         )}
 
@@ -554,16 +587,17 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             ref={ref}
             id={inputId}
             type="button"
-            disabled={disabled}
+            disabled={disabled || loading}
             aria-haspopup="dialog"
             aria-expanded={isOpen}
             aria-describedby={messageId}
+            aria-busy={loading || undefined}
             onClick={handleToggle}
             className={cn(
               styles.trigger,
               triggerSizeClass[size],
               error && styles.triggerError,
-              disabled && styles.triggerDisabled,
+              (disabled || loading) && styles.triggerDisabled,
               className
             )}
           >
@@ -572,8 +606,12 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             </span>
           </button>
 
-          {/* Trailing icon: clear button when value is set, calendar icon otherwise */}
-          {value && !disabled ? (
+          {/* Trailing icon: spinner while loading, clear button when value is set, calendar icon otherwise */}
+          {loading ? (
+            <span className={styles.calendarIcon} aria-hidden="true">
+              <Spinner size="xs" />
+            </span>
+          ) : value && !disabled ? (
             <button
               type="button"
               onClick={handleClear}

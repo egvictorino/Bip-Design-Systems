@@ -70,7 +70,7 @@ export const Default: Story = {
         <DropdownItem>Editar</DropdownItem>
         <DropdownItem>Duplicar</DropdownItem>
         <DropdownDivider />
-        <DropdownItem danger>Eliminar</DropdownItem>
+        <DropdownItem variant="danger">Eliminar</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   ),
@@ -88,7 +88,7 @@ export const WithIcons: Story = {
         <DropdownItem icon={<EditIcon />}>Editar</DropdownItem>
         <DropdownItem icon={<CopyIcon />}>Duplicar</DropdownItem>
         <DropdownDivider />
-        <DropdownItem icon={<TrashIcon />} danger>
+        <DropdownItem icon={<TrashIcon />} variant="danger">
           Eliminar
         </DropdownItem>
       </DropdownMenu>
@@ -115,7 +115,7 @@ export const AlignEnd: Story = {
         <DropdownItem icon={<EyeIcon />}>Ver detalle</DropdownItem>
         <DropdownItem icon={<EditIcon />}>Editar</DropdownItem>
         <DropdownDivider />
-        <DropdownItem icon={<TrashIcon />} danger>
+        <DropdownItem icon={<TrashIcon />} variant="danger">
           Eliminar
         </DropdownItem>
       </DropdownMenu>
@@ -135,7 +135,7 @@ export const WithDisabledItems: Story = {
         <DropdownItem disabled>Editar (sin permisos)</DropdownItem>
         <DropdownItem disabled>Duplicar (sin permisos)</DropdownItem>
         <DropdownDivider />
-        <DropdownItem danger disabled>
+        <DropdownItem variant="danger" disabled>
           Eliminar (sin permisos)
         </DropdownItem>
       </DropdownMenu>
@@ -162,6 +162,34 @@ export const BareButton: Story = {
 
 // ─── New stories ──────────────────────────────────────────────────────────────
 
+export const Controlled: Story = {
+  args: { children: null },
+  render: () => {
+    const ControlledStory = () => {
+      const [open, setOpen] = useState(false);
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start' }}>
+          <Button variant="secondary" onClick={() => setOpen((v) => !v)}>
+            {open ? 'Cerrar (externo)' : 'Abrir (externo)'}
+          </Button>
+          <Dropdown open={open} onOpenChange={setOpen}>
+            <DropdownTrigger>
+              <Button variant="secondary">Acciones</Button>
+            </DropdownTrigger>
+            <DropdownMenu>
+              <DropdownItem>Ver detalle</DropdownItem>
+              <DropdownItem>Editar</DropdownItem>
+              <DropdownItem>Duplicar</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+      );
+    };
+
+    return <ControlledStory />;
+  },
+};
+
 export const WithGroups: Story = {
   args: { children: null },
   render: () => (
@@ -176,7 +204,7 @@ export const WithGroups: Story = {
           <DropdownItem icon={<CopyIcon />}>Duplicar</DropdownItem>
         </DropdownGroup>
         <DropdownGroup label="Zona peligrosa">
-          <DropdownItem icon={<TrashIcon />} danger>
+          <DropdownItem icon={<TrashIcon />} variant="danger">
             Eliminar
           </DropdownItem>
         </DropdownGroup>
@@ -204,7 +232,7 @@ export const WithSearch: Story = {
             <DropdownSearch value={query} onChange={setQuery} placeholder="Buscar acción..." />
             {filtered.length > 0 ? (
               filtered.map((item) => (
-                <DropdownItem key={item} danger={item === 'Eliminar'}>
+                <DropdownItem key={item} variant={item === 'Eliminar' ? 'danger' : 'default'}>
                   {item}
                 </DropdownItem>
               ))
@@ -284,7 +312,7 @@ export const WithSubmenu: Story = {
           <DropdownItem>Archivo</DropdownItem>
         </DropdownSubmenu>
         <DropdownDivider />
-        <DropdownItem icon={<TrashIcon />} danger>
+        <DropdownItem icon={<TrashIcon />} variant="danger">
           Eliminar
         </DropdownItem>
       </DropdownMenu>

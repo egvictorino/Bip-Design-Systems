@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext } from 'react';
 import { esMX } from './es-MX.js';
 import type { BipLocale, PartialBipLocale } from './types.js';

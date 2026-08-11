@@ -91,4 +91,48 @@ describe('Popover', () => {
     expect(() => render(<PopoverTrigger>Open</PopoverTrigger>)).toThrow();
     spy.mockRestore();
   });
+
+  it('open prop controls content visibility and onOpenChange is called on toggle', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    const ControlledPopover = ({ open }: { open: boolean }) => (
+      <Popover open={open} onOpenChange={onOpenChange}>
+        <PopoverTrigger>
+          <button type="button">Open</button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <p>Popover body</p>
+        </PopoverContent>
+      </Popover>
+    );
+
+    const { rerender } = render(<ControlledPopover open={false} />);
+    expect(screen.queryByText('Popover body')).not.toBeInTheDocument();
+
+    // Clicking the trigger does not open the content by itself — the parent
+    // must react to onOpenChange and pass a new `open` value.
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+    expect(onOpenChange).toHaveBeenCalledWith(true);
+    expect(screen.queryByText('Popover body')).not.toBeInTheDocument();
+
+    rerender(<ControlledPopover open={true} />);
+    expect(screen.getByText('Popover body')).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('defaultOpen seeds the initial uncontrolled state', () => {
+    render(
+      <Popover defaultOpen>
+        <PopoverTrigger>
+          <button type="button">Open</button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <p>Popover body</p>
+        </PopoverContent>
+      </Popover>
+    );
+    expect(screen.getByText('Popover body')).toBeInTheDocument();
+  });
 });

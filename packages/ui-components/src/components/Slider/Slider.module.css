@@ -18,6 +18,11 @@
   color: var(--color-txt-disabled);
 }
 
+.requiredMark {
+  color: var(--color-danger);
+  margin-inline-start: var(--space-0-5);
+}
+
 .track {
   appearance: none;
   width: 100%;

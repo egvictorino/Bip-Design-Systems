@@ -2,11 +2,10 @@ import React from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Divider.module.css';
 
-export interface DividerProps {
+export interface DividerProps extends React.HTMLAttributes<HTMLElement> {
   orientation?: 'horizontal' | 'vertical';
   variant?: 'solid' | 'dashed';
   label?: string;
-  className?: string;
 }
 
 export const Divider: React.FC<DividerProps> = ({
@@ -14,10 +13,12 @@ export const Divider: React.FC<DividerProps> = ({
   variant = 'solid',
   label,
   className,
+  ...rest
 }) => {
   if (orientation === 'vertical') {
     return (
       <div
+        {...rest}
         role="separator"
         aria-orientation="vertical"
         className={cn(styles.vertical, variant === 'dashed' && styles.dashed, className)}
@@ -28,6 +29,7 @@ export const Divider: React.FC<DividerProps> = ({
   if (label) {
     return (
       <div
+        {...rest}
         role="separator"
         aria-orientation="horizontal"
         className={cn(styles.withLabel, className)}
@@ -41,6 +43,7 @@ export const Divider: React.FC<DividerProps> = ({
 
   return (
     <hr
+      {...rest}
       aria-orientation="horizontal"
       className={cn(styles.horizontal, variant === 'dashed' && styles.dashed, className)}
     />

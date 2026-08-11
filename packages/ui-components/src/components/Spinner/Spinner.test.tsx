@@ -23,7 +23,7 @@ describe('Spinner', () => {
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it.each(['primary', 'secondary', 'white', 'danger', 'success', 'info'] as const)(
+  it.each(['primary', 'secondary', 'inverse', 'danger', 'success', 'info'] as const)(
     'renders with variant %s',
     (variant) => {
       render(<Spinner variant={variant} />);

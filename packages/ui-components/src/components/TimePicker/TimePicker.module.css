@@ -17,6 +17,8 @@
   transition: color var(--duration-fast);
 }
 
+.requiredMark { color: var(--color-danger); margin-inline-start: var(--space-0-5); }
+
 .labelSm { font-size: var(--text-xs); }
 .labelMd { font-size: var(--text-sm); }
 .labelLg { font-size: var(--text-base); }

@@ -7,7 +7,7 @@ const meta = {
   parameters: { layout: 'padded' },
   tags: ['autodocs'],
   argTypes: {
-    size: { control: 'select', options: ['3xs', '2xs', 'xs', 'sm', 'base', 'lg', 'xl', '2xl'] },
+    size: { control: 'select', options: ['3xs', '2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'] },
     weight: { control: 'select', options: ['normal', 'medium', 'semibold', 'bold'] },
     color: {
       control: 'select',
@@ -34,14 +34,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { size: 'base', weight: 'normal', color: 'default' },
+  args: { size: 'md', weight: 'normal', color: 'default' },
 };
 
 export const Sizes: Story = {
   args: { children: null },
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-      {(['3xs', '2xs', 'xs', 'sm', 'base', 'lg', 'xl', '2xl'] as const).map((size) => (
+      {(['3xs', '2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const).map((size) => (
         <Text key={size} size={size}>
           {size} — The quick brown fox
         </Text>

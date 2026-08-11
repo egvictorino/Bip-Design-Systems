@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, forwardRef, useContext } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './Table.module.css';
@@ -58,19 +58,22 @@ export interface TableHeadProps extends React.HTMLAttributes<HTMLTableSectionEle
   children: React.ReactNode;
 }
 
-export const TableHead: React.FC<TableHeadProps> = ({ className, children, ...props }) => {
-  const ctx = useTableContext();
-  return (
-    <TableContext.Provider value={{ ...ctx, inHead: true }}>
-      <thead
-        className={cn(styles.thead, ctx.stickyHeader && styles.theadSticky, className)}
-        {...props}
-      >
-        {children}
-      </thead>
-    </TableContext.Provider>
-  );
-};
+export const TableHead = forwardRef<HTMLTableSectionElement, TableHeadProps>(
+  ({ className, children, ...props }, ref) => {
+    const ctx = useTableContext();
+    return (
+      <TableContext.Provider value={{ ...ctx, inHead: true }}>
+        <thead
+          ref={ref}
+          className={cn(styles.thead, ctx.stickyHeader && styles.theadSticky, className)}
+          {...props}
+        >
+          {children}
+        </thead>
+      </TableContext.Provider>
+    );
+  }
+);
 
 // ─── TableBody ───────────────────────────────────────────────────────────────
 
@@ -78,10 +81,12 @@ export interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionEle
   children?: React.ReactNode;
 }
 
-export const TableBody: React.FC<TableBodyProps> = ({ className, children, ...props }) => (
-  <tbody className={cn(styles.tbody, className)} {...props}>
-    {children}
-  </tbody>
+export const TableBody = forwardRef<HTMLTableSectionElement, TableBodyProps>(
+  ({ className, children, ...props }, ref) => (
+    <tbody ref={ref} className={cn(styles.tbody, className)} {...props}>
+      {children}
+    </tbody>
+  )
 );
 
 // ─── TableRow ────────────────────────────────────────────────────────────────
@@ -92,32 +97,29 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
   children: React.ReactNode;
 }
 
-export const TableRow: React.FC<TableRowProps> = ({
-  selected = false,
-  clickable = false,
-  className,
-  children,
-  ...props
-}) => {
-  const { striped, inHead } = useTableContext();
+export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
+  ({ selected = false, clickable = false, className, children, ...props }, ref) => {
+    const { striped, inHead } = useTableContext();
 
-  return (
-    <tr
-      aria-selected={!inHead && selected ? true : undefined}
-      className={cn(
-        styles.row,
-        selected
-          ? styles.rowSelected
-          : cn(styles.rowHoverable, !selected && striped && styles.rowStriped),
-        clickable && styles.rowClickable,
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </tr>
-  );
-};
+    return (
+      <tr
+        ref={ref}
+        aria-selected={!inHead && selected ? true : undefined}
+        className={cn(
+          styles.row,
+          selected
+            ? styles.rowSelected
+            : cn(styles.rowHoverable, !selected && striped && styles.rowStriped),
+          clickable && styles.rowClickable,
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </tr>
+    );
+  }
+);
 
 // ─── TableHeader ─────────────────────────────────────────────────────────────
 
@@ -156,60 +158,66 @@ const SortIcon: React.FC<{ direction?: 'asc' | 'desc' | null }> = ({ direction }
   </svg>
 );
 
-export const TableHeader: React.FC<TableHeaderProps> = ({
-  sortable = false,
-  sortDirection = null,
-  onSort,
-  align = 'left',
-  scope = 'col',
-  className,
-  children,
-  ...props
-}) => {
-  const { compact } = useTableContext();
+export const TableHeader = forwardRef<HTMLTableCellElement, TableHeaderProps>(
+  (
+    {
+      sortable = false,
+      sortDirection = null,
+      onSort,
+      align = 'left',
+      scope = 'col',
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const { compact } = useTableContext();
 
-  const ariaSort = sortable
-    ? sortDirection === 'asc'
-      ? 'ascending'
-      : sortDirection === 'desc'
-        ? 'descending'
-        : 'none'
-    : undefined;
+    const ariaSort = sortable
+      ? sortDirection === 'asc'
+        ? 'ascending'
+        : sortDirection === 'desc'
+          ? 'descending'
+          : 'none'
+      : undefined;
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTableCellElement>) => {
-    if (sortable && (e.key === 'Enter' || e.key === ' ')) {
-      e.preventDefault();
-      onSort?.();
-    }
-  };
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTableCellElement>) => {
+      if (sortable && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        onSort?.();
+      }
+    };
 
-  return (
-    <th
-      scope={scope}
-      aria-sort={ariaSort}
-      tabIndex={sortable ? 0 : undefined}
-      className={cn(
-        styles.th,
-        compact ? styles.thCompact : styles.thNormal,
-        alignClass[align],
-        sortable && styles.thSortable,
-        className
-      )}
-      onClick={sortable ? onSort : undefined}
-      onKeyDown={handleKeyDown}
-      {...props}
-    >
-      {sortable ? (
-        <span className={styles.sortableInner}>
-          {children}
-          <SortIcon direction={sortDirection} />
-        </span>
-      ) : (
-        children
-      )}
-    </th>
-  );
-};
+    return (
+      <th
+        ref={ref}
+        scope={scope}
+        aria-sort={ariaSort}
+        tabIndex={sortable ? 0 : undefined}
+        className={cn(
+          styles.th,
+          compact ? styles.thCompact : styles.thNormal,
+          alignClass[align],
+          sortable && styles.thSortable,
+          className
+        )}
+        onClick={sortable ? onSort : undefined}
+        onKeyDown={handleKeyDown}
+        {...props}
+      >
+        {sortable ? (
+          <span className={styles.sortableInner}>
+            {children}
+            <SortIcon direction={sortDirection} />
+          </span>
+        ) : (
+          children
+        )}
+      </th>
+    );
+  }
+);
 
 // ─── TableCell ───────────────────────────────────────────────────────────────
 
@@ -218,28 +226,26 @@ export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElem
   children?: React.ReactNode;
 }
 
-export const TableCell: React.FC<TableCellProps> = ({
-  align = 'left',
-  className,
-  children,
-  ...props
-}) => {
-  const { compact } = useTableContext();
+export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ align = 'left', className, children, ...props }, ref) => {
+    const { compact } = useTableContext();
 
-  return (
-    <td
-      className={cn(
-        styles.td,
-        compact ? styles.tdCompact : styles.tdNormal,
-        alignClass[align],
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </td>
-  );
-};
+    return (
+      <td
+        ref={ref}
+        className={cn(
+          styles.td,
+          compact ? styles.tdCompact : styles.tdNormal,
+          alignClass[align],
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </td>
+    );
+  }
+);
 
 // ─── TableEmpty ──────────────────────────────────────────────────────────────
 
@@ -248,20 +254,22 @@ export interface TableEmptyProps {
   children?: React.ReactNode;
 }
 
-export const TableEmpty: React.FC<TableEmptyProps> = ({ colSpan, children }) => {
-  const { compact } = useTableContext();
-  const t = useBipLocale();
-  return (
-    <tr>
-      <td
-        colSpan={colSpan}
-        className={cn(styles.tdEmpty, compact ? styles.tdCompact : styles.tdNormal)}
-      >
-        {children ?? t.table.emptyMessage}
-      </td>
-    </tr>
-  );
-};
+export const TableEmpty = forwardRef<HTMLTableRowElement, TableEmptyProps>(
+  ({ colSpan, children }, ref) => {
+    const { compact } = useTableContext();
+    const t = useBipLocale();
+    return (
+      <tr ref={ref}>
+        <td
+          colSpan={colSpan}
+          className={cn(styles.tdEmpty, compact ? styles.tdCompact : styles.tdNormal)}
+        >
+          {children ?? t.table.emptyMessage}
+        </td>
+      </tr>
+    );
+  }
+);
 
 Table.displayName = 'Table';
 TableHead.displayName = 'TableHead';

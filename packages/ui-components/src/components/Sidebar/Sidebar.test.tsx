@@ -17,15 +17,15 @@ const HomeIcon = () => <svg data-testid="home-icon" aria-hidden="true" />;
 const FolderIcon = () => <svg data-testid="folder-icon" aria-hidden="true" />;
 
 const DefaultSidebar = ({
-  isOpen = false,
+  open = false,
   onClose = vi.fn(),
   defaultCollapsed = false,
 }: {
-  isOpen?: boolean;
+  open?: boolean;
   onClose?: () => void;
   defaultCollapsed?: boolean;
 }) => (
-  <Sidebar isOpen={isOpen} onClose={onClose} defaultCollapsed={defaultCollapsed}>
+  <Sidebar open={open} onClose={onClose} defaultCollapsed={defaultCollapsed}>
     <SidebarHeader>
       <SidebarBrand>BipUI</SidebarBrand>
       <SidebarTrigger />
@@ -158,47 +158,47 @@ describe('Sidebar', () => {
     expect(screen.getAllByTestId('home-icon').length).toBeGreaterThan(0);
   });
 
-  it('shows overlay when isOpen=true', () => {
-    render(<DefaultSidebar isOpen />);
+  it('shows overlay when open=true', () => {
+    render(<DefaultSidebar open />);
     expect(screen.getByTestId('mobile-overlay')).toBeInTheDocument();
   });
 
-  it('does not show overlay when isOpen=false', () => {
-    render(<DefaultSidebar isOpen={false} />);
+  it('does not show overlay when open=false', () => {
+    render(<DefaultSidebar open={false} />);
     expect(screen.queryByTestId('mobile-overlay')).not.toBeInTheDocument();
   });
 
   it('clicking the overlay calls onClose', () => {
     const onClose = vi.fn();
-    render(<DefaultSidebar isOpen onClose={onClose} />);
+    render(<DefaultSidebar open onClose={onClose} />);
     fireEvent.click(screen.getByTestId('mobile-overlay'));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('pressing Escape calls onClose when isOpen', () => {
+  it('pressing Escape calls onClose when open', () => {
     const onClose = vi.fn();
-    render(<DefaultSidebar isOpen onClose={onClose} />);
+    render(<DefaultSidebar open onClose={onClose} />);
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('pressing Escape does NOT call onClose when sidebar is closed', () => {
     const onClose = vi.fn();
-    render(<DefaultSidebar isOpen={false} onClose={onClose} />);
+    render(<DefaultSidebar open={false} onClose={onClose} />);
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onClose).not.toHaveBeenCalled();
   });
 
   it('clicking a SidebarItem calls onClose (closes mobile drawer)', () => {
     const onClose = vi.fn();
-    render(<DefaultSidebar isOpen onClose={onClose} />);
+    render(<DefaultSidebar open onClose={onClose} />);
     fireEvent.click(screen.getByRole('link', { name: /dashboard/i }));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('clicking a disabled SidebarItem does not call onClose', () => {
     const onClose = vi.fn();
-    render(<DefaultSidebar isOpen onClose={onClose} />);
+    render(<DefaultSidebar open onClose={onClose} />);
     fireEvent.click(screen.getByRole('link', { name: /reportes/i }));
     expect(onClose).not.toHaveBeenCalled();
   });
@@ -612,7 +612,7 @@ describe('Sidebar — arrow key navigation', () => {
 describe('Sidebar — focus trap (mobile)', () => {
   it('Tab key wraps from last to first focusable element when mobile is open', () => {
     render(
-      <Sidebar isOpen onClose={vi.fn()}>
+      <Sidebar open onClose={vi.fn()}>
         <SidebarHeader>
           <SidebarTrigger />
         </SidebarHeader>
@@ -642,7 +642,7 @@ describe('Sidebar — focus trap (mobile)', () => {
 
   it('Shift+Tab key wraps from first to last focusable element when mobile is open', () => {
     render(
-      <Sidebar isOpen onClose={vi.fn()}>
+      <Sidebar open onClose={vi.fn()}>
         <SidebarHeader>
           <SidebarTrigger />
         </SidebarHeader>
