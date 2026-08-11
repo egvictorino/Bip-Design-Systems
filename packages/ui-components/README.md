@@ -5,6 +5,11 @@ React component library with full TypeScript support, CSS Modules, and design to
 [![npm version](https://img.shields.io/npm/v/@bip-design-systems/ui-components)](https://www.npmjs.com/package/@bip-design-systems/ui-components)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/egvictorino/Bip-Design-Systems/blob/main/LICENSE)
 
+**As of `1.0.0`, the public API is stable** and follows [semantic versioning](https://semver.org/)
+strictly — a breaking change only ever ships in a `major` release. Upgrading from a `0.4.x`
+release? See [Migration 0.4.x → 1.0.0](#migration-04x--100) below for the one-time breaking-change
+table.
+
 ---
 
 ## Requirements
@@ -410,11 +415,13 @@ your own font loading strategy.
 
 ---
 
-## Migration 0.4.x → 0.5.0
+## Migration 0.4.x → 1.0.0
 
-`0.5.0` unifies inconsistent prop names/values across sibling components ahead of a `1.0.0` API
-freeze. All changes below are breaking; see `CHANGELOG.md` for the full list including additive
-(non-breaking) changes.
+`0.5.0` unified inconsistent prop names/values across sibling components ahead of the `1.0.0` API
+freeze; `1.0.0` itself ships no further code changes — it's the formal stability declaration.
+If you're upgrading from any `0.4.x` release, this is the one breaking-change table you need. All
+changes below are breaking; see `CHANGELOG.md` for the full list including additive (non-breaking)
+changes.
 
 | Component | Before | After |
 |---|---|---|
