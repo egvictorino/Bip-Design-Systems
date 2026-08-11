@@ -8,6 +8,8 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-11
+
 ### Changed — Unificación de API (breaking en 0.x, ver guía de migración en el README)
 
 Preparación para congelar la API antes de declarar 1.0.0. Todos los cambios de esta sección son
@@ -95,6 +97,23 @@ breaking pero aceptados dentro del versionado 0.x; cada uno tiene un equivalente
 - `.size-limit.json`: el límite del bundle barrel sube de 62 KB a 64 KB (medido: 62.52 KB) para
   reflejar el crecimiento real por `forwardRef`+`HTMLAttributes` en ~35 componentes — no es una
   regresión de tamaño accidental, es la nueva base legítima tras esta adición.
+
+### Fixed
+
+- Corrige dos bugs de build detectados al consumir `0.4.0` desde un Server Component de Next.js:
+  - `src/index.css` tenía un comentario cuyo propio texto (`--duration-*/--ease-*`) contenía una
+    secuencia `*/` incrustada, que cualquier stripper de comentarios interpreta como el cierre
+    del comentario — dejaba el resto del texto como CSS crudo sin comentar en el bundle
+    publicado, rompiendo el parseo de `dist/style.css` en bundlers estrictos (Turbopack).
+    Reescrito para no contener la secuencia `*/` dentro del comentario.
+  - `LocaleContext.tsx`, 9 componentes que llaman `useBipLocale()` directamente (`Alert`,
+    `Breadcrumb`, `Card`, `ConfirmDialog`, `Link`, `Pagination`, `ProgressBar`, `Spinner`,
+    `StatsCard`) y los 5 hooks exportados en la raíz (`useClickOutside`, `useDisclosure`,
+    `useFocusTrap`, `useMediaQuery`, `useScrollLock`) no tenían la directiva `"use client"`,
+    pese a usar `createContext`/hooks de React — cualquier Server Component que los importara
+    (directa o transitivamente) fallaba con `TypeError: createContext is not a function` bajo
+    Next.js App Router. Mismo patrón de bug ya corregido una vez para otro subconjunto de
+    componentes (ver CHANGELOG de `0.2.8`); esta vez tocó un subconjunto distinto sin auditar.
 
 ## [0.4.0] - 2026-08-07
 
