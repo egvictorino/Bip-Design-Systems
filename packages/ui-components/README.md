@@ -39,6 +39,11 @@ individually (the build emits one file per component, `preserveModules: true`):
 import { Button } from '@bip-design-systems/ui-components/Button';
 ```
 
+This `./*` wildcard only covers components (`dist/components/*/*.js`) — hooks (`useDisclosure`,
+`useFocusTrap`, ...), `cn`, `contrastRatio`, and the i18n exports (`esMX`, `enUS`,
+`useBipLocale`, `mergeLocale`) don't have their own deep-import subpaths and must be imported
+from the package root instead.
+
 ## Quick Start
 
 ```tsx
@@ -96,6 +101,7 @@ const MyPage = () => {
 | `CheckboxGroup` | Group of related checkboxes |
 | `Radio` | Radio button with label and helper text |
 | `Toggle` | On/off switch with integrated label |
+| `Slider` | `<input type="range">` with label, helper text, `error`, and an optional live value display |
 | `DatePicker` | Date picker with calendar, min/max range, and full accessibility |
 | `TimePicker` | Time picker with scrollable H/M columns and configurable `step` |
 | `DateRangePicker` | Date range picker (start + end) with dual calendars |
@@ -136,6 +142,7 @@ const MyPage = () => {
 | `Pagination` | Paginator with first/last page jump |
 | `Dropdown` | Compound dropdown menu: `DropdownTrigger`, `DropdownMenu`, `DropdownItem`, `DropdownDivider` · full keyboard navigation |
 | `Accordion` | Expandable panel compound: `AccordionItem`, `AccordionTrigger`, `AccordionContent` |
+| `Link` | Styled anchor · `underline` (`always`/`hover`/`none`), `disabled`, `external` (adds `target="_blank"`, `rel="noopener noreferrer"`, and an accessible "opens in a new tab" hint) |
 
 ### Overlay
 
@@ -145,6 +152,7 @@ const MyPage = () => {
 | `ConfirmDialog` | Confirmation dialog with positive/negative actions |
 | `DrawerPanel` | Side sliding panel with background overlay |
 | `Tooltip` | Positionable tooltip with configurable delay |
+| `Popover` | Generic compound overlay: `PopoverTrigger`, `PopoverContent` (`placement`: `bottom-start`/`bottom-end`/`top-start`/`top-end`) · closes on outside click and Escape |
 
 ### Sidebar
 
@@ -159,6 +167,7 @@ const MyPage = () => {
 | `Divider` | Horizontal or vertical divider with optional label |
 | `EmptyState` | Empty state with icon, title, description, and primary action |
 | `Odontogram` | Interactive odontogram for recording dental conditions per tooth |
+| `VisuallyHidden` | Renders content in the DOM, accessible to screen readers, but visually hidden |
 | `ThemeProvider` | Theme provider — controls shape (`square`/`rounded`), color scheme (`light`/`dark`), brand (`tokens`), and locale (`locale`). See [Theming](#theming) and [Internationalization](#internationalization) |
 
 ---
@@ -215,6 +224,9 @@ import { ThemeProvider, enUS } from '@bip-design-systems/ui-components';
   works, defaulting to `es-MX` via `useBipLocale()`.
 - To write your own dictionary (a full additional language, not just an override), import the
   `BipLocale` type and use `esMX`/`enUS` as a shape reference.
+- `mergeLocale(base, override?)` — the same one-level merge `<ThemeProvider>` uses internally — is
+  exported from the package root too, for composing a `PartialBipLocale` override on top of a full
+  dictionary outside of `<ThemeProvider>` (e.g. to precompute a locale before passing it down).
 - See the `Foundations/I18n` story in Storybook for a live playground.
 
 ---

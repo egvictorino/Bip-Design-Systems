@@ -13,6 +13,15 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 - `formatCurrency`/`formatDate` accept optional `locale`/`currency` overrides — the `es-MX`/MXN
   defaults are unchanged.
 
+### Fixed
+
+- **El paquete publicado (`0.1.0`) no era importable.** Faltaba `"type": "module"` en
+  `package.json` pese a que `exports` solo declara la condición `"import"` y `dist/index.js` es
+  ESM real — Node lo interpretaba como CommonJS y lanzaba `SyntaxError: Unexpected token
+  'export'` en cualquier `import`. Se agregó `"type": "module"`, `"sideEffects": false`, y el
+  gate `lint:package` (`publint` + `attw`, corrido ahora también en `pr-validation.yml`) para
+  que este defecto falle en CI antes de publicarse.
+
 ## [0.1.0]
 
 ### Added

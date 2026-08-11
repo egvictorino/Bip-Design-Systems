@@ -8,6 +8,8 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-07
+
 ### Added
 
 - **Storybook 8.6 → 10.5.** `@storybook/addon-essentials` se disolvió en el core del paquete
@@ -17,6 +19,99 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
   panel del addon) no cambió de forma — sigue siendo `axe-core`'s `Spec`. Verificado con
   `pnpm test:visual:docker`: los 168 tests (theme-matrix, component-matrix, a11y-browser)
   pasan sin regenerar ningún baseline — cero deriva de IDs de story ni de rendering.
+- **Internacionalización (i18n).** Nuevo sistema de diccionarios (`BipLocale`) resuelto vía
+  contexto: todo `aria-label`/placeholder/texto visible que antes estaba quemado en español
+  directamente en el JSX ahora se resuelve vía `useBipLocale()`, con `es-MX` como default
+  byte-idéntico al comportamiento anterior. Nueva prop `locale` en `<ThemeProvider>` (sibling
+  de `theme`/`tokens`/`radius`), acepta el diccionario completo (`esMX`, `enUS`, ambos
+  exportados) o un override parcial que se fusiona sobre el diccionario del provider padre. El
+  diccionario también lleva un tag BCP-47 (`locale.locale`) que alimenta los
+  `Intl.DateTimeFormat` de `Calendar`/`DatePicker`/`DateRangePicker`, antes hardcodeados a
+  `'es-MX'` a nivel de módulo. Ver story `Foundations/I18n` en Storybook.
+- `formatCurrency`/`formatDate` (`shared-utils`) aceptan `locale`/`currency` opcionales — los
+  defaults `es-MX`/MXN no cambian.
+- `--provenance` en el publish de npm de ambos paquetes (`production.yml`) — badge de
+  procedencia verificada, aprovechando el `id-token: write` ya declarado a nivel de workflow.
+- E2E smoke test (`e2e/consumer.spec.ts`, `pnpm test:e2e` from the repo root) that installs
+  the actual `pnpm pack` tarball into a standalone Vite app (not a workspace link) and
+  asserts on real computed styles — catches the class of bug where the workspace-link dev
+  loop works but the published package doesn't (design tokens missing from the tarball, ESM
+  resolution failing outside the monorepo). Runs in CI on `qa.yml`/`production.yml` only, as
+  a release gate; `production.yml`'s `publish-npm` now `needs:` it.
+- `src/styles/contrast-tokens.test.ts` — verifica WCAG AA (4.5:1) contra los valores hex
+  reales de `tokens.css` para las 6 semillas de fill y sus `--color-txt-on-*`, en ambos
+  esquemas de color. Antes solo se probaba la función `contrastRatio` con pares escritos a
+  mano; ahora un cambio a un token real que rompa el contraste falla el build.
+- Visual regression ahora corre en CI (`pr-validation.yml`, job `visual-regression`) contra
+  baselines Linux generadas en `mcr.microsoft.com/playwright:v1.62.1-jammy` — antes solo
+  existían baselines macOS y ningún workflow invocaba `test:visual`. Nuevo
+  `scripts/visual-docker.sh` (raíz del repo, `pnpm test:visual:docker`) corre la misma imagen
+  en local para que verificar o regenerar baselines sea idéntico a lo que corre en CI.
+- `visual/component-matrix.spec.ts` — un screenshot por componente (48 de los 48 directorios
+  de `src/components`; `ThemeProvider` no tiene UI propia) más un subset de 15 en RTL
+  (`Sidebar`, `Toggle`, `Tooltip`, `Calendar`, `NumberInput`, `SearchInput`, `Input`, `Select`,
+  `Dropdown`, `DrawerPanel`, `Tabs`, `Stepper`, `Timeline`, `MultiSelect`, `DatePicker` — los
+  que tienen geometría direccional real). Antes las 8 baselines existentes cubrían solo
+  ThemeProvider/Foundations; una regresión visual en un componente en sí no la detectaba
+  nada. Guard de cobertura igual al de `a11y.test.tsx`: un componente nuevo sin entrada en
+  `component-matrix.ts` falla el build.
+- `visual/a11y-browser.spec.ts` — axe con `color-contrast` **activado**, en Chromium real vía
+  `@axe-core/playwright`, contra los componentes en light y dark. Cierra el hueco que
+  `a11y.test.tsx` deja explícito: happy-dom no resuelve `color-mix()`/custom properties con
+  fidelidad suficiente para evaluar contraste renderizado. La primera corrida encontró 26
+  violaciones reales — ver abajo.
+- Nuevo token `--color-primary-text`: `--color-primary`/`--color-active` usados directamente
+  como color de **texto** (no fill) medían 3.3–3.7:1 en dark contra superficies oscuras
+  derivadas — bajo AA. En light es un alias directo a `--color-primary` (ya pasa, 8.2:1); en
+  dark deriva con `color-mix(..., white 20%)`. Mismo mecanismo que `--color-danger-text` etc.
+- Nuevos componentes primitivos de layout y tipografía: `Stack`, `Grid`, `Container`, `Text`,
+  `Heading` — cierran el hueco que hasta ahora obligaba a resolver layout en las stories con
+  estilos inline (`style={{ display: 'flex', gap: '1rem' }}`).
+- Nuevos hooks públicos en `src/hooks/` (exportados desde el paquete):
+  `useClickOutside` (promovido desde `lib/`, ya usado por 7 componentes), `useDisclosure`,
+  `useFocusTrap`, `useMediaQuery`, `useScrollLock`. `cn` también se exporta ahora.
+- `BREAKPOINTS`/`mediaQuery` (`src/styles/breakpoints.ts`) — fuente única para los `@media`
+  que antes se repetían como literales en varios `.module.css` (Navbar, Sidebar) y para
+  `useMediaQuery` en runtime. `src/styles/breakpoints.test.ts` hace cumplir la escala.
+- Storybook: página `Introduction` (antes no había ningún `.mdx` ni landing page) y foundations
+  `Typography`, `Motion`, `Breakpoints` — `Elevation` no se agregó como página aparte porque
+  `Foundations/Colors` ya documenta los tokens `--shadow-*` (light/dark) dentro de su propia
+  página.
+- `publint`/`@arethetypeswrong` (`pnpm --filter ui-components lint:package` y, ahora, también
+  `pnpm --filter shared-utils lint:package`), wired into `pr-validation.yml`, para detectar
+  regresiones de empaquetado (exports map, resolución de tipos) automáticamente en vez de a
+  mano.
+- Cobertura de tests (`@vitest/coverage-v8`, `pnpm test:coverage`) con umbral fijado al nivel
+  actual, corriendo en CI, para **ambos** paquetes (`shared-utils` no tenía `vitest.config.ts`
+  ni umbrales propios); reporter `lcov` agregado a los dos para habilitar badges/Codecov.
+- Stories nuevas para los subcomponentes internos de `Odontogram`: `ImagePopover`,
+  `NotePopover`, `ToothDetail`, `ToothSVG` — antes solo tenían tests, sin story propia.
+- `visual/`, `.storybook/` y `e2e/` ahora se lintean (ESLint) y typechequean (`tsc`) — antes no
+  se comprobaban en absoluto. Cero violaciones nuevas: no eran deuda oculta, solo estaban fuera
+  del `include`/scope de los scripts existentes.
+- `eslint-plugin-storybook` (reglas sobre `*.stories.tsx`) y `eslint-plugin-playwright`
+  (reglas sobre `visual/**` y `e2e/**`), vía `overrides` en `.eslintrc.json`.
+- Presupuesto de bundle (`size-limit`, `pnpm size`) sobre `dist/index.js`, un componente
+  representativo (`Button`) y `dist/style.css`, con límites fijados al tamaño actual medido —
+  gate contra regresiones, no una meta aspiracional. Corriendo en `pr-validation.yml`.
+- Workflows de seguridad nuevos: `codeql.yml` (análisis estático JS/TS) y
+  `dependency-review.yml` (bloquea dependencias nuevas con CVEs conocidos en PRs).
+- Los jobs `deploy-storybook-dev`/`deploy-storybook-qa` (antes `echo` stubs que construían
+  Storybook y no publicaban nada) ahora suben la build como artifact de GitHub Actions
+  descargable — un repo solo tiene un sitio de GitHub Pages, ya usado por
+  `deploy-storybook-production`, así que dev/qa no pueden tener URL propia sin reestructurar.
+  Se eliminaron los jobs `notify-qa-team`/`notify-production` (echo sin integración real) y el
+  paso `Add QA badge` (escribía un `qa-banner.html` suelto que nada enlazaba).
+- **Cuatro componentes nuevos**, cerrando huecos identificados en una auditoría de completitud:
+  `Slider`, `Popover` (compound: `Popover`/`PopoverTrigger`/`PopoverContent`, mismo patrón de
+  contexto que `Dropdown`), `Link` (primer consumidor de los tokens `--color-link*`, ya
+  declarados en `tokens.css` pero sin usar), y `VisuallyHidden` (hasta ahora solo existía como
+  la clase global `.sr-only`). Los cuatro con tests, stories, y entrada en `a11y.test.tsx` y
+  `visual/component-matrix.ts`.
+- `mergeLocale` ahora se exporta desde el root del paquete (antes solo desde `i18n/index.ts`
+  internamente) — necesario para componer diccionarios parciales por fuera de `ThemeProvider`.
+- Matriz `react-compat` en `pr-validation.yml`: corre `test`+`typecheck` contra React 18 y 19
+  reales — antes el soporte a React 19 solo estaba en el `peerDependencies`, sin verificación.
 
 ### Fixed
 
@@ -46,63 +141,10 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
   el parser de Storybook 8 toleraba pero el de 9+ rechaza ("too many arguments for 'dev'.
   Expected 0 arguments but got 2") — todo lo posterior al `--` se trata como argumento
   posicional, no flag. Se quitó el separador redundante.
-
-- **Internacionalización (i18n).** Nuevo sistema de diccionarios (`BipLocale`) resuelto vía
-  contexto: los ~100 `aria-label`/placeholders/textos que antes estaban quemados en español
-  directamente en el JSX de 28 componentes ahora se resuelven vía `useBipLocale()`, con `es-MX`
-  como default byte-idéntico al comportamiento anterior. Nueva prop `locale` en
-  `<ThemeProvider>` (sibling de `theme`/`tokens`/`radius`), acepta el diccionario completo
-  (`esMX`, `enUS`, ambos exportados) o un override parcial que se fusiona sobre el diccionario
-  del provider padre. El diccionario también lleva un tag BCP-47 (`locale.locale`) que alimenta
-  los `Intl.DateTimeFormat` de `Calendar`/`DatePicker`/`DateRangePicker`, antes hardcodeados a
-  `'es-MX'` a nivel de módulo. Ver story `Foundations/I18n` en Storybook.
-- `formatCurrency`/`formatDate` (`shared-utils`) aceptan `locale`/`currency` opcionales — los
-  defaults `es-MX`/MXN no cambian.
-- `--provenance` en el publish de npm de ambos paquetes (`production.yml`) — badge de
-  procedencia verificada, aprovechando el `id-token: write` ya declarado a nivel de workflow.
-
-### Fixed
-
 - `Odontogram`'s `ImagePopover`/`NotePopover` duplicaban a mano un `useFocusTrap` local
   (solo Tab-cycling, sin manejo de Escape ni restauración de foco) — reemplazado por el hook
   compartido `src/hooks/useFocusTrap.ts`. Comportamiento nuevo: el foco se restaura al elemento
   que abrió el popover al cerrarse (mejora, no regresión).
-
-- E2E smoke test (`e2e/consumer.spec.ts`, `pnpm test:e2e` from the repo root) that installs
-  the actual `pnpm pack` tarball into a standalone Vite app (not a workspace link) and
-  asserts on real computed styles — catches the class of bug where the workspace-link dev
-  loop works but the published package doesn't (design tokens missing from the tarball, ESM
-  resolution failing outside the monorepo). Runs in CI on `qa.yml`/`production.yml` only, as
-  a release gate; `production.yml`'s `publish-npm` now `needs:` it.
-- `src/styles/contrast-tokens.test.ts` — verifica WCAG AA (4.5:1) contra los valores hex
-  reales de `tokens.css` para las 6 semillas de fill y sus `--color-txt-on-*`, en ambos
-  esquemas de color. Antes solo se probaba la función `contrastRatio` con pares escritos a
-  mano; ahora un cambio a un token real que rompa el contraste falla el build.
-- Visual regression ahora corre en CI (`pr-validation.yml`, job `visual-regression`) contra
-  baselines Linux generadas en `mcr.microsoft.com/playwright:v1.62.1-jammy` — antes solo
-  existían baselines macOS y ningún workflow invocaba `test:visual`. Nuevo
-  `scripts/visual-docker.sh` (raíz del repo, `pnpm test:visual:docker`) corre la misma imagen
-  en local para que verificar o regenerar baselines sea idéntico a lo que corre en CI.
-- `visual/component-matrix.spec.ts` — un screenshot por componente (42 de los 43 directorios
-  de `src/components`; `ThemeProvider` no tiene UI propia) más un subset de 15 en RTL
-  (`Sidebar`, `Toggle`, `Tooltip`, `Calendar`, `NumberInput`, `SearchInput`, `Input`, `Select`,
-  `Dropdown`, `DrawerPanel`, `Tabs`, `Stepper`, `Timeline`, `MultiSelect`, `DatePicker` — los
-  que tienen geometría direccional real). Antes las 8 baselines existentes cubrían solo
-  ThemeProvider/Foundations; una regresión visual en un componente en sí no la detectaba
-  nada. Guard de cobertura igual al de `a11y.test.tsx`: un componente nuevo sin entrada en
-  `component-matrix.ts` falla el build.
-- `visual/a11y-browser.spec.ts` — axe con `color-contrast` **activado**, en Chromium real vía
-  `@axe-core/playwright`, contra los 42 componentes en light y dark (84 casos). Cierra el
-  hueco que `a11y.test.tsx` deja explícito: happy-dom no resuelve `color-mix()`/custom
-  properties con fidelidad suficiente para evaluar contraste renderizado. La primera corrida
-  encontró 26 violaciones reales — ver abajo.
-- Nuevo token `--color-primary-text`: `--color-primary`/`--color-active` usados directamente
-  como color de **texto** (no fill) medían 3.3–3.7:1 en dark contra superficies oscuras
-  derivadas — bajo AA. En light es un alias directo a `--color-primary` (ya pasa, 8.2:1); en
-  dark deriva con `color-mix(..., white 20%)`. Mismo mecanismo que `--color-danger-text` etc.
-
-### Fixed
-
 - `playwright.visual.config.ts`: `use.viewport` estaba declarado pero sin efecto — el spread
   de `devices['Desktop Chrome']` en el project lo pisaba, así que el viewport real siempre fue
   1280×720, no 960×720. Corregido moviendo el viewport al `use` del project, donde sí aplica.
@@ -130,30 +172,6 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
     funcionalmente importante — no un estado inactivo. Swap a `--color-txt-secondary`.
   - `MultiSelect` `.placeholder`: mismo caso — es un `<span>` real (no `::placeholder`
     nativo), `--color-txt-disabled` fallaba 2.29:1. Swap a `--color-txt-secondary`.
-
-### Added
-
-- Nuevos componentes primitivos de layout y tipografía: `Stack`, `Grid`, `Container`, `Text`,
-  `Heading` — cierran el hueco que hasta ahora obligaba a resolver layout en las stories con
-  estilos inline (`style={{ display: 'flex', gap: '1rem' }}`).
-- Nuevos hooks públicos en `src/hooks/` (exportados desde el paquete):
-  `useClickOutside` (promovido desde `lib/`, ya usado por 7 componentes), `useDisclosure`,
-  `useFocusTrap`, `useMediaQuery`, `useScrollLock`. `cn` también se exporta ahora.
-- `BREAKPOINTS`/`mediaQuery` (`src/styles/breakpoints.ts`) — fuente única para los `@media`
-  que antes se repetían como literales en varios `.module.css` (Navbar, Sidebar) y para
-  `useMediaQuery` en runtime. `src/styles/breakpoints.test.ts` hace cumplir la escala.
-- Storybook: página `Introduction` (antes no había ningún `.mdx` ni landing page) y foundations
-  `Typography`, `Motion`, `Breakpoints` — `Elevation` no se agregó como página aparte porque
-  `Foundations/Colors` ya documenta los tokens `--shadow-*` (light/dark) dentro de su propia
-  página.
-- `publint`/`@arethetypeswrong` (`pnpm --filter ui-components lint:package`), wired into
-  `pr-validation.yml`, para detectar regresiones de empaquetado (exports map, resolución de
-  tipos) automáticamente en vez de a mano.
-- Cobertura de tests (`@vitest/coverage-v8`, `pnpm test:coverage`) con umbral fijado al nivel
-  actual, corriendo en CI.
-
-### Fixed
-
 - **`ThemeProvider` no declaraba `"use client"`** pese a ser el único componente con hooks de
   React sin la directiva — rompía en Next.js App Router al renderizarse desde un Server
   Component. Nuevo `src/styles/use-client.test.ts` lo hace cumplir para cualquier componente
@@ -179,27 +197,29 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
   del paquete en CommonJS (`module.exports`), se renombró a `postcss.config.cjs` para no
   romperse bajo la nueva declaración; sus dos referencias (`vite.config.ts`,
   `.storybook/main.js`) se actualizaron junto con él.
-
-### Added (infraestructura)
-
-- Stories nuevas para los subcomponentes internos de `Odontogram`: `ImagePopover`,
-  `NotePopover`, `ToothDetail`, `ToothSVG` — antes solo tenían tests, sin story propia.
-- `visual/`, `.storybook/` y `e2e/` ahora se lintean (ESLint) y typechequean (`tsc`) — antes no
-  se comprobaban en absoluto. Cero violaciones nuevas: no eran deuda oculta, solo estaban fuera
-  del `include`/scope de los scripts existentes.
-- `eslint-plugin-storybook` (reglas sobre `*.stories.tsx`) y `eslint-plugin-playwright`
-  (reglas sobre `visual/**` y `e2e/**`), vía `overrides` en `.eslintrc.json`.
-- Presupuesto de bundle (`size-limit`, `pnpm size`) sobre `dist/index.js`, un componente
-  representativo (`Button`) y `dist/style.css`, con límites fijados al tamaño actual medido —
-  gate contra regresiones, no una meta aspiracional. Corriendo en `pr-validation.yml`.
-- Workflows de seguridad nuevos: `codeql.yml` (análisis estático JS/TS) y
-  `dependency-review.yml` (bloquea dependencias nuevas con CVEs conocidos en PRs).
-- Los jobs `deploy-storybook-dev`/`deploy-storybook-qa` (antes `echo` stubs que construían
-  Storybook y no publicaban nada) ahora suben la build como artifact de GitHub Actions
-  descargable — un repo solo tiene un sitio de GitHub Pages, ya usado por
-  `deploy-storybook-production`, así que dev/qa no pueden tener URL propia sin reestructurar.
-  Se eliminaron los jobs `notify-qa-team`/`notify-production` (echo sin integración real) y el
-  paso `Add QA badge` (escribía un `qa-banner.html` suelto que nada enlazaba).
+- **El i18n de la primera pasada quedó incompleto y el guard que debía impedirlo no lo
+  detectaba.** `Table`, `DataTable`, `Calendar`, `FileUpload`, `MultiSelect`, `Odontogram`
+  (`ToothSVG`/`ToothDetail`/`NotePopover`/`ImagePopover`) y el grid de abreviaturas de mes de
+  `DatePicker`/`DateRangePicker` seguían con literales en español quemados en JSX — el string
+  vivía dentro de una expresión (`placeholder={editable ? 'Escribe una nota...' : undefined}`,
+  `{children ?? '...'}`) o era una palabra sin acento (`Guardar`, `Cancelar`, `Nota`), y
+  `no-hardcoded-strings.test.ts`'s dos heurísticas originales (atributo con comillas dobles
+  literales; nodo de texto JSX con acento y sin `{`) no cubrían ninguno de los dos casos.
+  Se agregaron las claves faltantes a `BipLocale`/`es-MX.ts`/`en-US.ts` y se migraron los 7
+  componentes a `useBipLocale()`; el guard se endureció con un escaneo genérico de literales de
+  string en toda expresión JS más una heurística corta de stopwords en español (no solo
+  acentos), y ya encontró un caso real al activarse (el `console.warn` de contraste de
+  `ThemeProvider`, dev-only, ahora en su `ALLOWLIST` documentada). `dictionaries.test.ts`'s
+  comparación de forma entre `esMX`/`enUS` pasó de comparar solo llaves de primer nivel a una
+  comparación recursiva, para que una clave anidada faltante en un diccionario falle el build.
+  De paso, `ThemeProvider`'s memoización de `locale` (`JSON.stringify(locale)`) no
+  serializaba funciones — un override que cambiara solo una función de interpolación no
+  disparaba el merge; el serializador ahora incluye `.toString()` de cada función en la clave.
+- **`@bip-design-systems/shared-utils@0.1.0` no era importable.** Faltaba `"type": "module"`
+  en su `package.json` pese a que `exports` solo declara la condición `"import"` y
+  `dist/index.js` es ESM real — Node lo interpretaba como CommonJS y lanzaba `SyntaxError:
+  Unexpected token 'export'` en cualquier `import`. Ver `CHANGELOG.md` de `shared-utils` para
+  el detalle del fix.
 
 ## [0.3.0] - 2026-08-06
 
@@ -238,5 +258,6 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 - Se corrigieron ~20 story files con clases Tailwind muertas que no aplicaban ningún estilo
   desde la migración.
 
-[Unreleased]: https://github.com/egvictorino/Bip-Design-Systems/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/egvictorino/Bip-Design-Systems/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/egvictorino/Bip-Design-Systems/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/egvictorino/Bip-Design-Systems/releases/tag/v0.3.0

@@ -27,16 +27,19 @@ import { FileUpload } from './components/FileUpload';
 import { Grid } from './components/Grid';
 import { Heading } from './components/Heading';
 import { Input } from './components/Input';
+import { Link } from './components/Link';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from './components/Modal';
 import { MultiSelect } from './components/MultiSelect';
 import { Navbar, NavbarBrand, NavbarNav, NavbarItem } from './components/Navbar';
 import { NumberInput } from './components/NumberInput';
 import { Odontogram } from './components/Odontogram';
 import { Pagination } from './components/Pagination';
+import { Popover, PopoverTrigger, PopoverContent } from './components/Popover';
 import { ProgressBar } from './components/ProgressBar';
 import { Radio } from './components/Radio';
 import { SearchInput } from './components/SearchInput';
 import { Select } from './components/Select';
+import { Slider } from './components/Slider';
 import {
   Sidebar,
   SidebarHeader,
@@ -60,6 +63,7 @@ import { Timeline, TimelineItem } from './components/Timeline';
 import { ToastProvider, useToast, type ToastConfig } from './components/Toast';
 import { Toggle } from './components/Toggle';
 import { Tooltip } from './components/Tooltip';
+import { VisuallyHidden } from './components/VisuallyHidden';
 
 const noop = () => {};
 
@@ -178,6 +182,7 @@ const REGISTRY: Record<string, () => ReactElement> = {
   ),
   Heading: () => <Heading level={2}>Título de sección</Heading>,
   Input: () => <Input variant="outlined" label="Correo" type="email" placeholder="correo@ejemplo.com" />,
+  Link: () => <Link href="#">Enlace de ejemplo</Link>,
   Modal: () => (
     <Modal isOpen onClose={noop} size="md">
       <ModalHeader>Título del modal</ModalHeader>
@@ -211,6 +216,16 @@ const REGISTRY: Record<string, () => ReactElement> = {
   NumberInput: () => <NumberInput label="Cantidad" placeholder="0" />,
   Odontogram: () => <Odontogram />,
   Pagination: () => <Pagination currentPage={5} totalPages={10} onPageChange={noop} />,
+  Popover: () => (
+    <Popover>
+      <PopoverTrigger>
+        <button type="button">Abrir</button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <p>Contenido del popover.</p>
+      </PopoverContent>
+    </Popover>
+  ),
   ProgressBar: () => <ProgressBar value={65} />,
   Radio: () => <Radio label="Opción A" name="a11y-radio-demo" />,
   SearchInput: () => <SearchInput placeholder="Buscar paciente..." variant="outlined" size="md" />,
@@ -244,6 +259,7 @@ const REGISTRY: Record<string, () => ReactElement> = {
     </div>
   ),
   Skeleton: () => <Skeleton variant="text" />,
+  Slider: () => <Slider label="Volumen" defaultValue={40} />,
   Spinner: () => <Spinner size="md" variant="primary" />,
   Stack: () => (
     <Stack direction="row" gap="2">
@@ -303,6 +319,12 @@ const REGISTRY: Record<string, () => ReactElement> = {
       <Button variant="secondary">Pasa el cursor aquí</Button>
     </Tooltip>
   ),
+  VisuallyHidden: () => (
+    <div>
+      <p>Contenido visible.</p>
+      <VisuallyHidden>Texto solo para lectores de pantalla</VisuallyHidden>
+    </div>
+  ),
 };
 
 /**
@@ -333,6 +355,22 @@ describe('accesibilidad automática (axe) por componente', () => {
       </Dropdown>
     );
     fireEvent.click(screen.getByRole('button', { name: 'Acciones' }));
+    const results = await axe(container, AXE_OPTIONS);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('Popover abierto no tiene violaciones de a11y', async () => {
+    const { container } = render(
+      <Popover>
+        <PopoverTrigger>
+          <button type="button">Abrir</button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <p>Contenido del popover.</p>
+        </PopoverContent>
+      </Popover>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
     const results = await axe(container, AXE_OPTIONS);
     expect(results).toHaveNoViolations();
   });
