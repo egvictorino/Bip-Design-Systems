@@ -3,10 +3,31 @@
 Todos los cambios notables de este paquete se documentan en este archivo.
 
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
-y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de la línea 0.x
-(cambios `minor` pueden ser incompatibles hasta llegar a 1.0.0).
+y este proyecto usa versionado [SemVer](https://semver.org/lang/es/). Desde `1.0.0`, un cambio
+`major` es la única vía para romper compatibilidad — antes de esa versión, un `minor` podía
+hacerlo (ver el historial 0.x más abajo para el detalle de qué cambió en cada uno).
 
 ## [Unreleased]
+
+## [1.0.0] - 2026-08-11
+
+La API pública queda declarada estable. `0.5.0` (más abajo) unificó el vocabulario inconsistente
+entre componentes hermanos como preparación para este corte — no hay cambios de código en esta
+versión, es la declaración formal de compromiso de compatibilidad de SemVer a partir de aquí.
+
+### Fixed
+
+- **`Navbar` emitía el warning de consola "Received an empty string for a boolean attribute
+  `inert`" bajo React 19**, reportado al consumir el paquete desde un proyecto real (Next.js App
+  Router). El panel móvil pasaba `inert={isMobileOpen ? undefined : ''}` como prop JSX — React 18
+  no tiene `inert` en su tabla de atributos booleanos conocidos (solo un valor `string` llega al
+  DOM, de ahí el `''`), pero React 19 sí la agregó, y para un atributo booleano conocido un valor
+  no-booleano como `''` genera el warning y se trata como `false` (el atributo tampoco se aplica).
+  Ningún valor único de la prop satisface ambas versiones del peer dependency a la vez. Se dejó
+  de pasar `inert` como prop JSX — ahora se asigna vía la propiedad DOM imperativa (`element.inert
+  = boolean`, `ref` + `useLayoutEffect`), la API nativa del navegador, evitando la traducción
+  prop→atributo de React por completo. También se elimina `src/react-inert.d.ts` (el type
+  augmentation que ya no usaba ningún componente y no participaba del build publicado).
 
 ## [0.5.0] - 2026-08-11
 
