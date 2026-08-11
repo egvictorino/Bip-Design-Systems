@@ -29,19 +29,38 @@ const usePopover = (): PopoverContextValue => {
 export interface PopoverProps {
   children: React.ReactNode;
   className?: string;
+  /** Controlado. Si se omite, el componente maneja su propio estado (ver `defaultOpen`). */
+  open?: boolean;
+  /** Valor inicial en modo no-controlado. @default false */
+  defaultOpen?: boolean;
+  /** Se invoca en cada cambio de apertura/cierre, tanto en modo controlado como no-controlado. */
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const Popover: React.FC<PopoverProps> = ({ children, className }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const Popover: React.FC<PopoverProps> = ({
+  children,
+  className,
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+}) => {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const containerRef = useRef<HTMLDivElement>(null);
   const id = useId();
   const contentId = `${id}content`;
   const triggerId = `${id}trigger`;
 
-  const toggle = () => setIsOpen((v) => !v);
-  const close = () => setIsOpen(false);
+  const isOpen = openProp ?? internalOpen;
 
-  useClickOutside(containerRef, () => setIsOpen(false));
+  const setOpen = (next: boolean) => {
+    if (openProp === undefined) setInternalOpen(next);
+    onOpenChange?.(next);
+  };
+
+  const toggle = () => setOpen(!isOpen);
+  const close = () => setOpen(false);
+
+  useClickOutside(containerRef, () => setOpen(false));
 
   return (
     <PopoverContext.Provider value={{ isOpen, toggle, close, contentId, triggerId }}>

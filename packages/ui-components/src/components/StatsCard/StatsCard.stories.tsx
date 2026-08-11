@@ -25,7 +25,7 @@ const meta = {
   parameters: { layout: 'padded' },
   tags: ['autodocs'],
   argTypes: {
-    variant: { control: 'select', options: ['outlined', 'filled', 'elevated'] },
+    variant: { control: 'select', options: ['elevated', 'outlined', 'flat'] },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
     trend: { control: 'number' },
     loading: { control: 'boolean' },
@@ -85,7 +85,7 @@ export const Variantes: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
       <StatsCard title="Outlined" value={42} trend={5} description="variante outlined" variant="outlined" />
-      <StatsCard title="Filled" value={42} trend={5} description="variante filled" variant="filled" />
+      <StatsCard title="Flat" value={42} trend={5} description="variante flat" variant="flat" />
       <StatsCard title="Elevated" value={42} trend={5} description="variante elevated" variant="elevated" />
     </div>
   ),

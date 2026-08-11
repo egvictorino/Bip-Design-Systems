@@ -48,7 +48,7 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
     {
       value = {},
       onChange,
-      readOnly = false,
+      disabled = false,
       dentition = 'permanent',
       label,
       size = 'md',
@@ -59,7 +59,7 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
     const t = useBipLocale();
     const generatedId = useId();
     const labelId = label ? generatedId : undefined;
-    const interactive = !readOnly && onChange != null;
+    const interactive = !disabled && onChange != null;
 
     // Refs keep latest values so callbacks can have empty deps (stable references)
     const onChangeRef = useRef(onChange);
@@ -179,7 +179,7 @@ export const Odontogram = forwardRef<HTMLDivElement, OdontogramProps>(
             toothNumber={selectedTooth}
             arch={getArch(selectedTooth)}
             data={value[selectedTooth] ?? EMPTY_TOOTH}
-            readOnly={!interactive}
+            disabled={!interactive}
             onChange={handleToothDetailChange}
             onClose={handleDetailClose}
           />

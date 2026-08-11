@@ -134,7 +134,7 @@ const REGISTRY: Record<string, () => ReactElement> = {
   Checkbox: () => <Checkbox label="Acepto los términos y condiciones" />,
   ConfirmDialog: () => (
     <ConfirmDialog
-      isOpen
+      open
       onClose={noop}
       onConfirm={noop}
       title="Confirmar acción"
@@ -184,7 +184,7 @@ const REGISTRY: Record<string, () => ReactElement> = {
   Input: () => <Input variant="outlined" label="Correo" type="email" placeholder="correo@ejemplo.com" />,
   Link: () => <Link href="#">Enlace de ejemplo</Link>,
   Modal: () => (
-    <Modal isOpen onClose={noop} size="md">
+    <Modal open onClose={noop} size="md">
       <ModalHeader>Título del modal</ModalHeader>
       <ModalBody>Contenido del modal.</ModalBody>
       <ModalFooter>
@@ -215,7 +215,7 @@ const REGISTRY: Record<string, () => ReactElement> = {
   ),
   NumberInput: () => <NumberInput label="Cantidad" placeholder="0" />,
   Odontogram: () => <Odontogram />,
-  Pagination: () => <Pagination currentPage={5} totalPages={10} onPageChange={noop} />,
+  Pagination: () => <Pagination page={5} totalPages={10} onPageChange={noop} />,
   Popover: () => (
     <Popover>
       <PopoverTrigger>

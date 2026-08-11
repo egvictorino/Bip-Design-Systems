@@ -89,6 +89,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       value,
       defaultValue,
       onKeyDown: externalOnKeyDown,
+      required,
       ...props
     },
     ref
@@ -200,6 +201,12 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             )}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className={styles.requiredMark}>
+                {' '}
+                *
+              </span>
+            )}
           </label>
         )}
 
@@ -247,6 +254,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             id={inputId}
             type="search"
             disabled={disabled}
+            required={required}
             aria-invalid={error || undefined}
             aria-describedby={messageId}
             aria-busy={loading || undefined}

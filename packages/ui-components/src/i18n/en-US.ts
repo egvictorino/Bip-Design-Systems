@@ -97,6 +97,7 @@ export const enUS: BipLocale = {
     clickToSelect: 'or click to select',
     formats: (accept) => `Formats: ${accept}`,
     maxSize: (size) => `Max. ${size}`,
+    uploading: 'Uploading…',
   },
 
   input: {

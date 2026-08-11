@@ -71,9 +71,9 @@ describe('StatsCard', () => {
     expect(container.firstChild).toHaveClass('outlined');
   });
 
-  it('applies filled variant class', () => {
-    const { container } = render(<StatsCard title="X" value={0} variant="filled" />);
-    expect(container.firstChild).toHaveClass('filled');
+  it('applies flat variant class', () => {
+    const { container } = render(<StatsCard title="X" value={0} variant="flat" />);
+    expect(container.firstChild).toHaveClass('flat');
   });
 
   it('applies elevated variant class', () => {

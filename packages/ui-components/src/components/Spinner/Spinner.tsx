@@ -5,7 +5,7 @@ import styles from './Spinner.module.css';
 
 export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  variant?: 'primary' | 'secondary' | 'white' | 'danger' | 'success' | 'info';
+  variant?: 'primary' | 'secondary' | 'inverse' | 'danger' | 'success' | 'info';
   speed?: 'slow' | 'normal' | 'fast';
   label?: string;
 }

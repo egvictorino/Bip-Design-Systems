@@ -5,7 +5,7 @@ import styles from './ProgressBar.module.css';
 
 export interface ProgressBarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'id'> {
   value?: number;
-  variant?: 'default' | 'success' | 'warning' | 'error';
+  variant?: 'default' | 'success' | 'warning' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   label?: string;
   showValue?: boolean;
@@ -29,7 +29,7 @@ const fillVariantClass: Record<NonNullable<ProgressBarProps['variant']>, string>
   default: styles.default,
   success: styles.success,
   warning: styles.warning,
-  error:   styles.error,
+  danger:  styles.danger,
 };
 
 const trackSizeClass: Record<NonNullable<ProgressBarProps['size']>, string> = {

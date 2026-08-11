@@ -4,7 +4,7 @@ import { useBipLocale } from '../../i18n/index.js';
 import styles from './Alert.module.css';
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'info' | 'success' | 'warning' | 'error';
+  variant?: 'info' | 'success' | 'warning' | 'danger';
   title?: string;
   onClose?: () => void;
   children: React.ReactNode;
@@ -16,14 +16,14 @@ const variantRole: Record<NonNullable<AlertProps['variant']>, 'alert' | 'status'
   info: 'status',
   success: 'status',
   warning: 'alert',
-  error: 'alert',
+  danger: 'alert',
 };
 
 const closeBtnClass: Record<NonNullable<AlertProps['variant']>, string> = {
   info:    styles.closeBtnInfo,
   success: styles.closeBtnSuccess,
   warning: styles.closeBtnWarning,
-  error:   styles.closeBtnError,
+  danger:  styles.closeBtnDanger,
 };
 
 const icons: Record<NonNullable<AlertProps['variant']>, React.ReactNode> = {
@@ -54,7 +54,7 @@ const icons: Record<NonNullable<AlertProps['variant']>, React.ReactNode> = {
       />
     </svg>
   ),
-  error: (
+  danger: (
     <svg viewBox="0 0 20 20" fill="currentColor" className={styles.icon} aria-hidden="true">
       <path
         fillRule="evenodd"

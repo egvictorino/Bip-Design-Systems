@@ -76,56 +76,56 @@ describe('Odontogram — render', () => {
 describe('Odontogram — conditions', () => {
   it('applies fillCaries class on surface with caries', () => {
     const value: OdontogramValue = { 11: { surfaces: { occlusal: 'caries' } } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     const surfaces = getToothSVG(11).querySelectorAll('[aria-label="Oclusal"]');
     expect(surfaces[0]).toHaveClass('fillCaries');
   });
 
   it('applies fillRestoration class on surface with restoration', () => {
     const value: OdontogramValue = { 21: { surfaces: { buccal: 'restoration' } } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     const surface = getToothSVG(21).querySelector('[aria-label="Bucal"]');
     expect(surface).toHaveClass('fillRestoration');
   });
 
   it('applies fillCrown class to all surfaces for crown', () => {
     const value: OdontogramValue = { 16: { condition: 'crown' } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     const surfaces = getToothSVG(16).querySelectorAll('polygon');
     surfaces.forEach((s) => expect(s).toHaveClass('fillCrown'));
   });
 
   it('applies fillMissing class to all surfaces for missing tooth', () => {
     const value: OdontogramValue = { 18: { condition: 'missing' } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     const surfaces = getToothSVG(18).querySelectorAll('polygon');
     surfaces.forEach((s) => expect(s).toHaveClass('fillMissing'));
   });
 
   it('applies fillImplant class to all surfaces for implant', () => {
     const value: OdontogramValue = { 36: { condition: 'implant' } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     const surfaces = getToothSVG(36).querySelectorAll('polygon');
     surfaces.forEach((s) => expect(s).toHaveClass('fillImplant'));
   });
 
   it('applies fillFracture class on surface with fracture', () => {
     const value: OdontogramValue = { 47: { surfaces: { occlusal: 'fracture' } } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     const surface = getToothSVG(47).querySelector('[aria-label="Oclusal"]');
     expect(surface).toHaveClass('fillFracture');
   });
 
   it('applies fillRootCanal class on surface with root canal', () => {
     const value: OdontogramValue = { 46: { surfaces: { occlusal: 'root_canal' } } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     const surface = getToothSVG(46).querySelector('[aria-label="Oclusal"]');
     expect(surface).toHaveClass('fillRootCanal');
   });
 
   it('applies fillExtractionPlanned class to all surfaces for extraction_planned', () => {
     const value: OdontogramValue = { 48: { condition: 'extraction_planned' } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     // extraction_planned is treated as a surface-level condition
     const surface = getToothSVG(48).querySelector('[aria-label="Oclusal"]');
     expect(surface).toHaveClass('fillExtractionPlanned');
@@ -139,7 +139,7 @@ describe('Odontogram — conditions', () => {
 
   it('renders X marker lines for missing tooth', () => {
     const value: OdontogramValue = { 18: { condition: 'missing' } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     const svg = getToothSVG(18);
     const lines = svg.querySelectorAll('line');
     expect(lines).toHaveLength(2);
@@ -162,7 +162,7 @@ describe('Odontogram — accessibility', () => {
 
   it('marks missing tooth as ausente in aria-label', () => {
     const value: OdontogramValue = { 18: { condition: 'missing' } };
-    render(<Odontogram value={value} readOnly />);
+    render(<Odontogram value={value} disabled />);
     const tooth = getToothSVG(18);
     expect(tooth).toHaveAttribute('aria-label', expect.stringContaining('Ausente'));
   });
@@ -174,8 +174,8 @@ describe('Odontogram — accessibility', () => {
     expect(surfaces.length).toBe(0);
   });
 
-  it('surfaces do NOT have role="button" when readOnly', () => {
-    render(<Odontogram readOnly />);
+  it('surfaces do NOT have role="button" when disabled', () => {
+    render(<Odontogram disabled />);
     const surfaces = getToothSVG(11).querySelectorAll('[role="button"]');
     expect(surfaces.length).toBe(0);
   });
@@ -269,18 +269,18 @@ describe('Odontogram — interactivity', () => {
     expect(updated[16]?.condition).toBe('missing');
   });
 
-  it('does NOT call onChange when readOnly', () => {
+  it('does NOT call onChange when disabled', () => {
     const handleChange = vi.fn();
-    render(<Odontogram onChange={handleChange} readOnly />);
+    render(<Odontogram onChange={handleChange} disabled />);
 
-    // In readOnly mode, tooth cells are not buttons
+    // In disabled mode, tooth cells are not buttons
     const buttons = screen.queryAllByRole('button', { name: /Seleccionar diente/ });
     expect(buttons).toHaveLength(0);
     expect(handleChange).not.toHaveBeenCalled();
   });
 
   it('does NOT call onChange when onChange prop is not provided', () => {
-    // No onChange = display-only even without readOnly
+    // No onChange = display-only even without disabled
     render(<Odontogram />);
     const buttons = screen.queryAllByRole('button', { name: /Seleccionar diente/ });
     expect(buttons).toHaveLength(0);
@@ -479,14 +479,14 @@ describe('Odontogram — primary dentition', () => {
     expect(changedTooth?.surfaces?.occlusal).toBe('caries');
   });
 
-  it('readOnly prevents changes in primary mode', async () => {
+  it('disabled prevents changes in primary mode', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(
       <Odontogram
         dentition="primary"
         onChange={handleChange}
-        readOnly
+        disabled
         value={{}}
       />
     );
@@ -872,8 +872,8 @@ describe('Odontogram — teclado', () => {
     expect(toothBtn).toBeInTheDocument();
   });
 
-  it('tooth cells in readOnly mode are not focusable buttons', () => {
-    render(<Odontogram readOnly />);
+  it('tooth cells in disabled mode are not focusable buttons', () => {
+    render(<Odontogram disabled />);
     const buttons = screen.queryAllByRole('button', { name: /Seleccionar diente/ });
     expect(buttons).toHaveLength(0);
   });

@@ -74,7 +74,7 @@
    .iconLabel necesita el --color-txt-on-* que corresponde a esa misma semilla. */
 .variantSuccess .iconLabel { color: var(--color-txt-on-success); }
 .variantWarning .iconLabel { color: var(--color-txt-on-warning); }
-.variantError .iconLabel   { color: var(--color-txt-on-danger); }
+.variantDanger .iconLabel  { color: var(--color-txt-on-danger); }
 
 /* Small dot */
 .dot {
@@ -102,7 +102,7 @@
   border-color: var(--color-warning);
 }
 
-.variantError {
+.variantDanger {
   background-color: var(--color-danger);
   border-color: var(--color-danger);
 }

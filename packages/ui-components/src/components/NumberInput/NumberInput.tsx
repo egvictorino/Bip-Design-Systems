@@ -23,7 +23,7 @@ export interface NumberInputProps
   step?: number;
   value?: number | string;
   defaultValue?: number | string;
-  onChange?: (value: number | null, event?: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (value: number | null) => void;
   /** Etiqueta no editable al inicio del input (ej: "$", "MXN") */
   prefix?: string | ReactNode;
   /** Etiqueta no editable al final del input (ej: "kg", "%") */
@@ -160,14 +160,14 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       const base = parsedValue ?? (min ?? 0);
       const next = clamp(base + step);
       setInternalValue(String(next));
-      onChange?.(next, undefined);
+      onChange?.(next);
     }, [parsedValue, min, step, clamp, onChange]);
 
     const handleDecrement = useCallback(() => {
       const base = parsedValue ?? (max ?? 0);
       const next = clamp(base - step);
       setInternalValue(String(next));
-      onChange?.(next, undefined);
+      onChange?.(next);
     }, [parsedValue, max, step, clamp, onChange]);
 
     const handleChange = useCallback(
@@ -181,7 +181,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
         }
         setInternalValue(raw);
         const parsed = parseValue(raw);
-        onChange?.(parsed, e);
+        onChange?.(parsed);
       },
       [onChange, decimals]
     );
@@ -196,7 +196,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             const formatted =
               decimals === 0 ? String(Math.round(clamped)) : clamped.toFixed(decimals);
             setInternalValue(formatted);
-            onChange?.(parseFloat(formatted), e);
+            onChange?.(parseFloat(formatted));
           } else {
             setInternalValue(String(clamped));
           }

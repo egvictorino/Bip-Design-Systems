@@ -19,6 +19,8 @@ export interface TooltipProps {
   closeDelay?: number;
   /** Controlled open state. When provided, hover/focus no longer toggle internally. */
   open?: boolean;
+  /** Initial open state when uncontrolled (default: false) */
+  defaultOpen?: boolean;
   /** Callback fired when the internal open state would change */
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
@@ -52,12 +54,13 @@ export const Tooltip: React.FC<TooltipProps> = ({
   delay = 0,
   closeDelay = 0,
   open,
+  defaultOpen = false,
   onOpenChange,
   children,
   className,
 }) => {
   const id = useId();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const triggerRef = useRef<HTMLElement | null>(null);

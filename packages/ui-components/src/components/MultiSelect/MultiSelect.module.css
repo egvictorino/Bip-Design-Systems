@@ -27,6 +27,8 @@
 .labelFocused { color: var(--color-primary-text); }
 .labelDisabled { opacity: 0.5; }
 
+.required { color: var(--color-danger); margin-inline-start: var(--space-0-5); }
+
 /* ─── Trigger (combobox) ─────────────────────────────────────────────────────── */
 
 .trigger {

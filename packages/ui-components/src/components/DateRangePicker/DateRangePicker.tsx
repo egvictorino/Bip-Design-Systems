@@ -24,6 +24,8 @@ export interface DateRange {
 
 export interface DateRangePickerProps {
   value?: DateRange;
+  /** Initial range when uncontrolled (ignored if `value` is provided) */
+  defaultValue?: DateRange;
   onChange?: (range: DateRange) => void;
   min?: Date;
   max?: Date;
@@ -35,6 +37,7 @@ export interface DateRangePickerProps {
   error?: boolean;
   errorMessage?: string;
   disabled?: boolean;
+  required?: boolean;
   size?: 'sm' | 'md' | 'lg';
   id?: string;
   fullWidth?: boolean;
@@ -478,6 +481,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
   (
     {
       value,
+      defaultValue,
       onChange,
       min,
       max,
@@ -488,6 +492,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
       error = false,
       errorMessage,
       disabled = false,
+      required,
       size = 'md',
       id,
       fullWidth = false,
@@ -499,6 +504,9 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
     const [isOpen, setIsOpen] = useState(false);
     const [hoverDate, setHoverDate] = useState<Date | null>(null);
     const [focusedDate, setFocusedDate] = useState<Date | null>(null);
+    const [internalRange, setInternalRange] = useState<DateRange>(
+      () => defaultValue ?? { from: null, to: null }
+    );
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const headingId = `${inputId}-heading`;
@@ -512,7 +520,17 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
       return d;
     }, []);
 
-    const range = useMemo(() => value ?? { from: null, to: null }, [value]);
+    const range = useMemo(
+      () => (value !== undefined ? value : internalRange),
+      [value, internalRange]
+    );
+
+    const commitRange = (next: DateRange) => {
+      if (value === undefined) {
+        setInternalRange(next);
+      }
+      onChange?.(next);
+    };
 
     const disabledSet = useMemo(
       () => new Set((disabledDates ?? []).map(dateKey)),
@@ -569,21 +587,21 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
     const handleSelectDay = (date: Date) => {
       // Sentinel: clear selection
       if (date.getTime() === new Date(0).getTime()) {
-        onChange?.({ from: null, to: null });
+        commitRange({ from: null, to: null });
         return;
       }
 
       if (!range.from || (range.from && range.to)) {
         // Start new range
-        onChange?.({ from: date, to: null });
+        commitRange({ from: date, to: null });
       } else {
         // Complete range — ensure from <= to
         if (date < range.from) {
-          onChange?.({ from: date, to: range.from });
+          commitRange({ from: date, to: range.from });
         } else if (isSameDay(date, range.from)) {
-          onChange?.({ from: null, to: null });
+          commitRange({ from: null, to: null });
         } else {
-          onChange?.({ from: range.from, to: date });
+          commitRange({ from: range.from, to: date });
         }
         setIsOpen(false);
         setHoverDate(null);
@@ -603,6 +621,12 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
             )}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className={styles.requiredMark}>
+                {' '}
+                *
+              </span>
+            )}
           </label>
         )}
 

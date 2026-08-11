@@ -13,6 +13,7 @@ import { cn } from '../../lib/cn.js';
 import { addDays, isSameDay } from '../../lib/dateHelpers.js';
 import { useThemeAttributes } from '../ThemeProvider/index.js';
 import { useBipLocale } from '../../i18n/index.js';
+import type { DateRange } from '../DateRangePicker/DateRangePicker.js';
 import styles from './Calendar.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -55,13 +56,14 @@ export interface CalendarProps {
   onDateChange?: (date: Date) => void;
   onEventClick?: (event: CalendarEvent) => void;
   onEventCreate?: (slotInfo: CalendarSlotInfo) => void;
-  onRangeSelect?: (start: Date, end: Date) => void;
+  onRangeSelect?: (range: DateRange) => void;
   onEventMove?: (event: CalendarEvent, start: Date, end: Date, doctorId?: string) => void;
   onEventResize?: (event: CalendarEvent, newEnd: Date) => void;
   minTime?: string;
   maxTime?: string;
   step?: 15 | 30 | 60;
   className?: string;
+  disabled?: boolean;
 }
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
@@ -452,7 +454,7 @@ interface MonthViewProps {
   date: Date;
   onEventClick: (e: CalendarEvent) => void;
   onEventCreate?: (info: CalendarSlotInfo) => void;
-  onRangeSelect?: (start: Date, end: Date) => void;
+  onRangeSelect?: (range: DateRange) => void;
   onEventMove?: (event: CalendarEvent, start: Date, end: Date, doctorId?: string) => void;
   onDateChange?: (d: Date) => void;
   onViewChange?: (v: CalendarView) => void;
@@ -714,7 +716,7 @@ const MonthView: React.FC<MonthViewProps> = ({
           end={rangePopover.end}
           position={rangePopover.position}
           onConfirm={() => {
-            onRangeSelect?.(rangePopover.start, rangePopover.end);
+            onRangeSelect?.({ from: rangePopover.start, to: rangePopover.end });
             setRangePopover(null);
           }}
           onClose={() => setRangePopover(null)}
@@ -1281,6 +1283,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
       maxTime = '20:00',
       step = 30,
       className,
+      disabled = false,
     },
     ref
   ) => {
@@ -1291,18 +1294,59 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     const maxMinutes = useMemo(() => timeToMinutes(maxTime), [maxTime]);
 
     const handleEventClick = useCallback(
-      (ev: CalendarEvent) => onEventClick?.(ev),
-      [onEventClick]
+      (ev: CalendarEvent) => {
+        if (disabled) return;
+        onEventClick?.(ev);
+      },
+      [onEventClick, disabled]
     );
 
     const handleViewChange = useCallback(
-      (v: CalendarView) => onViewChange?.(v),
-      [onViewChange]
+      (v: CalendarView) => {
+        if (disabled) return;
+        onViewChange?.(v);
+      },
+      [onViewChange, disabled]
     );
 
     const handleDateChange = useCallback(
-      (d: Date) => onDateChange?.(d),
-      [onDateChange]
+      (d: Date) => {
+        if (disabled) return;
+        onDateChange?.(d);
+      },
+      [onDateChange, disabled]
+    );
+
+    const handleEventCreate = useCallback(
+      (info: CalendarSlotInfo) => {
+        if (disabled) return;
+        onEventCreate?.(info);
+      },
+      [onEventCreate, disabled]
+    );
+
+    const handleRangeSelect = useCallback(
+      (range: DateRange) => {
+        if (disabled) return;
+        onRangeSelect?.(range);
+      },
+      [onRangeSelect, disabled]
+    );
+
+    const handleEventMove = useCallback(
+      (event: CalendarEvent, start: Date, end: Date, doctorId?: string) => {
+        if (disabled) return;
+        onEventMove?.(event, start, end, doctorId);
+      },
+      [onEventMove, disabled]
+    );
+
+    const handleEventResize = useCallback(
+      (event: CalendarEvent, newEnd: Date) => {
+        if (disabled) return;
+        onEventResize?.(event, newEnd);
+      },
+      [onEventResize, disabled]
     );
 
     // Suppress unused warning
@@ -1316,9 +1360,9 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
       maxMinutes,
       step,
       onEventClick: handleEventClick,
-      onEventCreate,
-      onEventMove,
-      onEventResize,
+      onEventCreate: handleEventCreate,
+      onEventMove: handleEventMove,
+      onEventResize: handleEventResize,
     };
 
     return (
@@ -1326,7 +1370,8 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
         ref={ref}
         role="application"
         aria-label={t.calendar.calendarLabel}
-        className={cn(styles.calendar, className)}
+        aria-disabled={disabled || undefined}
+        className={cn(styles.calendar, disabled && styles.disabled, className)}
       >
         <CalendarHeader
           view={view}
@@ -1341,9 +1386,9 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
             resources={resources}
             date={date}
             onEventClick={handleEventClick}
-            onEventCreate={onEventCreate}
-            onRangeSelect={onRangeSelect}
-            onEventMove={onEventMove}
+            onEventCreate={handleEventCreate}
+            onRangeSelect={handleRangeSelect}
+            onEventMove={handleEventMove}
             onDateChange={handleDateChange}
             onViewChange={handleViewChange}
           />

@@ -39,7 +39,7 @@ export type OdontogramValue = Record<number, ToothData>;
 export interface OdontogramProps {
   value?: OdontogramValue;
   onChange?: (value: OdontogramValue) => void;
-  readOnly?: boolean;
+  disabled?: boolean;
   /** Dentition mode: permanent (default, 32 teeth FDI 11-48) or primary (20 teeth FDI 51-85) */
   dentition?: DentitionMode;
   label?: string;

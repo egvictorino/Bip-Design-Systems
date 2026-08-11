@@ -3,7 +3,7 @@ import { cn } from '../../lib/cn.js';
 import styles from './Badge.module.css';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'primary' | 'success' | 'warning' | 'error' | 'neutral';
+  variant?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
   size?: 'sm' | 'md' | 'lg';
   dot?: boolean;
   children: React.ReactNode;
@@ -13,7 +13,7 @@ const dotVariantClasses: Record<NonNullable<BadgeProps['variant']>, string> = {
   primary: styles.dotPrimary,
   success: styles.dotSuccess,
   warning: styles.dotWarning,
-  error:   styles.dotError,
+  danger:  styles.dotDanger,
   neutral: styles.dotNeutral,
 };
 

@@ -53,14 +53,15 @@ export interface DataTableProps<T = Record<string, unknown>> {
   // Server-side
   serverSide?: boolean;
   totalCount?: number;
-  onPageChange?: (page: number, pageSize: number) => void;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
   onSortChange?: (key: string | null, direction: SortDirection) => void;
-  onSearchChange?: (query: string) => void;
+  onSearch?: (query: string) => void;
   // Column visibility
   columnVisibility?: boolean;
   defaultHiddenColumns?: string[];
   // ARIA / layout
-  label?: string;
+  'aria-label'?: string;
   className?: string;
 }
 
@@ -86,10 +87,10 @@ export function DataTable<T = Record<string, unknown>>({
   totalCount,
   onPageChange,
   onSortChange,
-  onSearchChange,
+  onSearch,
   columnVisibility = false,
   defaultHiddenColumns,
-  label,
+  'aria-label': ariaLabel,
   className,
 }: DataTableProps<T>) {
   const t = useBipLocale();
@@ -242,12 +243,12 @@ export function DataTable<T = Record<string, unknown>>({
 
   const handleSearch = (q: string) => {
     setSearchQuery(q);
-    if (serverSide) onSearchChange?.(q);
+    if (serverSide) onSearch?.(q);
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    if (serverSide) onPageChange?.(page, pageSize);
+    if (serverSide) onPageChange?.(page);
   };
 
   const handleHeaderCheckbox = () => {
@@ -286,8 +287,8 @@ export function DataTable<T = Record<string, unknown>>({
 
   return (
     <div
-      aria-label={label || undefined}
-      role={label ? 'region' : undefined}
+      aria-label={ariaLabel || undefined}
+      role={ariaLabel ? 'region' : undefined}
       className={cn(styles.root, className)}
     >
       {/* Screen reader live region — announces result count changes */}
@@ -463,7 +464,7 @@ export function DataTable<T = Record<string, unknown>>({
       {!loading && totalPages > 1 && (
         <div className={styles.paginationWrapper}>
           <Pagination
-            currentPage={currentPage}
+            page={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />

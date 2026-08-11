@@ -44,32 +44,52 @@ function getDirectItems(menu: HTMLElement): HTMLElement[] {
 export interface DropdownProps {
   children: React.ReactNode;
   className?: string;
+  /** Controlado. Si se omite, el componente maneja su propio estado (ver `defaultOpen`). */
+  open?: boolean;
+  /** Valor inicial en modo no-controlado. @default false */
+  defaultOpen?: boolean;
+  /** Se invoca en cada cambio de apertura/cierre, tanto en modo controlado como no-controlado. */
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({ children, className }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const Dropdown: React.FC<DropdownProps> = ({
+  children,
+  className,
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+}) => {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const containerRef = useRef<HTMLDivElement>(null);
   const id = useId();
   const menuId = `${id}menu`;
   const triggerId = `${id}trigger`;
 
-  const toggle = () => setIsOpen((v) => !v);
-  const close = () => setIsOpen(false);
+  const isOpen = openProp ?? internalOpen;
+
+  const setOpen = (next: boolean) => {
+    if (openProp === undefined) setInternalOpen(next);
+    onOpenChange?.(next);
+  };
+
+  const toggle = () => setOpen(!isOpen);
+  const close = () => setOpen(false);
 
   // Close on outside click
-  useClickOutside(containerRef, () => setIsOpen(false));
+  useClickOutside(containerRef, () => setOpen(false));
 
   // Close on Escape and return focus to trigger
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsOpen(false);
+        setOpen(false);
         document.getElementById(triggerId)?.focus();
       }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, triggerId]);
 
   return (
@@ -194,13 +214,13 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
 // ─── DropdownItem ─────────────────────────────────────────────────────────────
 
 export interface DropdownItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  danger?: boolean;
+  variant?: 'default' | 'danger';
   icon?: React.ReactNode;
   children: React.ReactNode;
 }
 
 export const DropdownItem: React.FC<DropdownItemProps> = ({
-  danger = false,
+  variant = 'default',
   icon,
   children,
   onClick,
@@ -220,7 +240,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
       type="button"
       disabled={disabled}
       onClick={handleClick}
-      className={cn(styles.item, danger && styles.itemDanger, className)}
+      className={cn(styles.item, variant === 'danger' && styles.itemDanger, className)}
       {...props}
       role="menuitem"
     >

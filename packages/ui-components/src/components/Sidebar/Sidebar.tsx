@@ -40,18 +40,25 @@ const useSidebar = (): SidebarContextValue => {
 // ─── Sidebar (root) ──────────────────────────────────────────────────────────
 
 export interface SidebarProps {
-  isOpen?: boolean;
+  open?: boolean;
   onClose?: () => void;
+  /** Optional mirror of onClose, invoked with `false` at the same call sites — for consumers that prefer the open/onOpenChange convention. */
+  onOpenChange?: (open: boolean) => void;
   defaultCollapsed?: boolean;
+  collapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
   variant?: SidebarVariant;
   className?: string;
   children: React.ReactNode;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
-  isOpen = false,
+  open = false,
   onClose,
+  onOpenChange,
   defaultCollapsed = false,
+  collapsed,
+  onCollapsedChange,
   variant = 'light',
   className,
   children,
@@ -60,24 +67,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const instanceId = useId();
   const sidebarId = `${instanceId}-sidebar`;
 
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
+  const isCollapsed = collapsed !== undefined ? collapsed : internalCollapsed;
 
-  const toggleCollapsed = useCallback(() => setIsCollapsed((prev) => !prev), []);
-  const closeMobile = useCallback(() => onClose?.(), [onClose]);
+  const toggleCollapsed = useCallback(() => {
+    const next = !isCollapsed;
+    if (collapsed === undefined) {
+      setInternalCollapsed(next);
+    }
+    onCollapsedChange?.(next);
+  }, [isCollapsed, collapsed, onCollapsedChange]);
+
+  const closeMobile = useCallback(() => {
+    onClose?.();
+    onOpenChange?.(false);
+  }, [onClose, onOpenChange]);
 
   // Escape closes the mobile drawer
   useEffect(() => {
-    if (!isOpen) return;
+    if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeMobile();
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [isOpen, closeMobile]);
+  }, [open, closeMobile]);
 
   // Focus trap: keep Tab/Shift+Tab cycling inside the panel when mobile drawer is open
   useEffect(() => {
-    if (!isOpen) return;
+    if (!open) return;
     const panelEl = document.getElementById(sidebarId);
     if (!panelEl) return;
     const focusableSelectors =
@@ -100,7 +118,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     };
     document.addEventListener('keydown', handleTab);
     return () => document.removeEventListener('keydown', handleTab);
-  }, [isOpen, sidebarId]);
+  }, [open, sidebarId]);
 
   const variantClass =
     variant === 'dark'
@@ -111,10 +129,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <SidebarContext.Provider
-      value={{ isCollapsed, isMobileOpen: isOpen, variant, toggleCollapsed, closeMobile, sidebarId }}
+      value={{ isCollapsed, isMobileOpen: open, variant, toggleCollapsed, closeMobile, sidebarId }}
     >
       {/* Mobile overlay */}
-      {isOpen && (
+      {open && (
         <div
           role="presentation"
           data-testid="mobile-overlay"
@@ -132,7 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           styles.panel,
           variantClass,
           isCollapsed ? styles.panelCollapsed : styles.panelExpanded,
-          isOpen ? styles.panelMobileOpen : styles.panelMobileClosed,
+          open ? styles.panelMobileOpen : styles.panelMobileClosed,
           className
         )}
       >

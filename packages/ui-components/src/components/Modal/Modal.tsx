@@ -21,9 +21,13 @@ const useModalContext = (): ModalContextValue => {
   return ctx;
 };
 
-export interface ModalProps {
-  isOpen: boolean;
+export interface ModalProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title' | 'className'> {
+  open: boolean;
   onClose: () => void;
+  /** Optional mirror of onClose, invoked with `false` at the same call sites — for consumers that prefer the open/onOpenChange convention. */
+  onOpenChange?: (open: boolean) => void;
+  /** Convenience header — renders a <ModalHeader> before `children`. Omit and compose your own <ModalHeader> for custom header content. */
+  title?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   closeOnBackdrop?: boolean;
   closeOnEscape?: boolean;
@@ -41,24 +45,27 @@ const sizeClass: Record<NonNullable<ModalProps['size']>, string> = {
 const ANIMATION_DURATION = 150;
 
 export const Modal: React.FC<ModalProps> = ({
-  isOpen,
+  open,
   onClose,
+  onOpenChange,
+  title,
   size = 'md',
   closeOnBackdrop = true,
   closeOnEscape = true,
   className,
   children,
+  ...rest
 }) => {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const { style: themeStyle, ...themeAttrs } = useThemeAttributes();
 
   // Animation state: isVisible keeps the portal in the DOM during exit animation
-  const [isVisible, setIsVisible] = useState(isOpen);
+  const [isVisible, setIsVisible] = useState(open);
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
+    if (open) {
       setIsVisible(true);
       requestAnimationFrame(() => setIsAnimating(true));
     } else {
@@ -66,21 +73,26 @@ export const Modal: React.FC<ModalProps> = ({
       const timer = setTimeout(() => setIsVisible(false), ANIMATION_DURATION);
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [open]);
 
-  useScrollLock(isOpen);
-  useFocusTrap(dialogRef, { enabled: isOpen, onEscape: closeOnEscape ? onClose : undefined });
+  const handleClose = () => {
+    onClose();
+    onOpenChange?.(false);
+  };
+
+  useScrollLock(open);
+  useFocusTrap(dialogRef, { enabled: open, onEscape: closeOnEscape ? handleClose : undefined });
 
   if (!isVisible) return null;
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (closeOnBackdrop && e.target === e.currentTarget) {
-      onClose();
+      handleClose();
     }
   };
 
   return ReactDOM.createPortal(
-    <ModalContext.Provider value={{ titleId, onClose }}>
+    <ModalContext.Provider value={{ titleId, onClose: handleClose }}>
       {/* Backdrop + centering container — presentational, Escape handled at document level */}
       <div
         role="presentation"
@@ -91,6 +103,7 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {/* Dialog */}
         <div
+          {...rest}
           ref={dialogRef}
           role="dialog"
           aria-modal="true"
@@ -98,6 +111,7 @@ export const Modal: React.FC<ModalProps> = ({
           tabIndex={-1}
           className={cn(styles.dialog, sizeClass[size], isAnimating && styles.dialogOpen, className)}
         >
+          {title && <ModalHeader>{title}</ModalHeader>}
           {children}
         </div>
       </div>

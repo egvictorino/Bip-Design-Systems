@@ -11,6 +11,8 @@ import styles from './DrawerPanel.module.css';
 export interface DrawerPanelProps {
   open: boolean;
   onClose: () => void;
+  /** Optional mirror of onClose, invoked with `false` at the same call sites — for consumers that prefer the open/onOpenChange convention. */
+  onOpenChange?: (open: boolean) => void;
   title?: string;
   size?: 'sm' | 'md' | 'lg';
   placement?: 'right' | 'left';
@@ -34,6 +36,7 @@ const sizeStyles: Record<NonNullable<DrawerPanelProps['size']>, string> = {
 export const DrawerPanel: React.FC<DrawerPanelProps> = ({
   open,
   onClose,
+  onOpenChange,
   title,
   size = 'md',
   placement = 'right',
@@ -64,8 +67,13 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
     }
   }, [open]);
 
+  const handleClose = () => {
+    onClose();
+    onOpenChange?.(false);
+  };
+
   useScrollLock(open);
-  useFocusTrap(panelRef, { enabled: open, onEscape: onClose });
+  useFocusTrap(panelRef, { enabled: open, onEscape: handleClose });
 
   if (!mounted) return null;
 
@@ -77,7 +85,7 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
         aria-hidden="true"
         tabIndex={-1}
         className={cn(styles.backdrop, visible && styles.backdropVisible)}
-        onClick={closeOnBackdrop ? onClose : undefined}
+        onClick={closeOnBackdrop ? handleClose : undefined}
       />
       {/* Panel */}
       <div
@@ -101,7 +109,7 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
             {headerActions && <div className={styles.headerActions}>{headerActions}</div>}
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               aria-label={t.drawerPanel.close}
               className={styles.closeBtn}
             >

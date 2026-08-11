@@ -8,6 +8,60 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ## [Unreleased]
 
+### Changed — Unificación de API (breaking en 0.x, ver guía de migración en el README)
+
+Preparación para congelar la API antes de declarar 1.0.0. Todos los cambios de esta sección son
+breaking pero aceptados dentro del versionado 0.x; cada uno tiene un equivalente directo.
+
+- **Rol semántico negativo unificado a `'danger'`** (antes `'error'` en algunos componentes,
+  `'danger'` en otros). Afecta `Alert`, `Toast`, `Badge`, `ProgressBar`, `Timeline`, `Tooltip`
+  (`variant="error"` → `variant="danger"`); `Stepper`'s `StepperStep` renombra además su prop
+  `status` → `variant` (`status="error"` → `variant="danger"`, y `success`/`warning`/`loading` se
+  quedan igual pero ahora bajo `variant`); `Dropdown`'s `DropdownItem` cambia `danger?: boolean` a
+  `variant?: 'default' | 'danger'`; `Spinner` renombra el valor `'white'` a `'inverse'`.
+- **Overlays unificados a `open` + `onOpenChange`** (estándar Radix/Headless UI/shadcn). `Modal`,
+  `ConfirmDialog` y `Sidebar` (eje del drawer móvil) renombran `isOpen` → `open`; `onClose` se
+  mantiene igual en los tres. `DrawerPanel` y `Tooltip` ya usaban `open`, ahora ganan
+  `onOpenChange`/`defaultOpen` para completar el patrón. `Dropdown` y `Popover` ganan soporte de
+  modo controlado (`open`/`defaultOpen`/`onOpenChange`), aditivo — el modo no-controlado existente
+  no cambia. `Sidebar` gana además `collapsed`/`onCollapsedChange` (aditivo) junto a
+  `defaultCollapsed`.
+- **Firmas de callbacks unificadas**: `NumberInput.onChange` pierde el segundo parámetro
+  (`event`) — ahora es `(value: number | null) => void`, igual que el resto de controles
+  compuestos. `Pagination.currentPage` → `page`. `DataTable.onPageChange(page, pageSize)` se separa
+  en `onPageChange(page)` + `onPageSizeChange(pageSize)`; `DataTable.onSearchChange` → `onSearch`
+  (alineado con `SearchInput`); su `label` (que en realidad era un nombre accesible) → `aria-label`.
+  `Calendar.onRangeSelect(start, end)` → `onRangeSelect(range: DateRange)`, reusando el tipo
+  `DateRange` de `DateRangePicker`.
+- **Vocabulario de escalas y superficies**: `Text`'s escalón medio `'base'` → `'md'` (alinea con
+  los otros 26 componentes con `size`). `StatsCard`'s variante `'filled'` → `'flat'` (alinea con
+  `Card`, que ya usaba ese vocabulario). `Odontogram`'s `readOnly` → `disabled` (alinea con el
+  resto de la librería).
+- **`Modal`** gana una prop `title?: string` de conveniencia (renderiza un `<ModalHeader>`
+  automáticamente) y ahora extiende `HTMLAttributes<HTMLDivElement>` (gana `style`, `id`, `data-*`,
+  `aria-*`, spreados sobre el `<div role="dialog">`). **`ConfirmDialog`** extiende
+  `HTMLAttributes<HTMLDivElement>` — antes no aceptaba ni `className`.
+
+### Added
+
+- Patrones de props incompletos completados en componentes controlados-only: `defaultValue` en
+  `MultiSelect`, `FileUpload`, `DatePicker`, `DateRangePicker`, `TimePicker`, `Odontogram` (antes
+  fallaban en silencio si el consumidor no pasaba `value`). `loading` en `FileUpload`, `DatePicker`,
+  `TimePicker`. `required` (con asterisco visual junto al `label`, igual que `Input`) en
+  `MultiSelect`, `DatePicker`, `DateRangePicker`, `TimePicker`, y renderizado del asterisco (ya
+  existía la prop por herencia nativa, pero no se pintaba) en `Slider`, `Toggle`, `SearchInput`.
+  `disabled` en `Pagination` y `Calendar`.
+- Exportados desde el barrel raíz (`src/index.ts`) tipos y hooks que ya existían pero no eran
+  alcanzables públicamente: `useDensity`, `useDir`, `BipDensity`, `BipDirection`,
+  `BipSpacingOverrides`, `RADIUS_VAR_MAP`, `ON_TEXT_VAR_MAP`, `FOCUS_RING_VAR_MAP`,
+  `MOTION_VAR_MAP`, `SPACING_VAR_MAP`, `BulkAction`, `SortDirection` (DataTable), `ToothImage`,
+  `ToothImageType` (Odontogram), `TabsVariant`, `TabsSize`, `TabsOrientation`, `AccordionVariant`,
+  `SelectOptionGroup`, `StatsCardVariant`, `StatsCardSize`, `TimelineVariant`, `TimelineSize`,
+  `TimelineOrientation`, `ToastContextValue`.
+- `package.json`'s `exports` gana `"./package.json"` (esperado por varias herramientas de bundling)
+  y subpaths explícitos `"./CheckboxGroup"` / `"./RadioGroup"`, antes inalcanzables por deep import
+  porque el wildcard `"./*"` solo resuelve `<dir>/<dir>.js`.
+
 ## [0.4.0] - 2026-08-07
 
 ### Added

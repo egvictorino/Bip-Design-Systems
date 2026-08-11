@@ -2,7 +2,7 @@ import React, { type ElementType, type ReactNode } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Text.module.css';
 
-export type TextSize = '3xs' | '2xs' | 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl';
+export type TextSize = '3xs' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 export type TextWeight = 'normal' | 'medium' | 'semibold' | 'bold';
 export type TextColor =
   | 'default'
@@ -33,7 +33,7 @@ const sizeClass: Record<TextSize, string> = {
   '2xs': styles.size2xs,
   xs: styles.sizeXs,
   sm: styles.sizeSm,
-  base: styles.sizeBase,
+  md: styles.sizeBase,
   lg: styles.sizeLg,
   xl: styles.sizeXl,
   '2xl': styles.size2xl,
@@ -68,7 +68,7 @@ const alignClass: Record<TextAlign, string> = {
 /** Typography primitive for body text — see `Heading` for semantic headings with independent visual size. */
 export const Text: React.FC<TextProps> = ({
   as: Component = 'p',
-  size = 'base',
+  size = 'md',
   weight = 'normal',
   color = 'default',
   align,

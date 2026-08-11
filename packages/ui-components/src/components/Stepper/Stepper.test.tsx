@@ -64,11 +64,11 @@ describe('Stepper', () => {
     const { container } = render(
       <Stepper value={1} onChange={vi.fn()}>
         <StepperStep value={0} label="Datos" />
-        <StepperStep value={1} label="Información" status="error" />
+        <StepperStep value={1} label="Información" variant="danger" />
         <StepperStep value={2} label="Revisión" />
       </Stepper>
     );
-    const errorIndicator = container.querySelector('.circleError');
+    const errorIndicator = container.querySelector('.circleDanger');
     expect(errorIndicator).toBeInTheDocument();
   });
 
@@ -90,7 +90,7 @@ describe('Stepper', () => {
   it('success step shows check icon', () => {
     const { container } = render(
       <Stepper value={1} onChange={vi.fn()}>
-        <StepperStep value={0} label="Datos" status="success" />
+        <StepperStep value={0} label="Datos" variant="success" />
         <StepperStep value={1} label="Información" />
       </Stepper>
     );
@@ -101,7 +101,7 @@ describe('Stepper', () => {
   it('success step indicator has circleSuccess class', () => {
     const { container } = render(
       <Stepper value={1} onChange={vi.fn()}>
-        <StepperStep value={0} label="Datos" status="success" />
+        <StepperStep value={0} label="Datos" variant="success" />
         <StepperStep value={1} label="Información" />
       </Stepper>
     );
@@ -111,7 +111,7 @@ describe('Stepper', () => {
   it('success step label has labelSuccess class', () => {
     const { container } = render(
       <Stepper value={1} onChange={vi.fn()}>
-        <StepperStep value={0} label="Datos" status="success" />
+        <StepperStep value={0} label="Datos" variant="success" />
         <StepperStep value={1} label="Información" />
       </Stepper>
     );
@@ -124,7 +124,7 @@ describe('Stepper', () => {
     const { container } = render(
       <Stepper value={1} onChange={vi.fn()}>
         <StepperStep value={0} label="Datos" />
-        <StepperStep value={1} label="Información" status="warning" />
+        <StepperStep value={1} label="Información" variant="warning" />
         <StepperStep value={2} label="Revisión" />
       </Stepper>
     );
@@ -137,7 +137,7 @@ describe('Stepper', () => {
     const { container } = render(
       <Stepper value={1} onChange={vi.fn()}>
         <StepperStep value={0} label="Datos" />
-        <StepperStep value={1} label="Información" status="warning" />
+        <StepperStep value={1} label="Información" variant="warning" />
         <StepperStep value={2} label="Revisión" />
       </Stepper>
     );
@@ -148,7 +148,7 @@ describe('Stepper', () => {
     const { container } = render(
       <Stepper value={1} onChange={vi.fn()}>
         <StepperStep value={0} label="Datos" />
-        <StepperStep value={1} label="Información" status="warning" />
+        <StepperStep value={1} label="Información" variant="warning" />
         <StepperStep value={2} label="Revisión" />
       </Stepper>
     );
@@ -161,7 +161,7 @@ describe('Stepper', () => {
     const { container } = render(
       <Stepper value={1} onChange={vi.fn()}>
         <StepperStep value={0} label="Datos" />
-        <StepperStep value={1} label="Procesando" status="loading" />
+        <StepperStep value={1} label="Procesando" variant="loading" />
         <StepperStep value={2} label="Revisión" />
       </Stepper>
     );
@@ -172,7 +172,7 @@ describe('Stepper', () => {
     const { container } = render(
       <Stepper value={1} onChange={vi.fn()}>
         <StepperStep value={0} label="Datos" />
-        <StepperStep value={1} label="Procesando" status="loading" />
+        <StepperStep value={1} label="Procesando" variant="loading" />
         <StepperStep value={2} label="Revisión" />
       </Stepper>
     );
@@ -183,7 +183,7 @@ describe('Stepper', () => {
     render(
       <Stepper value={2} onChange={vi.fn()}>
         <StepperStep value={0} label="Datos" />
-        <StepperStep value={1} label="Procesando" status="loading" />
+        <StepperStep value={1} label="Procesando" variant="loading" />
         <StepperStep value={2} label="Revisión" />
       </Stepper>
     );

@@ -121,7 +121,7 @@ export interface StepperStepProps {
   value: number;
   label: string;
   description?: string;
-  status?: 'error' | 'success' | 'warning' | 'loading';
+  variant?: 'danger' | 'success' | 'warning' | 'loading';
   disabled?: boolean;
   className?: string;
 }
@@ -130,17 +130,17 @@ export const StepperStep: React.FC<StepperStepProps> = ({
   value: stepValue,
   label,
   description,
-  status,
+  variant: stepVariant,
   disabled = false,
   className,
 }) => {
   const { activeValue, onChange, variant, size, orientation, totalSteps } = useStepperContext();
   const uid = useId();
 
-  const hasError   = status === 'error';
-  const hasSuccess = status === 'success';
-  const hasWarning = status === 'warning';
-  const hasLoading = status === 'loading';
+  const hasError   = stepVariant === 'danger';
+  const hasSuccess = stepVariant === 'success';
+  const hasWarning = stepVariant === 'warning';
+  const hasLoading = stepVariant === 'loading';
   const hasStatus  = hasError || hasSuccess || hasWarning || hasLoading;
 
   const isActive    = !hasStatus && stepValue === activeValue;
@@ -181,7 +181,7 @@ export const StepperStep: React.FC<StepperStepProps> = ({
   const circleClass = cn(
     styles.circle,
     sizeCircleClass[size],
-    hasError    && styles.circleError,
+    hasError    && styles.circleDanger,
     hasSuccess  && styles.circleSuccess,
     hasWarning  && styles.circleWarning,
     hasLoading  && styles.circleLoading,
@@ -194,7 +194,7 @@ export const StepperStep: React.FC<StepperStepProps> = ({
   const dotClass = cn(
     styles.dot,
     sizeDotClass[size],
-    hasError    && styles.dotError,
+    hasError    && styles.dotDanger,
     hasSuccess  && styles.dotSuccess,
     hasWarning  && styles.dotWarning,
     hasLoading  && styles.dotLoading,
@@ -223,7 +223,7 @@ export const StepperStep: React.FC<StepperStepProps> = ({
 
   const labelClass = cn(
     styles.label,
-    hasError   && styles.labelError,
+    hasError   && styles.labelDanger,
     hasSuccess && styles.labelSuccess,
     hasWarning && styles.labelWarning,
     !hasError && !hasWarning && (isActive || isCompleted || hasSuccess || hasLoading) && styles.labelActive,

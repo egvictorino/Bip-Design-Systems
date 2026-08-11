@@ -55,7 +55,7 @@ export const ConIconos: Story = {
           title="Cita cancelada"
           description="El paciente no se presentó."
           icon="✕"
-          variant="error"
+          variant="danger"
         />
         <TimelineItem
           date="20/01/2024"
@@ -73,7 +73,7 @@ export const Psiquiatrico: Story = {
   render: () => (
     <div style={{ width: '24rem' }}>
       <Timeline>
-        <TimelineItem date="03/03/2024" title="Evaluación inicial" description="PHQ-9: 18 puntos — Depresión moderada severa." variant="error" />
+        <TimelineItem date="03/03/2024" title="Evaluación inicial" description="PHQ-9: 18 puntos — Depresión moderada severa." variant="danger" />
         <TimelineItem date="10/03/2024" title="Inicio de tratamiento" description="Fluoxetina 20mg/día + terapia cognitivo-conductual." variant="default" />
         <TimelineItem date="24/03/2024" title="Seguimiento" description="PHQ-9: 12 puntos — Mejoría observada." variant="warning" />
         <TimelineItem date="07/04/2024" title="Revisión" description="PHQ-9: 6 puntos — Respuesta adecuada al tratamiento." variant="success" />
@@ -90,7 +90,7 @@ export const AllVariants: Story = {
         <TimelineItem title="Default" description="Estado por defecto." variant="default" date="01/01/2024" />
         <TimelineItem title="Success" description="Tarea completada correctamente." variant="success" date="02/01/2024" />
         <TimelineItem title="Warning" description="Requiere atención." variant="warning" date="03/01/2024" />
-        <TimelineItem title="Error" description="Se detectó un problema." variant="error" date="04/01/2024" />
+        <TimelineItem title="Error" description="Se detectó un problema." variant="danger" date="04/01/2024" />
       </Timeline>
     </div>
   ),

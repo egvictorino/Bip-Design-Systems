@@ -375,6 +375,37 @@ your own font loading strategy.
 
 ---
 
+## Migration 0.4.x → 0.5.0
+
+`0.5.0` unifies inconsistent prop names/values across sibling components ahead of a `1.0.0` API
+freeze. All changes below are breaking; see `CHANGELOG.md` for the full list including additive
+(non-breaking) changes.
+
+| Component | Before | After |
+|---|---|---|
+| `Alert`, `Toast`, `Badge`, `ProgressBar`, `Timeline`, `Tooltip` | `variant="error"` | `variant="danger"` |
+| `Stepper`'s `StepperStep` | `status="error"` (and `status="success"` etc.) | `variant="danger"` (and `variant="success"` etc.) |
+| `Dropdown`'s `DropdownItem` | `danger` (boolean) | `variant="danger"` |
+| `Spinner` | `variant="white"` | `variant="inverse"` |
+| `Modal`, `ConfirmDialog`, `Sidebar` (mobile drawer) | `isOpen` | `open` (`onClose` unchanged) |
+| `NumberInput` | `onChange={(value, event) => ...}` | `onChange={(value) => ...}` |
+| `Pagination` | `currentPage` | `page` |
+| `DataTable` | `onPageChange={(page, pageSize) => ...}` | `onPageChange={(page) => ...}` + `onPageSizeChange={(pageSize) => ...}` |
+| `DataTable` | `onSearchChange` | `onSearch` |
+| `DataTable` | `label` (was actually an accessible name) | `aria-label` |
+| `Calendar` | `onRangeSelect={(start, end) => ...}` | `onRangeSelect={(range: DateRange) => ...}` |
+| `Text` | `size="base"` | `size="md"` |
+| `StatsCard` | `variant="filled"` | `variant="flat"` |
+| `Odontogram` | `readOnly` | `disabled` |
+
+`Dropdown` and `Popover` gain optional `open`/`defaultOpen`/`onOpenChange` (additive — existing
+uncontrolled usage keeps working unchanged). `DrawerPanel` and `Tooltip` gain `onOpenChange`.
+`Sidebar` gains `collapsed`/`onCollapsedChange` alongside the existing `defaultCollapsed`. `Modal`
+gains a convenience `title` prop and now forwards `style`/`id`/`data-*`/`aria-*`; `ConfirmDialog`
+now accepts `className` and other `HTMLAttributes`.
+
+---
+
 ## Links
 
 - [Repository](https://github.com/egvictorino/Bip-Design-Systems)

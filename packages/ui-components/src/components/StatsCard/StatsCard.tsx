@@ -3,7 +3,7 @@ import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './StatsCard.module.css';
 
-export type StatsCardVariant = 'outlined' | 'filled' | 'elevated';
+export type StatsCardVariant = 'elevated' | 'outlined' | 'flat';
 export type StatsCardSize = 'sm' | 'md' | 'lg';
 
 export interface StatsCardProps {

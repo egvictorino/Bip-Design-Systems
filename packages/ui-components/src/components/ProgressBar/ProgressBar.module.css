@@ -58,7 +58,7 @@
 .default { background-color: var(--color-primary); }
 .success { background-color: var(--color-success); }
 .warning { background-color: var(--color-warning); }
-.error   { background-color: var(--color-danger); }
+.danger  { background-color: var(--color-danger); }
 
 /* ─── Indeterminate ─────────────────────────────────────────────────────────── */
 

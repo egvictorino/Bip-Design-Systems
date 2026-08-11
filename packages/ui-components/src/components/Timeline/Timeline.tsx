@@ -6,7 +6,7 @@ import styles from './Timeline.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type TimelineVariant = 'default' | 'success' | 'warning' | 'error';
+export type TimelineVariant = 'default' | 'success' | 'warning' | 'danger';
 export type TimelineSize = 'sm' | 'md' | 'lg';
 export type TimelineOrientation = 'vertical' | 'horizontal';
 
@@ -48,7 +48,7 @@ const dotVariantClass: Record<TimelineVariant, string> = {
   default: styles.variantDefault,
   success: styles.variantSuccess,
   warning: styles.variantWarning,
-  error: styles.variantError,
+  danger: styles.variantDanger,
 };
 
 const dotSizeClass: Record<TimelineSize, string> = {
