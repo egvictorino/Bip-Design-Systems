@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, type RefObject } from 'react';
 
 /** Calls `handler` on any mousedown outside of `ref`'s element. No-op while `enabled` is false. */

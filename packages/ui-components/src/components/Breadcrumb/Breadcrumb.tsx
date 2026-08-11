@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './Breadcrumb.module.css';

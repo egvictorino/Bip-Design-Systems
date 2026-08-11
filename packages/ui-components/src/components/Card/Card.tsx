@@ -1,3 +1,5 @@
+"use client";
+
 import React, { forwardRef } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
