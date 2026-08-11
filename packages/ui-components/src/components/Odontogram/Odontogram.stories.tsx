@@ -113,37 +113,37 @@ export const WithLabel: Story = {
 
 export const WithData: Story = {
   render: () => (
-    <Odontogram label="Odontograma con condiciones" value={SAMPLE_VALUE} readOnly />
+    <Odontogram label="Odontograma con condiciones" value={SAMPLE_VALUE} disabled />
   ),
 };
 
 export const ReadOnly: Story = {
   render: () => (
-    <Odontogram label="Vista de solo lectura" value={SAMPLE_VALUE} readOnly />
+    <Odontogram label="Vista de solo lectura" value={SAMPLE_VALUE} disabled />
   ),
 };
 
 export const EmptyReadOnly: Story = {
   render: () => (
-    <Odontogram label="Odontograma vacío (solo lectura)" readOnly />
+    <Odontogram label="Odontograma vacío (solo lectura)" disabled />
   ),
 };
 
 export const SizeSm: Story = {
   render: () => (
-    <Odontogram label="Tamaño pequeño" value={SAMPLE_VALUE} readOnly size="sm" />
+    <Odontogram label="Tamaño pequeño" value={SAMPLE_VALUE} disabled size="sm" />
   ),
 };
 
 export const SizeMd: Story = {
   render: () => (
-    <Odontogram label="Tamaño mediano" value={SAMPLE_VALUE} readOnly size="md" />
+    <Odontogram label="Tamaño mediano" value={SAMPLE_VALUE} disabled size="md" />
   ),
 };
 
 export const SizeLg: Story = {
   render: () => (
-    <Odontogram label="Tamaño grande" value={SAMPLE_VALUE} readOnly size="lg" />
+    <Odontogram label="Tamaño grande" value={SAMPLE_VALUE} disabled size="lg" />
   ),
 };
 
@@ -162,7 +162,7 @@ export const WithNotes: Story = {
     <Odontogram
       label="Odontograma con notas"
       value={SAMPLE_VALUE_WITH_NOTES}
-      readOnly
+      disabled
     />
   ),
 };
@@ -218,7 +218,7 @@ export const WithImages: Story = {
           images: [{ type: 'other', url: PLACEHOLDER_IMG }],
         },
       }}
-      readOnly
+      disabled
     />
   ),
 };
@@ -271,7 +271,7 @@ export const WithNotesAndImages: Story = {
           images: [{ type: 'radiograph', url: PLACEHOLDER_IMG }],
         },
       }}
-      readOnly
+      disabled
     />
   ),
 };
@@ -291,7 +291,7 @@ export const AllConditions: Story = {
         18: { condition: 'extraction_planned' },
         21: {},
       }}
-      readOnly
+      disabled
       size="lg"
     />
   ),
@@ -310,7 +310,7 @@ export const PrimaryDentitionWithData: Story = {
         74: { surfaces: { occlusal: 'caries', mesial: 'caries' } },
         84: { condition: 'extraction_planned' },
       }}
-      readOnly
+      disabled
     />
   ),
 };

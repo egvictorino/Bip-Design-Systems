@@ -5,11 +5,12 @@ import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
 import styles from './SearchInput.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface SearchInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   variant?: 'outlined' | 'filled' | 'bare';
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   helperText?: string;
   error?: boolean;
@@ -89,6 +90,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       value,
       defaultValue,
       onKeyDown: externalOnKeyDown,
+      required,
       ...props
     },
     ref
@@ -200,6 +202,12 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             )}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className={styles.requiredMark}>
+                {' '}
+                *
+              </span>
+            )}
           </label>
         )}
 
@@ -247,6 +255,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             id={inputId}
             type="search"
             disabled={disabled}
+            required={required}
             aria-invalid={error || undefined}
             aria-describedby={messageId}
             aria-busy={loading || undefined}

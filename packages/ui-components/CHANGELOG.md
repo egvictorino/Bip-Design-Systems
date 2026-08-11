@@ -8,6 +8,94 @@ y este proyecto usa versionado [SemVer](https://semver.org/lang/es/) dentro de l
 
 ## [Unreleased]
 
+### Changed — Unificación de API (breaking en 0.x, ver guía de migración en el README)
+
+Preparación para congelar la API antes de declarar 1.0.0. Todos los cambios de esta sección son
+breaking pero aceptados dentro del versionado 0.x; cada uno tiene un equivalente directo.
+
+- **Rol semántico negativo unificado a `'danger'`** (antes `'error'` en algunos componentes,
+  `'danger'` en otros). Afecta `Alert`, `Toast`, `Badge`, `ProgressBar`, `Timeline`, `Tooltip`
+  (`variant="error"` → `variant="danger"`); `Stepper`'s `StepperStep` renombra además su prop
+  `status` → `variant` (`status="error"` → `variant="danger"`, y `success`/`warning`/`loading` se
+  quedan igual pero ahora bajo `variant`); `Dropdown`'s `DropdownItem` cambia `danger?: boolean` a
+  `variant?: 'default' | 'danger'`; `Spinner` renombra el valor `'white'` a `'inverse'`.
+- **Overlays unificados a `open` + `onOpenChange`** (estándar Radix/Headless UI/shadcn). `Modal`,
+  `ConfirmDialog` y `Sidebar` (eje del drawer móvil) renombran `isOpen` → `open`; `onClose` se
+  mantiene igual en los tres. `DrawerPanel` y `Tooltip` ya usaban `open`, ahora ganan
+  `onOpenChange`/`defaultOpen` para completar el patrón. `Dropdown` y `Popover` ganan soporte de
+  modo controlado (`open`/`defaultOpen`/`onOpenChange`), aditivo — el modo no-controlado existente
+  no cambia. `Sidebar` gana además `collapsed`/`onCollapsedChange` (aditivo) junto a
+  `defaultCollapsed`.
+- **Firmas de callbacks unificadas**: `NumberInput.onChange` pierde el segundo parámetro
+  (`event`) — ahora es `(value: number | null) => void`, igual que el resto de controles
+  compuestos. `Pagination.currentPage` → `page`. `DataTable.onPageChange(page, pageSize)` se separa
+  en `onPageChange(page)` + `onPageSizeChange(pageSize)`; `DataTable.onSearchChange` → `onSearch`
+  (alineado con `SearchInput`); su `label` (que en realidad era un nombre accesible) → `aria-label`.
+  `Calendar.onRangeSelect(start, end)` → `onRangeSelect(range: DateRange)`, reusando el tipo
+  `DateRange` de `DateRangePicker`.
+- **Vocabulario de escalas y superficies**: `Text`'s escalón medio `'base'` → `'md'` (alinea con
+  los otros 26 componentes con `size`). `StatsCard`'s variante `'filled'` → `'flat'` (alinea con
+  `Card`, que ya usaba ese vocabulario). `Odontogram`'s `readOnly` → `disabled` (alinea con el
+  resto de la librería).
+- **`Modal`** gana una prop `title?: string` de conveniencia (renderiza un `<ModalHeader>`
+  automáticamente) y ahora extiende `HTMLAttributes<HTMLDivElement>` (gana `style`, `id`, `data-*`,
+  `aria-*`, spreados sobre el `<div role="dialog">`). **`ConfirmDialog`** extiende
+  `HTMLAttributes<HTMLDivElement>` — antes no aceptaba ni `className`.
+
+### Added
+
+- Patrones de props incompletos completados en componentes controlados-only: `defaultValue` en
+  `MultiSelect`, `FileUpload`, `DatePicker`, `DateRangePicker`, `TimePicker`, `Odontogram` (antes
+  fallaban en silencio si el consumidor no pasaba `value`). `loading` en `FileUpload`, `DatePicker`,
+  `TimePicker`. `required` (con asterisco visual junto al `label`, igual que `Input`) en
+  `MultiSelect`, `DatePicker`, `DateRangePicker`, `TimePicker`, y renderizado del asterisco (ya
+  existía la prop por herencia nativa, pero no se pintaba) en `Slider`, `Toggle`, `SearchInput`.
+  `disabled` en `Pagination` y `Calendar`.
+- Exportados desde el barrel raíz (`src/index.ts`) tipos y hooks que ya existían pero no eran
+  alcanzables públicamente: `useDensity`, `useDir`, `BipDensity`, `BipDirection`,
+  `BipSpacingOverrides`, `RADIUS_VAR_MAP`, `ON_TEXT_VAR_MAP`, `FOCUS_RING_VAR_MAP`,
+  `MOTION_VAR_MAP`, `SPACING_VAR_MAP`, `BulkAction`, `SortDirection` (DataTable), `ToothImage`,
+  `ToothImageType` (Odontogram), `TabsVariant`, `TabsSize`, `TabsOrientation`, `AccordionVariant`,
+  `SelectOptionGroup`, `StatsCardVariant`, `StatsCardSize`, `TimelineVariant`, `TimelineSize`,
+  `TimelineOrientation`, `ToastContextValue`.
+- `package.json`'s `exports` gana `"./package.json"` (esperado por varias herramientas de bundling)
+  y subpaths explícitos `"./CheckboxGroup"` / `"./RadioGroup"`, antes inalcanzables por deep import
+  porque el wildcard `"./*"` solo resuelve `<dir>/<dir>.js`. Se agregan stubs físicos
+  `CheckboxGroup.js`/`.d.ts` y `RadioGroup.js`/`.d.ts` en la raíz del paquete para que esos dos
+  subpaths también resuelvan bajo el algoritmo clásico `node10` (que ignora el mapa `exports`),
+  igual que el resto de la superficie pública.
+- **`forwardRef` en ~35 componentes** que extendían props nativas de HTML pero descartaban el
+  `ref` recibido (declarados como `React.FC` en vez de `forwardRef`), lo que rompía anclar un
+  `Tooltip`/`Popover` a ellos o usarlos con `react-hook-form`. Incluye tanto componentes atómicos
+  (`Alert`, `Badge`, `Text`, `Heading`, `Stack`, `Container`, `Grid`, `Skeleton`, `Spinner`,
+  `ProgressBar`, `EmptyState`, `Breadcrumb`, `VisuallyHidden`) como subcomponentes de familias
+  compuestas (`Table`, `Tabs`, `Modal`, `Sidebar`, `Dropdown`).
+- **`style`/`id`/`data-*`/`aria-*` habilitados** (vía `extends React.HTMLAttributes<...>` +
+  spread) en ~24 componentes que antes solo aceptaban `className` a mano: `Accordion` (+3
+  subcomponentes), `Calendar`, `CheckboxGroup`, `RadioGroup`, `DataTable`, `DatePicker`,
+  `DateRangePicker`, `Divider`, `DrawerPanel`, `FileUpload`, `MultiSelect`, `Odontogram`,
+  `Pagination`, `Popover` (+`PopoverContent`), `StatsCard`, `Stepper` (+`StepperStep`), `Tabs`,
+  `TimePicker`, `Timeline` (+`TimelineItem`), `Tooltip`, `AvatarGroup`, `CardMedia`, y varios
+  subcomponentes de `Sidebar`/`Dropdown`/`Navbar`. Donde una prop propia colisionaba en nombre
+  con un atributo nativo del mismo nombre pero tipo distinto (`onChange`, `defaultValue`,
+  `content`, `inputMode`), se usó `Omit<HTMLAttributes<...>, 'prop'>` para evitar el conflicto de
+  tipos. **`ThemeProvider` se dejó fuera deliberadamente**: su `dir` propio colisiona en nombre
+  con el atributo nativo `dir`, y su `style` calculado (tokens de marca resueltos) es demasiado
+  crítico para arriesgar un spread genérico sin una revisión dedicada.
+- Tipos compartidos `BipSize` (`'sm' | 'md' | 'lg'`) y `BipSizeExtended` (`'xs' | 'sm' | 'md' |
+  'lg' | 'xl'`) en `src/types/size.ts`, exportados desde el barrel raíz — reemplazan 21 unions
+  `'sm' | 'md' | 'lg'` inline duplicadas (`Button`, `Badge`, `Checkbox`, `Radio`, `DatePicker`,
+  `DateRangePicker`, `DrawerPanel`, `EmptyState`, `FileUpload`, `Input`, `MultiSelect`,
+  `SearchInput`, `ProgressBar`, `Stepper`, `Select`, `Skeleton`, `Toggle`, `Textarea`,
+  `TimePicker`, `CheckboxGroup`, `RadioGroup`) y el tipo `Size` no exportado de `NumberInput`.
+  `Spinner` (`'xs'..'xl'`) migra a `BipSizeExtended`. `Modal` (`'sm'|'md'|'lg'|'xl'`, sin `'xs'`)
+  y `Avatar` (ya exporta su propio `AvatarSize` con nombre público) se dejan con su unión propia
+  a propósito — forzarlos a `BipSize`/`BipSizeExtended` aceptaría o excluiría un valor sin
+  respaldo real en su CSS.
+- `.size-limit.json`: el límite del bundle barrel sube de 62 KB a 64 KB (medido: 62.52 KB) para
+  reflejar el crecimiento real por `forwardRef`+`HTMLAttributes` en ~35 componentes — no es una
+  regresión de tamaño accidental, es la nueva base legítima tras esta adición.
+
 ## [0.4.0] - 2026-08-07
 
 ### Added

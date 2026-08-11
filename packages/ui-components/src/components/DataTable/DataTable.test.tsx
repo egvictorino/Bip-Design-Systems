@@ -348,7 +348,7 @@ describe('DataTable — server-side', () => {
         serverSide
         searchable
         searchKeys={['nombre']}
-        onSearchChange={vi.fn()}
+        onSearch={vi.fn()}
       />
     );
     await userEvent.type(screen.getByRole('searchbox'), 'Ana');
@@ -358,7 +358,7 @@ describe('DataTable — server-side', () => {
     expect(screen.getByText('Beatriz')).toBeInTheDocument();
   });
 
-  it('calls onSearchChange when search query changes in server-side mode', async () => {
+  it('calls onSearch when search query changes in server-side mode', async () => {
     const onSearchChange = vi.fn();
     render(
       <DataTable
@@ -367,7 +367,7 @@ describe('DataTable — server-side', () => {
         serverSide
         searchable
         searchKeys={['nombre']}
-        onSearchChange={onSearchChange}
+        onSearch={onSearchChange}
       />
     );
     await userEvent.type(screen.getByRole('searchbox'), 'B');
@@ -418,7 +418,7 @@ describe('DataTable — server-side', () => {
       />
     );
     await userEvent.click(screen.getByRole('button', { name: 'Página 2' }));
-    expect(onPageChange).toHaveBeenCalledWith(2, 5);
+    expect(onPageChange).toHaveBeenCalledWith(2);
   });
 });
 
@@ -501,8 +501,8 @@ describe('DataTable — bug fixes', () => {
     expect(rows[rows.length - 1]).toHaveTextContent('—');
   });
 
-  it('sets role="region" and aria-label when label prop is provided', () => {
-    render(<DataTable columns={columns} data={data} label="Tabla de pacientes" />);
+  it('sets role="region" and aria-label when aria-label prop is provided', () => {
+    render(<DataTable columns={columns} data={data} aria-label="Tabla de pacientes" />);
     expect(screen.getByRole('region', { name: 'Tabla de pacientes' })).toBeInTheDocument();
   });
 });

@@ -4,6 +4,7 @@ import { forwardRef, useId, useState } from 'react';
 import type { SelectHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Select.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface SelectOption {
   value: string;
@@ -19,7 +20,7 @@ export interface SelectOptionGroup {
 
 export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
   variant?: 'outlined' | 'filled' | 'bare';
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   helperText?: string;
   error?: boolean;

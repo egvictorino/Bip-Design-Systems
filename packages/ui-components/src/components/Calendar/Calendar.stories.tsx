@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Calendar } from './Calendar';
 import type { CalendarEvent, CalendarResource, CalendarView } from './Calendar';
+import type { DateRange } from '../DateRangePicker/DateRangePicker';
 
 const meta = {
   title: 'Components/Calendar',
@@ -310,6 +311,33 @@ export const EmptyAgenda: Story = {
   },
 };
 
+export const Disabled: Story = {
+  name: 'Deshabilitado',
+  args: { view: 'month', date: new Date(), events: [], resources: [] },
+  render: () => {
+    function Wrapper() {
+      const [view, setView] = useState<CalendarView>('month');
+      const [date, setDate] = useState(new Date());
+      return (
+        <div style={{ height: 700 }}>
+          <Calendar
+            events={EVENTS}
+            resources={DOCTORS}
+            view={view}
+            date={date}
+            onViewChange={setView}
+            onDateChange={setDate}
+            onEventClick={(ev) => alert(`Cita: ${ev.title}`)}
+            onEventCreate={(info) => alert(`Nueva cita el ${info.start.toLocaleDateString('es-MX')}`)}
+            disabled
+          />
+        </div>
+      );
+    }
+    return <Wrapper />;
+  },
+};
+
 export const RangeSelectionStory: Story = {
   name: 'Selección de rango (vista mes)',
   args: { view: 'month', date: new Date(), events: [] },
@@ -317,7 +345,7 @@ export const RangeSelectionStory: Story = {
     function Wrapper() {
       const [view, setView] = useState<CalendarView>('month');
       const [date, setDate] = useState(new Date());
-      const [selectedRange, setSelectedRange] = useState<{ start: Date; end: Date } | null>(null);
+      const [selectedRange, setSelectedRange] = useState<DateRange | null>(null);
 
       const fmt = (d: Date) => d.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
@@ -335,8 +363,10 @@ export const RangeSelectionStory: Story = {
                 color: '#1D4ED8',
               }}
             >
-              Rango seleccionado: <strong>{fmt(selectedRange.start)}</strong> →{' '}
-              <strong>{fmt(new Date(selectedRange.end.getTime() - 86400000))}</strong>
+              Rango seleccionado: <strong>{selectedRange.from && fmt(selectedRange.from)}</strong> →{' '}
+              <strong>
+                {selectedRange.to && fmt(new Date(selectedRange.to.getTime() - 86400000))}
+              </strong>
             </div>
           )}
           <Calendar
@@ -348,7 +378,7 @@ export const RangeSelectionStory: Story = {
             onDateChange={setDate}
             onEventClick={(ev) => alert(`Cita: ${ev.title}`)}
             onEventCreate={(info) => alert(`Nueva cita el ${info.start.toLocaleDateString('es-MX')}`)}
-            onRangeSelect={(start, end) => setSelectedRange({ start, end })}
+            onRangeSelect={(range) => setSelectedRange(range)}
           />
         </div>
       );

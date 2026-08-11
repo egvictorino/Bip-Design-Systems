@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useRef, type RefObject } from 'react';
 
 const FOCUSABLE_SELECTORS =
@@ -66,6 +68,6 @@ export function useFocusTrap<T extends HTMLElement>(
       document.removeEventListener('keydown', handleKeyDown);
       restoreFocus();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- containerRef es una ref (identidad estable entre renders); incluirla no cambiaría cuándo se re-ejecuta el efecto
   }, [enabled, onEscape, restoreFocus]);
 }

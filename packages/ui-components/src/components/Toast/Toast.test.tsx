@@ -10,7 +10,7 @@ const TriggerButton = ({
   message = 'Mensaje de prueba',
   duration = 0, // default 0 so toasts don't auto-dismiss during tests
 }: {
-  variant?: 'info' | 'success' | 'warning' | 'error';
+  variant?: 'info' | 'success' | 'warning' | 'danger';
   title?: string;
   message?: string;
   duration?: number;
@@ -106,10 +106,10 @@ describe('ToastProvider / useToast', () => {
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it('error toasts render the underlying Alert with role="alert"', () => {
+  it('danger toasts render the underlying Alert with role="alert"', () => {
     render(
       <ToastProvider>
-        <TriggerButton variant="error" message="Error grave" />
+        <TriggerButton variant="danger" message="Error grave" />
       </ToastProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: 'Agregar toast' }));

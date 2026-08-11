@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect } from 'react';
 
 /** Locks `<body>` scroll while `enabled` is true; always restores it on cleanup. */

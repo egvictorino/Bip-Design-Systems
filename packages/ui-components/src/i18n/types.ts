@@ -92,6 +92,7 @@ export interface BipLocale {
     clickToSelect: string;
     formats: (accept: string) => string;
     maxSize: (size: string) => string;
+    uploading: string;
   };
 
   input: {

@@ -74,4 +74,4 @@
 .progressInfo    { background-color: var(--color-primary); }
 .progressSuccess { background-color: var(--color-success); }
 .progressWarning { background-color: var(--color-warning); }
-.progressError   { background-color: var(--color-danger); }
+.progressDanger  { background-color: var(--color-danger); }

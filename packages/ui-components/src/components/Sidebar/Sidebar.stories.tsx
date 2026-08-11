@@ -180,7 +180,7 @@ export const MobileOpen: Story = {
   args: { children: null },
   render: () => (
     <div style={{ height: 500, position: 'relative' }}>
-      <Sidebar isOpen onClose={() => {}}>
+      <Sidebar open onClose={() => {}}>
         <DefaultContent />
       </Sidebar>
     </div>

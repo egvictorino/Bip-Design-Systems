@@ -1,4 +1,4 @@
-import React, { type ElementType, type ReactNode } from 'react';
+import React, { forwardRef, type ElementType, type ReactNode } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Stack.module.css';
 
@@ -51,31 +51,37 @@ const justifyClass: Record<StackJustify, string> = {
 };
 
 /** Layout primitive for one-dimensional flex arrangements — see also `Grid` for two-dimensional layouts. */
-export const Stack: React.FC<StackProps> = ({
-  as: Component = 'div',
-  direction = 'column',
-  gap = '4',
-  align,
-  justify,
-  wrap = false,
-  className,
-  children,
-  ...props
-}) => (
-  <Component
-    className={cn(
-      styles.stack,
-      direction === 'row' ? styles.row : styles.column,
-      gapClass[gap],
-      align && alignClass[align],
-      justify && justifyClass[justify],
-      wrap && styles.wrap,
-      className
-    )}
-    {...props}
-  >
-    {children}
-  </Component>
+export const Stack = forwardRef<HTMLElement, StackProps>(
+  (
+    {
+      as: Component = 'div',
+      direction = 'column',
+      gap = '4',
+      align,
+      justify,
+      wrap = false,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => (
+    <Component
+      ref={ref}
+      className={cn(
+        styles.stack,
+        direction === 'row' ? styles.row : styles.column,
+        gapClass[gap],
+        align && alignClass[align],
+        justify && justifyClass[justify],
+        wrap && styles.wrap,
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Component>
+  )
 );
 
 Stack.displayName = 'Stack';

@@ -23,7 +23,7 @@ const DefaultDropdown = ({ onItemClick = vi.fn() }: { onItemClick?: () => void }
       <DropdownItem onClick={onItemClick}>Editar</DropdownItem>
       <DropdownItem>Duplicar</DropdownItem>
       <DropdownDivider />
-      <DropdownItem danger>Eliminar</DropdownItem>
+      <DropdownItem variant="danger">Eliminar</DropdownItem>
       <DropdownItem disabled>Deshabilitado</DropdownItem>
     </DropdownMenu>
   </Dropdown>
@@ -235,6 +235,51 @@ describe('Dropdown', () => {
     }
   );
 
+  // ── Controlled open ───────────────────────────────────────────────────────
+
+  it('open prop controls menu visibility and onOpenChange is called on toggle', () => {
+    const onOpenChange = vi.fn();
+    const ControlledDropdown = ({ open }: { open: boolean }) => (
+      <Dropdown open={open} onOpenChange={onOpenChange}>
+        <DropdownTrigger>
+          <button type="button">Abrir menú</button>
+        </DropdownTrigger>
+        <DropdownMenu>
+          <DropdownItem>Editar</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+    );
+
+    const { rerender } = render(<ControlledDropdown open={false} />);
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+    // Clicking the trigger does not open the menu by itself — the parent must
+    // react to onOpenChange and pass a new `open` value.
+    open();
+    expect(onOpenChange).toHaveBeenCalledWith(true);
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+    rerender(<ControlledDropdown open={true} />);
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('defaultOpen seeds the initial uncontrolled state', () => {
+    render(
+      <Dropdown defaultOpen>
+        <DropdownTrigger>
+          <button type="button">Abrir menú</button>
+        </DropdownTrigger>
+        <DropdownMenu>
+          <DropdownItem>Editar</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+    );
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
   // ── Context guard ─────────────────────────────────────────────────────────
 
   it('throws when sub-components are used outside <Dropdown>', () => {
@@ -264,7 +309,7 @@ describe('DropdownGroup', () => {
           <DropdownItem>Duplicar</DropdownItem>
         </DropdownGroup>
         <DropdownGroup label="Zona peligrosa">
-          <DropdownItem danger>Eliminar</DropdownItem>
+          <DropdownItem variant="danger">Eliminar</DropdownItem>
         </DropdownGroup>
       </DropdownMenu>
     </Dropdown>
@@ -473,7 +518,7 @@ describe('DropdownSubmenu', () => {
           <DropdownItem>Carpeta A</DropdownItem>
           <DropdownItem>Carpeta B</DropdownItem>
         </DropdownSubmenu>
-        <DropdownItem danger>Eliminar</DropdownItem>
+        <DropdownItem variant="danger">Eliminar</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );

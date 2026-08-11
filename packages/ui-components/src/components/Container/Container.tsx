@@ -1,4 +1,4 @@
-import React, { type ElementType, type ReactNode } from 'react';
+import React, { forwardRef, type ElementType, type ReactNode } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Container.module.css';
 
@@ -20,16 +20,16 @@ const maxWidthClass: Record<ContainerMaxWidth, string> = {
 };
 
 /** Centers content and caps its width — the outermost layout primitive, wraps `Stack`/`Grid` compositions. */
-export const Container: React.FC<ContainerProps> = ({
-  as: Component = 'div',
-  maxWidth = 'lg',
-  className,
-  children,
-  ...props
-}) => (
-  <Component className={cn(styles.container, maxWidthClass[maxWidth], className)} {...props}>
-    {children}
-  </Component>
+export const Container = forwardRef<HTMLElement, ContainerProps>(
+  ({ as: Component = 'div', maxWidth = 'lg', className, children, ...props }, ref) => (
+    <Component
+      ref={ref}
+      className={cn(styles.container, maxWidthClass[maxWidth], className)}
+      {...props}
+    >
+      {children}
+    </Component>
+  )
 );
 
 Container.displayName = 'Container';

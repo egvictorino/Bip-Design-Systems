@@ -11,11 +11,18 @@ export {
   ThemeProvider,
   useTheme,
   useColorScheme,
+  useDensity,
+  useDir,
   useThemeAttributes,
   useThemeControls,
   getThemeInitScript,
   THEME_RESET_STYLE,
   TOKEN_VAR_MAP,
+  RADIUS_VAR_MAP,
+  ON_TEXT_VAR_MAP,
+  FOCUS_RING_VAR_MAP,
+  MOTION_VAR_MAP,
+  SPACING_VAR_MAP,
   resolveTokenVars,
 } from './components/ThemeProvider/index.js';
 export type {
@@ -25,10 +32,13 @@ export type {
   BipTheme,
   BipColorScheme,
   BipColorSchemePreference,
+  BipDensity,
+  BipDirection,
   BipTokenOverrides,
   BipRadiusOverrides,
   BipFocusRingOverrides,
   BipMotionOverrides,
+  BipSpacingOverrides,
 } from './components/ThemeProvider/index.js';
 
 export { contrastRatio, pickReadableText } from './lib/contrast.js';
@@ -42,6 +52,7 @@ export type {
   AccordionItemProps,
   AccordionTriggerProps,
   AccordionContentProps,
+  AccordionVariant,
 } from './components/Accordion/index.js';
 
 export { Button } from './components/Button/index.js';
@@ -70,7 +81,7 @@ export { Badge } from './components/Badge/index.js';
 export type { BadgeProps } from './components/Badge/index.js';
 
 export { Select } from './components/Select/index.js';
-export type { SelectProps, SelectOption } from './components/Select/index.js';
+export type { SelectProps, SelectOption, SelectOptionGroup } from './components/Select/index.js';
 
 export { MultiSelect } from './components/MultiSelect/index.js';
 export type { MultiSelectProps, MultiSelectOption } from './components/MultiSelect/index.js';
@@ -79,7 +90,12 @@ export { Alert } from './components/Alert/index.js';
 export type { AlertProps } from './components/Alert/index.js';
 
 export { ToastProvider, useToast } from './components/Toast/index.js';
-export type { ToastProviderProps, ToastConfig, ToastPosition } from './components/Toast/index.js';
+export type {
+  ToastProviderProps,
+  ToastConfig,
+  ToastPosition,
+  ToastContextValue,
+} from './components/Toast/index.js';
 
 export { Spinner } from './components/Spinner/index.js';
 export type { SpinnerProps } from './components/Spinner/index.js';
@@ -116,7 +132,15 @@ export { ProgressBar } from './components/ProgressBar/index.js';
 export type { ProgressBarProps } from './components/ProgressBar/index.js';
 
 export { Tabs, TabList, Tab, TabPanel } from './components/Tabs/index.js';
-export type { TabsProps, TabListProps, TabProps, TabPanelProps } from './components/Tabs/index.js';
+export type {
+  TabsProps,
+  TabListProps,
+  TabProps,
+  TabPanelProps,
+  TabsVariant,
+  TabsSize,
+  TabsOrientation,
+} from './components/Tabs/index.js';
 
 export { Modal, ModalHeader, ModalBody, ModalFooter } from './components/Modal/index.js';
 export type {
@@ -221,7 +245,11 @@ export { Divider } from './components/Divider/index.js';
 export type { DividerProps } from './components/Divider/index.js';
 
 export { StatsCard } from './components/StatsCard/index.js';
-export type { StatsCardProps } from './components/StatsCard/index.js';
+export type {
+  StatsCardProps,
+  StatsCardVariant,
+  StatsCardSize,
+} from './components/StatsCard/index.js';
 
 export { SearchInput } from './components/SearchInput/index.js';
 export type { SearchInputProps } from './components/SearchInput/index.js';
@@ -233,13 +261,24 @@ export { DateRangePicker } from './components/DateRangePicker/index.js';
 export type { DateRangePickerProps, DateRange } from './components/DateRangePicker/index.js';
 
 export { Timeline, TimelineItem } from './components/Timeline/index.js';
-export type { TimelineProps, TimelineItemProps } from './components/Timeline/index.js';
+export type {
+  TimelineProps,
+  TimelineItemProps,
+  TimelineVariant,
+  TimelineSize,
+  TimelineOrientation,
+} from './components/Timeline/index.js';
 
 export { DrawerPanel } from './components/DrawerPanel/index.js';
 export type { DrawerPanelProps } from './components/DrawerPanel/index.js';
 
 export { DataTable } from './components/DataTable/index.js';
-export type { DataTableProps, ColumnDef } from './components/DataTable/index.js';
+export type {
+  DataTableProps,
+  ColumnDef,
+  BulkAction,
+  SortDirection,
+} from './components/DataTable/index.js';
 
 export { Odontogram } from './components/Odontogram/index.js';
 export type {
@@ -250,6 +289,8 @@ export type {
   ToothSurface,
   SurfaceCondition,
   DentitionMode,
+  ToothImageType,
+  ToothImage,
 } from './components/Odontogram/index.js';
 
 export { Stack } from './components/Stack/index.js';
@@ -287,6 +328,8 @@ export { cn } from './lib/cn.js';
 
 export { BREAKPOINTS, mediaQuery } from './styles/breakpoints.js';
 export type { BreakpointKey } from './styles/breakpoints.js';
+
+export type { BipSize, BipSizeExtended } from './types/size.js';
 
 export {
   useClickOutside,

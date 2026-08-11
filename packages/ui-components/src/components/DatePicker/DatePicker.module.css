@@ -25,6 +25,8 @@
 .labelError   { color: var(--color-danger); }
 .labelDisabled { opacity: 0.5; }
 
+.required { color: var(--color-danger); margin-inline-start: var(--space-0-5); }
+
 /* ─── Trigger button wrapper ─────────────────────────────────────────────────── */
 
 .triggerWrapper {

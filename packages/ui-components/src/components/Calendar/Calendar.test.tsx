@@ -561,7 +561,7 @@ describe('Calendar', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       fireEvent.click(screen.getByRole('button', { name: /crear evento/i }));
       expect(onRangeSelect).toHaveBeenCalledTimes(1);
-      const [start, end] = onRangeSelect.mock.calls[0] as [Date, Date];
+      const [{ from: start, to: end }] = onRangeSelect.mock.calls[0] as [{ from: Date; to: Date }];
       expect(end.getTime()).toBeGreaterThan(start.getTime());
     });
 
@@ -641,7 +641,7 @@ describe('Calendar', () => {
       fireEvent.mouseUp(grid);
       fireEvent.click(screen.getByRole('button', { name: /crear evento/i }));
       expect(onRangeSelect).toHaveBeenCalledTimes(1);
-      const [start, end] = onRangeSelect.mock.calls[0] as [Date, Date];
+      const [{ from: start, to: end }] = onRangeSelect.mock.calls[0] as [{ from: Date; to: Date }];
       expect(start).toBeInstanceOf(Date);
       expect(end).toBeInstanceOf(Date);
       expect(end.getTime()).toBeGreaterThan(start.getTime());
@@ -691,6 +691,61 @@ describe('Calendar', () => {
       fireEvent.mouseEnter(cells[12]);
       fireEvent.mouseUp(grid);
       expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    });
+  });
+
+  // ─── Disabled ─────────────────────────────────────────────────────────────────
+
+  describe('Disabled', () => {
+    it('sets aria-disabled and applies disabled class on the root', () => {
+      renderCalendar({ disabled: true });
+      const root = screen.getByRole('application');
+      expect(root).toHaveAttribute('aria-disabled', 'true');
+      expect(root.className).toContain('disabled');
+    });
+
+    it('does not set aria-disabled when disabled is false', () => {
+      renderCalendar();
+      expect(screen.getByRole('application')).not.toHaveAttribute('aria-disabled');
+    });
+
+    it('clicking an event chip does not call onEventClick when disabled', () => {
+      const onEventClick = vi.fn();
+      renderCalendar({
+        view: 'month',
+        events: EVENTS,
+        date: EVENTS[0].start,
+        onEventClick,
+        disabled: true,
+      });
+      const chip = screen.getByText(/revisión general/i).closest('[role="button"]') as HTMLElement;
+      fireEvent.click(chip);
+      expect(onEventClick).not.toHaveBeenCalled();
+    });
+
+    it('clicking a view switcher button does not call onViewChange when disabled', () => {
+      const onViewChange = vi.fn();
+      renderCalendar({ onViewChange, disabled: true });
+      fireEvent.click(screen.getByRole('button', { name: 'Semana' }));
+      expect(onViewChange).not.toHaveBeenCalled();
+    });
+
+    it('clicking next period button does not call onDateChange when disabled', () => {
+      const onDateChange = vi.fn();
+      renderCalendar({ onDateChange, disabled: true });
+      fireEvent.click(screen.getByRole('button', { name: 'Período siguiente' }));
+      expect(onDateChange).not.toHaveBeenCalled();
+    });
+
+    it('range selection does not call onRangeSelect when disabled', () => {
+      const onRangeSelect = vi.fn();
+      const onEventCreate = vi.fn();
+      renderCalendar({ view: 'month', date: BASE_DATE, onRangeSelect, onEventCreate, disabled: true });
+      const cells = screen.getAllByRole('gridcell');
+      fireEvent.mouseDown(cells[0], { button: 0 });
+      fireEvent.mouseUp(cells[0]);
+      expect(onEventCreate).not.toHaveBeenCalled();
+      expect(onRangeSelect).not.toHaveBeenCalled();
     });
   });
 });

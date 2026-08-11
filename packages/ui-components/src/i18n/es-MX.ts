@@ -102,6 +102,7 @@ export const esMX: BipLocale = {
     clickToSelect: 'o haz click para seleccionar',
     formats: (accept) => `Formatos: ${accept}`,
     maxSize: (size) => `Máx. ${size}`,
+    uploading: 'Subiendo…',
   },
 
   input: {

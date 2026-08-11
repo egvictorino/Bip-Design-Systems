@@ -21,11 +21,10 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export interface AvatarGroupProps {
+export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   max?: number;
   size?: AvatarSize;
   children: React.ReactNode;
-  className?: string;
 }
 
 // ─── Style maps ──────────────────────────────────────────────────────────────
@@ -183,6 +182,7 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
   size = 'md',
   children,
   className,
+  ...rest
 }) => {
   const t = useBipLocale();
   const childArray = React.Children.toArray(children);
@@ -190,7 +190,7 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
   const overflow = childArray.length - max;
 
   return (
-    <div role="group" className={cn(styles.group, className)}>
+    <div role="group" className={cn(styles.group, className)} {...rest}>
       {visible.map((child, index) => (
         <div
           key={index}

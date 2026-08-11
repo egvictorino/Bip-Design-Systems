@@ -45,6 +45,11 @@
   opacity: 0.5;
 }
 
+.requiredMark {
+  color: var(--color-danger);
+  margin-inline-start: var(--space-0-5);
+}
+
 /* ─── Input wrapper ───────────────────────────────────────────────────────── */
 
 .inputWrapper {

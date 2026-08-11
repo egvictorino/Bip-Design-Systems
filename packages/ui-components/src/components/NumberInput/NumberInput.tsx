@@ -5,14 +5,14 @@ import type { InputHTMLAttributes, ReactNode } from 'react';
 import React from 'react';
 import { cn } from '../../lib/cn.js';
 import { useBipLocale } from '../../i18n/index.js';
+import type { BipSize } from '../../types/size.js';
 import styles from './NumberInput.module.css';
 
-type Size = 'sm' | 'md' | 'lg';
 
 export interface NumberInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type' | 'onChange' | 'prefix'> {
   variant?: 'outlined' | 'filled' | 'bare';
-  size?: Size;
+  size?: BipSize;
   label?: string;
   helperText?: string;
   error?: boolean;
@@ -23,7 +23,7 @@ export interface NumberInputProps
   step?: number;
   value?: number | string;
   defaultValue?: number | string;
-  onChange?: (value: number | null, event?: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (value: number | null) => void;
   /** Etiqueta no editable al inicio del input (ej: "$", "MXN") */
   prefix?: string | ReactNode;
   /** Etiqueta no editable al final del input (ej: "kg", "%") */
@@ -35,49 +35,49 @@ export interface NumberInputProps
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
 
-const inputSizeClass: Record<Size, string> = {
+const inputSizeClass: Record<BipSize, string> = {
   sm: styles.inputSm,
   md: styles.inputMd,
   lg: styles.inputLg,
 };
 
-const labelSizeClass: Record<Size, string> = {
+const labelSizeClass: Record<BipSize, string> = {
   sm: styles.labelSm,
   md: styles.labelMd,
   lg: styles.labelLg,
 };
 
-const helperSizeClass: Record<Size, string> = {
+const helperSizeClass: Record<BipSize, string> = {
   sm: styles.helperSm,
   md: styles.helperMd,
   lg: styles.helperLg,
 };
 
-const stepBtnSizeClass: Record<Size, string> = {
+const stepBtnSizeClass: Record<BipSize, string> = {
   sm: styles.stepBtnSm,
   md: styles.stepBtnMd,
   lg: styles.stepBtnLg,
 };
 
-const prefixSizeClass: Record<Size, string> = {
+const prefixSizeClass: Record<BipSize, string> = {
   sm: styles.prefixSm,
   md: styles.prefixMd,
   lg: styles.prefixLg,
 };
 
-const suffixSizeClass: Record<Size, string> = {
+const suffixSizeClass: Record<BipSize, string> = {
   sm: styles.suffixSm,
   md: styles.suffixMd,
   lg: styles.suffixLg,
 };
 
-const inputPrefixSizeClass: Record<Size, string> = {
+const inputPrefixSizeClass: Record<BipSize, string> = {
   sm: styles.inputSmPrefix,
   md: styles.inputMdPrefix,
   lg: styles.inputLgPrefix,
 };
 
-const inputSuffixSizeClass: Record<Size, string> = {
+const inputSuffixSizeClass: Record<BipSize, string> = {
   sm: styles.inputSmSuffix,
   md: styles.inputMdSuffix,
   lg: styles.inputLgSuffix,
@@ -160,14 +160,14 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       const base = parsedValue ?? (min ?? 0);
       const next = clamp(base + step);
       setInternalValue(String(next));
-      onChange?.(next, undefined);
+      onChange?.(next);
     }, [parsedValue, min, step, clamp, onChange]);
 
     const handleDecrement = useCallback(() => {
       const base = parsedValue ?? (max ?? 0);
       const next = clamp(base - step);
       setInternalValue(String(next));
-      onChange?.(next, undefined);
+      onChange?.(next);
     }, [parsedValue, max, step, clamp, onChange]);
 
     const handleChange = useCallback(
@@ -181,7 +181,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
         }
         setInternalValue(raw);
         const parsed = parseValue(raw);
-        onChange?.(parsed, e);
+        onChange?.(parsed);
       },
       [onChange, decimals]
     );
@@ -196,7 +196,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             const formatted =
               decimals === 0 ? String(Math.round(clamped)) : clamped.toFixed(decimals);
             setInternalValue(formatted);
-            onChange?.(parseFloat(formatted), e);
+            onChange?.(parseFloat(formatted));
           } else {
             setInternalValue(String(clamped));
           }

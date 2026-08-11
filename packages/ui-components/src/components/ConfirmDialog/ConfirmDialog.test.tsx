@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { ConfirmDialog } from './ConfirmDialog';
 
 const defaultProps = {
-  isOpen: true,
+  open: true,
   onClose: vi.fn(),
   onConfirm: vi.fn(),
   title: 'Confirmar eliminación',
@@ -43,8 +43,8 @@ describe('ConfirmDialog', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('does not render when isOpen is false', () => {
-    render(<ConfirmDialog {...defaultProps} isOpen={false} />);
+  it('does not render when open is false', () => {
+    render(<ConfirmDialog {...defaultProps} open={false} />);
     expect(screen.queryByText('Confirmar eliminación')).not.toBeInTheDocument();
   });
 

@@ -32,6 +32,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       step = 1,
       value,
       defaultValue,
+      required,
       ...props
     },
     ref
@@ -52,6 +53,12 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
                 className={cn(styles.label, disabled && styles.labelDisabled)}
               >
                 {label}
+                {required && (
+                  <span aria-hidden="true" className={styles.requiredMark}>
+                    {' '}
+                    *
+                  </span>
+                )}
               </label>
             )}
             {showValue && <span className={styles.valueLabel}>{currentValue}</span>}
@@ -67,6 +74,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
           value={value}
           defaultValue={defaultValue}
           disabled={disabled}
+          required={required}
           aria-invalid={error || undefined}
           aria-describedby={messageId}
           className={cn(styles.track, error && styles.error)}

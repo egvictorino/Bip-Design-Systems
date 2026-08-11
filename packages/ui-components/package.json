@@ -33,13 +33,26 @@
       "import": "./dist/index.js"
     },
     "./style.css": "./dist/style.css",
+    "./package.json": "./package.json",
+    "./CheckboxGroup": {
+      "types": "./dist/components/Checkbox/CheckboxGroup.d.ts",
+      "import": "./dist/components/Checkbox/CheckboxGroup.js"
+    },
+    "./RadioGroup": {
+      "types": "./dist/components/Radio/RadioGroup.d.ts",
+      "import": "./dist/components/Radio/RadioGroup.js"
+    },
     "./*": {
       "types": "./dist/components/*/*.d.ts",
       "import": "./dist/components/*/*.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "CheckboxGroup.js",
+    "CheckboxGroup.d.ts",
+    "RadioGroup.js",
+    "RadioGroup.d.ts"
   ],
   "engines": {
     "node": ">=20.0.0"

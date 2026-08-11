@@ -143,4 +143,21 @@ describe('Toggle', () => {
     const track = container.querySelector('.track') as HTMLElement;
     expect(track).toHaveClass(trackClass);
   });
+
+  // ── Required ───────────────────────────────────────────────────────────────
+
+  it('shows a required asterisk next to the label when required is true', () => {
+    render(<Toggle label="Notificaciones" required />);
+    expect(screen.getByText('*')).toBeInTheDocument();
+  });
+
+  it('does not show a required asterisk when required is not set', () => {
+    render(<Toggle label="Notificaciones" />);
+    expect(screen.queryByText('*')).not.toBeInTheDocument();
+  });
+
+  it('sets required on the underlying input when required is true', () => {
+    render(<Toggle label="Notificaciones" required />);
+    expect(screen.getByRole('switch')).toBeRequired();
+  });
 });

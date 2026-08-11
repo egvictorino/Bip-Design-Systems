@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Popover, PopoverTrigger, PopoverContent } from './Popover';
 import { Button } from '../Button/index.js';
@@ -48,4 +49,30 @@ export const Placements: Story = {
       </Popover>
     </div>
   ),
+};
+
+export const Controlled: Story = {
+  args: { children: null },
+  render: () => {
+    const ControlledStory = () => {
+      const [open, setOpen] = useState(false);
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start' }}>
+          <Button variant="secondary" onClick={() => setOpen((v) => !v)}>
+            {open ? 'Cerrar (externo)' : 'Abrir (externo)'}
+          </Button>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger>
+              <Button>Abrir popover</Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <p>Contenido controlado externamente vía `open`/`onOpenChange`.</p>
+            </PopoverContent>
+          </Popover>
+        </div>
+      );
+    };
+
+    return <ControlledStory />;
+  },
 };

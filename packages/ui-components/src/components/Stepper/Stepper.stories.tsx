@@ -51,7 +51,7 @@ export const WithError: Story = {
     <div style={{ width: 560 }}>
       <Stepper value={1} onChange={() => {}}>
         <StepperStep value={0} label="Datos personales" />
-        <StepperStep value={1} label="Información" status="error" />
+        <StepperStep value={1} label="Información" variant="danger" />
         <StepperStep value={2} label="Revisión" />
         <StepperStep value={3} label="Confirmación" />
       </Stepper>
@@ -64,8 +64,8 @@ export const WithSuccess: Story = {
   render: () => (
     <div style={{ width: 560 }}>
       <Stepper value={2} onChange={() => {}}>
-        <StepperStep value={0} label="Datos personales" status="success" />
-        <StepperStep value={1} label="Información" status="success" />
+        <StepperStep value={0} label="Datos personales" variant="success" />
+        <StepperStep value={1} label="Información" variant="success" />
         <StepperStep value={2} label="Revisión" />
         <StepperStep value={3} label="Confirmación" />
       </Stepper>
@@ -79,7 +79,7 @@ export const WithWarning: Story = {
     <div style={{ width: 560 }}>
       <Stepper value={1} onChange={() => {}}>
         <StepperStep value={0} label="Datos personales" />
-        <StepperStep value={1} label="Información" status="warning" />
+        <StepperStep value={1} label="Información" variant="warning" />
         <StepperStep value={2} label="Revisión" />
         <StepperStep value={3} label="Confirmación" />
       </Stepper>
@@ -93,7 +93,7 @@ export const WithLoading: Story = {
     <div style={{ width: 560 }}>
       <Stepper value={1} onChange={() => {}}>
         <StepperStep value={0} label="Datos personales" />
-        <StepperStep value={1} label="Procesando..." status="loading" />
+        <StepperStep value={1} label="Procesando..." variant="loading" />
         <StepperStep value={2} label="Revisión" />
         <StepperStep value={3} label="Confirmación" />
       </Stepper>
@@ -106,10 +106,10 @@ export const AllStatuses: Story = {
   render: () => (
     <div style={{ width: 640 }}>
       <Stepper value={4} onChange={() => {}}>
-        <StepperStep value={0} label="Completado" status="success" />
-        <StepperStep value={1} label="Advertencia" status="warning" />
-        <StepperStep value={2} label="Cargando" status="loading" />
-        <StepperStep value={3} label="Error" status="error" />
+        <StepperStep value={0} label="Completado" variant="success" />
+        <StepperStep value={1} label="Advertencia" variant="warning" />
+        <StepperStep value={2} label="Cargando" variant="loading" />
+        <StepperStep value={3} label="Error" variant="danger" />
       </Stepper>
     </div>
   ),

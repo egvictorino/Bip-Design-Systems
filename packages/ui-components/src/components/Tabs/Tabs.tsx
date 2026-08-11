@@ -1,6 +1,14 @@
 "use client";
 
-import React, { useId, useState, useContext, useCallback, useRef, useEffect } from 'react';
+import React, {
+  useId,
+  useState,
+  useContext,
+  useCallback,
+  useRef,
+  useEffect,
+  forwardRef,
+} from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Tabs.module.css';
 
@@ -34,7 +42,7 @@ const useTabsContext = (): TabsContextValue => {
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
-export interface TabsProps {
+export interface TabsProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
@@ -42,8 +50,6 @@ export interface TabsProps {
   size?: TabsSize;
   orientation?: TabsOrientation;
   animated?: boolean;
-  className?: string;
-  style?: React.CSSProperties;
   children: React.ReactNode;
 }
 
@@ -58,6 +64,7 @@ export const Tabs: React.FC<TabsProps> = ({
   className,
   style,
   children,
+  ...rest
 }) => {
   const [internalValue, setInternalValue] = useState(defaultValue);
   const instanceId = useId();
@@ -98,6 +105,7 @@ export const Tabs: React.FC<TabsProps> = ({
           className
         )}
         style={style}
+        {...rest}
       >
         {children}
       </div>
@@ -117,48 +125,62 @@ const tabListClassMap: Record<TabsVariant, Record<'horizontal' | 'vertical', str
   boxed: { horizontal: styles.tabListBoxed, vertical: styles.tabListBoxed },
 };
 
-export const TabList: React.FC<TabListProps> = ({ className, children, ...props }) => {
-  const { variant, orientation, animated, activeTab, tabRefs } = useTabsContext();
-  const listRef = useRef<HTMLDivElement>(null);
-  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
-  const [initialized, setInitialized] = useState(false);
+export const TabList = forwardRef<HTMLDivElement, TabListProps>(
+  ({ className, children, ...props }, ref) => {
+    const { variant, orientation, animated, activeTab, tabRefs } = useTabsContext();
+    const listRef = useRef<HTMLDivElement>(null);
+    const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+    const [initialized, setInitialized] = useState(false);
 
-  useEffect(() => {
-    if (!animated || variant !== 'line' || orientation !== 'horizontal') return;
-    const activeEl = tabRefs.current?.get(activeTab);
-    if (!activeEl || !listRef.current) return;
-    const listRect = listRef.current.getBoundingClientRect();
-    const tabRect = activeEl.getBoundingClientRect();
-    setIndicatorStyle({ left: tabRect.left - listRect.left, width: tabRect.width });
-    setInitialized(true);
-  }, [activeTab, animated, variant, orientation, tabRefs]);
+    const combinedRef = useCallback(
+      (node: HTMLDivElement | null) => {
+        (listRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      },
+      [ref]
+    );
 
-  const orientationKey = orientation === 'vertical' ? 'vertical' : 'horizontal';
-  const tabListClass = tabListClassMap[variant][orientationKey];
+    useEffect(() => {
+      if (!animated || variant !== 'line' || orientation !== 'horizontal') return;
+      const activeEl = tabRefs.current?.get(activeTab);
+      if (!activeEl || !listRef.current) return;
+      const listRect = listRef.current.getBoundingClientRect();
+      const tabRect = activeEl.getBoundingClientRect();
+      setIndicatorStyle({ left: tabRect.left - listRect.left, width: tabRect.width });
+      setInitialized(true);
+    }, [activeTab, animated, variant, orientation, tabRefs]);
 
-  return (
-    <div
-      ref={listRef}
-      role="tablist"
-      aria-orientation={orientation}
-      className={cn(
-        tabListClass,
-        animated && variant === 'line' && orientation === 'horizontal' && styles.tabListAnimated,
-        className
-      )}
-      {...props}
-    >
-      {children}
-      {animated && variant === 'line' && orientation === 'horizontal' && (
-        <span
-          aria-hidden="true"
-          className={cn(styles.tabIndicator, initialized && styles.tabIndicatorAnimated)}
-          style={{ left: indicatorStyle.left, width: indicatorStyle.width }}
-        />
-      )}
-    </div>
-  );
-};
+    const orientationKey = orientation === 'vertical' ? 'vertical' : 'horizontal';
+    const tabListClass = tabListClassMap[variant][orientationKey];
+
+    return (
+      <div
+        ref={combinedRef}
+        role="tablist"
+        aria-orientation={orientation}
+        className={cn(
+          tabListClass,
+          animated &&
+            variant === 'line' &&
+            orientation === 'horizontal' &&
+            styles.tabListAnimated,
+          className
+        )}
+        {...props}
+      >
+        {children}
+        {animated && variant === 'line' && orientation === 'horizontal' && (
+          <span
+            aria-hidden="true"
+            className={cn(styles.tabIndicator, initialized && styles.tabIndicatorAnimated)}
+            style={{ left: indicatorStyle.left, width: indicatorStyle.width }}
+          />
+        )}
+      </div>
+    );
+  }
+);
 
 // ─── Tab ──────────────────────────────────────────────────────────────────────
 
@@ -197,82 +219,100 @@ const tabVariantClasses: Record<TabsVariant, TabVariantInfo> = {
   },
 };
 
-export const Tab: React.FC<TabProps> = ({ value, className, children, ...props }) => {
-  const { activeTab, onChange, instanceId, variant, size, orientation, registerTabRef } =
-    useTabsContext();
-  const isActive = activeTab === value;
-  const tabId = `${instanceId}-tab-${value}`;
-  const panelId = `${instanceId}-panel-${value}`;
-  const buttonRef = useRef<HTMLButtonElement>(null);
+export const Tab = forwardRef<HTMLButtonElement, TabProps>(
+  ({ value, className, children, ...props }, ref) => {
+    const { activeTab, onChange, instanceId, variant, size, orientation, registerTabRef } =
+      useTabsContext();
+    const isActive = activeTab === value;
+    const tabId = `${instanceId}-tab-${value}`;
+    const panelId = `${instanceId}-panel-${value}`;
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    registerTabRef(value, buttonRef.current);
-    return () => registerTabRef(value, null);
-  }, [value, registerTabRef]);
+    const combinedRef = useCallback(
+      (node: HTMLButtonElement | null) => {
+        (buttonRef as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+      },
+      [ref]
+    );
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    const tablist = e.currentTarget.closest('[role="tablist"]');
-    if (!tablist) return;
-    const tabs = Array.from(
-      tablist.querySelectorAll('[role="tab"]:not([disabled])')
-    ) as HTMLElement[];
-    const currentIndex = tabs.indexOf(e.currentTarget);
-    let nextIndex = currentIndex;
+    useEffect(() => {
+      registerTabRef(value, buttonRef.current);
+      return () => registerTabRef(value, null);
+    }, [value, registerTabRef]);
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      const tablist = e.currentTarget.closest('[role="tablist"]');
+      if (!tablist) return;
+      const tabs = Array.from(
+        tablist.querySelectorAll('[role="tab"]:not([disabled])')
+      ) as HTMLElement[];
+      const currentIndex = tabs.indexOf(e.currentTarget);
+      let nextIndex = currentIndex;
+
+      const isVertical = orientation === 'vertical';
+      const nextKey = isVertical ? 'ArrowDown' : 'ArrowRight';
+      const prevKey = isVertical ? 'ArrowUp' : 'ArrowLeft';
+
+      if (e.key === nextKey) {
+        nextIndex = (currentIndex + 1) % tabs.length;
+        e.preventDefault();
+      } else if (e.key === prevKey) {
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        e.preventDefault();
+      } else if (e.key === 'Home') {
+        nextIndex = 0;
+        e.preventDefault();
+      } else if (e.key === 'End') {
+        nextIndex = tabs.length - 1;
+        e.preventDefault();
+      }
+
+      if (nextIndex !== currentIndex) {
+        tabs[nextIndex].focus();
+      }
+    };
 
     const isVertical = orientation === 'vertical';
-    const nextKey = isVertical ? 'ArrowDown' : 'ArrowRight';
-    const prevKey = isVertical ? 'ArrowUp' : 'ArrowLeft';
+    const variantInfo = tabVariantClasses[variant];
+    const baseClass =
+      isVertical && variant === 'line' ? variantInfo.baseVertical ?? variantInfo.base : variantInfo.base;
+    const activeClass =
+      isVertical && variant === 'line'
+        ? variantInfo.activeVertical ?? variantInfo.active
+        : variantInfo.active;
+    const inactiveClass =
+      isVertical && variant === 'line'
+        ? variantInfo.inactiveVertical ?? variantInfo.inactive
+        : variantInfo.inactive;
 
-    if (e.key === nextKey) {
-      nextIndex = (currentIndex + 1) % tabs.length;
-      e.preventDefault();
-    } else if (e.key === prevKey) {
-      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-      e.preventDefault();
-    } else if (e.key === 'Home') {
-      nextIndex = 0;
-      e.preventDefault();
-    } else if (e.key === 'End') {
-      nextIndex = tabs.length - 1;
-      e.preventDefault();
-    }
-
-    if (nextIndex !== currentIndex) {
-      tabs[nextIndex].focus();
-    }
-  };
-
-  const isVertical = orientation === 'vertical';
-  const variantInfo = tabVariantClasses[variant];
-  const baseClass = isVertical && variant === 'line' ? variantInfo.baseVertical ?? variantInfo.base : variantInfo.base;
-  const activeClass = isVertical && variant === 'line' ? variantInfo.activeVertical ?? variantInfo.active : variantInfo.active;
-  const inactiveClass = isVertical && variant === 'line' ? variantInfo.inactiveVertical ?? variantInfo.inactive : variantInfo.inactive;
-
-  return (
-    <button
-      ref={buttonRef}
-      role="tab"
-      id={tabId}
-      aria-controls={panelId}
-      aria-selected={isActive}
-      tabIndex={isActive ? 0 : -1}
-      type="button"
-      onClick={() => onChange(value)}
-      onKeyDown={handleKeyDown}
-      className={cn(
-        styles.tab,
-        baseClass,
-        isActive ? activeClass : inactiveClass,
-        size === 'sm' && styles.tabSm,
-        size === 'lg' && styles.tabLg,
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
+    return (
+      <button
+        ref={combinedRef}
+        role="tab"
+        id={tabId}
+        aria-controls={panelId}
+        aria-selected={isActive}
+        tabIndex={isActive ? 0 : -1}
+        type="button"
+        onClick={() => onChange(value)}
+        onKeyDown={handleKeyDown}
+        className={cn(
+          styles.tab,
+          baseClass,
+          isActive ? activeClass : inactiveClass,
+          size === 'sm' && styles.tabSm,
+          size === 'lg' && styles.tabLg,
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
+);
 
 // ─── TabPanel ─────────────────────────────────────────────────────────────────
 
@@ -281,29 +321,32 @@ export interface TabPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export const TabPanel: React.FC<TabPanelProps> = ({ value, className, children, ...props }) => {
-  const { activeTab, instanceId, orientation } = useTabsContext();
-  const tabId = `${instanceId}-tab-${value}`;
-  const panelId = `${instanceId}-panel-${value}`;
+export const TabPanel = forwardRef<HTMLDivElement, TabPanelProps>(
+  ({ value, className, children, ...props }, ref) => {
+    const { activeTab, instanceId, orientation } = useTabsContext();
+    const tabId = `${instanceId}-tab-${value}`;
+    const panelId = `${instanceId}-panel-${value}`;
 
-  return (
-    <div
-      role="tabpanel"
-      id={panelId}
-      aria-labelledby={tabId}
-      tabIndex={0}
-      hidden={activeTab !== value}
-      className={cn(
-        styles.tabPanel,
-        orientation === 'vertical' && styles.tabPanelVertical,
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
+    return (
+      <div
+        ref={ref}
+        role="tabpanel"
+        id={panelId}
+        aria-labelledby={tabId}
+        tabIndex={0}
+        hidden={activeTab !== value}
+        className={cn(
+          styles.tabPanel,
+          orientation === 'vertical' && styles.tabPanelVertical,
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
+);
 
 Tabs.displayName = 'Tabs';
 TabList.displayName = 'TabList';

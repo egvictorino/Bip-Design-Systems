@@ -4,10 +4,11 @@ import React, { forwardRef, useId, useState, useRef, useEffect, useCallback } fr
 import type { TextareaHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Textarea.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
   variant?: 'outlined' | 'filled' | 'bare';
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   helperText?: string;
   error?: boolean;

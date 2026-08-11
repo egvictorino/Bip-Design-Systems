@@ -53,7 +53,7 @@ const PortalThemingDemo = () => {
   return (
     <ThemeProvider theme="rounded">
       <Button onClick={() => setIsOpen(true)}>Abrir modal (rounded)</Button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <ModalHeader>Modal en tema rounded</ModalHeader>
         <ModalBody>
           El Modal usa createPortal hacia document.body; este contenido debe
@@ -162,7 +162,7 @@ const CustomBrandDemo = () => {
 
         <Input label="Nombre" placeholder="Ej. Ana López" />
 
-        <Alert variant="error">Este es un mensaje de error con la marca personalizada.</Alert>
+        <Alert variant="danger">Este es un mensaje de error con la marca personalizada.</Alert>
 
         <Tabs defaultValue="uno" style={{ width: '420px' }}>
           <TabList>
@@ -175,7 +175,7 @@ const CustomBrandDemo = () => {
 
         <div>
           <Button onClick={() => setIsOpen(true)}>Abrir modal (marca custom)</Button>
-          <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+          <Modal open={isOpen} onClose={() => setIsOpen(false)}>
             <ModalHeader>Modal con marca personalizada</ModalHeader>
             <ModalBody>
               El Modal se porta hacia document.body pero recibe las vars de

@@ -7,7 +7,7 @@ const meta = {
   parameters: { layout: 'centered' },
   tags: ['autodocs'],
   argTypes: {
-    variant: { control: 'select', options: ['info', 'success', 'warning', 'error'] },
+    variant: { control: 'select', options: ['info', 'success', 'warning', 'danger'] },
     onClose: { action: 'closed' },
   },
 } satisfies Meta<typeof Alert>;
@@ -38,7 +38,7 @@ export const Warning: Story = {
 
 export const Error: Story = {
   args: {
-    variant: 'error',
+    variant: 'danger',
     children: 'Ocurrió un error al procesar tu solicitud. Intenta de nuevo más tarde.',
   },
 };
@@ -75,7 +75,7 @@ export const AllVariants: Story = {
       <Alert variant="info">Tu solicitud está siendo procesada.</Alert>
       <Alert variant="success">Los cambios han sido guardados.</Alert>
       <Alert variant="warning">Tu sesión expirará en 5 minutos.</Alert>
-      <Alert variant="error">Ocurrió un error. Intenta de nuevo.</Alert>
+      <Alert variant="danger">Ocurrió un error. Intenta de nuevo.</Alert>
     </div>
   ),
 };

@@ -4,9 +4,10 @@ import { forwardRef, useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn.js';
 import styles from './Toggle.module.css';
+import type { BipSize } from '../../types/size.js';
 
 export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
-  size?: 'sm' | 'md' | 'lg';
+  size?: BipSize;
   label?: string;
   helperText?: string;
   error?: boolean;
@@ -56,6 +57,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
       className,
       disabled = false,
       id,
+      required,
       ...props
     },
     ref
@@ -84,6 +86,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
               type="checkbox"
               role="switch"
               disabled={disabled}
+              required={required}
               aria-invalid={error || undefined}
               aria-describedby={messageId}
               className={styles.nativeInput}
@@ -104,6 +107,12 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
               )}
             >
               {label}
+              {required && (
+                <span aria-hidden="true" className={styles.requiredMark}>
+                  {' '}
+                  *
+                </span>
+              )}
             </label>
           )}
         </div>
