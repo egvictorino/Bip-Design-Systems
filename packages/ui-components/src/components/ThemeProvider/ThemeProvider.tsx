@@ -497,7 +497,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     if (!saved) return;
     if (themeProp === undefined && saved.theme) setInternalTheme(saved.theme);
     if (colorSchemeProp === undefined && saved.colorScheme) setInternalColorScheme(saved.colorScheme);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- themeProp/colorSchemeProp se leen deliberadamente solo al montar/cambiar storageKey, no en cada cambio suyo — ver el comentario del bloque de arriba
   }, [storageKey]);
 
   const theme = themeProp ?? internalTheme;
