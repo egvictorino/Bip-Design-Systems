@@ -13,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "production"
+  group: "production-${{ github.ref }}"
   cancel-in-progress: false
 
 jobs:
