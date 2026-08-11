@@ -8,6 +8,16 @@ import { COMPONENT_MATRIX, SKIP_LIST } from './component-matrix';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
+ * `Calendar`'s COMPONENT_MATRIX story (`WeekViewStory`) renders with `date: new Date()` — the
+ * real "today" at render time — so its grid (which cell is "today", which of the fixture
+ * EVENTS fall in the visible week) drifts a little more each day and eventually diffs against
+ * a baseline captured on an earlier date. `page.clock.setFixedTime()` pins `Date.now()`/
+ * `new Date()` to a fixed instant without touching real timers, so `animations: 'disabled'`
+ * (which needs timers to actually tick) still works normally.
+ */
+const FROZEN_TIME = new Date('2026-01-15T09:00:00');
+
+/**
  * Un screenshot canónico por componente — acotado a #storybook-root (no fullPage, como
  * theme-matrix.spec.ts) para que el archivo sea chico y el diff sea del componente, no del
  * canvas completo. `animations: 'disabled'` porque casi todo componente tiene una transición
@@ -16,6 +26,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 test.describe('component matrix — un screenshot por componente (LTR + subset RTL)', () => {
   for (const { dir, storyId, rtl } of COMPONENT_MATRIX) {
     test(`${dir} — LTR`, async ({ page }) => {
+      if (dir === 'Calendar') await page.clock.setFixedTime(FROZEN_TIME);
       await page.goto(`/iframe.html?id=${storyId}&viewMode=story`);
       await page.waitForLoadState('networkidle');
       await expect(page.locator('#storybook-root')).toHaveScreenshot(`${dir}.png`, {
@@ -25,6 +36,7 @@ test.describe('component matrix — un screenshot por componente (LTR + subset R
 
     if (rtl) {
       test(`${dir} — RTL`, async ({ page }) => {
+        if (dir === 'Calendar') await page.clock.setFixedTime(FROZEN_TIME);
         await page.goto(`/iframe.html?id=${storyId}&viewMode=story&globals=dir:rtl`);
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#storybook-root')).toHaveScreenshot(`${dir}-rtl.png`, {

@@ -17,11 +17,18 @@ import { COMPONENT_MATRIX } from './component-matrix';
  * Corre en ambos esquemas de color — no solo light — porque los tokens derivados cambian
  * de fórmula (aclaran hacia white en dark en vez de oscurecer hacia black) y es donde más
  * probable es que un contraste marginal falle.
+ *
+ * `Calendar`'s story renders with `date: new Date()` — see the same fixed-time note in
+ * component-matrix.spec.ts. Frozen here too so a date-dependent render (which fixture EVENTS
+ * fall in the visible week, which cell is "today") can't flip an axe result day to day.
  */
+const FROZEN_TIME = new Date('2026-01-15T09:00:00');
+
 test.describe('a11y — axe en navegador real, color-contrast activado', () => {
   for (const { dir, storyId } of COMPONENT_MATRIX) {
     for (const colorScheme of ['light', 'dark'] as const) {
       test(`${dir} — ${colorScheme}`, async ({ page }) => {
+        if (dir === 'Calendar') await page.clock.setFixedTime(FROZEN_TIME);
         await page.goto(`/iframe.html?id=${storyId}&viewMode=story&globals=colorScheme:${colorScheme}`);
         await page.waitForLoadState('networkidle');
 
