@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../Modal/index.js';
 import { Button } from '../Button/index.js';
