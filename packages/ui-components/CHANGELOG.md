@@ -15,6 +15,20 @@ La API pública queda declarada estable. `0.5.0` (más abajo) unificó el vocabu
 entre componentes hermanos como preparación para este corte — no hay cambios de código en esta
 versión, es la declaración formal de compromiso de compatibilidad de SemVer a partir de aquí.
 
+### Fixed
+
+- **`Navbar` emitía el warning de consola "Received an empty string for a boolean attribute
+  `inert`" bajo React 19**, reportado al consumir el paquete desde un proyecto real (Next.js App
+  Router). El panel móvil pasaba `inert={isMobileOpen ? undefined : ''}` como prop JSX — React 18
+  no tiene `inert` en su tabla de atributos booleanos conocidos (solo un valor `string` llega al
+  DOM, de ahí el `''`), pero React 19 sí la agregó, y para un atributo booleano conocido un valor
+  no-booleano como `''` genera el warning y se trata como `false` (el atributo tampoco se aplica).
+  Ningún valor único de la prop satisface ambas versiones del peer dependency a la vez. Se dejó
+  de pasar `inert` como prop JSX — ahora se asigna vía la propiedad DOM imperativa (`element.inert
+  = boolean`, `ref` + `useLayoutEffect`), la API nativa del navegador, evitando la traducción
+  prop→atributo de React por completo. También se elimina `src/react-inert.d.ts` (el type
+  augmentation que ya no usaba ningún componente y no participaba del build publicado).
+
 ## [0.5.0] - 2026-08-11
 
 ### Changed — Unificación de API (breaking en 0.x, ver guía de migración en el README)
