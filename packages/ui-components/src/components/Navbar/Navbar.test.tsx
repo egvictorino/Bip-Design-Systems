@@ -122,6 +122,28 @@ describe('Navbar', () => {
     expect(panel).toHaveAttribute('aria-hidden', 'false');
   });
 
+  // Regression test: the panel used to pass inert={isMobileOpen ? undefined : ''}. Under
+  // React 19's boolean-attribute handling, an empty string is treated as falsy — the
+  // opposite of intent — and logs "Received an empty string for a boolean attribute
+  // `inert`" to the console. Passing `true`/`false` (not `''`/`undefined`) is what makes the
+  // attribute presence match intent under both React 18 and 19.
+  it('mobile menu panel sets inert (a real boolean, not an empty string) when closed', async () => {
+    const user = userEvent.setup();
+    renderNavbar();
+    const toggle = screen.getByRole('button', { name: 'Abrir menú' });
+    const mobileMenuId = toggle.getAttribute('aria-controls') as string;
+    const panel = document.getElementById(mobileMenuId) as HTMLElement;
+
+    // Closed by default: inert must be present so the panel's contents are out of the tab
+    // order and hidden from assistive tech, matching its aria-hidden="true" sibling above.
+    expect(panel.hasAttribute('inert')).toBe(true);
+
+    await user.click(toggle);
+
+    // Open: inert must be absent entirely, matching aria-hidden="false".
+    expect(panel.hasAttribute('inert')).toBe(false);
+  });
+
   it('pressing Escape closes the mobile menu', async () => {
     const user = userEvent.setup();
     renderNavbar();
