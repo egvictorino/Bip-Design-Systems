@@ -1,6 +1,7 @@
 "use client";
 
 import React, {
+  useCallback,
   useEffect,
   useRef,
   useContext,
@@ -83,10 +84,24 @@ export const Modal: React.FC<ModalProps> = ({
     }
   }, [open]);
 
-  const handleClose = () => {
+  // Memoized so `onEscape` below only changes identity when onClose/onOpenChange
+  // themselves do — otherwise it's a new function on every render of Modal
+  // (which happens on every render of any state-holding component nested
+  // directly inside `children`, e.g. a controlled <input> whose value lives in
+  // the same component that renders <Modal>), and useFocusTrap's effect
+  // re-runs on every one of those renders as a result: it tears down and
+  // re-acquires the trap, which unconditionally re-focuses the container's
+  // first focusable element — stealing focus away from whatever the user was
+  // actually typing into on every keystroke. Reproduced with
+  // TenantLookupModal (frontend consumer): a plain useState-controlled input
+  // right inside the component that renders <Modal> lost focus after exactly
+  // one character. Forms using react-hook-form's uncontrolled register()
+  // rarely re-render their Modal ancestor on keystroke, which is why this
+  // stayed hidden until a controlled-input consumer hit it.
+  const handleClose = useCallback(() => {
     onClose();
     onOpenChange?.(false);
-  };
+  }, [onClose, onOpenChange]);
 
   useScrollLock(open);
   useFocusTrap(dialogRef, { enabled: open, onEscape: closeOnEscape ? handleClose : undefined });
