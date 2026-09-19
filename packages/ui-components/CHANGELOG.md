@@ -9,6 +9,8 @@ hacerlo (ver el historial 0.x más abajo para el detalle de qué cambió en cada
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-09-19
+
 ### Fixed
 
 - **`Modal`/`DrawerPanel` robaban el foco de un input controlado en cada tecla escrita**,
