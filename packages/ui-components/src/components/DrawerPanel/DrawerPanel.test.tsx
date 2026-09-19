@@ -1,4 +1,5 @@
-import { act, render, screen } from '@testing-library/react';
+import { useState } from 'react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DrawerPanel } from './DrawerPanel';
 
@@ -251,5 +252,37 @@ describe('DrawerPanel — headerActions', () => {
     );
     await userEvent.click(screen.getByLabelText('Cerrar panel'));
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not steal focus away from a controlled input on every keystroke', () => {
+    // Same regression as Modal.test.tsx's equivalent test — DrawerPanel's
+    // handleClose was unmemoized too, so useFocusTrap's effect re-ran (and
+    // re-focused the panel's first focusable element) on every render of
+    // DrawerPanel, including ones triggered only by a controlled input
+    // inside it changing value. `stableOnClose` stands in for a real
+    // parent-supplied onClose prop, which stays referentially stable across
+    // the drawer content's own re-renders — an inline `() => {}` literal
+    // would itself be a new reference every render and mask the bug.
+    const stableOnClose = () => {};
+
+    const ControlledDrawer = () => {
+      const [value, setValue] = useState('');
+      return (
+        <DrawerPanel open onClose={stableOnClose} title="Filtrar">
+          <input aria-label="Buscar" value={value} onChange={(e) => setValue(e.target.value)} />
+        </DrawerPanel>
+      );
+    };
+
+    render(<ControlledDrawer />);
+    const input = screen.getByLabelText('Buscar');
+    input.focus();
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.change(input, { target: { value: 'a' } });
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.change(input, { target: { value: 'ab' } });
+    expect(document.activeElement).toBe(input);
   });
 });

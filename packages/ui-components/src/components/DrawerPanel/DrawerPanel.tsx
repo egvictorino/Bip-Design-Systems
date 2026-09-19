@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { cn } from '../../lib/cn.js';
 import { useFocusTrap, useScrollLock } from '../../hooks/index.js';
@@ -68,10 +68,16 @@ export const DrawerPanel: React.FC<DrawerPanelProps> = ({
     }
   }, [open]);
 
-  const handleClose = () => {
+  // See the equivalent useCallback in Modal.tsx for why this must be memoized:
+  // an unmemoized handleClose changes identity on every render of DrawerPanel
+  // (including ones triggered only by its own children re-rendering), which
+  // makes useFocusTrap's effect re-run every time — re-stealing focus onto
+  // the panel's first focusable element and breaking any controlled input
+  // inside it after a single keystroke.
+  const handleClose = useCallback(() => {
     onClose();
     onOpenChange?.(false);
-  };
+  }, [onClose, onOpenChange]);
 
   useScrollLock(open);
   useFocusTrap(panelRef, { enabled: open, onEscape: handleClose });
