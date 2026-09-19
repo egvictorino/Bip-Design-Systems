@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from './Modal';
@@ -139,6 +140,55 @@ describe('Modal', () => {
   it('moves focus to the first focusable element on open', () => {
     render(<DefaultModal />);
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Cerrar modal' }));
+  });
+
+  it('does not steal focus away from a controlled input on every keystroke', () => {
+    // Regression test: a real consumer (TenantLookupModal) holds its input's
+    // value in the SAME component that renders <Modal>, so every keystroke
+    // re-renders <Modal> itself (new `children`) — even though the `onClose`
+    // PROP it receives from its own parent stays referentially stable across
+    // those re-renders (it's only reconstructed when the grandparent
+    // re-renders, which typing in the input does not trigger). handleClose
+    // used to be recreated on every Modal render regardless, which changed
+    // useFocusTrap's `onEscape` dependency and re-ran its effect — re-
+    // focusing the modal's first focusable element (the header's close
+    // button) after every single character typed. Forms built on react-hook-
+    // form's uncontrolled register() rarely re-render their Modal ancestor
+    // per keystroke, which is why this stayed hidden until a controlled-
+    // input consumer hit it. `stableOnClose` here stands in for that stable
+    // parent-supplied prop — an inline `() => {}` literal would itself be a
+    // new reference every render and mask the bug this test targets.
+    const stableOnClose = () => {};
+
+    const ControlledModal = () => {
+      const [value, setValue] = useState('');
+      return (
+        <Modal open onClose={stableOnClose}>
+          <ModalHeader>Entra a tu consultorio</ModalHeader>
+          <ModalBody>
+            <input
+              aria-label="Subdominio"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+            />
+          </ModalBody>
+        </Modal>
+      );
+    };
+
+    render(<ControlledModal />);
+    const input = screen.getByLabelText('Subdominio');
+    input.focus();
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.change(input, { target: { value: 'v' } });
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.change(input, { target: { value: 'vi' } });
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.change(input, { target: { value: 'vir' } });
+    expect(document.activeElement).toBe(input);
   });
 
   it('Tab from the last focusable element wraps focus to the first', () => {
