@@ -279,6 +279,8 @@ Ant Design `ConfigProvider`-style: pass a color and the whole library recolors �
 </ThemeProvider>
 ```
 
+> ⚠️ **Pitfall:** no intentes overridear `--color-primary` (o cualquier otro token de marca) declarándolo en tu propia hoja de estilos global (`:root { --color-primary: ... }`). `<ThemeProvider>` redeclara esos tokens como inline style en su propio wrapper interno (`display: contents`), que tiene mayor especificidad y envuelve toda tu app — tu override de `:root` solo "gana" en `<html>`, no dentro del árbol de componentes de la librería. El síntoma es confuso: parece funcionar a medias, porque cualquier CSS propio que resuelva ese custom property sí cambia, pero componentes de la librería como `<Button>` no. Usa siempre la prop `tokens` (o `cssVars` como escape hatch) — es la única forma soportada de cambiar estos valores de forma confiable.
+
 - Available seeds: `colorPrimary`, `colorSecondary`, `colorDanger`, `colorInfo`, `colorSuccess`, `colorWarning`, `colorUnique`, `colorLink`, `colorTxt`, `colorSurface`, `colorEdge`, `colorField`, `fontFamily`.
 - `cssVars` is the escape hatch for any custom property outside that list: `cssVars={{ '--color-selected': '#...' }}`.
 - Nested `<ThemeProvider>`s merge with their parent — an inner one only overrides what it declares.

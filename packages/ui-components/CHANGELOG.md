@@ -9,6 +9,29 @@ hacerlo (ver el historial 0.x más abajo para el detalle de qué cambió en cada
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-09-19
+
+### Fixed
+
+- **`Modal`/`DrawerPanel` robaban el foco de un input controlado en cada tecla escrita**,
+  reportado desde un proyecto real (BipCare, `TenantLookupModal`). Ambos componentes construían su
+  `handleClose` sin memoizar (`const handleClose = () => {...}`), y lo pasaban como `onEscape` a
+  `useFocusTrap` — cuyo `useEffect` depende de esa referencia. `handleClose` cambiaba de identidad
+  en cada render del componente, y el componente se re-renderiza cada vez que `children` cambia —
+  lo cual ocurre en cada tecla si el consumidor mantiene el `value` de un input en el mismo
+  componente que renderiza `<Modal>`/`<DrawerPanel>` (un patrón perfectamente válido: `useState`
+  controlado, no solo `react-hook-form`). Cada cambio de `onEscape` hacía que el efecto de
+  `useFocusTrap` se desmontara y volviera a montar, y al montar siempre re-enfoca el primer
+  elemento focusable del contenedor (normalmente el botón "×" de cerrar) — robándole el foco al
+  input que el usuario estaba escribiendo, tras un solo carácter. Formularios construidos sobre
+  `react-hook-form` con `register()` (inputs no controlados) rara vez re-renderizan su `Modal`
+  ancestro por cada tecla, así que este bug se mantuvo oculto hasta que un consumidor con estado
+  controlado lo expuso. Fix: `handleClose` ahora se memoiza con `useCallback([onClose,
+  onOpenChange])` en ambos componentes. Cobertura nueva: un test de regresión en cada
+  `*.test.tsx` monta un input controlado dentro del componente y confirma que el foco permanece
+  ahí tras varios cambios de `value` — verificado en rojo (falla sin el fix, robando el foco hacia
+  el botón de cerrar) y en verde (pasa con el fix) antes de dar el fix por bueno.
+
 ## [1.0.0] - 2026-08-11
 
 La API pública queda declarada estable. `0.5.0` (más abajo) unificó el vocabulario inconsistente
