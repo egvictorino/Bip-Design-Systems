@@ -398,6 +398,144 @@ describe('DateRangePicker — month picker view', () => {
   });
 });
 
+// ─── Year picker view ─────────────────────────────────────────────────────────
+
+describe('DateRangePicker — year picker view', () => {
+  const openYearPicker = async () => {
+    render(
+      <DateRangePicker value={{ from: new Date(2026, 2, 1), to: null }} onChange={noop} />
+    );
+    await userEvent.click(screen.getByRole('button', { name: /01\/03\/2026/i }));
+    await userEvent.click(
+      screen.getByRole('button', { name: /Marzo 2026 — Seleccionar mes y año/i })
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Seleccionar año' }));
+  };
+
+  it('opens a 12-year grid from the month picker\'s year heading', async () => {
+    await openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    expect(yearGrid.querySelectorAll('button')).toHaveLength(12);
+  });
+
+  it('shows the decade containing the current year', async () => {
+    await openYearPicker();
+    // 2026 falls in the 2016–2027 decade block (Math.floor(2026 / 12) * 12 === 2016)
+    expect(screen.getByText('2016 – 2027')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2026' })).toBeInTheDocument();
+  });
+
+  it('clicking a year returns to the month picker for that year', async () => {
+    await openYearPicker();
+    // 2020 is within the default visible decade block (2016–2027) — no navigation needed.
+    await userEvent.click(screen.getByRole('button', { name: '2020' }));
+    expect(screen.getByRole('grid', { name: 'Seleccionar mes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Marzo 2020' })).toBeInTheDocument();
+  });
+
+  it('decade navigation buttons move the visible range by 12 years', async () => {
+    await openYearPicker();
+    await userEvent.click(screen.getByRole('button', { name: 'Años anteriores' }));
+    expect(screen.getByText('2004 – 2015')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Años siguientes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Años siguientes' }));
+    expect(screen.getByText('2028 – 2039')).toBeInTheDocument();
+  });
+
+  it('years outside min/max are disabled', async () => {
+    render(
+      <DateRangePicker
+        value={{ from: new Date(2026, 2, 1), to: null }}
+        min={new Date(2020, 0, 1)}
+        max={new Date(2030, 11, 31)}
+        onChange={noop}
+      />
+    );
+    await userEvent.click(screen.getByRole('button', { name: /01\/03\/2026/i }));
+    await userEvent.click(
+      screen.getByRole('button', { name: /Marzo 2026 — Seleccionar mes y año/i })
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Seleccionar año' }));
+    expect(screen.getByRole('button', { name: '2018' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '2026' })).not.toBeDisabled();
+  });
+
+  it('year buttons use roving tabindex — the current year has tabIndex=0', async () => {
+    await openYearPicker();
+    expect(screen.getByRole('button', { name: '2026' })).toHaveAttribute('tabindex', '0');
+    expect(screen.getByRole('button', { name: '2025' })).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('ArrowRight moves focus to the next year', async () => {
+    await openYearPicker();
+    // The current year (2026) is auto-focused when the year grid opens.
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(screen.getByRole('button', { name: '2027' })).toHaveFocus();
+  });
+
+  it('ArrowLeft moves focus to the previous year', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('button', { name: '2025' })).toHaveFocus();
+  });
+
+  it('ArrowUp moves focus 4 years back (one grid row)', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{ArrowUp}');
+    expect(screen.getByRole('button', { name: '2022' })).toHaveFocus();
+  });
+
+  it('ArrowDown moves focus 4 years forward (one grid row)', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(screen.getByRole('button', { name: '2030' })).toHaveFocus();
+  });
+
+  it('Home moves focus to the first year of the visible decade', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{Home}');
+    expect(screen.getByRole('button', { name: '2016' })).toHaveFocus();
+  });
+
+  it('End moves focus to the last year of the visible decade', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{End}');
+    expect(screen.getByRole('button', { name: '2027' })).toHaveFocus();
+  });
+
+  it('PageUp jumps back a full decade, advancing the visible block if needed', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{PageUp}');
+    // 2026 - 12 = 2014, outside 2016–2027 — the block must shift back to 2004–2015.
+    expect(screen.getByText('2004 – 2015')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2014' })).toHaveFocus();
+  });
+
+  it('PageDown jumps forward a full decade, advancing the visible block if needed', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{PageDown}');
+    // 2026 + 12 = 2038, outside 2016–2027 — the block must advance to 2028–2039.
+    expect(screen.getByText('2028 – 2039')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2038' })).toHaveFocus();
+  });
+
+  it('Enter selects the focused year', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{ArrowRight}{Enter}');
+    expect(screen.getByRole('grid', { name: 'Seleccionar mes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Marzo 2027' })).toBeInTheDocument();
+  });
+});
+
 // ─── disabledDates ────────────────────────────────────────────────────────────
 
 describe('DateRangePicker — disabledDates', () => {

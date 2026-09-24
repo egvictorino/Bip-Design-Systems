@@ -158,6 +158,21 @@ export const MonthYearPicker: Story = {
   ),
 };
 
+/**
+ * Selector rápido de año — un tercer nivel dentro del selector de mes/año: clic en el año
+ * abre un grid de 12 años navegable ±12 por década. Pensado para el caso donde antes había que
+ * avanzar/retroceder un año a la vez (ej. capturar una fecha de nacimiento anterior al 2000).
+ */
+export const YearPicker: Story = {
+  render: () => (
+    <ControlledDatePicker
+      label="Fecha de nacimiento"
+      helperText="Abre el calendario, clic en el mes/año, luego clic en el año para saltar por década"
+      value={new Date(1990, 5, 15)}
+    />
+  ),
+};
+
 /** Navegación con teclado — flechas, Enter, Home/End, PageUp/Down */
 export const KeyboardNavigation: Story = {
   render: () => (

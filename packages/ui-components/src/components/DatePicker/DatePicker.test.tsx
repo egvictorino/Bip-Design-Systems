@@ -430,4 +430,184 @@ describe('DatePicker', () => {
     fireEvent.keyDown(grid, { key: 'Enter' });
     expect(onChange).not.toHaveBeenCalled();
   });
+
+  // ── Selector rápido de año ──────────────────────────────────────────────────
+
+  const openYearPicker = () => {
+    fireEvent.click(getTrigger());
+    fireEvent.click(screen.getByRole('button', { name: /Seleccionar mes y año/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Seleccionar año' }));
+  };
+
+  it('clicking the year heading in month picker opens a 12-year grid', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    expect(yearGrid.querySelectorAll('button')).toHaveLength(12);
+  });
+
+  it('year grid shows the decade containing the current year', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    // 2026 falls in the 2016–2027 decade block (Math.floor(2026 / 12) * 12 === 2016)
+    expect(screen.getByText('2016 – 2027')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2026' })).toBeInTheDocument();
+  });
+
+  it('clicking a year returns to the month picker for that year', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    // 2020 is within the default visible decade block (2016–2027) — no navigation needed.
+    fireEvent.click(screen.getByRole('button', { name: '2020' }));
+    expect(screen.getByRole('grid', { name: 'Seleccionar mes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Marzo.*2020/ })).toBeInTheDocument();
+  });
+
+  it('reaches a year before 2000 by paging decades, without ever stepping year-by-year', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    fireEvent.click(getTrigger());
+    fireEvent.click(screen.getByRole('button', { name: /Seleccionar mes y año/ })); // open month picker
+    fireEvent.click(screen.getByRole('button', { name: 'Seleccionar año' })); // open year picker
+    // Starting decade block is 2016–2027; three ±12 jumps reach the 1980–1991 block.
+    fireEvent.click(screen.getByRole('button', { name: 'Años anteriores' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Años anteriores' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Años anteriores' }));
+    expect(screen.getByText('1980 – 1991')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '1985' }));
+    expect(screen.getByRole('grid', { name: 'Seleccionar mes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Marzo.*1985/ })).toBeInTheDocument();
+  });
+
+  it('decade navigation buttons move the visible range by 12 years', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    fireEvent.click(screen.getByRole('button', { name: 'Años anteriores' }));
+    expect(screen.getByText('2004 – 2015')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Años siguientes' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Años siguientes' }));
+    expect(screen.getByText('2028 – 2039')).toBeInTheDocument();
+  });
+
+  it('years outside min/max are disabled', () => {
+    render(
+      <DatePicker
+        value={MARCH_15_2026}
+        min={new Date(2020, 0, 1)}
+        max={new Date(2030, 11, 31)}
+      />
+    );
+    openYearPicker();
+    expect(screen.getByRole('button', { name: '2018' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '2026' })).not.toBeDisabled();
+  });
+
+  it('decade navigation stops at the min/max boundary', () => {
+    render(
+      <DatePicker
+        value={MARCH_15_2026}
+        min={new Date(2020, 0, 1)}
+        max={new Date(2026, 11, 31)}
+      />
+    );
+    openYearPicker();
+    expect(screen.getByRole('button', { name: 'Años siguientes' })).toBeDisabled();
+  });
+
+  // ── Navegación con teclado del selector de año ──────────────────────────────
+
+  it('year buttons use roving tabindex — the current year has tabIndex=0', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    expect(screen.getByRole('button', { name: '2026' })).toHaveAttribute('tabindex', '0');
+    expect(screen.getByRole('button', { name: '2025' })).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('ArrowRight moves focus to the next year', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'ArrowRight' });
+    expect(screen.getByRole('button', { name: '2027' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('ArrowDown moves focus 4 years forward (one grid row)', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'ArrowDown' });
+    expect(screen.getByRole('button', { name: '2030' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('ArrowRight past the end of the visible decade advances to the next block', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    // 2026 is not the last cell of 2016–2027, so move to it first, then one more step off the edge.
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    for (let i = 0; i < 2; i++) fireEvent.keyDown(yearGrid, { key: 'ArrowDown' });
+    // 2026 + 8 = 2034, past 2027 — the visible block must have advanced to include it.
+    expect(screen.getByText('2028 – 2039')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2034' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('ArrowLeft moves focus to the previous year', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'ArrowLeft' });
+    expect(screen.getByRole('button', { name: '2025' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('ArrowUp moves focus 4 years back (one grid row)', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'ArrowUp' });
+    expect(screen.getByRole('button', { name: '2022' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('Home moves focus to the first year of the visible decade', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'Home' });
+    expect(screen.getByRole('button', { name: '2016' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('End moves focus to the last year of the visible decade', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'End' });
+    expect(screen.getByRole('button', { name: '2027' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('PageUp jumps back a full decade, advancing the visible block if needed', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'PageUp' });
+    // 2026 - 12 = 2014, outside 2016–2027 — the block must shift back to 2004–2015.
+    expect(screen.getByText('2004 – 2015')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2014' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('PageDown jumps forward a full decade, advancing the visible block if needed', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'PageDown' });
+    // 2026 + 12 = 2038, outside 2016–2027 — the block must advance to 2028–2039.
+    expect(screen.getByText('2028 – 2039')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2038' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('Enter selects the focused year', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'ArrowRight' });
+    fireEvent.keyDown(yearGrid, { key: 'Enter' });
+    expect(screen.getByRole('grid', { name: 'Seleccionar mes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Marzo.*2027/ })).toBeInTheDocument();
+  });
 });

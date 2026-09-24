@@ -9,6 +9,21 @@ hacerlo (ver el historial 0.x más abajo para el detalle de qué cambió en cada
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-24
+
+### Added
+
+- **Selector rápido de año en `DatePicker`/`DateRangePicker`** — reportado por un proyecto real
+  (BipCare) al capturar una fecha de nacimiento anterior al 2000, donde había que avanzar el año
+  uno por uno (~30 clics) para llegar a él. Ambos componentes ya tenían un selector de mes (grid
+  4×3, abierto al hacer clic en el encabezado "Marzo 2026"); ahora ese encabezado de año, dentro
+  del selector de mes, también es clickeable y abre un tercer nivel: un grid de 12 años navegable
+  ±12 por década (`◄ 2016 – 2027 ►`), acotado por `min`/`max` cuando se pasan. Mismo patrón visual,
+  de accesibilidad (roving tabindex, teclado ← → ↑ ↓ Home End PageUp/PageDown Enter/Space, ARIA
+  `role="grid"`/`"gridcell"`) y de i18n (`es-MX`/`en-US`) que el selector de mes existente — llaves
+  nuevas `selectYear`, `prevYears`, `nextYears`, `yearRange(from, to)` en el diccionario de ambos
+  componentes. Sin dependencias nuevas ni props públicas nuevas.
+
 ## [1.0.1] - 2026-09-19
 
 ### Fixed

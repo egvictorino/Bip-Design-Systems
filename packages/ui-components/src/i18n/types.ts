@@ -51,6 +51,10 @@ export interface BipLocale {
     prevMonth: string;
     nextMonth: string;
     selectMonthAndYear: (month: string, year: number) => string;
+    selectYear: string;
+    prevYears: string;
+    nextYears: string;
+    yearRange: (fromYear: number, toYear: number) => string;
     placeholder: string;
     clear: string;
     calendar: string;
@@ -68,6 +72,10 @@ export interface BipLocale {
     prevMonth: string;
     nextMonth: string;
     selectMonthAndYear: (month: string, year: number) => string;
+    selectYear: string;
+    prevYears: string;
+    nextYears: string;
+    yearRange: (fromYear: number, toYear: number) => string;
     placeholder: string;
     selectRange: string;
     clearSelection: string;
