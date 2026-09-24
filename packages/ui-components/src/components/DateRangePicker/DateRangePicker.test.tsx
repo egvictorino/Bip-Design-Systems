@@ -474,6 +474,59 @@ describe('DateRangePicker — year picker view', () => {
     expect(screen.getByRole('button', { name: '2027' })).toHaveFocus();
   });
 
+  it('ArrowLeft moves focus to the previous year', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('button', { name: '2025' })).toHaveFocus();
+  });
+
+  it('ArrowUp moves focus 4 years back (one grid row)', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{ArrowUp}');
+    expect(screen.getByRole('button', { name: '2022' })).toHaveFocus();
+  });
+
+  it('ArrowDown moves focus 4 years forward (one grid row)', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(screen.getByRole('button', { name: '2030' })).toHaveFocus();
+  });
+
+  it('Home moves focus to the first year of the visible decade', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{Home}');
+    expect(screen.getByRole('button', { name: '2016' })).toHaveFocus();
+  });
+
+  it('End moves focus to the last year of the visible decade', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{End}');
+    expect(screen.getByRole('button', { name: '2027' })).toHaveFocus();
+  });
+
+  it('PageUp jumps back a full decade, advancing the visible block if needed', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{PageUp}');
+    // 2026 - 12 = 2014, outside 2016–2027 — the block must shift back to 2004–2015.
+    expect(screen.getByText('2004 – 2015')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2014' })).toHaveFocus();
+  });
+
+  it('PageDown jumps forward a full decade, advancing the visible block if needed', async () => {
+    await openYearPicker();
+    screen.getByRole('button', { name: '2026' }).focus();
+    await userEvent.keyboard('{PageDown}');
+    // 2026 + 12 = 2038, outside 2016–2027 — the block must advance to 2028–2039.
+    expect(screen.getByText('2028 – 2039')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2038' })).toHaveFocus();
+  });
+
   it('Enter selects the focused year', async () => {
     await openYearPicker();
     screen.getByRole('button', { name: '2026' }).focus();

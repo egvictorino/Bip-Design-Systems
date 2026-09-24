@@ -549,6 +549,58 @@ describe('DatePicker', () => {
     expect(screen.getByRole('button', { name: '2034' })).toHaveAttribute('tabindex', '0');
   });
 
+  it('ArrowLeft moves focus to the previous year', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'ArrowLeft' });
+    expect(screen.getByRole('button', { name: '2025' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('ArrowUp moves focus 4 years back (one grid row)', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'ArrowUp' });
+    expect(screen.getByRole('button', { name: '2022' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('Home moves focus to the first year of the visible decade', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'Home' });
+    expect(screen.getByRole('button', { name: '2016' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('End moves focus to the last year of the visible decade', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'End' });
+    expect(screen.getByRole('button', { name: '2027' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('PageUp jumps back a full decade, advancing the visible block if needed', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'PageUp' });
+    // 2026 - 12 = 2014, outside 2016–2027 — the block must shift back to 2004–2015.
+    expect(screen.getByText('2004 – 2015')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2014' })).toHaveAttribute('tabindex', '0');
+  });
+
+  it('PageDown jumps forward a full decade, advancing the visible block if needed', () => {
+    render(<DatePicker value={MARCH_15_2026} />);
+    openYearPicker();
+    const yearGrid = screen.getByRole('grid', { name: 'Seleccionar año' });
+    fireEvent.keyDown(yearGrid, { key: 'PageDown' });
+    // 2026 + 12 = 2038, outside 2016–2027 — the block must advance to 2028–2039.
+    expect(screen.getByText('2028 – 2039')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2038' })).toHaveAttribute('tabindex', '0');
+  });
+
   it('Enter selects the focused year', () => {
     render(<DatePicker value={MARCH_15_2026} />);
     openYearPicker();
