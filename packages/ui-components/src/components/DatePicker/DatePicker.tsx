@@ -105,9 +105,12 @@ const CalendarGrid = ({
     [t.locale]
   );
 
-  const [calendarView, setCalendarView] = useState<'days' | 'months'>('days');
+  const [calendarView, setCalendarView] = useState<'days' | 'months' | 'years'>('days');
   const [pickerYear, setPickerYear] = useState(year);
+  const [yearRangeStart, setYearRangeStart] = useState(() => Math.floor(year / 12) * 12);
+  const [focusedYear, setFocusedYear] = useState<number | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const yearsGridRef = useRef<HTMLDivElement>(null);
 
   const viewIdx = monthIndex(viewDate);
   const canGoPrev = !min || viewIdx > monthIndex(min);
@@ -159,6 +162,13 @@ const CalendarGrid = ({
     btn?.focus({ preventScroll: true });
   }, [focusedDate, calendarView]);
 
+  // Auto-focus the focused year button when focusedYear changes (keyboard nav or open)
+  useEffect(() => {
+    if (focusedYear === null || calendarView !== 'years') return;
+    const btn = yearsGridRef.current?.querySelector<HTMLButtonElement>(`[data-year="${focusedYear}"]`);
+    btn?.focus({ preventScroll: true });
+  }, [focusedYear, calendarView]);
+
   const handleShowMonthPicker = () => {
     setPickerYear(viewDate.getFullYear());
     setCalendarView('months');
@@ -183,6 +193,161 @@ const CalendarGrid = ({
     return false;
   };
 
+  // ── Year picker (decade grid) ─────────────────────────────────────────────
+
+  const handleShowYearPicker = () => {
+    setYearRangeStart(Math.floor(pickerYear / 12) * 12);
+    setFocusedYear(pickerYear);
+    setCalendarView('years');
+  };
+
+  const handleSelectYear = (y: number) => {
+    setPickerYear(y);
+    setCalendarView('months');
+  };
+
+  const canGoPrevYears = !min || yearRangeStart > min.getFullYear();
+  const canGoNextYears = !max || yearRangeStart + 11 < max.getFullYear();
+
+  const isYearDisabled = (y: number): boolean => {
+    if (min && y < min.getFullYear()) return true;
+    if (max && y > max.getFullYear()) return true;
+    return false;
+  };
+
+  const moveToYear = (delta: number) => {
+    if (focusedYear === null) return;
+    const next = focusedYear + delta;
+    if (min && next < min.getFullYear()) return;
+    if (max && next > max.getFullYear()) return;
+    setFocusedYear(next);
+    if (next < yearRangeStart) setYearRangeStart((s) => s - 12);
+    else if (next > yearRangeStart + 11) setYearRangeStart((s) => s + 12);
+  };
+
+  // ── Year picker view ──────────────────────────────────────────────────────
+
+  if (calendarView === 'years') {
+    const years = Array.from({ length: 12 }, (_, i) => yearRangeStart + i);
+
+    return (
+      <div className={styles.calendarGrid}>
+        {/* Decade navigation */}
+        <div className={styles.monthNav}>
+          <button
+            type="button"
+            onClick={() => setYearRangeStart((s) => s - 12)}
+            disabled={!canGoPrevYears}
+            aria-label={t.datePicker.prevYears}
+            className={styles.monthNavBtn}
+          >
+            <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
+              <path
+                fillRule="evenodd"
+                d="M10.78 3.22a.75.75 0 0 1 0 1.06L7.06 8l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <span className={styles.monthHeading}>
+            {t.datePicker.yearRange(yearRangeStart, yearRangeStart + 11)}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setYearRangeStart((s) => s + 12)}
+            disabled={!canGoNextYears}
+            aria-label={t.datePicker.nextYears}
+            className={styles.monthNavBtn}
+          >
+            <svg viewBox="0 0 16 16" fill="currentColor" className={styles.iconMd} aria-hidden="true">
+              <path
+                fillRule="evenodd"
+                d="M5.22 3.22a.75.75 0 0 0 0 1.06L8.94 8 5.22 11.72a.75.75 0 1 0 1.06 1.06l4.25-4.25a.75.75 0 0 0 0-1.06L6.28 3.22a.75.75 0 0 0-1.06 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* 4×3 year grid — roving tabindex + keyboard navigation, same pattern as the day grid */}
+        <div
+          ref={yearsGridRef}
+          role="grid"
+          tabIndex={-1}
+          aria-label={t.datePicker.selectYear}
+          className={styles.monthPickerGrid}
+          onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+            if (focusedYear === null) return;
+
+            switch (e.key) {
+              case 'ArrowLeft':
+                e.preventDefault();
+                moveToYear(-1);
+                break;
+              case 'ArrowRight':
+                e.preventDefault();
+                moveToYear(1);
+                break;
+              case 'ArrowUp':
+                e.preventDefault();
+                moveToYear(-4);
+                break;
+              case 'ArrowDown':
+                e.preventDefault();
+                moveToYear(4);
+                break;
+              case 'Home':
+                e.preventDefault();
+                setFocusedYear(yearRangeStart);
+                break;
+              case 'End':
+                e.preventDefault();
+                setFocusedYear(yearRangeStart + 11);
+                break;
+              case 'PageUp':
+                e.preventDefault();
+                moveToYear(-12);
+                break;
+              case 'PageDown':
+                e.preventDefault();
+                moveToYear(12);
+                break;
+              case 'Enter':
+              case ' ':
+                e.preventDefault();
+                if (!isYearDisabled(focusedYear)) handleSelectYear(focusedYear);
+                break;
+            }
+          }}
+        >
+          {years.map((y) => {
+            const isCurrent = y === pickerYear;
+            const disabled = isYearDisabled(y);
+            const isFocused = focusedYear === y;
+            return (
+              <div key={y} role="gridcell">
+                <button
+                  type="button"
+                  data-year={y}
+                  tabIndex={isFocused ? 0 : -1}
+                  onClick={() => handleSelectYear(y)}
+                  disabled={disabled}
+                  aria-label={String(y)}
+                  aria-pressed={isCurrent}
+                  className={cn(styles.monthPickerBtn, isCurrent && styles.monthPickerBtnCurrent)}
+                >
+                  {y}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   // ── Month picker view ─────────────────────────────────────────────────────
 
   if (calendarView === 'months') {
@@ -206,7 +371,14 @@ const CalendarGrid = ({
             </svg>
           </button>
 
-          <span className={styles.monthHeading}>{pickerYear}</span>
+          <button
+            type="button"
+            onClick={handleShowYearPicker}
+            aria-label={t.datePicker.selectYear}
+            className={styles.monthHeadingBtn}
+          >
+            {pickerYear}
+          </button>
 
           <button
             type="button"
