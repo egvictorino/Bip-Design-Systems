@@ -9,6 +9,8 @@ hacerlo (ver el historial 0.x más abajo para el detalle de qué cambió en cada
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-24
+
 ### Added
 
 - **Selector rápido de año en `DatePicker`/`DateRangePicker`** — reportado por un proyecto real
