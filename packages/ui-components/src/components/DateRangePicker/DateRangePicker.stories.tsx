@@ -177,3 +177,28 @@ export const FullWidth: Story = {
     </div>
   ),
 };
+
+/**
+ * Selector rápido de año — clic en el encabezado del mes abre el selector de mes/año, y clic en
+ * el año abre un grid de 12 años navegable ±12 por década, en vez de tener que avanzar/retroceder
+ * un año a la vez.
+ */
+export const SelectorDeAno: Story = {
+  args: {},
+  render: () => {
+    const Story = () => {
+      const [range, setRange] = useState<DateRange>({ from: null, to: null });
+      return (
+        <div style={{ width: '20rem' }}>
+          <DateRangePicker
+            label="Periodo"
+            value={range}
+            onChange={setRange}
+            helperText="Abre el calendario, clic en el mes/año, luego clic en el año"
+          />
+        </div>
+      );
+    };
+    return <Story />;
+  },
+};
